@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Cuotas Sociales - Proyecto SEIS</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h2>⚙️ CONFIGURACIÓN DE CUOTAS SOCIALES</h2>
+                <p>Configure los precios de las cuotas mensuales</p>
+            </div>
+
+            <div class="page-content">
+                <div class="form-container">
+                    <h3>💰 Precios de Cuotas</h3>
+                    
+                    <form id="formConfigCuotas">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="required">Precio Cuota Regular:</label>
+                                <div class="input-group">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" 
+                                           id="precioRegular" 
+                                           name="precioRegular" 
+                                           min="1000" 
+                                           step="100"
+                                           required
+                                           placeholder="5000">
+                                </div>
+                                <small class="form-help">Precio mensual para voluntarios regulares</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="required">Precio Cuota Estudiante:</label>
+                                <div class="input-group">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" 
+                                           id="precioEstudiante" 
+                                           name="precioEstudiante" 
+                                           min="0" 
+                                           step="100"
+                                           required
+                                           placeholder="3000">
+                                </div>
+                                <small class="form-help">Precio mensual para estudiantes (puede ser 0 para exento)</small>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="window.location.href='sistema.html'">
+                                ⬅️ Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                ✅ Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Vista previa -->
+                <div class="info-box info-success" style="margin-top: 30px;">
+                    <h4>📋 Vista Previa del Selector</h4>
+                    <p>Así se verá en el formulario de pago de cuotas:</p>
+                    <div style="margin-top: 15px;">
+                        <select id="previewSelector" class="form-control" disabled>
+                            <option>Seleccione tipo</option>
+                            <option id="previewRegular">Cuota Regular - $5.000</option>
+                            <option id="previewEstudiante">Cuota Estudiante - $3.000</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="info-box info-info" style="margin-top: 20px;">
+                    <h4>ℹ️ Información</h4>
+                    <ul>
+                        <li><strong>Cuota Regular:</strong> Aplicable a todos los voluntarios activos que no sean estudiantes.</li>
+                        <li><strong>Cuota Estudiante:</strong> Aplicable a voluntarios que están estudiando (con documentación).</li>
+                        <li><strong>Exenciones automáticas:</strong> Honorarios, Insignes y Mártires están exentos por defecto (a menos que el Tesorero los active manualmente).</li>
+                        <li><strong>Cambios futuros:</strong> Los nuevos precios solo afectan pagos futuros, no históricos.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/storage.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/sidebar.js' %}"></script>
+    <script src="{% static 'js/configurar-cuotas.js' %}?v=2.0"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas - Sistema Bomberos</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/finanzas.css' %}?v=5.1">
+</head>
+<body>
+<div class="fin-wrap">
+
+    <!-- ========== HEADER ========== -->
+    <div class="fin-header">
+        <div class="fin-header-top">
+            <div>
+                <h1>Sistema de Gestión Financiera</h1>
+                <p>Control de ingresos y egresos de la compañía</p>
+            </div>
+            <div class="fin-header-btns">
+                <button class="btn-reg volver" onclick="window.location.href='/sistema.html'">← Volver</button>
+                <button class="btn-reg" style="background:#1a6ea8;color:#fff" onclick="window.location.href='/cuentas-compania.html'">🏦 Cuentas</button>
+                <button class="btn-reg ingreso" onclick="abrirModal('ingreso')">+ Registrar Ingreso</button>
+                <button class="btn-reg egreso" onclick="abrirModal('egreso')">+ Registrar Egreso</button>
+            </div>
+        </div>
+        <div class="fin-summary">
+            <div class="sum-card">
+                <div class="sum-label">Saldo Total Compañía</div>
+                <div class="sum-value saldo" id="saldoTotal">$0</div>
+            </div>
+            <div class="sum-divider"></div>
+            <div class="sum-card">
+                <div class="sum-label">Ingresos <span id="anioLabel"></span></div>
+                <div class="sum-value verde" id="totalIngresosAnio">$0</div>
+            </div>
+            <div class="sum-divider"></div>
+            <div class="sum-card">
+                <div class="sum-label">Egresos <span id="anioLabelE"></span></div>
+                <div class="sum-value rojo" id="totalEgresosAnio">$0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TABS ========== -->
+    <div class="fin-tabs">
+        <button id="tab-btn-ingresos" class="fin-tab active" onclick="cambiarTab('ingresos')">Ingresos</button>
+        <button id="tab-btn-egresos" class="fin-tab" onclick="cambiarTab('egresos')">Egresos</button>
+    </div>
+
+    <!-- ========== TAB INGRESOS ========== -->
+    <div id="panel-ingresos" class="fin-panel">
+        <div class="fin-card">
+            <div class="fin-filters">
+                <div class="filter-search">
+                    <input type="text" id="busqIngresos" placeholder="Buscar por nombre, tipo, descripción, monto..." oninput="resetPagina('ingresos'); renderTab('ingresos')">
+                </div>
+                <div class="filter-row">
+                    <div class="filter-item filter-item-sm">
+                        <label>Año</label>
+                        <select id="anioFiltroIngresos" onchange="resetPagina('ingresos'); renderTab('ingresos')"></select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Tipo de Ingreso</label>
+                        <select id="tipoFiltroIngresos" onchange="resetPagina('ingresos'); renderTab('ingresos')">
+                            <option value="">Todos</option>
+                            <option>Cartones bingo</option>
+                            <option>Accesorios bingo</option>
+                            <option>Asesorías</option>
+                            <option>Socios cooperadores</option>
+                            <option>Cuotas sociales</option>
+                            <option>Rifa Gigante</option>
+                            <option>Arriendo salón</option>
+                            <option value="__otro__">Otro (personalizado)</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Desde</label>
+                        <input type="date" id="desdeIngresos" onchange="resetPagina('ingresos'); renderTab('ingresos')">
+                    </div>
+                    <div class="filter-item">
+                        <label>Hasta</label>
+                        <input type="date" id="hastaIngresos" onchange="resetPagina('ingresos'); renderTab('ingresos')">
+                    </div>
+                    <div class="filter-item filter-action">
+                        <button class="btn-limpiar" onclick="limpiarFiltros('ingresos')">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+            <div class="fin-contador" id="contadorIngresos">Cargando...</div>
+            <div id="paginIngresosTop"></div>
+            <div id="listaIngresos"></div>
+            <div id="paginIngresos"></div>
+        </div>
+    </div>
+
+    <!-- ========== TAB EGRESOS ========== -->
+    <div id="panel-egresos" class="fin-panel" style="display:none">
+        <div class="fin-card">
+            <div class="fin-filters">
+                <div class="filter-search">
+                    <input type="text" id="busqEgresos" placeholder="Buscar por motivo, descripción, documento, monto..." oninput="resetPagina('egresos'); renderTab('egresos')">
+                </div>
+                <div class="filter-row">
+                    <div class="filter-item filter-item-sm">
+                        <label>Año</label>
+                        <select id="anioFiltroEgresos" onchange="resetPagina('egresos'); renderTab('egresos')"></select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Motivo</label>
+                        <select id="motivoFiltroEgresos" onchange="resetPagina('egresos'); renderTab('egresos')">
+                            <option value="">Todos</option>
+                            <option>Mantenimiento de Equipos</option>
+                            <option>Combustible</option>
+                            <option>Uniformes y Vestimenta</option>
+                            <option>Capacitaciones</option>
+                            <option>Servicios Básicos</option>
+                            <option>Seguros</option>
+                            <option>Alimentación</option>
+                            <option>Reparaciones</option>
+                            <option value="__otro__">Otro (personalizado)</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>Desde</label>
+                        <input type="date" id="desdeEgresos" onchange="resetPagina('egresos'); renderTab('egresos')">
+                    </div>
+                    <div class="filter-item">
+                        <label>Hasta</label>
+                        <input type="date" id="hastaEgresos" onchange="resetPagina('egresos'); renderTab('egresos')">
+                    </div>
+                    <div class="filter-item filter-action">
+                        <button class="btn-limpiar" onclick="limpiarFiltros('egresos')">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+            <div class="fin-contador" id="contadorEgresos">Cargando...</div>
+            <div id="paginEgresosTop"></div>
+            <div id="listaEgresos"></div>
+            <div id="paginEgresos"></div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- ========== MODAL INGRESO ========== -->
+<div id="modalIngreso" class="fin-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalIngreso')">
+    <div class="fin-modal">
+        <div class="modal-header ingreso-header">
+            <h3>Registrar Ingreso de Dinero</h3>
+            <button class="modal-close" onclick="cerrarModal('modalIngreso')">✕</button>
+        </div>
+        <form id="formIngreso" class="modal-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tipo de Ingreso <span class="req">*</span></label>
+                    <select id="tipoIngreso" required onchange="toggleOtro('ingreso')">
+                        <option value="">Seleccione tipo</option>
+                        <option>Cartones bingo</option>
+                        <option>Accesorios bingo</option>
+                        <option>Asesorías</option>
+                        <option>Socios cooperadores</option>
+                        <option>Cuotas sociales</option>
+                        <option>Rifa Gigante</option>
+                        <option>Arriendo salón</option>
+                        <option value="__otro__">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group" id="otroIngresoGrupo" style="display:none">
+                    <label>Especificar tipo <span class="req">*</span></label>
+                    <input type="text" id="otroIngresoNombre" placeholder="Ej: Donación empresa X">
+                </div>
+                <div class="form-group">
+                    <label>Monto (CLP) <span class="req">*</span></label>
+                    <input type="number" id="montoIngreso" required min="1" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Fecha <span class="req">*</span></label>
+                    <input type="date" id="fechaIngreso" required>
+                </div>
+                <div class="form-group">
+                    <label>Método de pago <span class="req">*</span></label>
+                    <select id="metodoPagoIngreso" onchange="toggleCuentaIngreso()">
+                        <option value="efectivo">Efectivo (Caja)</option>
+                        <option value="transferencia">Transferencia bancaria</option>
+                    </select>
+                </div>
+                <div class="form-group" id="cuentaBancariaIngresoGrupo" style="display:none">
+                    <label>Cuenta bancaria destino <span class="req">*</span></label>
+                    <select id="cuentaBancariaIngreso">
+                        <option value="">— Cargando cuentas —</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Descripción / Observaciones</label>
+                    <textarea id="descripcionIngreso" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit ingreso">Registrar Ingreso</button>
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalIngreso')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========== MODAL EGRESO ========== -->
+<div id="modalEgreso" class="fin-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalEgreso')">
+    <div class="fin-modal">
+        <div class="modal-header egreso-header">
+            <h3>Registrar Egreso de Dinero</h3>
+            <button class="modal-close" onclick="cerrarModal('modalEgreso')">✕</button>
+        </div>
+        <form id="formEgreso" class="modal-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Motivo del Egreso <span class="req">*</span></label>
+                    <select id="motivoEgreso" required onchange="toggleOtro('egreso')">
+                        <option value="">Seleccione motivo</option>
+                        <option>Mantenimiento de Equipos</option>
+                        <option>Combustible</option>
+                        <option>Uniformes y Vestimenta</option>
+                        <option>Capacitaciones</option>
+                        <option>Servicios Básicos</option>
+                        <option>Seguros</option>
+                        <option>Alimentación</option>
+                        <option>Reparaciones</option>
+                        <option value="__otro__">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group" id="otroEgresoGrupo" style="display:none">
+                    <label>Especificar motivo <span class="req">*</span></label>
+                    <input type="text" id="otroEgresoNombre" placeholder="Ej: Premio aniversario">
+                </div>
+                <div class="form-group">
+                    <label>Monto (CLP) <span class="req">*</span></label>
+                    <input type="number" id="montoEgreso" required min="1" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Fecha <span class="req">*</span></label>
+                    <input type="date" id="fechaEgreso" required>
+                </div>
+                <div class="form-group">
+                    <label>N° Documento</label>
+                    <input type="text" id="numeroDocEgreso" placeholder="Boleta o factura">
+                </div>
+                <div class="form-group">
+                    <label>Sale de <span class="req">*</span></label>
+                    <select id="metodoPagoEgreso" onchange="toggleCuentaEgreso()">
+                        <option value="efectivo">Caja / Efectivo</option>
+                        <option value="transferencia">Cuenta bancaria</option>
+                    </select>
+                </div>
+                <div class="form-group" id="cuentaBancariaEgresoGrupo" style="display:none">
+                    <label>Cuenta origen <span class="req">*</span></label>
+                    <select id="cuentaBancariaEgreso">
+                        <option value="">— Seleccionar cuenta —</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Descripción <span class="req">*</span></label>
+                    <textarea id="descripcionEgreso" required rows="3" placeholder="Describa el egreso de dinero"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-submit egreso">Registrar Egreso</button>
+                <button type="button" class="btn-cancel" onclick="cerrarModal('modalEgreso')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/utils.js' %}"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/finanzas-simple.js' %}?v=5.1"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+/* ==================== FIX UNIFORME PARA TODOS LOS BOTONES ==================== */
+
+/* TODOS los botones del mismo tamaño */
+.registro-card button,
+.card-actions button,
+button[style*="background"],
+button[onclick*="activar"],
+button[onclick*="desactivar"],
+button[onclick*="Cuotas"],
+button[onclick*="Beneficios"],
+button[onclick*="Uniformes"] {
+    padding: 8px 16px !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px !important;
+    height: 34px !important;
+    min-width: fit-content !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}

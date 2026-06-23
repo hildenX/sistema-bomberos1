@@ -1,0 +1,310 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rifas - Sistema Bomberos</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .rif-wrap { max-width: 1200px; margin: 0 auto; padding: 0 0 60px; }
+
+        /* ─── HEADER ─────────────────────────────────────────── */
+        .rif-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white; padding: 28px 32px 0;
+            border-radius: 0 0 24px 24px; margin-bottom: 24px;
+            box-shadow: 0 6px 28px rgba(196,30,58,0.35);
+        }
+        .rif-header-top {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 16px; margin-bottom: 20px;
+        }
+        .rif-titulo { margin: 0 0 5px; font-size: 1.65rem; font-weight: 800; letter-spacing: -0.3px; }
+        .rif-subtitulo { margin: 0; opacity: 0.75; font-size: 0.875rem; }
+        .rif-header-btns { display: flex; gap: 10px; flex-shrink: 0; padding-top: 4px; }
+
+        /* Stats bar fondo */
+        .rif-stats-bar {
+            display: flex; background: rgba(0,0,0,0.2); border-radius: 14px 14px 0 0;
+            overflow-x: auto; gap: 0;
+        }
+        .rif-stat {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 14px 24px; flex: 1; min-width: 130px;
+            border-right: 1px solid rgba(255,255,255,0.1); transition: background .15s; cursor: default;
+        }
+        .rif-stat:last-child { border-right: none; }
+        .rif-stat:hover { background: rgba(255,255,255,0.06); }
+        .rif-stat-num   { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+        .rif-stat-label { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.7px; opacity: 0.7; margin-top: 3px; }
+
+        /* ─── BUTTONS ────────────────────────────────────────── */
+        .btn-rif {
+            padding: 9px 18px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.875rem; font-weight: 600; transition: all .18s; white-space: nowrap;
+        }
+        .btn-rif.volver { background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); }
+        .btn-rif.volver:hover { background: rgba(255,255,255,0.28); }
+        .btn-rif.nuevo  { background: white; color: #c41e3a; }
+        .btn-rif.nuevo:hover  { background: #fdf2f5; box-shadow: 0 3px 10px rgba(196,30,58,0.25); transform: translateY(-1px); }
+        .btn-rif.primary { background: #c41e3a; color: white; }
+        .btn-rif.primary:hover { background: #a8172f; box-shadow: 0 3px 10px rgba(196,30,58,0.3); transform: translateY(-1px); }
+        .btn-rif.secondary { background: #e5e7eb; color: #374151; }
+        .btn-rif.secondary:hover { background: #d1d5db; }
+        .btn-rif.danger { background: #7f1d1d; color: white; }
+        .btn-rif.danger:hover { background: #6b1717; }
+
+        /* ─── NOTIFICACIÓN ───────────────────────────────────── */
+        .rif-notif {
+            margin: 0 16px 16px; padding: 12px 18px; border-radius: 10px;
+            font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            animation: slideDown .2s ease-out;
+        }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+        .rif-notif.ok  { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .rif-notif.err { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+
+        /* ─── CARDS GRID ─────────────────────────────────────── */
+        .rifas-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 18px; padding: 0 16px;
+        }
+        .rifa-card {
+            background: white; border-radius: 16px; padding: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #f0f0f0;
+            transition: box-shadow .2s, transform .2s; display: flex; flex-direction: column; gap: 14px;
+        }
+        .rifa-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.12); transform: translateY(-2px); }
+
+        /* Card top */
+        .rifa-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .rifa-nombre { font-size: 1.05rem; font-weight: 700; color: #111827; margin-bottom: 3px; }
+        .rifa-ciclo  { font-size: 0.78rem; color: #9ca3af; }
+
+        /* Badges */
+        .badge-estado {
+            padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap;
+        }
+        .badge-estado.activa  { background: #d1fae5; color: #065f46; }
+        .badge-estado.cerrada { background: #f3f4f6; color: #6b7280; }
+
+        /* Info básica */
+        .rifa-info { font-size: 0.82rem; color: #6b7280; line-height: 1.8; }
+        .rifa-info strong { color: #374151; }
+
+        /* Stats mini grid */
+        .rifa-stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+        }
+        .stat-mini {
+            background: #f9fafb; border-radius: 10px; padding: 10px 8px; text-align: center;
+            border: 1px solid #f0f0f0;
+        }
+        .stat-mini-val { font-size: 1.15rem; font-weight: 700; color: #111827; }
+        .stat-mini-lbl { font-size: 0.62rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+        .stat-mini.sin-ret  .stat-mini-val { color: #d97706; }
+        .stat-mini.retirada .stat-mini-val { color: #2563eb; }
+        .stat-mini.pagada   .stat-mini-val { color: #059669; }
+        .stat-mini.liberada .stat-mini-val { color: #9ca3af; }
+
+        /* Recaudado */
+        .rifa-recaudado {
+            background: #f9fafb; border-radius: 10px; padding: 12px 14px;
+            display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+            border: 1px solid #e5e7eb;
+        }
+        .rec-item { text-align: center; flex: 1; min-width: 80px; }
+        .rec-val  { font-size: 0.88rem; font-weight: 700; color: #111827; }
+        .rec-lbl  { font-size: 0.62rem; text-transform: uppercase; color: #9ca3af; margin-top: 1px; letter-spacing: 0.3px; }
+        .rec-item.transf .rec-val { color: #2563eb; }
+        .rec-item.efec   .rec-val { color: #059669; }
+
+        /* Progreso */
+        .rifa-progress-wrap { display: flex; flex-direction: column; gap: 4px; }
+        .rifa-progress-header { display: flex; justify-content: space-between; font-size: 0.78rem; color: #6b7280; }
+        .rifa-progress-pct { font-weight: 700; color: #374151; }
+        .rifa-progress-track { height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
+        .rifa-progress-fill  { height: 100%; background: linear-gradient(90deg,#c41e3a,#e03256); border-radius: 4px; transition: width .5s; }
+
+        /* Acciones */
+        .rifa-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+
+        /* ─── MODAL ──────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px; backdrop-filter: blur(3px);
+        }
+        .modal-box {
+            background: white; border-radius: 20px; width: 100%; max-width: 640px;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 28px 80px rgba(0,0,0,0.25);
+            animation: modalIn .18s cubic-bezier(.22,.68,0,1.2);
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(.95) translateY(10px); } to { opacity:1; transform:none; } }
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white; padding: 20px 24px; border-radius: 20px 20px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+        .modal-body   { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 10px; background: #fafafa; border-radius: 0 0 20px 20px; }
+        .btn-close-modal {
+            background: rgba(255,255,255,0.2); border: none; cursor: pointer;
+            font-size: 1rem; color: white; padding: 6px 10px; border-radius: 8px; line-height: 1; transition: background .15s;
+        }
+        .btn-close-modal:hover { background: rgba(255,255,255,0.35); }
+
+        /* Form */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.8rem; font-weight: 600; color: #374151; }
+        .form-group input, .form-group select {
+            padding: 9px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px;
+            font-size: 0.875rem; outline: none; transition: border-color .18s; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #c41e3a; }
+        .req { color: #c41e3a; }
+
+        /* Empty / Loading */
+        .empty-state { text-align: center; padding: 70px 20px; color: #9ca3af; }
+        .empty-state .icon { font-size: 4rem; margin-bottom: 14px; }
+        .empty-state h3 { margin: 0 0 6px; color: #374151; font-size: 1.05rem; }
+        .empty-state p  { margin: 4px 0; font-size: 0.875rem; }
+        .loading { text-align: center; padding: 50px; color: #9ca3af; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="rif-wrap">
+
+    <!-- HEADER -->
+    <div class="rif-header">
+        <div class="rif-header-top">
+            <div>
+                <h1 class="rif-titulo">🎟 Rifas Anuales</h1>
+                <p class="rif-subtitulo">Gestión de rifas y control de recaudación</p>
+            </div>
+            <div class="rif-header-btns">
+                <button class="btn-rif volver" onclick="window.location.href='/sistema.html'">← Volver</button>
+                <button class="btn-rif nuevo" onclick="abrirModalNuevaRifa()">＋ Nueva Rifa</button>
+            </div>
+        </div>
+        <div class="rif-stats-bar">
+            <div class="rif-stat">
+                <div class="rif-stat-num" id="statActivas">0</div>
+                <div class="rif-stat-label">Rifas Activas</div>
+            </div>
+            <div class="rif-stat">
+                <div class="rif-stat-num" id="statTransf">$0</div>
+                <div class="rif-stat-label">Recaudado Transferencia</div>
+            </div>
+            <div class="rif-stat">
+                <div class="rif-stat-num" id="statEfec">$0</div>
+                <div class="rif-stat-label">Recaudado Efectivo</div>
+            </div>
+            <div class="rif-stat">
+                <div class="rif-stat-num" id="statPagadas">0/0</div>
+                <div class="rif-stat-label">Talonarios Pagados</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN -->
+    <div id="rifNotif" class="rif-notif" style="display:none"></div>
+
+    <!-- GRID -->
+    <div id="rifasGrid" class="loading">Cargando rifas...</div>
+
+</div>
+
+<!-- ══ MODAL NUEVA RIFA ══════════════════════════════════════ -->
+<div id="modalNuevaRifa" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>＋ Nueva Rifa Anual</h3>
+            <button class="btn-close-modal" onclick="cerrarModalNuevaRifa()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ciclo (Año) <span class="req">*</span></label>
+                    <input type="text" id="nrCiclo" placeholder="2025" maxlength="4">
+                </div>
+                <div class="form-group">
+                    <label>Nombre <span class="req">*</span></label>
+                    <input type="text" id="nrNombre" placeholder="Rifa 2025">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Inicio <span class="req">*</span></label>
+                    <input type="date" id="nrFechaInicio">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Cierre</label>
+                    <input type="date" id="nrFechaCierre" placeholder="Default: 30 Dic">
+                </div>
+                <div class="form-group">
+                    <label>Precio por Número <span class="req">*</span></label>
+                    <input type="number" id="nrPrecio" placeholder="500" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Números por Talonario <span class="req">*</span></label>
+                    <input type="number" id="nrNumTalonario" placeholder="100" min="1">
+                </div>
+            </div>
+            <p style="font-size:0.78rem;color:#9ca3af;margin:16px 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px">Talonarios por categoría</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Voluntarios (0–19 años)</label>
+                    <input type="number" id="nrTalVol" value="1" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Hon. Compañía (20–24 años)</label>
+                    <input type="number" id="nrTalHCia" value="1" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Hon. Cuerpo (25–49 años)</label>
+                    <input type="number" id="nrTalHCuerpo" value="1" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Insignes (50+ años)</label>
+                    <input type="number" id="nrTalInsigne" value="1" min="0">
+                </div>
+            </div>
+        </div>
+        <div id="nrError" style="display:none;margin:0 24px 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;font-size:0.84rem;font-weight:600"></div>
+        <div class="modal-footer">
+            <button class="btn-rif secondary" onclick="cerrarModalNuevaRifa()">Cancelar</button>
+            <button class="btn-rif primary" onclick="crearRifa()">🎟 Crear Rifa</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL CERRAR RIFA ════════════════════════════════════ -->
+<div id="modalCerrar" class="modal-overlay" style="display:none">
+    <div class="modal-box" style="max-width:460px">
+        <div class="modal-header">
+            <h3>🔒 Cerrar Rifa</h3>
+            <button class="btn-close-modal" onclick="document.getElementById('modalCerrar').style.display='none'">✕</button>
+        </div>
+        <div class="modal-body">
+            <p id="modalCerrarTexto" style="color:#374151;margin:0 0 10px;font-weight:600"></p>
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:0.84rem;color:#991b1b">
+                ⚠️ Se generarán egresos automáticos en las cuentas bancarias para retirar los fondos de la rifa.
+                Esta acción no se puede deshacer.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-rif secondary" onclick="document.getElementById('modalCerrar').style.display='none'">Cancelar</button>
+            <button class="btn-rif danger" onclick="confirmarCerrarRifa()">🔒 Sí, Cerrar Rifa</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/rifas.js' %}?v=2.0"></script>
+</body>
+</html>

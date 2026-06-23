@@ -1,0 +1,384 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuentas de la Compañía</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .cc-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: #fff;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            box-shadow: 0 3px 12px rgba(0,0,0,.25);
+        }
+        .cc-header h1 { font-size: 1.4rem; font-weight: 700; flex: 1; }
+        .btn-cc {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 600;
+            transition: opacity .15s;
+        }
+        .btn-cc:hover { opacity: .85; }
+        .btn-cc.volver   { background: rgba(255,255,255,.2); color: #fff; }
+        .btn-cc.nuevo    { background: #fff; color: #c41e3a; }
+        .btn-cc.deposito { background: #27ae60; color: #fff; }
+        .btn-cc.desact   { background: #e74c3c; color: #fff; font-size: .75rem; padding: 5px 10px; }
+        .btn-cc.react    { background: #27ae60; color: #fff; font-size: .75rem; padding: 5px 10px; }
+        .btn-cc.sm       { font-size: .78rem; padding: 5px 12px; }
+        .btn-cc.ver-comp { background: #3498db; color: #fff; font-size: .75rem; padding: 4px 10px; }
+        .btn-cc.elim     { background: #7f1d1d; color: #fff; font-size: .75rem; padding: 5px 10px; }
+
+        /* ===== NOTIF ===== */
+        #ccNotif {
+            display: none;
+            margin: 16px 24px 0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: .9rem;
+        }
+        #ccNotif.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        #ccNotif.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        #ccNotif.info    { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+
+        /* ===== BODY ===== */
+        .cc-body { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+        /* ===== SALDO CARDS ===== */
+        .cc-saldos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .cc-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            border-top: 4px solid #c41e3a;
+            position: relative;
+        }
+        .cc-card.caja  { border-top-color: #27ae60; }
+        .cc-card.desactivada { border-top-color: #aaa; opacity: .7; }
+        .cc-card-titulo {
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .cc-card-nombre {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 2px;
+        }
+        .cc-card-sub {
+            font-size: .78rem;
+            color: #888;
+            margin-bottom: 12px;
+        }
+        .cc-card-saldo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #27ae60;
+        }
+        .cc-card-saldo.negativo { color: #e74c3c; }
+        .cc-card-actions { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* ===== TABLA DEPÓSITOS ===== */
+        .cc-section { margin-bottom: 32px; }
+        .cc-section h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #8b1429;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0e0e3;
+        }
+        .cc-table-wrap { overflow-x: auto; }
+        .cc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .85rem;
+        }
+        .cc-table th {
+            background: #8b1429;
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .cc-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f0e0e3;
+        }
+        .cc-table tr:hover td { background: #fdf2f4; }
+        .cc-table .monto { font-weight: 700; color: #27ae60; }
+        .cc-empty {
+            text-align: center;
+            padding: 24px;
+            color: #999;
+            font-size: .9rem;
+        }
+
+        /* ===== MODALES ===== */
+        .cc-modal {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .cc-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,.2);
+        }
+        .cc-modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #8b1429;
+            margin-bottom: 20px;
+        }
+        .cc-field { margin-bottom: 14px; }
+        .cc-field label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .cc-field input,
+        .cc-field select,
+        .cc-field textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: .9rem;
+            font-family: inherit;
+        }
+        .cc-field input:focus,
+        .cc-field select:focus,
+        .cc-field textarea:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+        .cc-field textarea { resize: vertical; min-height: 60px; }
+        .cc-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+        .btn-cc.cancelar { background: #eee; color: #333; }
+        .btn-cc.guardar  { background: #c41e3a; color: #fff; }
+
+        /* Vista previa comprobante */
+        #prevComprobante {
+            display: none;
+            margin-top: 8px;
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        #prevComprobantePdf {
+            display: none;
+            margin-top: 8px;
+            font-size: .8rem;
+            color: #c41e3a;
+            font-weight: 600;
+        }
+
+        /* Modal comprobante */
+        #modalVerComp .cc-modal-box { max-width: 700px; }
+        #imgComprobante { max-width: 100%; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="cc-header">
+    <h1>🏦 Cuentas de la Compañía</h1>
+    <button class="btn-cc volver" onclick="window.location.href='/finanzas.html'">← Volver</button>
+    <button class="btn-cc deposito" onclick="abrirModalDeposito()">💵 Registrar Depósito</button>
+    <button class="btn-cc nuevo" onclick="abrirModalCuenta()">＋ Nueva Cuenta</button>
+</div>
+
+<!-- NOTIF -->
+<div id="ccNotif"></div>
+
+<div class="cc-body">
+
+    <!-- TOTAL GENERAL -->
+    <div style="background:linear-gradient(135deg,#8b1429,#c41e3a);border-radius:12px;padding:20px 24px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.2)">
+        <div>
+            <div style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;opacity:.8">Total General — Compañía</div>
+            <div style="font-size:.75rem;opacity:.7">Caja + todas las cuentas bancarias</div>
+        </div>
+        <div id="totalGeneral" style="font-size:2rem;font-weight:800">Cargando…</div>
+    </div>
+
+    <!-- SALDO CARDS -->
+    <div class="cc-section">
+        <h2>💰 Saldos Actuales</h2>
+        <div class="cc-saldos" id="ccsaldos">
+            <div class="cc-card caja">
+                <div class="cc-card-titulo">Caja / Efectivo</div>
+                <div class="cc-card-nombre">Caja</div>
+                <div class="cc-card-sub">Pagos en efectivo</div>
+                <div class="cc-card-saldo" id="saldoCaja">Cargando…</div>
+            </div>
+            <div id="ccCuentasCards"></div>
+        </div>
+    </div>
+
+    <!-- HISTORIAL DEPÓSITOS -->
+    <div class="cc-section">
+        <h2>📋 Historial de Depósitos (Caja → Banco)</h2>
+        <div class="cc-table-wrap">
+            <table class="cc-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Cuenta Destino</th>
+                        <th>Monto</th>
+                        <th>N° Comprobante</th>
+                        <th>Observaciones</th>
+                        <th>Comp.</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaDepositos">
+                    <tr><td colspan="7" class="cc-empty">Cargando…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FONDOS RIFA -->
+    <div class="cc-section" id="seccionFondosRifa" style="display:none">
+        <h2>🎟 Fondos de Rifas Activas</h2>
+        <div id="fondosRifaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:12px"></div>
+    </div>
+
+</div>
+
+<!-- MODAL NUEVA CUENTA -->
+<div class="cc-modal" id="modalCuenta" onclick="cerrarModalFondo(event,'modalCuenta')">
+    <div class="cc-modal-box">
+        <h3>＋ Nueva Cuenta Bancaria</h3>
+        <form id="formCuenta" onsubmit="guardarCuenta(event)">
+            <div class="cc-field">
+                <label>Titular / Nombre de la empresa *</label>
+                <input type="text" name="nombre" placeholder="Ej: Cuerpo de Bomberos de Puerto Montt" required>
+            </div>
+            <div class="cc-field">
+                <label>RUT del titular</label>
+                <input type="text" name="rut_titular" placeholder="Ej: 61.123.456-7">
+            </div>
+            <div class="cc-field">
+                <label>Banco *</label>
+                <input type="text" name="banco" placeholder="Ej: BancoEstado, Santander, BCI…" required>
+            </div>
+            <div class="cc-field">
+                <label>Número de cuenta *</label>
+                <input type="text" name="numero_cuenta" placeholder="Ej: 00-123456-7" required>
+            </div>
+            <div class="cc-field">
+                <label>Tipo de cuenta</label>
+                <select name="tipo_cuenta">
+                    <option value="corriente">Corriente</option>
+                    <option value="ahorro">Ahorro</option>
+                    <option value="vista">Vista</option>
+                </select>
+            </div>
+            <div class="cc-modal-actions">
+                <button type="button" class="btn-cc cancelar" onclick="cerrarModal('modalCuenta')">Cancelar</button>
+                <button type="submit" class="btn-cc guardar">Guardar Cuenta</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL REGISTRAR DEPÓSITO -->
+<div class="cc-modal" id="modalDeposito" onclick="cerrarModalFondo(event,'modalDeposito')">
+    <div class="cc-modal-box">
+        <h3>💵 Registrar Depósito a Banco</h3>
+        <form id="formDeposito" onsubmit="guardarDeposito(event)">
+            <div class="cc-field">
+                <label>Cuenta destino *</label>
+                <select name="cuenta_destino_id" id="selCuentaDeposito" required>
+                    <option value="">— Seleccionar cuenta —</option>
+                </select>
+            </div>
+            <div class="cc-field">
+                <label>Monto ($) *</label>
+                <input type="number" name="monto" min="1" step="1" placeholder="0" required>
+            </div>
+            <div class="cc-field">
+                <label>Fecha</label>
+                <input type="date" name="fecha" id="inputFechaDeposito">
+            </div>
+            <div class="cc-field">
+                <label>Hora</label>
+                <input type="time" name="hora" id="inputHoraDeposito">
+            </div>
+            <div class="cc-field">
+                <label>N° Comprobante</label>
+                <input type="text" name="numero_comprobante" placeholder="Ej: 12345678">
+            </div>
+            <div class="cc-field">
+                <label>Adjuntar comprobante (imagen o PDF)</label>
+                <input type="file" id="fileComprobante" accept="image/*,application/pdf" onchange="previsualizarComp(this)">
+                <img id="prevComprobante" alt="Vista previa">
+                <div id="prevComprobantePdf">📄 PDF adjunto</div>
+                <input type="hidden" name="comprobante_base64" id="inputComprobanteB64">
+            </div>
+            <div class="cc-field">
+                <label>Observaciones</label>
+                <textarea name="observaciones" placeholder="Opcional…"></textarea>
+            </div>
+            <div class="cc-modal-actions">
+                <button type="button" class="btn-cc cancelar" onclick="cerrarModal('modalDeposito')">Cancelar</button>
+                <button type="submit" class="btn-cc guardar">Registrar Depósito</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL VER COMPROBANTE -->
+<div class="cc-modal" id="modalVerComp" onclick="cerrarModalFondo(event,'modalVerComp')">
+    <div class="cc-modal-box">
+        <h3>🖼️ Comprobante</h3>
+        <div id="contenidoComprobante" style="text-align:center"></div>
+        <div class="cc-modal-actions">
+            <button class="btn-cc cancelar" onclick="cerrarModal('modalVerComp')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/cuentas-compania.js' %}"></script>
+</body>
+</html>

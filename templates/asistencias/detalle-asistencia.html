@@ -1,0 +1,414 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Asistencia | Proyecto 6</title>
+    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-detalle {
+            background: white;
+            border-radius: 20px;
+            padding: 35px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-detalle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .header-detalle h1 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .info-principal {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .info-row {
+            display: grid;
+            grid-template-columns: 150px 1fr 150px 1fr;
+            gap: 20px 30px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            align-items: center;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-row.full-width {
+            grid-template-columns: 150px 1fr;
+        }
+        
+        .info-label {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 1.05em;
+            font-weight: 500;
+        }
+        
+        .info-value strong {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .info-value-small {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        
+        .seccion-asistentes {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .seccion-asistentes h2 {
+            margin: 0 0 25px 0;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            font-size: 1.8em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .categoria-grupo {
+            margin-bottom: 30px;
+        }
+        
+        .categoria-titulo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .asistentes-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .asistente-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        
+        .asistente-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .asistente-nombre {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        
+        .asistente-cargo {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-top: 5px;
+            padding-left: 5px;
+            border-left: 2px solid #667eea;
+        }
+        
+        .btn-volver {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .btn-volver:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-detalle">
+            <h1 id="tituloAsistencia">📋 Detalle de Asistencia</h1>
+            <div class="info-principal" id="infoPrincipal">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="seccion-asistentes">
+            <h2>👥 Asistentes Registrados</h2>
+            <div id="contenidoAsistentes">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn-volver" onclick="window.history.back()">
+                ← Volver
+            </button>
+        </div>
+    </div>
+    
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/claves-radiales.js' %}"></script>
+    <script src="{% static 'js/detalle-asistencia-django.js' %}?v=10.0"></script>
+    <script>console.log('✅ Detalle Asistencia v10.0 - 🔥 HORAS SIEMPRE VISIBLES');</script>
+    
+    <!-- SCRIPT ANTIGUO COMENTADO -->
+    <!--<script>
+        class DetalleAsistencia {
+            constructor() {
+                this.asistenciaId = localStorage.getItem('asistenciaDetalleId');
+                this.asistencia = null;
+                this.init();
+            }
+            
+            init() {
+                if (!this.asistenciaId) {
+                    alert('No se encontró el ID de la asistencia');
+                    window.history.back();
+                    return;
+                }
+                
+                this.cargarAsistencia();
+                this.renderizar();
+            }
+            
+            cargarAsistencia() {
+                const asistencias = storage.getAsistencias();
+                this.asistencia = asistencias.find(a => a.id == this.asistenciaId);
+                
+                if (!this.asistencia) {
+                    alert('Asistencia no encontrada');
+                    window.history.back();
+                }
+            }
+            
+            renderizar() {
+                this.renderizarInfo();
+                this.renderizarAsistentes();
+            }
+            
+            renderizarInfo() {
+                const fecha = new Date(this.asistencia.fecha);
+                const fechaFormateada = fecha.toLocaleDateString('es-CL', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                
+                // Título
+                let titulo = '📋 ';
+                switch(this.asistencia.tipo) {
+                    case 'emergencia': titulo += 'Emergencia'; break;
+                    case 'asamblea': titulo += 'Asamblea'; break;
+                    case 'ejercicios': titulo += 'Ejercicio'; break;
+                    case 'citaciones': titulo += 'Citación'; break;
+                    case 'directorio': titulo += 'Directorio de Cía'; break;
+                    case 'otras': titulo += 'Otra Actividad'; break;
+                    default: titulo += 'Asistencia';
+                }
+                
+                document.getElementById('tituloAsistencia').innerHTML = titulo;
+                
+                // Info principal - FORMATO LIMPIO
+                let html = `
+                    <div class="info-row">
+                        <div class="info-label">📅 Fecha:</div>
+                        <div class="info-value">${fechaFormateada}</div>
+                        <div class="info-label">⏰ Horario:</div>
+                        <div class="info-value">${this.asistencia.horaInicio || 'N/A'} - ${this.asistencia.horaTermino || 'N/A'}</div>
+                    </div>
+                `;
+                
+                // Info adicional según tipo - EMERGENCIAS
+                if (this.asistencia.tipo === 'emergencia') {
+                    // Clave Radial + Total Asistentes
+                    if (this.asistencia.claveEmergencia) {
+                        const descripcionClave = typeof obtenerDescripcionClave === 'function' 
+                            ? obtenerDescripcionClave(this.asistencia.claveEmergencia)
+                            : this.asistencia.claveEmergencia;
+                        
+                        html += `
+                            <div class="info-row">
+                                <div class="info-label">📻 Clave Radial:</div>
+                                <div class="info-value">
+                                    ${this.asistencia.claveEmergencia}
+                                    <div class="info-value-small">${descripcionClave}</div>
+                                </div>
+                                <div class="info-label">👥 Total Asistentes:</div>
+                                <div class="info-value">${this.asistencia.asistentes?.length || 0} personas</div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="info-row">
+                                <div class="info-label">👥 Total Asistentes:</div>
+                                <div class="info-value">${this.asistencia.asistentes?.length || 0} personas</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Dirección
+                    if (this.asistencia.direccion) {
+                        html += `
+                            <div class="info-row full-width">
+                                <div class="info-label">📍 Dirección:</div>
+                                <div class="info-value">${this.asistencia.direccion}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Descripción/Observaciones
+                    if (this.asistencia.observaciones) {
+                        html += `
+                            <div class="info-row full-width">
+                                <div class="info-label">📝 Observaciones:</div>
+                                <div class="info-value">${this.asistencia.observaciones}</div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Para otros tipos de asistencia (no emergencias)
+                    html += `
+                        <div class="info-row">
+                            <div class="info-label">👥 Total Asistentes:</div>
+                            <div class="info-value">${this.asistencia.asistentes?.length || 0} personas</div>
+                        </div>
+                    `;
+                    
+                    if (this.asistencia.descripcion) {
+                        html += `
+                            <div class="info-row full-width">
+                                <div class="info-label">📝 Descripción:</div>
+                                <div class="info-value">${this.asistencia.descripcion}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                document.getElementById('infoPrincipal').innerHTML = html;
+            }
+            
+            renderizarAsistentes() {
+                const asistentes = this.asistencia.asistentes || [];
+                
+                if (asistentes.length === 0) {
+                    document.getElementById('contenidoAsistentes').innerHTML = 
+                        '<p style="text-align: center; color: #999;">No hay asistentes registrados</p>';
+                    return;
+                }
+                
+                // Agrupar por categoría
+                const categorias = {
+                    'Oficial de Comandancia': [],
+                    'Oficial de Compañía': [],
+                    'Cargo de Confianza': [],
+                    'Voluntario': [],
+                    'Otros': []
+                };
+                
+                asistentes.forEach(a => {
+                    const cat = a.categoria || 'Otros';
+                    if (categorias[cat]) {
+                        categorias[cat].push(a);
+                    } else {
+                        categorias['Otros'].push(a);
+                    }
+                });
+                
+                let html = '';
+                
+                Object.keys(categorias).forEach(categoria => {
+                    const lista = categorias[categoria];
+                    if (lista.length === 0) return;
+                    
+                    html += `
+                        <div class="categoria-grupo">
+                            <div class="categoria-titulo">${categoria} (${lista.length})</div>
+                            <div class="asistentes-lista">
+                    `;
+                    
+                    lista.forEach(asistente => {
+                        html += `
+                            <div class="asistente-item">
+                                <div class="asistente-nombre">${asistente.nombre}</div>
+                                ${asistente.cargo ? `<div class="asistente-cargo">Cargo: ${asistente.cargo}</div>` : ''}
+                                ${asistente.claveBombero ? `<div class="asistente-cargo">Clave: ${asistente.claveBombero}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('contenidoAsistentes').innerHTML = html;
+            }
+        }
+        
+        // Inicializar
+        new DetalleAsistencia();
+    </script>-->
+</body>
+</html>

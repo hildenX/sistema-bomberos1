@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py runserver:*)",
+      "Bash(curl:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(MOVER_ARCHIVOS_OBSOLETOS.bat)",
+      "Bash(cmd.exe /c \"echo y | MOVER_ARCHIVOS_OBSOLETOS.bat\")",
+      "Bash(if [ -f \"static/css/sistema-compacto.css\" ])",
+      "Bash(then mv static/css/sistema-compacto.css archivos_obsoletos_2025_11_25/css_antiguo/)",
+      "Bash(fi)",
+      "Bash(if [ -f \"static/css/sistema-final-compacto.css\" ])",
+      "Bash(then mv static/css/sistema-final-compacto.css archivos_obsoletos_2025_11_25/css_antiguo/)",
+      "Bash(if [ -f \"static/css/sistema-separado.css\" ])",
+      "Bash(then mv static/css/sistema-separado.css archivos_obsoletos_2025_11_25/css_antiguo/)",
+      "Bash(find:*)",
+      "Bash(test:*)",
+      "Bash(if [ -f \"sanciones/crear.html\" ])",
+      "Bash(then mv sanciones/crear.html ../archivos_obsoletos_2025_11_25/templates_views_custom/)",
+      "Bash(if [ -f \"cargos/crear.html\" ])",
+      "Bash(then mv cargos/crear.html ../archivos_obsoletos_2025_11_25/templates_views_custom/)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(if [ -f \"archivos_obsoletos_2025_11_25/templates_admin_tools/index.html\" ])",
+      "Bash(then cp archivos_obsoletos_2025_11_25/templates_admin_tools/index.html templates/)",
+      "Bash(else echo \"Buscando en otras carpetas...\")",
+      "Bash(del \"CREAR_BASE_DATOS_MYSQL.sql\" \"MIGRAR_A_MYSQL.bat\")",
+      "Bash(python manage.py dumpdata:*)",
+      "Bash(pip install:*)",
+      "Bash(python -m pip install:*)",
+      "Bash(python manage.py migrate:*)",
+      "Bash(python manage.py loaddata:*)",
+      "Bash(python:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout /t 3 /nobreak)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

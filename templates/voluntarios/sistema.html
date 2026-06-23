@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Sistema Principal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/voluntarios-cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/botones-tesorero.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/sistema-profesional-final.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/botones-especiales-fix.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/botones-uniformes.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/fix-fotos-definitivo.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/fix-tarjetas-datos.css' %}?v=1">
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🚒</div>
+            <div class="sidebar-title">
+                <h1>Proyecto SEIS</h1>
+                <span>Sistema Bomberos</span>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sidebar-user-role" id="sidebarUserRole">-</div>
+            <div class="sidebar-user-name" id="sidebarUserName">-</div>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Los items se cargarán dinámicamente según el rol -->
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="sidebar-logout" onclick="logout()">
+                <span>🚪</span>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Toggle para móvil -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+        ☰ Menú
+    </button>
+
+    <div class="main-content-with-sidebar">
+        <div class="main-system" id="mainSystem">
+        <div id="containerPrincipal" class="container">
+            <header class="main-header" style="display: none;">
+                <div class="header-container">
+                    <div class="header-brand">
+                        <div class="brand-logo">🚒</div>
+                        <div class="brand-text">
+                            <h1>Proyecto SEIS</h1>
+                            <p>Sistema de Registro de Bomberos</p>
+                        </div>
+                    </div>
+
+                    <div class="header-panel">
+                        <div id="saldoCompaniaHeader" class="widget-saldo" style="display: none;">
+                            <span class="widget-label">Saldo Compañía</span>
+                            <span class="widget-value" id="saldoMontoHeader">$0</span>
+                        </div>
+
+                        <div class="header-buttons">
+                            <button class="header-btn btn-alert" id="btnDeudores" style="display: none;">
+                                <span class="btn-badge" id="cantidadDeudores">0</span>
+                                <span class="btn-label">Deudores</span>
+                            </button>
+
+                            <button class="header-btn btn-primary" id="btnBeneficios" style="display: none;">
+                                <span class="btn-icon">🎪</span>
+                                <span class="btn-label">Beneficios</span>
+                            </button>
+
+                            <button class="header-btn btn-success" id="btnFinanzas" style="display: none;">
+                                <span class="btn-icon">💰</span>
+                                <span class="btn-label">Finanzas</span>
+                            </button>
+                            
+                            <button class="header-btn btn-danger" id="btnRegistroAsistencia" style="display: none;">
+                                <span class="btn-icon">📋</span>
+                                <span class="btn-label">Asistencia</span>
+                            </button>
+                            
+                            <button class="header-btn btn-info" id="btnHistorialAsistencias" style="display: none;">
+                                <span class="btn-icon">📊</span>
+                                <span class="btn-label">Historial</span>
+                            </button>
+                            
+                            <button class="header-btn btn-warning" id="btnListadoSanciones" style="display: none;">
+                                <span class="btn-icon">📋</span>
+                                <span class="btn-label">Listado Sanciones</span>
+                            </button>
+                        </div>
+
+                        <div class="header-user">
+                            <div class="user-avatar">
+                                <span id="userInitials">T</span>
+                            </div>
+                            <div class="user-details">
+                                <div class="user-role" id="userRoleInfo">Tesorero</div>
+                                <button class="btn-logout-compact" id="logoutBtn">Cerrar Sesión</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="form-container">
+                <div id="mensaje" class="success" style="display: none;"></div>
+                
+                <!-- Botón para crear nuevo voluntario -->
+                <div id="contenedorCrearVoluntario" style="text-align: center; margin: 30px 0; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(46, 125, 50, 0.1) 100%); border-radius: 15px; border: 2px dashed rgba(76, 175, 80, 0.3);">
+                    <button type="button"
+                            id="btnCrearVoluntario"
+                            onclick="sistemaBomberos.irACrear()"
+                            style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); color: white; border: none; padding: 18px 50px; font-size: 1.3rem; font-weight: 600; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3); transition: all 0.3s;">
+                        ➕ CREAR NUEVO VOLUNTARIO
+                    </button>
+                </div>
+
+                <div class="registros">
+                    <div class="registros-header">
+                        <h3>Bomberos Registrados</h3>
+                        <div class="registros-buttons">
+                            <button type="button" class="btn btn-info" onclick="sistemaBomberos.toggleInfoCategorias()">
+                                ℹ️ Info Categorías
+                            </button>
+                            <button type="button" class="btn btn-excel" onclick="sistemaBomberos.exportarExcel()">
+                                📊 Exportar Excel
+                            </button>
+                            <button type="button" class="btn btn-pdf" onclick="sistemaBomberos.generarPDFConsultaVoluntarios()">
+                                📄 PDF Voluntarios por Antigüedad
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="buscador-container">
+                        <input type="text" id="buscadorBomberos" 
+                               placeholder="🔍 Buscar por nombre, clave, RUT, compañía...">
+                    </div>
+
+                    <div class="filtros-estado-container" style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        <button class="btn-filtro-estado active" data-estado="todos" 
+                                style="padding: 8px 16px; border: 2px solid #4caf50; background: #4caf50; color: white; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            📊 Todos
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="activo"
+                                style="padding: 8px 16px; border: 2px solid #4caf50; background: white; color: #4caf50; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ✅ Activos
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="suspendido"
+                                style="padding: 8px 16px; border: 2px solid #ff9800; background: white; color: #ff9800; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ⏸️ Suspendidos
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="renunciado"
+                                style="padding: 8px 16px; border: 2px solid #f59e0b; background: white; color: #f59e0b; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            🔄 Renunciados
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="separado"
+                                style="padding: 8px 16px; border: 2px solid #ef4444; background: white; color: #ef4444; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ⏸️ Separados
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="expulsado"
+                                style="padding: 8px 16px; border: 2px solid #dc2626; background: white; color: #dc2626; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ❌ Expulsados
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="martir"
+                                style="padding: 8px 16px; border: 2px solid #9c27b0; background: white; color: #9c27b0; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            🕊️ Mártires
+                        </button>
+                        <button class="btn-filtro-estado" data-estado="fallecido"
+                                style="padding: 8px 16px; border: 2px solid #6b7280; background: white; color: #6b7280; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            ☠️ Fallecidos
+                        </button>
+                    </div>
+
+                    <div id="infoCategorias" class="info-categorias" style="display: none;">
+                        <h4>📋 Sistema de Categorías por Antigüedad</h4>
+                        <div class="categoria-explicacion">
+                            <div style="border-left-color: #1976d2;">
+                                <strong style="color: #1976d2;">🔰 Voluntario</strong><br>
+                                <small>Menos de 20 años de servicio</small>
+                            </div>
+                            <div style="border-left-color: #388e3c;">
+                                <strong style="color: #388e3c;">🏅 Voluntario Honorario de Compañía</strong><br>
+                                <small>Entre 20 y 24 años de servicio</small>
+                            </div>
+                            <div style="border-left-color: #f57c00;">
+                                <strong style="color: #f57c00;">🎖️ Voluntario Honorario del Cuerpo</strong><br>
+                                <small>Entre 25 y 49 años de servicio</small>
+                            </div>
+                            <div style="border-left-color: #d32f2f;">
+                                <strong style="color: #d32f2f;">🏆 Voluntario Insigne de Chile</strong><br>
+                                <small>50 años o más de servicio</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contador">
+                        Total de bomberos registrados: <strong id="totalBomberos">0</strong>
+                    </div>
+                    <div id="listaBomberos"></div>
+                    <div id="paginationControlsBomberos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div> <!-- Cierre main-content-with-sidebar -->
+
+    <!-- Scripts Django -->
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/sidebar-django.js' %}?v=30.0"></script>
+    <script src="{% static 'js/sistema-django.js' %}?v=20251125181200"></script>
+    <script>console.log('✅ Sistema actualizado - Finanzas Django');</script>
+</body>
+</html>

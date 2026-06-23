@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Pagos Voluntarios</title>
+    <style>
+        :root { --bg:#161616; --panel:#f6f1e8; --accent:#b32025; --accent-dark:#7f1418; --text:#1e1e1e; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; font-family:Georgia, "Times New Roman", serif; background:radial-gradient(circle at top, #3b0f10, #161616 58%); color:var(--text); display:grid; place-items:center; padding:24px; }
+        .login-card { width:min(460px,100%); background:var(--panel); border-radius:24px; padding:36px; box-shadow:0 24px 70px rgba(0,0,0,.35); }
+        h1 { margin:0 0 8px; font-size:2rem; }
+        p { margin:0 0 24px; color:#5b4d46; }
+        label { display:block; font-weight:700; margin:14px 0 6px; }
+        input { width:100%; padding:14px 16px; border-radius:14px; border:1px solid #d8c9bb; background:#fffdfa; }
+        button { width:100%; margin-top:20px; padding:14px 16px; border:none; border-radius:14px; background:linear-gradient(135deg, var(--accent), var(--accent-dark)); color:#fff; font-weight:700; cursor:pointer; }
+        .error { min-height:24px; margin-top:14px; color:#b32025; font-weight:700; }
+        .note { margin-top:20px; font-size:.92rem; color:#68574d; }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <h1>Portal de Pagos</h1>
+        <p>Ingreso exclusivo para voluntarios. Desde aquí puedes revisar deudas y enviar comprobantes al tesorero.</p>
+        <form id="portalLoginForm">
+            <label for="username">Usuario</label>
+            <input id="username" name="username" type="text" required autofocus>
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" required>
+            <button type="submit">Ingresar al Portal</button>
+            <div id="portalLoginError" class="error"></div>
+        </form>
+        <div class="note">Si no tienes tus credenciales, solicítalas al tesorero.</div>
+    </main>
+    <script src="{% static 'js/portal-voluntario.js' %}"></script>
+</body>
+</html>

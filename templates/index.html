@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Sistema de Bomberos - Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="login-screen" id="loginScreen">
+        <div class="background-particles" id="particles"></div>
+        
+        <div class="login-container">
+            <h1 class="login-title">🔥 Sistema de Bomberos</h1>
+            <form id="loginForm">
+                <div class="login-form-group">
+                    <label for="username" class="login-label">Usuario</label>
+                    <input type="text" id="username" name="username" class="login-input" placeholder="Ingresa tu usuario" required autofocus>
+                </div>
+                
+                <div class="login-form-group">
+                    <label for="password" class="login-label">Contraseña</label>
+                    <input type="password" id="password" name="password" class="login-input" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    🔥 INICIAR SESIÓN
+                </button>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Auth Django - Usa APIs en lugar de localStorage -->
+    <script src="{% static 'js/auth_django.js' %}"></script>
+</body>
+</html>

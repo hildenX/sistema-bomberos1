@@ -1,0 +1,666 @@
+/* ==================== TEMA BOMBERIL CLARO - CUERPO DE BOMBEROS ==================== */
+/* Diseño profesional con fondo blanco y colores bomberiles */
+
+:root {
+    /* Colores Principales - Bomberiles */
+    --rojo-bombero: #c41e3a;
+    --rojo-oscuro: #8b1429;
+    --rojo-hover: #a01730;
+    
+    /* Colores de Fondo - CLARO */
+    --blanco-principal: #ffffff;
+    --gris-fondo: #f5f5f5;
+    --gris-claro: #e8e8e8;
+    --gris-medio: #d0d0d0;
+    
+    /* Colores de Texto */
+    --negro-texto: #2c2c2c;
+    --gris-texto: #666666;
+    --blanco-texto: #ffffff;
+    
+    /* Colores de Acento */
+    --azul-accion: #5A6FD8;
+    --azul-hover: #4a5fc8;
+    --verde-ok: #28a745;
+    --amarillo-warning: #ffc107;
+    --gris-neutro: #6c757d;
+    
+    /* Sombras */
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --sombra-fuerte: 0 6px 20px rgba(196, 30, 58, 0.2);
+    
+    /* Tipografía */
+    --fuente-principal: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    --fuente-titulos: 'Roboto', 'Arial Black', sans-serif;
+}
+
+/* ==================== RESET Y BASE ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fuente-principal);
+    background-color: var(--gris-fondo);
+    color: var(--negro-texto);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* ==================== CONTENEDORES PRINCIPALES ==================== */
+.container,
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Cards y Secciones */
+.card,
+.section,
+.form-section,
+.datos-emergencia {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--sombra-suave);
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* ==================== HEADERS Y TÍTULOS ==================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fuente-titulos);
+    color: var(--negro-texto);
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: var(--blanco-texto);
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: var(--blanco-texto);
+}
+
+h3 {
+    font-size: 1.4rem;
+    color: var(--negro-texto);
+    border-left: 4px solid var(--rojo-bombero);
+    padding-left: 15px;
+}
+
+/* ==================== HEADER PRINCIPAL ==================== */
+.page-header,
+.header,
+.historial-header,
+.asistencias-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--sombra-media);
+}
+
+.page-header h1,
+.page-header h2,
+.header h1 {
+    position: relative;
+    z-index: 1;
+    color: var(--blanco-texto);
+    margin: 0;
+}
+
+.page-header p,
+.header p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    position: relative;
+    z-index: 1;
+    margin: 5px 0 0 0;
+}
+
+/* ==================== BOTONES ==================== */
+.btn,
+button:not(.close):not(.swal2-confirm):not(.swal2-cancel) {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn::before,
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before,
+button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-primary,
+.btn.btn-primary {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--rojo-hover), var(--rojo-bombero));
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+.btn-success,
+.btn.btn-success {
+    background: var(--verde-ok);
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-warning,
+.btn.btn-warning {
+    background: var(--amarillo-warning);
+    color: var(--negro-texto);
+    border: none;
+    font-weight: 700;
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+    transform: translateY(-2px);
+}
+
+.btn-danger,
+.btn.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-secondary,
+.btn.btn-secondary {
+    background: var(--gris-neutro);
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-volver,
+.volver-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* ==================== FORMULARIOS ==================== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--negro-texto);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--blanco-principal);
+    border: 2px solid var(--gris-claro);
+    border-radius: 8px;
+    color: var(--negro-texto);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--rojo-bombero);
+    box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--gris-texto);
+}
+
+.required {
+    color: var(--rojo-bombero);
+    font-weight: 700;
+}
+
+/* ==================== ESTADÍSTICAS Y STATS ==================== */
+.estadisticas-asistencia,
+.estadisticas,
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-box,
+.stat-item {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--sombra-suave);
+}
+
+.stat-label {
+    color: var(--gris-texto);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    color: var(--rojo-bombero);
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+/* ==================== RANKING ==================== */
+.ranking-container {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: var(--sombra-suave);
+}
+
+.ranking-header {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.ranking-item {
+    background: var(--gris-fondo);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.ranking-item:hover {
+    background: var(--blanco-principal);
+    border-color: var(--rojo-bombero);
+    transform: translateX(5px);
+    box-shadow: var(--sombra-suave);
+}
+
+.ranking-position {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.ranking-nombre {
+    color: var(--negro-texto);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.ranking-asistencias {
+    color: var(--rojo-bombero);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-left: auto;
+}
+
+/* ==================== CARDS DE ASISTENCIAS ==================== */
+.emergencia-card,
+.asistencia-card {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-left: 4px solid var(--rojo-bombero);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra-suave);
+}
+
+.emergencia-card:hover,
+.asistencia-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--rojo-bombero);
+    box-shadow: var(--sombra-media);
+}
+
+.emergencia-fecha,
+.asistencia-fecha {
+    color: var(--negro-texto);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.emergencia-hora {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.badge-stats,
+.asistencia-tipo-badge {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* ==================== CATEGORÍAS DE VOLUNTARIOS ==================== */
+.categoria-container {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.categoria-container:hover {
+    border-color: var(--rojo-bombero);
+    box-shadow: var(--sombra-suave);
+}
+
+.categoria-header {
+    border-bottom: 2px solid var(--gris-claro);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.categoria-titulo {
+    color: var(--negro-texto);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.categoria-icono {
+    font-size: 1.3rem;
+}
+
+/* ==================== VOLUNTARIOS ITEM ==================== */
+.voluntario-item {
+    background: var(--gris-fondo);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.voluntario-item:hover {
+    background: var(--blanco-principal);
+    border-color: var(--gris-medio);
+}
+
+.voluntario-item.selected {
+    background: rgba(196, 30, 58, 0.1);
+    border-color: var(--rojo-bombero);
+}
+
+/* ==================== FILTROS ==================== */
+.filtros-container {
+    background: var(--blanco-principal);
+    border: 1px solid var(--gris-claro);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: var(--sombra-suave);
+}
+
+.filtro-group select {
+    background: var(--blanco-principal);
+    color: var(--negro-texto);
+    border: 2px solid var(--gris-claro);
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.filtro-group select:focus {
+    border-color: var(--rojo-bombero);
+    box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+}
+
+/* ==================== ALERTAS Y NOTIFICACIONES ==================== */
+.alert {
+    padding: 15px 20px;
+    border-radius: 10px;
+    border-left: 5px solid;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #d4edda;
+    border-color: var(--verde-ok);
+    color: #155724;
+}
+
+.alert-danger,
+.alert-error {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border-color: var(--amarillo-warning);
+    color: #856404;
+}
+
+/* ==================== TABLAS ==================== */
+table {
+    width: 100%;
+    background: var(--blanco-principal);
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--gris-claro);
+}
+
+thead {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+}
+
+th {
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 700;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--gris-claro);
+    color: var(--negro-texto);
+}
+
+tr:hover {
+    background: var(--gris-fondo);
+}
+
+/* ==================== EFECTOS Y ANIMACIONES ==================== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* ==================== SCROLLBAR PERSONALIZADO ==================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gris-claro);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gris-neutro);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--rojo-bombero);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.2rem; }
+    
+    .stat-value { font-size: 2rem; }
+    
+    .ranking-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ranking-asistencias {
+        margin-left: 0;
+    }
+}
+
+/* ==================== UTILIDADES ==================== */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.mb-20 { margin-bottom: 20px; }
+.mt-20 { margin-top: 20px; }
+.p-20 { padding: 20px; }
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--rojo-bombero), var(--rojo-oscuro));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==================== EFECTOS DE BRILLO ==================== */
+/* Botón Azul para acciones secundarias */
+.btn-azul,
+.btn-info {
+    background: linear-gradient(135deg, var(--azul-accion), var(--azul-hover));
+    color: white;
+    border: none;
+}
+
+.btn-azul:hover,
+.btn-info:hover {
+    background: linear-gradient(135deg, var(--azul-hover), var(--azul-accion));
+    transform: translateY(-2px);
+}
+
+.glow-red {
+    box-shadow: 0 0 15px rgba(196, 30, 58, 0.4);
+}
+
+.glow-blue {
+    box-shadow: 0 0 15px rgba(90, 111, 216, 0.4);
+}

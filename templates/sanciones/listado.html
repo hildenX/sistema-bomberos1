@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Listado General de Sanciones</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js\' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
+    <style>
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .sanctions-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1400px;
+        }
+
+        .sanctions-table thead {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sanctions-table th {
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sanctions-table th:last-child {
+            border-right: none;
+        }
+
+        .sanctions-table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .sanctions-table tbody tr:hover {
+            background: rgba(25, 118, 210, 0.05);
+        }
+
+        .sanctions-table td {
+            padding: 12px 10px;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        .tipo-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: white;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .tipo-renuncia { background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); }
+        .tipo-suspension { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); }
+        .tipo-separacion { background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%); }
+        .tipo-expulsion { background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); }
+
+        .autoridad-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .autoridad-consejo { background: #c41e3a; }
+        .autoridad-capitania { background: #ff9800; }
+        .autoridad-comandancia { background: #1976d2; }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2rem;
+            color: #1976d2;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .btn-export { background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); }
+        .btn-back { background: linear-gradient(135deg, #757575 0%, #616161 100%); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h2>📊 LISTADO GENERAL DE SANCIONES DISCIPLINARIAS</h2>
+                <p>Registro Completo de Todas las Sanciones del Sistema</p>
+            </div>
+
+            <div class="page-content">
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3 id="totalSanciones">0</h3>
+                        <p>Total Sanciones</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalRenuncias">0</h3>
+                        <p>Renuncias</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalSuspensiones">0</h3>
+                        <p>Suspensiones</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalSeparaciones">0</h3>
+                        <p>Separaciones</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalExpulsiones">0</h3>
+                        <p>Expulsiones</p>
+                    </div>
+                </div>
+
+                <div class="filters-section">
+                    <h3>🔍 Filtros de Búsqueda</h3>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Tipo de Sanción</label>
+                            <select id="filtroTipo">
+                                <option value="">Todos</option>
+                                <option value="renuncia">Renuncia</option>
+                                <option value="suspension">Suspensión</option>
+                                <option value="separacion">Separación</option>
+                                <option value="expulsion">Expulsión</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Autoridad Sancionatoria</label>
+                            <select id="filtroAutoridad">
+                                <option value="">Todas</option>
+                                <option value="Consejo Superior de Disciplina">Consejo Superior</option>
+                                <option value="Consejo de Disciplina de Cía">Consejo de Cía</option>
+                                <option value="Capitanía">Capitanía</option>
+                                <option value="Comandancia">Comandancia</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Buscar por Nombre</label>
+                            <input type="text" id="filtroNombre" placeholder="Nombre del bombero">
+                        </div>
+                        <div class="filter-group">
+                            <label>Buscar por RUN</label>
+                            <input type="text" id="filtroRun" placeholder="RUN">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-action btn-export" onclick="listadoSanciones.exportarExcel()">
+                        📊 Exportar a Excel
+                    </button>
+                    <button class="btn-action btn-back" onclick="listadoSanciones.volver()">
+                        ← Volver al Sistema
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="sanctions-table">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Nombre Completo</th>
+                                <th>RUN</th>
+                                <th>Tipo de Sanción</th>
+                                <th>Fecha de Inicio</th>
+                                <th>Días</th>
+                                <th>Fecha Finalización</th>
+                                <th>Archivos</th>
+                                <th>Ente Sancionatorio</th>
+                                <th>Oficio N°</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSanciones"></tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <h3>📋 No hay sanciones registradas</h3>
+                    <p>No se encontraron sanciones que coincidan con los filtros</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/storage.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/listado-sanciones.js' %}"></script>
+</body>
+</html>

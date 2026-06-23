@@ -1,0 +1,45 @@
+/* ==================== FIX PARA MOSTRAR TODOS LOS DATOS ==================== */
+
+/* Asegurar que el contenedor de info tenga espacio */
+.registro-info {
+    min-height: 40px !important;
+    padding-bottom: 8px !important;
+}
+
+/* Cada item del grid debe ser visible */
+.registro-info > * {
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Labels y valores en la misma línea */
+.registro-info span,
+.registro-info strong {
+    white-space: normal !important;
+}
+
+/* Asegurar que la categoría badge sea visible */
+.categoria-badge {
+    margin: 8px 0 !important;
+    display: inline-block !important;
+}
+
+/* Card actions con espacio suficiente */
+.card-actions {
+    margin-top: 14px !important;
+    padding-top: 10px !important;
+}
+
+/* Contenedor de registro sin restricciones */
+.registro-card {
+    height: auto !important;
+    min-height: fit-content !important;
+    max-height: none !important;
+}
+
+/* Info visible completa */
+.registro-info span {
+    overflow: visible !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+}

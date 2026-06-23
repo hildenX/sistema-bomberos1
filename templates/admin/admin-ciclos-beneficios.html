@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciclos de Beneficios - Sistema Bomberos</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        /* ===== RESET / BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; color: #333; }
+
+        /* ===== LAYOUT ===== */
+        .cb-wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+
+        /* ===== HEADER ===== */
+        .cb-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            border-radius: 14px;
+            padding: 28px 28px 22px;
+            margin-bottom: 22px;
+            color: #fff;
+        }
+        .cb-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .cb-header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.03em; }
+        .cb-header p { font-size: 0.85rem; opacity: 0.85; margin-top: 3px; }
+        .cb-header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        /* ===== DASHBOARD CICLO ACTIVO ===== */
+        .cb-dashboard {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+        }
+        .cb-dashboard-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+        .cb-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        .cb-stat { text-align: center; }
+        .cb-stat-val {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff700;
+        }
+        .cb-stat-lbl { font-size: 0.72rem; opacity: 0.85; margin-top: 3px; }
+
+        /* ===== BUTTONS ===== */
+        .btn-cb {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-cb:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-cb.volver { background: rgba(255,255,255,0.2); color: #fff; border: 1.5px solid rgba(255,255,255,0.4); }
+        .btn-cb.nuevo  { background: #fff700; color: #8b1429; }
+        .btn-cb.activar { background: #2e7d32; color: #fff; }
+        .btn-cb.cerrar  { background: #c41e3a; color: #fff; }
+        .btn-cb.reabrir { background: #757575; color: #fff; }
+        .btn-cb.stats   { background: #1565c0; color: #fff; }
+        .btn-cb.sm { padding: 6px 12px; font-size: 0.78rem; }
+
+        /* ===== NOTIF ===== */
+        .cb-notif {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .cb-notif.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
+        .cb-notif.error   { background: #fce4ec; color: #c41e3a; border-left: 4px solid #c41e3a; }
+        .cb-notif.warning { background: #fff8e1; color: #e65100; border-left: 4px solid #ff9800; }
+        .cb-notif.info    { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+
+        /* ===== CICLO CARDS ===== */
+        .cb-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+            margin-bottom: 16px;
+            overflow: hidden;
+            border-left: 5px solid #e0e0e0;
+            transition: box-shadow 0.2s;
+        }
+        .cb-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.12); }
+        .cb-card.activo { border-left-color: #c41e3a; }
+        .cb-card.cerrado { border-left-color: #9e9e9e; opacity: 0.85; }
+        .cb-card.sin-ciclo { border-left-color: #ff9800; border-style: dashed; }
+
+        .cb-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .cb-card-anio {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #8b1429;
+        }
+        .cb-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .cb-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .cb-badge.activo  { background: #fce4ec; color: #c41e3a; }
+        .cb-badge.cerrado { background: #eeeeee; color: #616161; }
+        .cb-badge.sin-ciclo { background: #fff3e0; color: #e65100; }
+
+        .cb-card-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 1px;
+            background: #f5f5f5;
+            border-top: 1px solid #f0f0f0;
+        }
+        .cb-stat-cell {
+            background: #fff;
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .cb-stat-cell .val { font-size: 1.1rem; font-weight: 800; color: #222; }
+        .cb-stat-cell .val.verde { color: #2e7d32; }
+        .cb-stat-cell .val.rojo  { color: #c41e3a; }
+        .cb-stat-cell .val.naranja { color: #e65100; }
+        .cb-stat-cell .lbl { font-size: 0.7rem; color: #888; margin-top: 2px; }
+
+        .cb-card-actions {
+            padding: 12px 18px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #fafafa;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .cb-dates {
+            padding: 6px 20px 10px;
+            font-size: 0.78rem;
+            color: #888;
+        }
+
+        /* ===== EMPTY ===== */
+        .cb-empty {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 0.95rem;
+            background: #fff;
+            border-radius: 12px;
+        }
+
+        /* ===== MODAL ===== */
+        .cb-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .cb-modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 92%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: cbSlide 0.25s ease;
+        }
+        @keyframes cbSlide {
+            from { transform: translateY(-20px) scale(0.97); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .cb-modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: #fff;
+            padding: 20px 24px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cb-modal-header h3 { font-size: 1rem; font-weight: 700; }
+        .cb-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: 1.5px solid rgba(255,255,255,0.5);
+            color: #fff;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .cb-modal-close:hover { background: #fff; color: #c41e3a; }
+
+        .cb-modal-body { padding: 22px 24px; }
+        .cb-form-group { margin-bottom: 16px; }
+        .cb-form-group label { display: block; font-weight: 600; font-size: 0.82rem; margin-bottom: 5px; color: #555; }
+        .cb-form-group input,
+        .cb-form-group textarea,
+        .cb-form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            transition: border-color 0.2s;
+        }
+        .cb-form-group input:focus,
+        .cb-form-group textarea:focus { outline: none; border-color: #c41e3a; }
+        .cb-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .cb-form-grid .full { grid-column: 1 / -1; }
+        .cb-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; }
+        .cb-modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding: 0 24px 22px;
+        }
+        .btn-cb.submit { background: #c41e3a; color: #fff; }
+        .btn-cb.cancel { background: #f5f5f5; color: #555; }
+
+        /* ===== BOTTOM NAV ===== */
+        .cb-bottom { margin-top: 32px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="cb-wrap">
+
+    <!-- ===== HEADER ===== -->
+    <div class="cb-header">
+        <div class="cb-header-top">
+            <div>
+                <h1>🎫 Ciclos Anuales de Beneficios</h1>
+                <p>Gestión de periodos anuales de tarjetas y beneficios</p>
+            </div>
+            <div class="cb-header-btns">
+                <button class="btn-cb volver" onclick="window.location.href='/sistema.html'">← Volver</button>
+                <button class="btn-cb nuevo" onclick="abrirModalNuevo()">＋ Nuevo Ciclo</button>
+            </div>
+        </div>
+        <!-- Dashboard ciclo activo -->
+        <div id="dashboardActivo" class="cb-dashboard" style="display:none">
+            <div class="cb-dashboard-title">📊 Ciclo Activo: <span id="cicloActivoAnio">—</span></div>
+            <div class="cb-stats-grid">
+                <div class="cb-stat">
+                    <div class="cb-stat-val" id="dsBeneficios">0</div>
+                    <div class="cb-stat-lbl">Beneficios</div>
+                </div>
+                <div class="cb-stat">
+                    <div class="cb-stat-val" id="dsEsperado">$0</div>
+                    <div class="cb-stat-lbl">Total Esperado</div>
+                </div>
+                <div class="cb-stat">
+                    <div class="cb-stat-val" id="dsRecaudado">$0</div>
+                    <div class="cb-stat-lbl">Recaudado</div>
+                </div>
+                <div class="cb-stat">
+                    <div class="cb-stat-val" id="dsDeuda">$0</div>
+                    <div class="cb-stat-lbl">Deuda Pendiente</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NOTIF ===== -->
+    <div id="cbNotif" class="cb-notif"></div>
+
+    <!-- ===== LISTA CICLOS ===== -->
+    <div id="listaCiclos">
+        <div class="cb-empty">Cargando ciclos...</div>
+    </div>
+
+    <div class="cb-bottom">
+        <button class="btn-cb volver" style="background:#fff;color:#c41e3a;border:2px solid #c41e3a;" onclick="window.location.href='/sistema.html'">← Volver al Sistema Principal</button>
+    </div>
+</div>
+
+<!-- ===== MODAL NUEVO CICLO ===== -->
+<div id="modalCiclo" class="cb-modal-overlay" onclick="cerrarModalFondo(event)">
+    <div class="cb-modal">
+        <div class="cb-modal-header">
+            <h3 id="modalTitulo">Nuevo Ciclo de Beneficios</h3>
+            <button class="cb-modal-close" onclick="cerrarModal()">✕</button>
+        </div>
+        <form id="formCiclo" onsubmit="guardarCiclo(event)">
+            <div class="cb-modal-body">
+                <div class="cb-form-grid">
+                    <div class="cb-form-group">
+                        <label>Año <span style="color:#c41e3a">*</span></label>
+                        <input type="number" id="inputAnio" name="anio" required min="2020" max="2050" placeholder="ej: 2026">
+                    </div>
+                    <div class="cb-form-group">
+                        <label class="cb-checkbox-row">
+                            <input type="checkbox" id="inputActivo" name="activo">
+                            Activar al crear
+                        </label>
+                    </div>
+                    <div class="cb-form-group">
+                        <label>Fecha Inicio <span style="color:#c41e3a">*</span></label>
+                        <input type="date" id="inputInicio" name="fecha_inicio" required>
+                    </div>
+                    <div class="cb-form-group">
+                        <label>Fecha Fin <span style="color:#c41e3a">*</span></label>
+                        <input type="date" id="inputFin" name="fecha_fin" required>
+                    </div>
+                    <div class="cb-form-group full">
+                        <label>Observaciones</label>
+                        <textarea id="inputObs" name="observaciones" rows="2" placeholder="(opcional)"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="cb-modal-footer">
+                <button type="submit" class="btn-cb submit">Crear Ciclo</button>
+                <button type="button" class="btn-cb cancel" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/admin-ciclos-beneficios.js' %}?v=1.0"></script>
+</body>
+</html>

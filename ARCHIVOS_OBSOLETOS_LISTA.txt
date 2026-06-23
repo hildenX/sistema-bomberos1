@@ -1,0 +1,254 @@
+===========================================
+LISTA DE ARCHIVOS OBSOLETOS - SEGUROS PARA MOVER
+Sistema de Gestión de Bomberos P6P
+Fecha: 2025-11-25
+===========================================
+
+VERIFICACIÓN REALIZADA:
+✓ Ninguno de estos archivos se importa en templates activos
+✓ Ninguno está registrado en urls.py (excepto templates activos)
+✓ Ninguno se importa en código Python del proyecto
+✓ Son versiones antiguas, backups o archivos de testing
+
+TOTAL: 106 archivos identificados
+ESPACIO ESTIMADO: ~3-4 MB
+
+===========================================
+CATEGORÍA 1: JAVASCRIPT NO USADO (31 archivos)
+===========================================
+Directorio: static/js/
+
+Archivos de versiones antiguas (pre-Django):
+- agregar-voluntario.js
+- asistencia-asamblea.js
+- asistencia-citaciones.js
+- asistencia-ejercicios.js
+- asistencia-otras.js
+- asistencias.js
+- asistencias-externos-mixin.js
+- auth.js
+- beneficios.js
+- cargos.js
+- crear-bombero.js
+- cuotas.js
+- cuotas-beneficios.js
+- editar-bombero.js
+- finanzas.js
+- gestor-logos.js
+- historial-asistencias.js
+- informes.js
+- informes-cargos.js
+- js.js
+- mapa-auto.js
+- pagar-beneficio.js
+- pagination.js
+- reintegracion.js
+- sanciones.js
+- sidebar.js
+- sistema.js
+- storage.js
+- uniformes-backup.js
+- uniformes-nuevo.js
+- uniformes-voluntario.js
+- verificador-datos.js
+
+NOTA: Estos fueron reemplazados por versiones con sufijo -django.js
+
+===========================================
+CATEGORÍA 2: CSS NO USADO (3 archivos)
+===========================================
+Directorio: static/css/
+
+- sistema-compacto.css
+- sistema-final-compacto.css
+- sistema-separado.css
+
+NOTA: Estilos de diseños antiguos no utilizados
+
+===========================================
+CATEGORÍA 3: TEMPLATES BACKUP/OLD (5 archivos)
+===========================================
+Directorio: templates/
+
+- crear-bombero-old.html
+- editar-bombero-old.html
+- registro-asistencia-backup.html
+- registro-directorio-new.html
+- registro-directorio-OLD.html
+
+NOTA: Versiones antiguas explícitas. Existen versiones activas sin sufijos.
+
+===========================================
+CATEGORÍA 4: SCRIPTS DE TESTING (33 archivos)
+===========================================
+Directorio raíz del proyecto:
+
+Testing de APIs:
+- test_api_beneficios.py
+- test_api_voluntario.py
+- test_api_voluntarios.py
+- test_direct_api.py
+- test_endpoint_beneficios.py
+- test_endpoints_beneficios.py
+- test_endpoints_deudores.py
+- test_pagar_beneficio_url.py
+- test_urls.py
+
+Testing de Cuotas y Ciclos:
+- test_activar_desactivar_cuotas.py
+- test_ciclos_completo.py
+- test_ciclos_cuotas.py
+- test_ciclos_y_saldo.py
+- test_config_cuotas.py
+- test_configuracion_ciclo.py
+- test_estado_estudiante.py
+- test_frontend_ciclos.py
+- test_pagos_cuotas.py
+- test_post_cuotas.py
+
+Testing de Beneficios:
+- test_beneficios_completo.py
+- test_crear_beneficio_django.py
+- test_pagar_beneficio.py
+
+Testing de PDFs:
+- test_pdf_cuotas.py
+- test_pdf_mejorado.py
+
+Testing General:
+- test_botones_agregados.py
+- test_cache_fix.py
+- test_correcciones.py
+- test_correcciones_finales.py
+- test_correciones_finales.py
+- test_cristian_vera_estudiante.py
+- test_felicitacion.py
+- test_sistema_completo.py
+- test_suma_ranking.py
+- test_voluntario_detalle.py
+
+===========================================
+CATEGORÍA 5: SCRIPTS DE VERIFICACIÓN (8 archivos)
+===========================================
+Directorio raíz del proyecto:
+
+- verificar_bd.py
+- verificar_beneficio_creado.py
+- verificar_curanto_junio.py
+- verificar_datos_separacion.py
+- verificar_movimiento_financiero.py
+- verificar_reset.py
+- verificar_tabla.py
+- verificar_voluntarios.py
+
+===========================================
+CATEGORÍA 6: SCRIPTS DE UTILIDADES (21 archivos)
+===========================================
+Directorio raíz del proyecto:
+
+- activar_ciclo_2025.py
+- activar_cristian_estudiante.py
+- actualizar_templates.py
+- arreglar_static_tags.py
+- asignar_cargos_ejemplo.py
+- borrar_voluntarios.py
+- cambiar_estado_cristian.py
+- corregir_categorias.py
+- crear_voluntarios_ejemplo.py
+- generar_sql_mysql.py
+- limpiar_ciclos.py
+- probar_antiguedad_congelada.py
+- reiniciar_ciclo_2025.py
+- reset_completo_cuotas.py
+- ver_felicitaciones.py
+- ver_felicitaciones_simple.py
+- ver_ultimo_voluntario.py
+- ver_voluntario_detallado.py
+- PRUEBAS_FINALES_ESTUDIANTE.py
+
+===========================================
+CATEGORÍA 7: ARCHIVOS SQL (2 archivos)
+===========================================
+Directorio raíz del proyecto:
+
+- SCHEMA_MYSQL_BOMBEROS.sql
+- schema_mysql_completo.sql
+
+NOTA: Django usa su propio sistema de migraciones.
+Estos archivos SQL no son necesarios para el funcionamiento.
+
+===========================================
+CATEGORÍA 8: ARCHIVOS TEMPORALES (1 archivo)
+===========================================
+Directorio raíz del proyecto:
+
+- cookies.txt
+
+===========================================
+CATEGORÍA 9: DOCUMENTACIÓN (1 archivo - OPCIONAL)
+===========================================
+Directorio raíz del proyecto:
+
+- REGLAS_CARGOS_ASISTENCIAS.md
+
+NOTA: Contiene reglas de negocio. Mover solo si tienes
+documentación actualizada en otro lado.
+
+===========================================
+RESUMEN POR TIPO DE ARCHIVO
+===========================================
+
+JavaScript:     31 archivos
+CSS:             3 archivos
+HTML:            5 archivos
+Python Test:    33 archivos
+Python Verify:   8 archivos
+Python Utils:   21 archivos
+SQL:             2 archivos
+Temporal:        1 archivo
+Documentación:   1 archivo (opcional)
+-----------------------------------
+TOTAL:         105 archivos (106 con .md)
+
+===========================================
+INSTRUCCIONES PARA MOVER ARCHIVOS
+===========================================
+
+1. Crear carpeta de respaldo:
+   mkdir archivos_obsoletos_2025_11_25
+
+2. Crear subcarpetas:
+   mkdir archivos_obsoletos_2025_11_25\js_antiguo
+   mkdir archivos_obsoletos_2025_11_25\css_antiguo
+   mkdir archivos_obsoletos_2025_11_25\templates_backup
+   mkdir archivos_obsoletos_2025_11_25\scripts_testing
+   mkdir archivos_obsoletos_2025_11_25\scripts_utilidades
+   mkdir archivos_obsoletos_2025_11_25\sql
+   mkdir archivos_obsoletos_2025_11_25\temporales
+
+3. Ejecutar script de movimiento (ver archivo siguiente)
+
+4. Probar el sistema completo
+
+5. Si todo funciona correctamente después de 1 semana,
+   eliminar carpeta archivos_obsoletos_2025_11_25
+
+===========================================
+ARCHIVOS QUE DEBEN PERMANECER (NO MOVER)
+===========================================
+
+CRÍTICOS - NO TOCAR:
+✓ Todos los archivos *-django.js
+✓ auth_django.js, utils.js, sidebar-django.js
+✓ Todos los CSS importados en templates activos
+✓ Todos los templates registrados en urls.py
+✓ manage.py, requirements.txt, db.sqlite3
+✓ Archivos .bat de instalación
+✓ Carpeta config/
+✓ Carpeta voluntarios/
+✓ Carpeta static/ (excepto archivos listados arriba)
+✓ Carpeta templates/ (excepto archivos listados arriba)
+
+===========================================
+FIN DEL REPORTE
+===========================================

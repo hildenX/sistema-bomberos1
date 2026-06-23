@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credenciales Portal</title>
+    <style>
+        body { margin:0; font-family:Georgia, "Times New Roman", serif; background:#f5f0e8; color:#241b17; }
+        .shell { width:min(1100px, calc(100% - 32px)); margin:24px auto; }
+        .hero, .panel { background:#fffdf9; border-radius:24px; padding:24px; box-shadow:0 16px 44px rgba(42,28,18,.08); }
+        .hero { margin-bottom:20px; }
+        .hero h1 { margin:0 0 8px; }
+        .hero p { margin:4px 0; color:#6a5c53; }
+        .clave { display:inline-block; margin-top:12px; padding:10px 14px; border-radius:999px; background:#2d211b; color:#fff; font-weight:700; }
+        .tabla-portal { width:100%; border-collapse:collapse; }
+        .tabla-portal th, .tabla-portal td { text-align:left; padding:14px 12px; border-bottom:1px solid #e7dbcf; }
+        .tabla-portal th { color:#6a5c53; font-size:.88rem; text-transform:uppercase; letter-spacing:.06em; }
+        .empty-state { padding:18px; border-radius:16px; background:#f8f0e6; color:#6a5c53; }
+        @media (max-width: 800px) { .tabla-portal { font-size:.9rem; } }
+    </style>
+</head>
+<body>
+    <main id="tesoreriaCredencialesPortal" class="shell">
+        <section class="hero">
+            <h1>Credenciales del Portal de Voluntarios</h1>
+            <p>Los usuarios se generan automáticamente al registrar un bombero nuevo.</p>
+            <p>Mientras no cambien su clave, la contraseña inicial es:</p>
+            <div class="clave" id="passwordGenerica">-</div>
+        </section>
+        <section class="panel">
+            <div id="listaCredencialesPortal"></div>
+        </section>
+    </main>
+    <script src="{% static 'js/tesoreria-portal.js' %}"></script>
+</body>
+</html>

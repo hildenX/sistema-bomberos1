@@ -1,0 +1,731 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Uniformes - Proyecto SEIS</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(255, 152, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 5px;
+            flex-shrink: 0;
+        }
+        
+        .header > div {
+            flex: 1;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .info-voluntario {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-voluntario p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .tabla-uniforme-tipo {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .tabla-uniforme-tipo h3 {
+            margin: 0;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            color: white;
+        }
+
+        .tabla-uniformes-detalle {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tabla-uniformes-detalle th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .tabla-uniformes-detalle td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        .tabla-uniformes-detalle td:last-child {
+            max-width: 250px;
+            word-wrap: break-word;
+        }
+
+        .badge-condicion, .badge-estado {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .condicion-nuevo { background-color: #4caf50; color: white; }
+        .condicion-semi-nuevo { background-color: #ff9800; color: white; }
+        .condicion-usado { background-color: #f44336; color: white; }
+        .estado-bueno { background-color: #8bc34a; color: white; }
+        .estado-regular { background-color: #ffc107; color: white; }
+        .estado-malo { background-color: #d32f2f; color: white; }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #607d8b 0%, #546e7a 100%);
+            color: white;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 125, 139, 0.3);
+        }
+
+        .no-uniformes {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .tipos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tipo-card {
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+
+        /* Estilos para impresión */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .action-buttons {
+                display: none !important;
+            }
+
+            .header {
+                background: #ff9800 !important;
+                padding: 8mm 10mm !important;
+                margin: 0 0 5mm 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 3mm !important;
+            }
+            
+            .header img {
+                width: 12mm !important;
+                height: 12mm !important;
+                object-fit: contain !important;
+                background: white !important;
+                padding: 1mm !important;
+                border-radius: 2mm !important;
+            }
+            
+            .header > div {
+                flex: 1 !important;
+            }
+
+            .header h1 {
+                font-size: 18px !important;
+                margin: 0 !important;
+                color: white !important;
+            }
+            
+            .header p {
+                font-size: 11px !important;
+                color: white !important;
+                opacity: 0.95 !important;
+            }
+            
+            .info-voluntario {
+                page-break-inside: avoid !important;
+                margin-bottom: 4mm !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 3mm !important;
+                background: #f5f5f5 !important;
+                padding: 3mm !important;
+                border-radius: 0 !important;
+            }
+            
+            .info-voluntario > div {
+                background: white !important;
+                padding: 3mm !important;
+                border-left: 3px solid !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+            
+            .info-voluntario p:first-child {
+                font-size: 9px !important;
+                margin-bottom: 2mm !important;
+            }
+            
+            .info-voluntario p:last-child {
+                font-size: 16px !important;
+            }
+
+            .badge-condicion, .badge-estado {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                padding: 2px 6px !important;
+                font-size: 9px !important;
+            }
+            
+            .condicion-nuevo, .estado-bueno {
+                background-color: #4caf50 !important;
+                color: white !important;
+            }
+            
+            .condicion-semi-nuevo {
+                background-color: #ff9800 !important;
+                color: white !important;
+            }
+            
+            .condicion-usado {
+                background-color: #f44336 !important;
+                color: white !important;
+            }
+            
+            .estado-regular {
+                background-color: #ffc107 !important;
+                color: white !important;
+            }
+            
+            .estado-malo {
+                background-color: #d32f2f !important;
+                color: white !important;
+            }
+
+            .tabla-uniforme-tipo {
+                page-break-inside: avoid !important;
+                margin-bottom: 4mm !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+            }
+
+            .tabla-uniforme-tipo > div:first-child {
+                padding: 2mm 4mm !important;
+                page-break-after: avoid !important;
+            }
+
+            .tabla-uniforme-tipo h3 {
+                font-size: 12px !important;
+                margin: 0 !important;
+                color: white !important;
+            }
+
+            .tabla-uniformes-detalle {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+
+            .tabla-uniformes-detalle th {
+                font-size: 9px !important;
+                padding: 2mm 1mm !important;
+                background: #f0f0f0 !important;
+                border: 1px solid #ccc !important;
+                font-weight: 600 !important;
+                text-align: left !important;
+            }
+
+            .tabla-uniformes-detalle td {
+                font-size: 8px !important;
+                padding: 1.5mm 1mm !important;
+                border: 1px solid #ddd !important;
+            }
+            
+            .tabla-uniformes-detalle td span {
+                font-size: 7px !important;
+                padding: 1mm 2mm !important;
+            }
+            
+            .tabla-uniforme-tipo > div:last-child {
+                padding: 2mm 4mm !important;
+                font-size: 8px !important;
+                background: #fafafa !important;
+                border-top: 1px solid #ddd !important;
+            }
+            
+            .no-uniformes {
+                padding: 10mm !important;
+                text-align: center !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="action-buttons">
+            <button class="btn btn-print" id="btnImprimirTabla">💾 Descargar PDF</button>
+            <a href="/sistema.html" class="btn btn-back">← Volver al Sistema</a>
+        </div>
+
+        <div id="contenidoTabla">
+            <!-- El contenido se cargará aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script>
+        // Obtener ID del bombero desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bomberoId = urlParams.get('id');
+
+        if (!bomberoId) {
+            document.getElementById('contenidoTabla').innerHTML = `
+                <div class="no-uniformes">
+                    <h2>❌ Error</h2>
+                    <p>No se especificó un ID de voluntario válido.</p>
+                    <a href="/sistema.html" class="btn btn-back" style="margin-top: 20px;">Volver al Sistema</a>
+                </div>
+            `;
+        } else {
+            cargarTablaUniformes(bomberoId);
+        }
+
+        let logoCompania = null;
+
+        async function cargarTablaUniformes(bomberoId) {
+            try {
+                // Cargar logo de compañía
+                try {
+                    const respLogo = await fetch('/api/logos/', {
+                        headers: {'Authorization': `Token ${localStorage.getItem('token')}`}
+                    });
+                    if (respLogo.ok) {
+                        const logosData = await respLogo.json();
+                        const logos = Array.isArray(logosData) ? logosData : (logosData.results || []);
+                        if (logos.length > 0) {
+                            const logoActivo = logos.find(l => l.usar_en_pdfs);
+                            if (logoActivo) {
+                                logoCompania = logoActivo.imagen;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log('No se pudo cargar logo:', err);
+                }
+                
+                // Obtener voluntario
+                const respVoluntario = await fetch(`/api/voluntarios/${bomberoId}/`, {
+                    headers: {'Authorization': `Token ${localStorage.getItem('token')}`}
+                });
+                
+                if (!respVoluntario.ok) throw new Error('Voluntario no encontrado');
+                const voluntario = await respVoluntario.json();
+                
+                // Obtener uniformes del voluntario
+                const respUniformes = await fetch(`/api/uniformes/por_voluntario/?voluntario_id=${bomberoId}`, {
+                    headers: {'Authorization': `Token ${localStorage.getItem('token')}`}
+                });
+                
+                if (!respUniformes.ok) throw new Error('Error al cargar uniformes');
+                const uniformes = await respUniformes.json();
+                
+                // Generar HTML
+                renderizarTabla(voluntario, uniformes);
+                
+                // Configurar botón de descarga PDF
+                configurarBotonPDF(voluntario);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('contenidoTabla').innerHTML = `
+                    <div class="no-uniformes">
+                        <h2>❌ Error al cargar</h2>
+                        <p>${error.message}</p>
+                        <a href="/sistema.html" class="btn btn-back" style="margin-top: 20px;">Volver al Sistema</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function configurarBotonPDF(voluntario) {
+            const btnImprimir = document.getElementById('btnImprimirTabla');
+            if (!btnImprimir) return;
+            
+            btnImprimir.onclick = function() {
+                // Construir nombre del archivo
+                const partes = [];
+                if (voluntario.nombre) partes.push(voluntario.nombre);
+                else if (voluntario.primerNombre) partes.push(voluntario.primerNombre);
+                
+                if (voluntario.apellido_paterno) partes.push(voluntario.apellido_paterno);
+                else if (voluntario.primerApellido) partes.push(voluntario.primerApellido);
+                
+                if (voluntario.apellido_materno) partes.push(voluntario.apellido_materno);
+                else if (voluntario.segundoApellido) partes.push(voluntario.segundoApellido);
+                
+                const nombreCompleto = partes.join('_').replace(/\s+/g, '_').toLowerCase();
+                const nombreArchivo = `tabla_uniformes_${nombreCompleto}`;
+                
+                // Cambiar título del documento (aparecerá como nombre sugerido en "Guardar como PDF")
+                const tituloOriginal = document.title;
+                document.title = nombreArchivo;
+                
+                // Abrir diálogo de impresión (el usuario puede elegir "Guardar como PDF" y el directorio)
+                window.print();
+                
+                // Restaurar título original después de un momento
+                setTimeout(() => {
+                    document.title = tituloOriginal;
+                }, 1000);
+            };
+        }
+
+        function renderizarTabla(voluntario, uniformes) {
+            console.log('=== DEBUG VOLUNTARIO ===');
+            console.log('Voluntario completo:', voluntario);
+            console.log('Campos disponibles:', Object.keys(voluntario).join(', '));
+            
+            // Construir nombre completo probando TODOS los posibles campos
+            const partes = [];
+            
+            // NOMBRES (probar todos los posibles)
+            if (voluntario.nombre) {
+                partes.push(voluntario.nombre);
+            } else if (voluntario.primerNombre) {
+                partes.push(voluntario.primerNombre);
+                if (voluntario.segundoNombre) partes.push(voluntario.segundoNombre);
+                if (voluntario.tercerNombre) partes.push(voluntario.tercerNombre);
+            }
+            
+            // APELLIDO PATERNO
+            if (voluntario.apellido_paterno) {
+                partes.push(voluntario.apellido_paterno);
+            } else if (voluntario.primerApellido) {
+                partes.push(voluntario.primerApellido);
+            }
+            
+            // APELLIDO MATERNO
+            if (voluntario.apellido_materno) {
+                partes.push(voluntario.apellido_materno);
+            } else if (voluntario.segundoApellido) {
+                partes.push(voluntario.segundoApellido);
+            }
+            
+            const nombreCompleto = partes.length > 0 ? partes.join(' ') : 'Voluntario sin nombre';
+            
+            // CLAVE (probar todos los posibles)
+            const clave = voluntario.clave_bombero || voluntario.claveBombero || voluntario.clave || '-';
+            
+            console.log('✅ Nombre construido:', nombreCompleto);
+            console.log('✅ Clave bombero:', clave);
+            console.log('✅ RUT:', voluntario.rut || 'Sin RUT');
+            
+            // Filtrar solo uniformes activos (NO devueltos)
+            const uniformesActivos = uniformes.filter(u => u.estado === 'activo');
+            
+            let html = `
+                <div class="header">
+                    ${logoCompania ? `<img src="${logoCompania}" alt="Logo Compañía">` : ''}
+                    <div>
+                        <h1>Uniformes de ${nombreCompleto}</h1>
+                        <p>Uniformes en poder del voluntario</p>
+                    </div>
+                </div>
+                
+                <div class="info-voluntario" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #2196F3; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Clave Bombero</p>
+                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: bold; color: #2196F3;">${clave}</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">RUN</p>
+                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: bold; color: #4caf50;">${voluntario.rut || '-'}</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Total Uniformes Activos</p>
+                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: bold; color: #ff9800;">${uniformesActivos.length}</p>
+                    </div>
+                </div>
+            `;
+            
+            if (uniformesActivos.length === 0) {
+                html += `
+                    <div class="no-uniformes">
+                        <h3>📭 Sin uniformes activos</h3>
+                        <p>Este voluntario no tiene uniformes en su poder actualmente.</p>
+                    </div>
+                `;
+            } else {
+                uniformesActivos.forEach((uniforme, idx) => {
+                    const piezas = uniforme.piezas.filter(p => p.estado_pieza === 'activo');
+                    if (piezas.length === 0) return;
+                    
+                    const tipoNombre = obtenerNombreTipo(uniforme.tipo_uniforme);
+                    const colorTipo = obtenerColorTipo(uniforme.tipo_uniforme);
+                    
+                    html += `
+                        <div class="tabla-uniforme-tipo" style="margin-bottom: 30px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="background: ${colorTipo}; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                                <h3 style="margin: 0; color: white; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                                    <span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; font-size: 14px;">#${idx + 1}</span>
+                                    🔥 ${tipoNombre}
+                                </h3>
+                                <span style="background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+                                    ID: ${uniforme.id}
+                                </span>
+                            </div>
+                            
+                            <div style="overflow-x: auto;">
+                                <table class="tabla-uniformes-detalle" style="margin: 0;">
+                                    <thead>
+                                        <tr style="background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);">
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Artículo</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Unidad</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Tipo</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Marca</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">N° Serie</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Talla</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Condición</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Estado</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">F.Entrega</th>
+                                            <th style="padding: 14px 12px; font-size: 13px; color: #555; border-bottom: 2px solid ${colorTipo};">Observaciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                    
+                    piezas.forEach((pieza, piezaIdx) => {
+                        const parSimple = pieza.unidad === 2 ? 'Par' : 'Simple';
+                        const fecha = pieza.fecha_entrega ? new Date(pieza.fecha_entrega).toLocaleDateString('es-CL') : '-';
+                        const bgRow = piezaIdx % 2 === 0 ? '#fafafa' : 'white';
+                        const nombreArticulo = obtenerNombreDisplay(pieza);
+                        
+                        html += `
+                            <tr style="background: ${bgRow}; transition: all 0.2s;" onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='${bgRow}'">
+                                <td style="padding: 12px; font-weight: 500; color: #333;">${nombreArticulo}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: 600; color: #666;">${pieza.unidad || 1}</td>
+                                <td style="padding: 12px;">
+                                    <span style="background: ${parSimple === 'Par' ? '#e3f2fd' : '#fff3e0'}; color: ${parSimple === 'Par' ? '#1976d2' : '#f57c00'}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                        ${parSimple}
+                                    </span>
+                                </td>
+                                <td style="padding: 12px; color: #666;">${pieza.marca || '-'}</td>
+                                <td style="padding: 12px; font-family: monospace; color: #666; font-size: 12px;">${pieza.serie || '-'}</td>
+                                <td style="padding: 12px; text-align: center; font-weight: 600; color: #666;">${pieza.talla || '-'}</td>
+                                <td style="padding: 12px;"><span class="badge-condicion condicion-${pieza.condicion}">${formatearCondicion(pieza.condicion)}</span></td>
+                                <td style="padding: 12px;"><span class="badge-estado estado-${pieza.estado_fisico}">${formatearEstado(pieza.estado_fisico)}</span></td>
+                                <td style="padding: 12px; color: #666; white-space: nowrap;">${fecha}</td>
+                                <td style="padding: 12px; color: #999; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${uniforme.observaciones || '-'}</td>
+                            </tr>`;
+                    });
+                    
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div style="background: #f9f9f9; padding: 12px 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #666; font-size: 13px;">
+                                    <strong>${piezas.length}</strong> ${piezas.length === 1 ? 'artículo' : 'artículos'} en este uniforme
+                                </span>
+                                <span style="color: #999; font-size: 12px;">
+                                    Registrado: ${uniforme.fecha_registro ? new Date(uniforme.fecha_registro).toLocaleDateString('es-CL') : 'N/A'}
+                                </span>
+                            </div>
+                        </div>`;
+                });
+            }
+            
+            document.getElementById('contenidoTabla').innerHTML = html;
+        }
+        
+        function obtenerNombreTipo(tipo) {
+            const map = {
+                'estructural': 'EPP - Estructural',
+                'forestal': 'Forestal',
+                'rescate': 'Rescate',
+                'hazmat': 'Hazmat',
+                'tenidaCuartel': 'Tenida de Cuartel',
+                'accesorios': 'Accesorios',
+                'parada': 'Uniforme de Parada',
+                'usar': 'USAR',
+                'agreste': 'AGRESTE',
+                'um6': 'UM-6 Marítimo',
+                'gersa': 'GERSA'
+            };
+            return map[tipo] || tipo;
+        }
+        
+        function obtenerColorTipo(tipo) {
+            const colores = {
+                'estructural': 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                'forestal': 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                'rescate': 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+                'hazmat': 'linear-gradient(135deg, #ffc107 0%, #ffa000 100%)',
+                'tenidaCuartel': 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                'accesorios': 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+                'parada': 'linear-gradient(135deg, #00bcd4 0%, #0097a7 100%)',
+                'usar': 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)',
+                'agreste': 'linear-gradient(135deg, #8bc34a 0%, #689f38 100%)',
+                'um6': 'linear-gradient(135deg, #03a9f4 0%, #0288d1 100%)',
+                'gersa': 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)'
+            };
+            return colores[tipo] || 'linear-gradient(135deg, #607d8b 0%, #455a64 100%)';
+        }
+        
+        function formatearCondicion(cond) {
+            return {'nuevo': 'Nuevo', 'semi-nuevo': 'Semi-Nuevo', 'usado': 'Usado'}[cond] || cond;
+        }
+        
+        function formatearEstado(est) {
+            return {'bueno': 'Bueno', 'regular': 'Regular', 'malo': 'Malo'}[est] || est;
+        }
+        
+        function obtenerNombreDisplay(pieza) {
+            // Si tiene nombre personalizado, usarlo
+            if (pieza.nombre_personalizado) {
+                return pieza.nombre_personalizado;
+            }
+            
+            // Mapeo de nombres comunes (mismo que en Python)
+            const NOMBRES_COMPONENTES = {
+                'jardinera': 'Jardinera',
+                'chaqueta': 'Chaqueta',
+                'casco': 'Casco',
+                'guantes': 'Guantes',
+                'botas': 'Botas',
+                'linterna': 'Linterna',
+                'radio_portatil': 'Radio Portátil',
+                'camara_multi_gas': 'Cámara Multi-Gas',
+                'aletas': 'Aletas',
+                'traje_neopreno': 'Traje de Neopreno',
+                'chaleco_salvavidas': 'Chaleco Salvavidas',
+                'mascara_buceo': 'Máscara de Buceo',
+                'pantalon': 'Pantalón',
+                'polera': 'Polera',
+                'gorra': 'Gorra',
+                'insignia': 'Insignia',
+                'corbata': 'Corbata'
+            };
+            
+            // Convertir componente a snake_case y buscar en el mapeo
+            const componenteLower = pieza.componente.toLowerCase().replace(/ /g, '_');
+            
+            // Si está en el mapeo, usar ese nombre
+            if (NOMBRES_COMPONENTES[componenteLower]) {
+                return NOMBRES_COMPONENTES[componenteLower];
+            }
+            
+            // Si no, formatear: quitar guiones bajos y poner en mayúscula cada palabra
+            return pieza.componente.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beneficios - Sistema Bomberos</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/beneficios.css' %}?v=2.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div class="ben-wrap">
+
+    <!-- ========== HEADER ========== -->
+    <div class="ben-header">
+        <div class="ben-header-top">
+            <div>
+                <h1>Administración de Beneficios</h1>
+                <p>Gestión de eventos y control de deudores</p>
+            </div>
+            <div class="ben-header-btns">
+                <button class="btn-ben volver" onclick="window.location.href='/sistema.html'">← Volver</button>
+                <button class="btn-ben nuevo" onclick="toggleFormulario()">+ Nuevo Beneficio</button>
+            </div>
+        </div>
+        <div class="ben-summary">
+            <div class="sum-card">
+                <div class="sum-icon">🎫</div>
+                <div>
+                    <div class="sum-label">Beneficios Activos</div>
+                    <div class="sum-value" id="statActivos">0</div>
+                </div>
+            </div>
+            <div class="sum-divider"></div>
+            <div class="sum-card">
+                <div class="sum-icon">💰</div>
+                <div>
+                    <div class="sum-label">Monto Esperado</div>
+                    <div class="sum-value" id="statEsperado">$0</div>
+                </div>
+            </div>
+            <div class="sum-divider"></div>
+            <div class="sum-card">
+                <div class="sum-icon">⚠️</div>
+                <div>
+                    <div class="sum-label">Total Deudores</div>
+                    <div class="sum-value" id="statDeudores">0</div>
+                </div>
+            </div>
+            <div class="sum-divider"></div>
+            <div class="sum-card">
+                <div class="sum-icon">📊</div>
+                <div>
+                    <div class="sum-label">Eficiencia Global</div>
+                    <div class="sum-value" id="statEficiencia">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== NOTIFICACIÓN ========== -->
+    <div id="benNotif" class="ben-notif" style="display:none"></div>
+
+    <!-- ========== FORMULARIO (colapsable) ========== -->
+    <div id="formSection" class="ben-card" style="display:none">
+        <div class="ben-card-header">
+            <h2>Crear Nuevo Beneficio</h2>
+            <button class="btn-close-form" onclick="toggleFormulario()">✕</button>
+        </div>
+        <form id="formCrearBeneficio" class="ben-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tipo de Beneficio <span class="req">*</span></label>
+                    <select id="tipoBeneficio" required onchange="toggleOtroTipo()">
+                        <option value="">Seleccione tipo</option>
+                        <option value="Curanto">🍲 Curanto</option>
+                        <option value="Bingo">🎰 Bingo</option>
+                        <option value="Rifa">🎫 Rifa</option>
+                        <option value="Asado">🥩 Asado</option>
+                        <option value="Otro">📌 Otro</option>
+                    </select>
+                </div>
+                <div class="form-group" id="otroTipoGrupo" style="display:none">
+                    <label>Especificar tipo <span class="req">*</span></label>
+                    <input type="text" id="otroTipoNombre" placeholder="Ej: Festival">
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Evento <span class="req">*</span></label>
+                    <input type="text" id="nombreBeneficio" required placeholder="Ej: Curanto Mayo 2025">
+                </div>
+                <div class="form-group">
+                    <label>Fecha del Evento <span class="req">*</span></label>
+                    <input type="date" id="fechaEvento" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Límite Rendición <span class="req">*</span></label>
+                    <input type="date" id="fechaLimiteRendicion" required>
+                </div>
+                <div class="form-group">
+                    <label>Precio por Tarjeta (CLP) <span class="req">*</span></label>
+                    <input type="number" id="precioTarjeta" required min="100" step="100" placeholder="Ej: 8000">
+                </div>
+                <div class="form-group full-width">
+                    <label>Tarjetas por Categoría <span class="req">*</span></label>
+                    <div class="cat-grid">
+                        <div class="cat-item">
+                            <label>👤 Voluntarios Regulares</label>
+                            <input type="number" id="tarjetasVoluntarios" required min="0" value="8">
+                        </div>
+                        <div class="cat-item">
+                            <label>🏅 Honorarios Compañía</label>
+                            <input type="number" id="tarjetasHonorariosCia" required min="0" value="5">
+                        </div>
+                        <div class="cat-item">
+                            <label>🎖️ Honorarios Cuerpo</label>
+                            <input type="number" id="tarjetasHonorariosCuerpo" required min="0" value="3">
+                        </div>
+                        <div class="cat-item">
+                            <label>🏆 Insignes de Chile</label>
+                            <input type="number" id="tarjetasInsignes" required min="0" value="2">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Descripción</label>
+                    <textarea id="descripcionBeneficio" rows="2" placeholder="Descripción opcional del beneficio"></textarea>
+                </div>
+            </div>
+            <div class="form-note">
+                💡 Al crear el beneficio, se asignará automáticamente a todos los bomberos activos según su categoría.
+            </div>
+            <div class="form-footer">
+                <button type="submit" class="btn-ben submit">Crear Beneficio y Asignar</button>
+                <button type="button" class="btn-ben cancel" onclick="toggleFormulario()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ========== LISTA ========== -->
+    <div class="ben-card">
+        <div class="ben-card-header">
+            <h2>Beneficios Registrados</h2>
+            <div class="ben-filters">
+                <select id="filtroAnio" onchange="aplicarFiltros()">
+                    <option value="">Todos los años</option>
+                </select>
+                <select id="filtroEstado" onchange="aplicarFiltros()">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activos</option>
+                    <option value="cerrado">Cerrados</option>
+                </select>
+            </div>
+        </div>
+        <div class="ben-contador" id="benContador">Cargando...</div>
+        <div id="listaBeneficios"></div>
+    </div>
+
+    <!-- ========== VOLVER ABAJO ========== -->
+    <div class="ben-bottom-nav">
+        <button class="btn-ben volver-abajo" onclick="window.location.href='/sistema.html'">← Volver al Sistema Principal</button>
+    </div>
+
+</div>
+
+<!-- ========== MODAL DEUDORES ========== -->
+<div id="modalDeudores" class="ben-modal-overlay" style="display:none" onclick="cerrarModalDeudores(event)">
+    <div class="ben-modal">
+        <div class="ben-modal-header">
+            <div>
+                <h3 id="modalDeudoresTitle">Lista de Deudores</h3>
+                <p id="modalDeudoresSubtitle"></p>
+            </div>
+            <button class="modal-close" onclick="document.getElementById('modalDeudores').style.display='none'">✕</button>
+        </div>
+        <div class="ben-modal-stats" id="modalDeudoresStats"></div>
+        <div class="ben-modal-body" id="modalDeudoresList"></div>
+        <div class="ben-modal-footer">
+            <button class="btn-ben pdf" onclick="exportarPDFDeudores()">📄 Exportar PDF</button>
+            <button class="btn-ben cancel" onclick="document.getElementById('modalDeudores').style.display='none'">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/utils.js' %}"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/beneficios-django.js' %}?v=2.0"></script>
+</body>
+</html>

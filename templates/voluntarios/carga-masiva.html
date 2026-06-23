@@ -1,0 +1,364 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Carga Masiva de Voluntarios</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        .carga-masiva-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+        }
+
+        .page-header-carga {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #c8102e;
+        }
+
+        .page-header-carga h1 {
+            color: #c8102e;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-header-carga p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .step-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3b82f6;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .btn-download-template {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-download-template:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #1e40af;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #1e3a8a;
+        }
+
+        .info-box ul li {
+            margin: 5px 0;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-success {
+            background: #d1fae5;
+            border-left: 5px solid #10b981;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-success h3 {
+            color: #065f46;
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .result-error {
+            background: #fee2e2;
+            border-left: 5px solid #ef4444;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-error h3 {
+            color: #991b1b;
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .error-list {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .error-item {
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .btn-volver {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="carga-masiva-container">
+        <!-- Header -->
+        <div class="page-header-carga">
+            <h1>
+                <span>📤</span>
+                CARGA MASIVA DE VOLUNTARIOS
+            </h1>
+            <p>Importa múltiples voluntarios desde un archivo Excel</p>
+        </div>
+
+        <!-- PASO 1: Descargar Plantilla -->
+        <div class="step-container">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Descargar Plantilla Excel</div>
+            </div>
+            
+            <p style="color: #475569; margin-bottom: 20px;">
+                Descarga la plantilla Excel con las columnas requeridas. Llena todos los datos de los voluntarios que deseas importar.
+            </p>
+
+            <button class="btn-download-template" onclick="descargarPlantilla()">
+                <span>📥</span>
+                Descargar Plantilla Bomberos.xlsx
+            </button>
+
+            <div class="info-box">
+                <h4>📋 Información de la Plantilla:</h4>
+                <ul>
+                    <li><strong>Una sola hoja:</strong> Todos los datos en la hoja "VOLUNTARIOS" (23 columnas)</li>
+                    <li><strong>Obligatorios:</strong> Clave, Primer Nombre, Primer Apellido, Segundo Apellido, RUT, Fecha Ingreso, Padrinos</li>
+                    <li><strong>Opcionales:</strong> Segundo Nombre, Tercer Nombre, Fecha Nac, Teléfono, Email, etc.</li>
+                    <li><strong>Estados:</strong> activo, fallecido, martir (solo estos 3)</li>
+                    <li><strong>Formatos:</strong> RUT 12.345.678-9, Fechas YYYY-MM-DD</li>
+                    <li><strong>Límite:</strong> Máximo 500 voluntarios</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PASO 2: Subir Archivo -->
+        <div class="step-container">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Cargar Archivo Excel</div>
+            </div>
+
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📂</div>
+                <div class="upload-text">Arrastra aquí tu archivo .xlsx</div>
+                <div class="upload-hint">o haz clic para seleccionar</div>
+                <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
+            </div>
+
+            <div id="selectedFile" style="display: none; margin-top: 15px; text-align: center;">
+                <p style="color: #059669; font-weight: 600; font-size: 1.1rem;">
+                    <span>✅</span> Archivo seleccionado: <span id="fileName"></span>
+                </p>
+                <button onclick="procesarArchivo()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">
+                    🚀 Validar e Importar
+                </button>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill">0%</div>
+                </div>
+                <p id="progressText" style="text-align: center; margin-top: 10px; color: #6b7280; font-weight: 600;"></p>
+            </div>
+
+            <!-- Resultados -->
+            <div class="result-container" id="resultContainer"></div>
+        </div>
+
+        <!-- Botón Volver -->
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn-volver" onclick="window.location.href='sistema.html'">
+                ← Volver al Sistema Principal
+            </button>
+        </div>
+    </div>
+
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/carga-masiva.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ranking Externos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #c41e3a;
+        }
+        button {
+            background: #c41e3a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #8b0000;
+        }
+        .success {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 TEST: Ranking con Externos</h1>
+        <p>Este script agrega participantes y canjes al ranking para probar el sistema.</p>
+
+        <button onclick="agregarExternosAlRanking()">➕ Agregar Externos al Ranking</button>
+        <button onclick="verRanking()">👁️ Ver Ranking Actual</button>
+        <button onclick="limpiarRanking()">🗑️ Limpiar Todo</button>
+        <button onclick="window.location.href='historial-asistencias.html'">📊 Ver Historial</button>
+
+        <div class="success" id="mensaje"></div>
+
+        <h3>📋 Resultado:</h3>
+        <pre id="resultado">Haz click en un botón para empezar...</pre>
+    </div>
+
+    <script>
+        function agregarExternosAlRanking() {
+            const añoActual = 2025;
+            let ranking = JSON.parse(localStorage.getItem('rankingAsistencias')) || {};
+            
+            if (!ranking[añoActual]) {
+                ranking[añoActual] = {};
+            }
+
+            // Inicializar externos
+            if (!ranking[añoActual].externos_participantes) {
+                ranking[añoActual].externos_participantes = {};
+            }
+            if (!ranking[añoActual].externos_canjes) {
+                ranking[añoActual].externos_canjes = {};
+            }
+
+            // Agregar 3 participantes
+            const participantes = [
+                { id: 'part_001', nombre: 'Carlos Participante' },
+                { id: 'part_002', nombre: 'Ana Colaboradora' },
+                { id: 'part_003', nombre: 'Luis Ayudante' }
+            ];
+
+            participantes.forEach(p => {
+                ranking[añoActual].externos_participantes[p.id] = {
+                    id: p.id,
+                    nombre: p.nombre,
+                    total: Math.floor(Math.random() * 10) + 5, // 5-15 asistencias
+                    emergencias: Math.floor(Math.random() * 5) + 2, // 2-7
+                    asambleas: Math.floor(Math.random() * 3) + 1, // 1-4
+                    ejercicios: Math.floor(Math.random() * 3) + 1, // 1-4
+                    citaciones: Math.floor(Math.random() * 2), // 0-2
+                    otras: Math.floor(Math.random() * 2), // 0-2
+                    tipo: 'participante'
+                };
+            });
+
+            // Agregar 2 canjes
+            const canjes = [
+                { id: 'canje_001', nombre: 'Pedro Canje (3ra Cía)' },
+                { id: 'canje_002', nombre: 'María Canje (5ta Cía)' }
+            ];
+
+            canjes.forEach(c => {
+                ranking[añoActual].externos_canjes[c.id] = {
+                    id: c.id,
+                    nombre: c.nombre,
+                    total: Math.floor(Math.random() * 8) + 3, // 3-11 asistencias
+                    emergencias: Math.floor(Math.random() * 4) + 1, // 1-5
+                    asambleas: Math.floor(Math.random() * 2), // 0-2
+                    ejercicios: Math.floor(Math.random() * 3) + 1, // 1-4
+                    citaciones: Math.floor(Math.random() * 2), // 0-2
+                    otras: Math.floor(Math.random() * 1), // 0-1
+                    tipo: 'canje'
+                };
+            });
+
+            // Guardar
+            localStorage.setItem('rankingAsistencias', JSON.stringify(ranking));
+
+            // Mostrar mensaje
+            const mensaje = document.getElementById('mensaje');
+            mensaje.style.display = 'block';
+            mensaje.innerHTML = `
+                ✅ ¡Externos agregados exitosamente!<br>
+                • 3 Participantes 🤝<br>
+                • 2 Canjes 🔄<br>
+                <br>
+                Ahora abre el Historial para verlos en el ranking.
+            `;
+
+            // Mostrar resultado
+            verRanking();
+        }
+
+        function verRanking() {
+            const ranking = JSON.parse(localStorage.getItem('rankingAsistencias')) || {};
+            const añoActual = 2025;
+            
+            if (!ranking[añoActual]) {
+                document.getElementById('resultado').textContent = 'No hay datos de ranking para 2025';
+                return;
+            }
+
+            let resultado = `RANKING ${añoActual}\n${'='.repeat(50)}\n\n`;
+
+            // Voluntarios regulares
+            const voluntarios = Object.entries(ranking[añoActual])
+                .filter(([key]) => !key.startsWith('externos_'));
+            resultado += `👨‍🚒 VOLUNTARIOS REGULARES: ${voluntarios.length}\n`;
+            voluntarios.slice(0, 5).forEach(([id, datos]) => {
+                resultado += `  ${datos.nombre}\n`;
+                resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
+            });
+
+            // Participantes
+            if (ranking[añoActual].externos_participantes) {
+                const participantes = Object.values(ranking[añoActual].externos_participantes);
+                resultado += `\n🤝 PARTICIPANTES: ${participantes.length}\n`;
+                participantes.forEach(datos => {
+                    resultado += `  ${datos.nombre}\n`;
+                    resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
+                });
+            }
+
+            // Canjes
+            if (ranking[añoActual].externos_canjes) {
+                const canjes = Object.values(ranking[añoActual].externos_canjes);
+                resultado += `\n🔄 CANJES: ${canjes.length}\n`;
+                canjes.forEach(datos => {
+                    resultado += `  ${datos.nombre}\n`;
+                    resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
+                });
+            }
+
+            document.getElementById('resultado').textContent = resultado;
+        }
+
+        function limpiarRanking() {
+            if (confirm('¿Seguro que quieres eliminar TODO el ranking?')) {
+                localStorage.removeItem('rankingAsistencias');
+                document.getElementById('resultado').textContent = '🗑️ Ranking eliminado';
+                const mensaje = document.getElementById('mensaje');
+                mensaje.style.display = 'block';
+                mensaje.style.background = '#ff9800';
+                mensaje.textContent = '⚠️ Ranking eliminado. Genera nuevos datos con generar-datos-prueba.html';
+            }
+        }
+    </script>
+</body>
+</html>

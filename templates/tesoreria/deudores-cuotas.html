@@ -1,0 +1,349 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deudores de Cuotas</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        body {
+            background: #f4f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .page-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 48px;
+        }
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 22px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.25);
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .page-header p {
+            margin: 4px 0 0;
+            font-size: 0.85rem;
+            opacity: 0.85;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        /* Resumen */
+        .resumen-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid #f59e0b;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.15);
+        }
+        .resumen-item {
+            text-align: center;
+        }
+        .resumen-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #78350f;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .resumen-valor {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .resumen-valor.naranja { color: #d97706; }
+        .resumen-valor.verde   { color: #059669; }
+        .resumen-divider {
+            width: 1px;
+            height: 50px;
+            background: rgba(120, 53, 15, 0.2);
+        }
+        /* Tabla */
+        .tabla-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        .tabla-toolbar {
+            padding: 16px 22px;
+            background: #f8f9fb;
+            border-bottom: 1px solid #eeeef4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .tabla-toolbar span {
+            font-size: 0.88rem;
+            color: #666;
+            font-weight: 500;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+        }
+        thead th {
+            padding: 13px 16px;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+        }
+        thead th:last-child { text-align: right; }
+        tbody tr {
+            border-bottom: 1px solid #f0f0f4;
+            transition: background 0.15s ease;
+        }
+        tbody tr:hover { background: #faf8fb; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody td {
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        tbody td:first-child { color: #888; font-weight: 600; }
+        .td-deuda { text-align: right; font-weight: 700; color: #059669; }
+        .td-meses { color: #c41e3a; font-weight: 600; font-size: 0.85rem; }
+        .td-clave { color: #6b7280; }
+        /* Estado vacío */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #888;
+        }
+        .empty-state p { font-size: 1rem; margin: 8px 0 0; }
+        /* Cargando */
+        #loadingMsg {
+            padding: 50px 20px;
+            text-align: center;
+            color: #666;
+            font-size: 1rem;
+        }
+        /* Botones */
+        .btn-pdf {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.25);
+            text-decoration: none;
+        }
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(196, 30, 58, 0.35);
+        }
+        .btn-close {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .btn-close:hover { background: #e5e7eb; }
+        /* Print styles */
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .tabla-card { box-shadow: none; }
+            .resumen-card { border: 1px solid #ccc; }
+        }
+        /* Selector año */
+        .anio-selector {
+            background: white;
+            border: 1.5px solid #dde0e8;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+        .anio-selector:focus { outline: none; border-color: #c41e3a; }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header no-print">
+        <div>
+            <h1>Deudores de Cuotas Sociales</h1>
+            <p id="subtitulo">Cargando datos...</p>
+        </div>
+        <div class="header-actions">
+            <select id="selectorAnio" class="anio-selector" onchange="cargarDeudores()"></select>
+            <a id="btnPDF" href="#" target="_blank" class="btn-pdf">
+                📄 Descargar PDF
+            </a>
+            <button type="button" class="btn-close" onclick="window.close()">✕ Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="resumen-card" id="resumenCard" style="display:none;">
+        <div class="resumen-item">
+            <div class="resumen-label">Total Deudores</div>
+            <div class="resumen-valor naranja" id="totalDeudores">0</div>
+        </div>
+        <div class="resumen-divider"></div>
+        <div class="resumen-item">
+            <div class="resumen-label">Deuda Total</div>
+            <div class="resumen-valor verde" id="totalDeuda">$0</div>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="tabla-card">
+        <div class="tabla-toolbar no-print">
+            <span id="contadorRegistros"></span>
+        </div>
+
+        <div id="loadingMsg">Cargando deudores...</div>
+
+        <div id="tablaWrapper" style="display:none; overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:42px">#</th>
+                        <th>Nombre</th>
+                        <th>Clave</th>
+                        <th>Meses Pendientes</th>
+                        <th style="text-align:right">Deuda</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBody"></tbody>
+            </table>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <div style="font-size:3rem;">✅</div>
+            <p>No hay deudores de cuotas para este año.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API_BASE = '/api/voluntarios';
+    let anioActual = new Date().getFullYear();
+
+    // Inicializar selector de año
+    (function inicializarSelector() {
+        const sel = document.getElementById('selectorAnio');
+        const params = new URLSearchParams(window.location.search);
+        anioActual = parseInt(params.get('anio')) || new Date().getFullYear();
+        for (let y = anioActual + 1; y >= 2020; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === anioActual) opt.selected = true;
+            sel.appendChild(opt);
+        }
+    })();
+
+    async function cargarDeudores() {
+        anioActual = parseInt(document.getElementById('selectorAnio').value);
+
+        // Actualizar link PDF
+        document.getElementById('btnPDF').href = `${API_BASE}/pdf-deudores-cuotas/${anioActual}/`;
+        document.getElementById('subtitulo').textContent = `Ciclo ${anioActual} — Solo voluntarios activos con cuotas pendientes`;
+
+        // Mostrar cargando
+        document.getElementById('loadingMsg').style.display = 'block';
+        document.getElementById('tablaWrapper').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('resumenCard').style.display = 'none';
+
+        try {
+            const res = await fetch(`${API_BASE}/deudores-cuotas-listado/?anio=${anioActual}`);
+            if (!res.ok) throw new Error('Error al cargar datos');
+            const data = await res.json();
+
+            document.getElementById('loadingMsg').style.display = 'none';
+
+            if (!data.success || data.total === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('contadorRegistros').textContent = 'Sin deudores';
+                return;
+            }
+
+            // Resumen
+            const totalDeuda = data.deudores.reduce((s, d) => s + parseFloat(d.monto || 0), 0);
+            document.getElementById('totalDeudores').textContent = data.total;
+            document.getElementById('totalDeuda').textContent = '$' + totalDeuda.toLocaleString('es-CL');
+            document.getElementById('resumenCard').style.display = 'flex';
+            document.getElementById('contadorRegistros').textContent = `Mostrando ${data.total} deudor${data.total !== 1 ? 'es' : ''}`;
+
+            // Filas
+            const tbody = document.getElementById('tablaBody');
+            tbody.innerHTML = '';
+            data.deudores.forEach((d, i) => {
+                const monto = parseFloat(d.monto || 0);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td><strong>${d.nombre_completo || ''}</strong></td>
+                    <td class="td-clave">${d.clave_bombero || 'N/A'}</td>
+                    <td class="td-meses">${d.meses_pendientes || ''}</td>
+                    <td class="td-deuda">$${monto.toLocaleString('es-CL')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('tablaWrapper').style.display = 'block';
+
+        } catch (err) {
+            document.getElementById('loadingMsg').textContent = 'Error al cargar datos: ' + err.message;
+        }
+    }
+
+    // Carga inicial
+    cargarDeudores();
+</script>
+</body>
+</html>

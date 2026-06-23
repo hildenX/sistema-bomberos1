@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Pago - Beneficio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 20px;
+            padding: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #10b981;
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        .header p {
+            color: #666;
+            margin: 0;
+            font-size: 14px;
+        }
+        .comprobante-numero {
+            background: #10b981;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .info-section {
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        table td.label {
+            font-weight: bold;
+            color: #555;
+            width: 40%;
+        }
+        table td.value {
+            color: #333;
+            width: 60%;
+        }
+        .monto-total {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #10b981;
+        }
+        .monto-total .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .monto-total .valor {
+            font-size: 36px;
+            font-weight: bold;
+            color: #10b981;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .nota {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .nota strong {
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 COMPROBANTE DE PAGO</h1>
+            <p>Beneficio - Bomberos</p>
+        </div>
+
+        <div class="comprobante-numero">
+            Comprobante N° {{ pago.id }}
+        </div>
+
+        <div class="info-section">
+            <table>
+                <tr>
+                    <td class="label">Voluntario:</td>
+                    <td class="value">{{ voluntario.nombre }} {{ voluntario.apellido_paterno }} {{ voluntario.apellido_materno }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Clave:</td>
+                    <td class="value">{{ voluntario.clave_bombero }}</td>
+                </tr>
+                <tr>
+                    <td class="label">RUT:</td>
+                    <td class="value">{{ voluntario.rut }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Beneficio:</td>
+                    <td class="value">{{ beneficio.nombre }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Fecha de Pago:</td>
+                    <td class="value">{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Cantidad de Tarjetas:</td>
+                    <td class="value">{{ pago.cantidad_tarjetas }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Método de Pago:</td>
+                    <td class="value">{{ pago.metodo_pago|default:"Efectivo" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="monto-total">
+            <div class="label">MONTO PAGADO</div>
+            <div class="valor">${{ pago.monto|floatformat:0 }}</div>
+        </div>
+
+        {% if pago.observaciones %}
+        <div class="nota">
+            <strong>Observaciones:</strong><br>
+            {{ pago.observaciones }}
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p><strong>Este es un comprobante electrónico</strong></p>
+            <p>Generado automáticamente el {{ pago.created_at|date:"d/m/Y H:i" }}</p>
+            <p>Sistema de Gestión de Bomberos - Proyecto SEIS</p>
+            <p style="margin-top: 15px; font-size: 10px;">
+                Este documento es válido sin firma ni timbre
+            </p>
+        </div>
+    </div>
+</body>
+</html>

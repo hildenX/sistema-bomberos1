@@ -1,0 +1,349 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asamblea - Sistema Bomberos</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js\' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+</head>
+<body>
+    <div class="page-container asistencias-page">
+        <div class="container">
+            <div class="page-header asistencias-header" style="background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);">
+                <button type="button" class="btn btn-volver" onclick="window.location.href='tipos-asistencia.html'" style="position: absolute; left: 20px; top: 20px;">
+                    ← Volver
+                </button>
+                <div class="header-logo" style="margin-bottom: 15px;">
+                    <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                </div>
+                <h2>🏛️ REGISTRO DE ASISTENCIA A ASAMBLEA</h2>
+                <p>Sistema de Control de Asistencia de Voluntarios</p>
+            </div>
+
+            <div class="page-content">
+                <!-- DATOS DE LA ASAMBLEA -->
+                <div class="datos-emergencia">
+                    <h3>📋 Datos de la Asamblea</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fechaAsamblea">Fecha <span class="required">*</span></label>
+                            <input type="date" id="fechaAsamblea" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaInicio">Hora de Inicio <span class="required">*</span></label>
+                            <input type="time" id="horaInicio" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaTermino">Hora de Término <span class="required">*</span></label>
+                            <input type="time" id="horaTermino" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipoAsamblea">Tipo de Asamblea <span class="required">*</span></label>
+                            <select id="tipoAsamblea" required>
+                                <option value="">Seleccione tipo</option>
+                                <option value="ordinaria">📋 Ordinaria</option>
+                                <option value="extraordinaria">⚡ Extraordinaria</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="descripcionAsamblea">Descripción</label>
+                            <textarea id="descripcionAsamblea" rows="3" placeholder="Descripción de la asamblea..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTADÍSTICAS -->
+                <div class="estadisticas-asistencia">
+                    <div class="stat-box">
+                        <div class="stat-label">Total de Personas</div>
+                        <div class="stat-value" id="totalPersonas">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Asistentes Seleccionados</div>
+                        <div class="stat-value" id="asistentesSeleccionados">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Porcentaje de Asistencia</div>
+                        <div class="stat-value" id="porcentajeAsistencia">0%</div>
+                    </div>
+                </div>
+
+                <!-- LISTAS DE VOLUNTARIOS (8 CATEGORÍAS) -->
+                <div class="voluntarios-container">
+                    
+                    <!-- MÁRTIRES -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🕊️</span>
+                                VOLUNTARIOS MÁRTIRES
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('martir')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('martir')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaMartires" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- OFICIALES DE COMANDANCIA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">⭐</span>
+                                OFICIALES DE COMANDANCIA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('comandancia')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('comandancia')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaGenerales" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- OFICIALES DE COMPAÑÍA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">👔</span>
+                                OFICIALES DE COMPAÑÍA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('compania')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('compania')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaCompania" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- CARGOS DE CONFIANZA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🔧</span>
+                                CARGOS DE CONFIANZA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('confianza')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('confianza')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaCargosConfianza" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- VOLUNTARIOS INSIGNES -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🏆</span>
+                                VOLUNTARIOS INSIGNES
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('insigne')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('insigne')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaInsignes" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- V.H. DEL CUERPO -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🎖️</span>
+                                V.H. DEL CUERPO
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('honorarioCuerpo')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('honorarioCuerpo')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaHonorariosCuerpo" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- V.H. DE COMPAÑÍA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🏅</span>
+                                V.H. DE COMPAÑÍA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('honorarioCia')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('honorarioCia')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaHonorariosCia" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- VOLUNTARIOS -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🔰</span>
+                                VOLUNTARIOS
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asambleaSistema.seleccionarTodos('voluntario')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asambleaSistema.deseleccionarTodos('voluntario')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaVoluntarios" class="voluntarios-lista"></div>
+                    </div>
+
+                </div>
+
+                <!-- VOLUNTARIOS PARTICIPANTES Y CANJES -->
+                <div class="voluntarios-externos-container">
+                    <h3>👥 VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
+                    <p class="info-text">Agrega voluntarios de otras compañías o cuerpos de bomberos</p>
+                    
+                    <div class="externos-grid">
+                        <!-- Voluntarios Participantes -->
+                        <div class="externos-section">
+                            <h4>🤝 Voluntarios Participantes</h4>
+                            <div class="externos-input-group">
+                                <input type="text" 
+                                       id="inputParticipante" 
+                                       placeholder="Nombre del voluntario participante"
+                                       list="listaParticipantes"
+                                       class="externos-input">
+                                <button type="button" 
+                                        class="btn btn-success btn-sm" 
+                                        onclick="asambleaSistema.agregarParticipante()">
+                                    ➕ Agregar
+                                </button>
+                            </div>
+                            <datalist id="listaParticipantes"></datalist>
+                            <div id="participantesSeleccionados" class="externos-lista"></div>
+                        </div>
+
+                        <!-- Voluntarios Canjes -->
+                        <div class="externos-section">
+                            <h4>🔄 Voluntarios Canjes</h4>
+                            <div class="externos-input-group">
+                                <input type="text" 
+                                       id="inputCanje" 
+                                       placeholder="Nombre y compañía de origen"
+                                       list="listaCanjes"
+                                       class="externos-input">
+                                <button type="button" 
+                                        class="btn btn-success btn-sm" 
+                                        onclick="asambleaSistema.agregarCanje()">
+                                    ➕ Agregar
+                                </button>
+                            </div>
+                            <datalist id="listaCanjes"></datalist>
+                            <div id="canjesSeleccionados" class="externos-lista"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUMEN DETALLADO DE ASISTENCIA -->
+                <div class="resumen-detallado">
+                    <h3>📊 RESUMEN DETALLADO DE ASISTENCIA</h3>
+                    <div class="resumen-grid">
+                        <div class="resumen-item">
+                            <span class="resumen-label">Total Asistentes:</span>
+                            <span class="resumen-valor" id="resumenTotal">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Oficiales Total:</span>
+                            <span class="resumen-valor" id="resumenOficiales">0</span>
+                        </div>
+                        <div class="resumen-item resumen-sub">
+                            <span class="resumen-label">• Of. Comandancia:</span>
+                            <span class="resumen-valor" id="resumenComandancia">0</span>
+                        </div>
+                        <div class="resumen-item resumen-sub">
+                            <span class="resumen-label">• Of. Compañía:</span>
+                            <span class="resumen-valor" id="resumenCompania">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Cargos de Confianza:</span>
+                            <span class="resumen-valor" id="resumenConfianza">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Voluntarios:</span>
+                            <span class="resumen-valor" id="resumenVoluntarios">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="botones-accion">
+                    <button type="button" class="btn btn-success btn-lg" onclick="guardarAsamblea()">
+                        💾 Guardar Asistencia
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='tipos-asistencia.html'">
+                        ← Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/asistencias-genericas-django.js' %}?v=3.0"></script>
+    <script>console.log('✅ Asamblea v3.0 - EXTERNOS ARREGLADOS');</script>
+    <script>
+        // Inicializar sistema de asamblea
+        let asambleaSistema;
+        window.addEventListener('load', function() {
+            asambleaSistema = new SistemaAsistenciasGenericas('asamblea');
+        });
+        
+        // Función para guardar
+        async function guardarAsamblea() {
+            if (asambleaSistema) {
+                await asambleaSistema.guardarAsistencia();
+            }
+        }
+    </script>
+    <script src="{% static 'js/cargar-logo-header.js' %}?v=1.0"></script>
+</body>
+</html>

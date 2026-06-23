@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tipos de Asistencia - Sistema Bomberos</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <style>
+        .tipos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tipo-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .tipo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .tipo-card.emergencia {
+            border-color: #d32f2f;
+            background: linear-gradient(135deg, #fff 0%, #ffebee 100%);
+        }
+
+        .tipo-card.asamblea {
+            border-color: #1976d2;
+            background: linear-gradient(135deg, #fff 0%, #e3f2fd 100%);
+        }
+
+        .tipo-card.ejercicios {
+            border-color: #388e3c;
+            background: linear-gradient(135deg, #fff 0%, #e8f5e9 100%);
+        }
+
+        .tipo-card.citaciones {
+            border-color: #f57c00;
+            background: linear-gradient(135deg, #fff 0%, #fff3e0 100%);
+        }
+
+        .tipo-card.otras {
+            border-color: #7b1fa2;
+            background: linear-gradient(135deg, #fff 0%, #f3e5f5 100%);
+        }
+
+        .tipo-card.directorio {
+            border-color: #607d8b;
+            background: linear-gradient(135deg, #fff 0%, #eceff1 100%);
+        }
+
+        .tipo-icono {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .tipo-titulo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .tipo-descripcion {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            position: relative;
+        }
+
+        .page-title-logo {
+            max-width: 120px;
+            max-height: 120px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(255,255,255,0.4));
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .page-title p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-system">
+        <div class="page-title">
+            <img id="logoAsistencias" class="page-title-logo" src="{% static 'images/logo.png' %}" alt="Logo Bomberos">
+            <h1>REGISTRO DE ASISTENCIAS</h1>
+            <p>Seleccione el tipo de asistencia que desea registrar</p>
+        </div>
+
+        <div class="tipos-grid">
+            <!-- EMERGENCIA -->
+            <div class="tipo-card emergencia" onclick="window.location.href='registro-asistencia.html'">
+                <span class="tipo-icono">🚨</span>
+                <div class="tipo-titulo">EMERGENCIA</div>
+                <div class="tipo-descripcion">
+                    Registro de asistencia a emergencias, incendios y rescates
+                </div>
+            </div>
+
+            <!-- ASAMBLEA -->
+            <div class="tipo-card asamblea" onclick="window.location.href='registro-asamblea.html'">
+                <span class="tipo-icono">🏛️</span>
+                <div class="tipo-titulo">ASAMBLEA</div>
+                <div class="tipo-descripcion">
+                    Asamblea ordinaria o extraordinaria de la compañía
+                </div>
+            </div>
+
+            <!-- EJERCICIOS -->
+            <div class="tipo-card ejercicios" onclick="window.location.href='registro-ejercicios.html'">
+                <span class="tipo-icono">💪</span>
+                <div class="tipo-titulo">EJERCICIOS</div>
+                <div class="tipo-descripcion">
+                    Entrenamiento, prácticas y ejercicios de la compañía
+                </div>
+            </div>
+
+            <!-- CITACIONES -->
+            <div class="tipo-card citaciones" onclick="window.location.href='registro-citaciones.html'">
+                <span class="tipo-icono">📞</span>
+                <div class="tipo-titulo">CITACIONES</div>
+                <div class="tipo-descripcion">
+                    Citaciones oficiales y convocatorias especiales
+                </div>
+            </div>
+
+            <!-- OTRAS -->
+            <div class="tipo-card otras" onclick="window.location.href='registro-otras.html'">
+                <span class="tipo-icono">📋</span>
+                <div class="tipo-titulo">OTRAS</div>
+                <div class="tipo-descripcion">
+                    Otros tipos de eventos y actividades varias
+                </div>
+            </div>
+
+            <!-- DIRECTORIO DE CÍA -->
+            <div class="tipo-card directorio" onclick="window.location.href='registro-directorio.html'">
+                <span class="tipo-icono">👔</span>
+                <div class="tipo-titulo">DIRECTORIO DE CÍA.</div>
+                <div class="tipo-descripcion">
+                    Reuniones del directorio de compañía (solo oficiales y cargos de confianza)
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation-buttons" style="text-align: center; padding: 40px;">
+            <button type="button" class="btn btn-volver" onclick="window.location.href='sistema.html'">
+                ← Volver al Sistema Principal
+            </button>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth()) {
+            window.location.href = 'index.html';
+        }
+
+        // Cargar logo asignado para Asistencias
+        async function cargarLogoHeader() {
+            try {
+                const response = await fetch('/api/logos/asistencias/', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const logo = await response.json();
+                    document.getElementById('logoAsistencias').src = logo.imagen;
+                    console.log('[LOGO ASISTENCIAS] ✅ Logo cargado:', logo.nombre);
+                } else {
+                    console.log('[LOGO ASISTENCIAS] No hay logo asignado, usando por defecto');
+                }
+            } catch (error) {
+                console.error('[LOGO ASISTENCIAS] Error:', error);
+            }
+        }
+
+        // Cargar logo cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', cargarLogoHeader);
+    </script>
+</body>
+</html>

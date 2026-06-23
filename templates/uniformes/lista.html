@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Entrega de Uniformes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js\' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .uniformes-header {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%) !important;
+        }
+        .btn-uniforme {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border: none;
+        }
+        .btn-uniforme:hover {
+            background: linear-gradient(135deg, #fb8c00 0%, #ff9800 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+        .uniforme-card {
+            border-left: 4px solid #ff9800 !important;
+        }
+        
+        /* Selector de tipos de uniformes */
+        .tipo-uniforme-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .tipo-uniforme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .tipo-uniforme-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tipo-uniforme-card:hover {
+            border-color: #ff9800;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+        }
+        .tipo-uniforme-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .tipo-uniforme-card h4 {
+            color: #ff9800;
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        .tipo-uniforme-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Secciones del formulario */
+        .form-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-section h4 {
+            color: #ff9800;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff9800;
+        }
+        .form-check {
+            margin-bottom: 15px;
+        }
+        .form-check input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        /* Cards de uniformes asignados */
+        .uniforme-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #ff9800;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .uniforme-card h4 {
+            color: #ff9800;
+            margin: 0 0 10px 0;
+        }
+        .uniforme-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        /* Botones */
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        .btn-pdf {
+            background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+            color: white;
+            border: none;
+        }
+        .btn-pdf:hover {
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container uniformes-page">
+        <div class="container">
+            <div class="page-header uniformes-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h2 style="margin: 0 0 5px 0;">👔 SISTEMA DE ENTREGA DE UNIFORMES</h2>
+                    <p style="margin: 0;">Registro de Uniformes Entregados a Voluntarios</p>
+                </div>
+                <button type="button" onclick="window.location.href='/sistema.html'" 
+                        style="background: rgba(255,255,255,0.2); color: white; padding: 10px 24px; border: 2px solid white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.3s; backdrop-filter: blur(10px);"
+                        onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
+                    ← VOLVER AL SISTEMA
+                </button>
+            </div>
+
+            <div class="page-content">
+                <div id="mensajeUniformes" class="mensaje-global" style="display: none;"></div>
+
+                <!-- Info del bombero cargada por JS -->
+                <div id="bomberoDatosUniformes"></div>
+
+                <div class="tipo-uniforme-selector">
+                    <h3>📋 Seleccione el Tipo de Uniforme</h3>
+                    <div class="tipo-uniforme-grid">
+                        <div class="tipo-uniforme-card card-basico" id="cardEstructural" onclick="sistemaUniformes.seleccionarTipo('estructural')">
+                            <div class="tipo-uniforme-icon">🧯</div>
+                            <h4>Uniforme Estructural</h4>
+                            <p>Jardinera + Chaqueta + Casco (Opcional)</p>
+                        </div>
+                        <div class="tipo-uniforme-card card-basico" id="cardForestal" onclick="sistemaUniformes.seleccionarTipo('forestal')">
+                            <div class="tipo-uniforme-icon">🌲</div>
+                            <h4>Uniforme Forestal</h4>
+                            <p>Similar al estructural</p>
+                        </div>
+                        <div class="tipo-uniforme-card card-basico" id="cardRescate" onclick="sistemaUniformes.seleccionarTipo('rescate')">
+                            <div class="tipo-uniforme-icon">🚑</div>
+                            <h4>Uniforme de Rescate</h4>
+                            <p>Similar al forestal</p>
+                        </div>
+                        <div class="tipo-uniforme-card card-basico" id="cardHazmat" onclick="sistemaUniformes.seleccionarTipo('hazmat')">
+                            <div class="tipo-uniforme-icon">☣️</div>
+                            <h4>Uniforme Hazmat</h4>
+                            <p>Casaca, Pantalón, Botas, Casco</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-tenida" id="cardTenida" onclick="sistemaUniformes.seleccionarTipo('tenidaCuartel')">
+                            <div class="tipo-uniforme-icon">🏠</div>
+                            <h4>Tenida de Cuartel</h4>
+                            <p>Polera, Polerón, Casaca, Pantalón</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-accesorios" id="cardAccesorios" onclick="sistemaUniformes.seleccionarTipo('accesorios')">
+                            <div class="tipo-uniforme-icon">🎒</div>
+                            <h4>Accesorios</h4>
+                            <p>Radio, Cargador, Batería, Linterna</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-parada" id="cardParada" onclick="sistemaUniformes.seleccionarTipo('parada')">
+                            <div class="tipo-uniforme-icon">🎖️</div>
+                            <h4>Uniforme de Parada</h4>
+                            <p>Casaca, Pantalón, Cinturón</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-usar" id="cardUsar" onclick="sistemaUniformes.seleccionarTipo('usar')">
+                            <div class="tipo-uniforme-icon">🚨</div>
+                            <h4>Uniforme USAR</h4>
+                            <p>EPP Multi Rol, Botas, Casco</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-agreste" id="cardAgreste" onclick="sistemaUniformes.seleccionarTipo('agreste')">
+                            <div class="tipo-uniforme-icon">🌾</div>
+                            <h4>Uniforme AGRESTE</h4>
+                            <p>Mat. Peligrosos, Botas, Casco</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-um6" id="cardUm6" onclick="sistemaUniformes.seleccionarTipo('um6')">
+                            <div class="tipo-uniforme-icon">⚓</div>
+                            <h4>Uniforme UM-6</h4>
+                            <p>Marítimo, Chaleco Flotante</p>
+                        </div>
+                        <div class="tipo-uniforme-card tipo-gersa" id="cardGersa" onclick="sistemaUniformes.seleccionarTipo('gersa')">
+                            <div class="tipo-uniforme-icon">🤿</div>
+                            <h4>Uniforme GERSA</h4>
+                            <p>Buceo, Traje, Aletas, Compensador</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="formularioUniforme" class="form-container" style="display: none;">
+                    <!-- Formulario se carga dinámicamente según el tipo -->
+                    </div>
+
+                <style>
+                    .tipo-uniforme-selector {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                        margin-bottom: 30px;
+                    }
+                    .tipo-uniforme-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                        gap: 20px;
+                        margin-top: 20px;
+                    }
+                    .tipo-uniforme-card {
+                        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                        border: 2px solid #e0e0e0;
+                        border-radius: 12px;
+                        padding: 30px 20px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    .tipo-uniforme-card:hover {
+                        border-color: #ff9800;
+                        transform: translateY(-5px);
+                        box-shadow: 0 8px 20px rgba(255, 152, 0, 0.2);
+                    }
+                    .tipo-uniforme-icon {
+                        font-size: 3rem;
+                        margin-bottom: 15px;
+                    }
+                    .tipo-uniforme-card h4 {
+                        color: #ff9800;
+                        margin: 10px 0;
+                        font-size: 1.2rem;
+                    }
+                    .tipo-uniforme-card p {
+                        color: #666;
+                        font-size: 0.9rem;
+                    }
+                    .form-section {
+                        background: #f8f9fa;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                    }
+                    .form-section h4 {
+                        color: #ff9800;
+                        margin-top: 0;
+                        margin-bottom: 15px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid #ff9800;
+                    }
+                    .form-check {
+                        margin-bottom: 15px;
+                    }
+                    .form-check input[type="checkbox"] {
+                        margin-right: 10px;
+                    }
+                    .uniforme-card {
+                        background: white;
+                        border: 1px solid #e0e0e0;
+                        border-left: 4px solid #ff9800;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                    }
+                    .uniforme-card h4 {
+                        color: #ff9800;
+                        margin: 0 0 10px 0;
+                    }
+                    .uniforme-card p {
+                        margin: 5px 0;
+                        color: #555;
+                    }
+                    .btn-sm {
+                        padding: 8px 16px;
+                        font-size: 0.9rem;
+                    }
+                    .btn-pdf {
+                        background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+                        color: white;
+                        border: none;
+                    }
+                    .btn-pdf:hover {
+                        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+                    }
+                </style>
+
+                <!-- Contenedor único donde se renderiza TODO -->
+                <div id="contenedorPrincipalUniformes"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/uniformes-django.js' %}?v=7.7"></script>
+    <script>console.log('✅ Uniformes Django v7.7 - Tabla HTML + API Django');</script>
+</body>
+</html>

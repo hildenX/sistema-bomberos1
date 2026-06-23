@@ -1,0 +1,1256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Ciclos - Sistema P6P</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        .ciclos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .ciclo-activo {
+            background: #e3f2fd;
+            border: 3px solid #2196f3;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ciclo-activo h2 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+
+        .ciclo-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .ciclo-card.cerrado {
+            opacity: 0.7;
+            background: #f5f5f5;
+        }
+
+        .ciclo-card:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.2);
+        }
+
+        .ciclo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ciclo-nombre {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .ciclo-estado {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .estado-activo {
+            background: #4caf50;
+            color: white;
+        }
+
+        .estado-cerrado {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .ciclo-fechas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .fecha-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #c41e3a;
+        }
+
+        .fecha-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .fecha-valor {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .ciclo-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-valor {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .ciclo-acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #8b0000;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #f57c00;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .btn-secondary {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #757575;
+        }
+
+        .form-nuevo-ciclo {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Sección de emergencias del ciclo */
+        .emergencias-ciclo {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .emergencias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        /* Scrollbar personalizado */
+        .emergencias-grid::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .emergencias-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .emergencias-grid::-webkit-scrollbar-thumb {
+            background: #c41e3a;
+            border-radius: 10px;
+        }
+
+        .emergencias-grid::-webkit-scrollbar-thumb:hover {
+            background: #8b0000;
+        }
+
+        .emergencia-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .emergencia-card:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .emergencia-fecha {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.75rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .emergencia-tipo-badge {
+            display: inline-block;
+            background: #c41e3a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .emergencia-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .emergencia-stat {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #c41e3a;
+        }
+
+        .emergencia-stat-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .emergencia-stat-valor {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .emergencia-descripcion {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #333;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .btn-ver-detalle {
+            width: 100%;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-ver-detalle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: slideDown 0.3s;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #ffcccb;
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+        }
+
+        .detalle-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detalle-row:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            font-weight: 700;
+            color: #666;
+        }
+
+        .detalle-valor {
+            color: #333;
+        }
+
+        .asistentes-lista {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .asistente-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 3px solid #c41e3a;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ciclo-fechas,
+            .ciclo-stats,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🚒</div>
+            <div class="sidebar-title">
+                <h1>Proyecto SEIS</h1>
+                <span>Sistema Bomberos</span>
+            </div>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sidebar-user-role" id="sidebarUserRole">-</div>
+            <div class="sidebar-user-name" id="sidebarUserName">-</div>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Los items se cargarán dinámicamente según el rol -->
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="sidebar-logout" onclick="logout()">
+                <span>🚪</span>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Toggle para móvil -->
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+        ☰ Menú
+    </button>
+
+    <div class="main-content-with-sidebar">
+    <div class="ciclos-container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📅 Administración de Ciclos de Asistencias</h1>
+            <p>Gestiona los períodos de conteo para premios anuales</p>
+        </div>
+
+        <!-- ALERTAS -->
+        <div class="alert alert-success" id="alertSuccess"></div>
+        <div class="alert alert-danger" id="alertError"></div>
+
+        <!-- FORMULARIO NUEVO CICLO -->
+        <div class="form-nuevo-ciclo">
+            <h2>➕ Crear Nuevo Ciclo</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nombre del Ciclo</label>
+                    <input type="text" id="nombreCiclo" placeholder="Ej: Ciclo 2024-2025">
+                </div>
+                <div class="form-group">
+                    <label>Duración (estimada)</label>
+                    <input type="text" id="duracionInfo" readonly value="Calculado automáticamente">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Inicio <span style="color: red;">*</span></label>
+                    <input type="date" id="fechaInicio" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Fin <span style="color: red;">*</span></label>
+                    <input type="date" id="fechaFin" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Descripción (opcional)</label>
+                <textarea id="descripcionCiclo" rows="2" placeholder="Descripción del ciclo..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="crearNuevoCiclo()">
+                🆕 Crear Ciclo y Cerrar el Actual
+            </button>
+        </div>
+
+        <!-- CICLO ACTIVO -->
+        <div id="cicloActivoContainer"></div>
+
+        <!-- EMERGENCIAS DEL CICLO ACTIVO -->
+        <div class="emergencias-ciclo">
+            <h2>🚨 Emergencias del Ciclo Activo</h2>
+            <p style="color: #666; margin-bottom: 20px;">Solo se muestran las emergencias registradas dentro del período activo</p>
+            <div id="emergenciasGrid" class="emergencias-grid">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+
+        <!-- CICLOS CERRADOS -->
+        <div style="margin-top: 30px;">
+            <h2>📋 Ciclos Anteriores (Cerrados)</h2>
+            <div id="ciclosCerradosContainer"></div>
+        </div>
+
+        <!-- BOTONES DE NAVEGACIÓN -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn btn-secondary" onclick="window.location.href='sistema.html'">
+                ← Volver al Sistema
+            </button>
+            <button class="btn btn-primary" onclick="window.location.href='historial-asistencias.html'">
+                📊 Ver Historial
+            </button>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE DETALLES -->
+    <div id="modalDetalles" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚨 Detalles de la Emergencia</h3>
+                <button class="close-modal" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Instancia global de CiclosAsistencias
+        let ciclosAsistencias;
+        
+        // Cargar ciclos al iniciar
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Inicializar sidebar
+            await initSidebar();
+            
+            // Inicializar sistema de ciclos
+            ciclosAsistencias = new CiclosAsistencias();
+            
+            // Cargar datos del módulo
+            cargarCiclos();
+            cargarEmergenciasCicloActivo();
+            configurarFechasPorDefecto();
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalDetalles');
+            if (event.target == modal) {
+                cerrarModal();
+            }
+        };
+
+        function configurarFechasPorDefecto() {
+            const hoy = new Date();
+            const añoActual = hoy.getFullYear();
+            
+            // Sugerir 12 octubre de este año como inicio
+            document.getElementById('fechaInicio').value = `${añoActual}-10-12`;
+            // Sugerir 11 octubre del próximo año como fin
+            document.getElementById('fechaFin').value = `${añoActual + 1}-10-11`;
+            
+            // Calcular duración automáticamente
+            calcularDuracion();
+        }
+
+        function calcularDuracion() {
+            const inicio = document.getElementById('fechaInicio').value;
+            const fin = document.getElementById('fechaFin').value;
+            
+            if (inicio && fin) {
+                const fechaInicio = new Date(inicio);
+                const fechaFin = new Date(fin);
+                const dias = Math.ceil((fechaFin - fechaInicio) / (1000 * 60 * 60 * 24));
+                document.getElementById('duracionInfo').value = `${dias} días (${Math.floor(dias/30)} meses aprox.)`;
+            }
+        }
+
+        document.getElementById('fechaInicio').addEventListener('change', calcularDuracion);
+        document.getElementById('fechaFin').addEventListener('change', calcularDuracion);
+
+        function cargarCiclos() {
+            const ciclos = ciclosAsistencias.obtenerTodosCiclos();
+            const cicloActivo = ciclosAsistencias.obtenerCicloActivo();
+            const ciclosCerrados = ciclos.filter(c => c.estado === 'cerrado');
+
+            // Renderizar ciclo activo
+            if (cicloActivo) {
+                renderizarCicloActivo(cicloActivo);
+            } else {
+                document.getElementById('cicloActivoContainer').innerHTML = `
+                    <div class="ciclo-activo">
+                        <h2>⚠️ No hay ciclo activo</h2>
+                        <p>Crea un nuevo ciclo para empezar a contar asistencias.</p>
+                    </div>
+                `;
+            }
+
+            // Renderizar ciclos cerrados
+            if (ciclosCerrados.length > 0) {
+                document.getElementById('ciclosCerradosContainer').innerHTML = ciclosCerrados
+                    .map(c => renderizarCicloCard(c))
+                    .join('');
+            } else {
+                document.getElementById('ciclosCerradosContainer').innerHTML = `
+                    <p style="text-align: center; color: #999;">No hay ciclos cerrados</p>
+                `;
+            }
+        }
+
+        async function renderizarCicloActivo(ciclo) {
+            const duracion = ciclosAsistencias.obtenerDuracionCiclo(ciclo);
+
+            document.getElementById('cicloActivoContainer').innerHTML = `
+                <div class="ciclo-activo">
+                    <div class="ciclo-header">
+                        <div>
+                            <h2>🔥 ${ciclo.nombre}</h2>
+                            <p>${ciclo.descripcion || 'Sin descripción'}</p>
+                        </div>
+                        <div class="ciclo-estado estado-activo">✅ ACTIVO</div>
+                    </div>
+
+                    <div class="ciclo-fechas">
+                        <div class="fecha-box">
+                            <div class="fecha-label">📅 Fecha de Inicio</div>
+                            <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaInicio)}</div>
+                        </div>
+                        <div class="fecha-box">
+                            <div class="fecha-label">📅 Fecha de Fin</div>
+                            <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaFin)}</div>
+                        </div>
+                    </div>
+
+                    <div class="ciclo-stats">
+                        <div class="stat-box">
+                            <div class="stat-valor">${duracion}</div>
+                            <div class="stat-label">Días totales</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-valor" id="statsAsistencias-${ciclo.id}">
+                                <div class="spinner" style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            </div>
+                            <div class="stat-label">Asistencias Registradas</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-valor">${calcularDiasRestantes(ciclo.fechaFin)}</div>
+                            <div class="stat-label">Días restantes</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-valor">✓</div>
+                            <div class="stat-label">Completadas</div>
+                        </div>
+                    </div>
+                    
+                    <style>
+                        @keyframes spin {
+                            to { transform: rotate(360deg); }
+                        }
+                    </style>
+
+                    <div class="ciclo-acciones">
+                        <button class="btn btn-warning" onclick="cerrarCiclo('${ciclo.id}')">
+                            🔒 Cerrar Ciclo (para premios)
+                        </button>
+                        <button class="btn btn-primary" onclick="window.location.href='historial-asistencias.html'">
+                            📊 Ver Ranking
+                        </button>
+                        <button class="btn btn-success" onclick="exportarRankingCiclo('${ciclo.id}')">
+                            📥 Exportar Excel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Cargar asistencias desde API
+            cargarAsistenciasCiclo(ciclo);
+        }
+        
+        async function cargarAsistenciasCiclo(ciclo) {
+            try {
+                const response = await fetch('/api/eventos-asistencia/', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                const eventos = Array.isArray(data) ? data : (data.results || []);
+                
+                // Filtrar eventos dentro del rango del ciclo
+                const fechaInicio = new Date(ciclo.fechaInicio);
+                const fechaFin = new Date(ciclo.fechaFin);
+                
+                const eventosCiclo = eventos.filter(e => {
+                    const fechaEvento = new Date(e.fecha);
+                    return fechaEvento >= fechaInicio && fechaEvento <= fechaFin;
+                });
+                
+                // Actualizar contador
+                const contador = document.getElementById(`statsAsistencias-${ciclo.id}`);
+                if (contador) {
+                    contador.textContent = eventosCiclo.length;
+                }
+                
+                console.log(`[CICLO ${ciclo.nombre}] Asistencias encontradas:`, eventosCiclo.length);
+            } catch (error) {
+                console.error('Error cargando asistencias del ciclo:', error);
+                const contador = document.getElementById(`statsAsistencias-${ciclo.id}`);
+                if (contador) {
+                    contador.textContent = '0';
+                }
+            }
+        }
+
+        function renderizarCicloCard(ciclo) {
+            const stats = ciclosAsistencias.obtenerEstadisticasCiclo(ciclo.id);
+            const duracion = ciclosAsistencias.obtenerDuracionCiclo(ciclo);
+
+            return `
+                <div class="ciclo-card cerrado">
+                    <div class="ciclo-header">
+                        <div class="ciclo-nombre">${ciclo.nombre}</div>
+                        <div class="ciclo-estado estado-cerrado">🔒 CERRADO</div>
+                    </div>
+
+                    <div class="ciclo-fechas">
+                        <div class="fecha-box">
+                            <div class="fecha-label">Inicio</div>
+                            <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaInicio)}</div>
+                        </div>
+                        <div class="fecha-box">
+                            <div class="fecha-label">Fin</div>
+                            <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaFin)}</div>
+                        </div>
+                    </div>
+
+                    <div class="ciclo-stats">
+                        <div class="stat-box" style="background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);">
+                            <div class="stat-valor">${duracion}</div>
+                            <div class="stat-label">Días</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);">
+                            <div class="stat-valor">${stats.totalAsistencias}</div>
+                            <div class="stat-label">Asistencias</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);">
+                            <div class="stat-valor">${stats.totalVoluntarios}</div>
+                            <div class="stat-label">Voluntarios</div>
+                        </div>
+                        <div class="stat-box" style="background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);">
+                            <div class="stat-valor">✓</div>
+                            <div class="stat-label">Completado</div>
+                        </div>
+                    </div>
+
+                    <div class="ciclo-acciones">
+                        <button class="btn btn-success" onclick="exportarRankingCiclo('${ciclo.id}')">
+                            📥 Exportar Excel
+                        </button>
+                        <button class="btn btn-warning" onclick="reabrirCiclo('${ciclo.id}')">
+                            🔓 Reabrir
+                        </button>
+                        <button class="btn btn-danger" onclick="eliminarCiclo('${ciclo.id}')">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calcularDiasRestantes(fechaFin) {
+            const hoy = new Date();
+            const fin = new Date(fechaFin);
+            const dias = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
+            return dias > 0 ? dias : 0;
+        }
+
+        function crearNuevoCiclo() {
+            try {
+                const nombre = document.getElementById('nombreCiclo').value;
+                const fechaInicio = document.getElementById('fechaInicio').value;
+                const fechaFin = document.getElementById('fechaFin').value;
+                const descripcion = document.getElementById('descripcionCiclo').value;
+
+                if (!fechaInicio || !fechaFin) {
+                    mostrarError('Por favor completa las fechas requeridas');
+                    return;
+                }
+
+                const ciclo = ciclosAsistencias.crearNuevoCiclo(fechaInicio, fechaFin, nombre, descripcion);
+                
+                mostrarExito(`¡Ciclo "${ciclo.nombre}" creado exitosamente!`);
+                
+                // Limpiar formulario
+                document.getElementById('nombreCiclo').value = '';
+                document.getElementById('descripcionCiclo').value = '';
+                configurarFechasPorDefecto();
+                
+                // Recargar vista
+                setTimeout(() => cargarCiclos(), 1000);
+                
+            } catch (error) {
+                mostrarError(error.message);
+            }
+        }
+
+        function cerrarCiclo(cicloId) {
+            if (!confirm('¿Estás seguro de cerrar este ciclo? Esto significa que el período de conteo ha terminado.')) {
+                return;
+            }
+
+            try {
+                ciclosAsistencias.cerrarCiclo(cicloId);
+                mostrarExito('¡Ciclo cerrado exitosamente! Ahora puedes entregar los premios.');
+                setTimeout(() => cargarCiclos(), 1000);
+            } catch (error) {
+                mostrarError(error.message);
+            }
+        }
+
+        function reabrirCiclo(cicloId) {
+            if (!confirm('¿Reabrir este ciclo? Esto cerrará el ciclo activo actual.')) {
+                return;
+            }
+
+            try {
+                ciclosAsistencias.reabrirCiclo(cicloId);
+                mostrarExito('¡Ciclo reabierto exitosamente!');
+                setTimeout(() => cargarCiclos(), 1000);
+            } catch (error) {
+                mostrarError(error.message);
+            }
+        }
+
+        function eliminarCiclo(cicloId) {
+            if (!confirm('¿ELIMINAR este ciclo permanentemente? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            try {
+                ciclosAsistencias.eliminarCiclo(cicloId);
+                mostrarExito('¡Ciclo eliminado exitosamente!');
+                setTimeout(() => cargarCiclos(), 1000);
+            } catch (error) {
+                mostrarError(error.message);
+            }
+        }
+
+        function exportarRankingCiclo(cicloId) {
+            try {
+                const stats = ciclosAsistencias.obtenerEstadisticasCiclo(cicloId);
+                const ciclo = stats.ciclo;
+                const ranking = stats.ranking;
+                
+                // Convertir ranking a array ordenado
+                const rankingArray = Object.keys(ranking).map(id => ({
+                    ...ranking[id],
+                    id
+                })).sort((a, b) => b.total - a.total);
+                
+                // Agregar posición
+                rankingArray.forEach((item, index) => {
+                    item.posicion = index + 1;
+                });
+                
+                // Preparar datos para Excel
+                const datosExcel = rankingArray.map(item => ({
+                    'Posición': item.posicion,
+                    'Clave': item.claveBombero || 'N/A',
+                    'Nombre': item.nombre,
+                    'Total': item.total,
+                    'Emergencias': item.emergencias || 0,
+                    'Asambleas': item.asambleas || 0,
+                    'Ejercicios': item.ejercicios || 0,
+                    'Citaciones': item.citaciones || 0,
+                    'Otras': item.otras || 0
+                }));
+                
+                // Crear libro de trabajo
+                const wb = XLSX.utils.book_new();
+                
+                // Crear hoja con datos
+                const ws = XLSX.utils.json_to_sheet(datosExcel);
+                
+                // Configurar ancho de columnas
+                ws['!cols'] = [
+                    { wch: 10 },  // Posición
+                    { wch: 12 },  // Clave
+                    { wch: 30 },  // Nombre
+                    { wch: 10 },  // Total
+                    { wch: 12 },  // Emergencias
+                    { wch: 12 },  // Asambleas
+                    { wch: 12 },  // Ejercicios
+                    { wch: 12 },  // Citaciones
+                    { wch: 10 }   // Otras
+                ];
+                
+                // Agregar hoja al libro
+                XLSX.utils.book_append_sheet(wb, ws, 'Ranking');
+                
+                // Crear hoja de información del ciclo
+                const infoCiclo = [
+                    { Campo: 'Nombre del Ciclo', Valor: ciclo.nombre },
+                    { Campo: 'Fecha de Inicio', Valor: ciclosAsistencias.formatearFecha(ciclo.fechaInicio) },
+                    { Campo: 'Fecha de Fin', Valor: ciclosAsistencias.formatearFecha(ciclo.fechaFin) },
+                    { Campo: 'Estado', Valor: ciclo.estado.toUpperCase() },
+                    { Campo: 'Duración', Valor: `${ciclosAsistencias.obtenerDuracionCiclo(ciclo)} días` },
+                    { Campo: 'Total Asistencias', Valor: stats.totalAsistencias },
+                    { Campo: 'Total Voluntarios', Valor: stats.totalVoluntarios },
+                    { Campo: 'Fecha de Exportación', Valor: new Date().toLocaleString('es-ES') }
+                ];
+                
+                const wsInfo = XLSX.utils.json_to_sheet(infoCiclo);
+                wsInfo['!cols'] = [{ wch: 25 }, { wch: 40 }];
+                XLSX.utils.book_append_sheet(wb, wsInfo, 'Información');
+                
+                // Generar nombre de archivo
+                const nombreArchivo = `Ranking_${ciclo.nombre.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+                
+                // Descargar archivo
+                XLSX.writeFile(wb, nombreArchivo);
+                
+                mostrarExito(`¡Ranking exportado exitosamente! Archivo: ${nombreArchivo}`);
+                
+            } catch (error) {
+                console.error('Error al exportar:', error);
+                mostrarError('Error al exportar el ranking: ' + error.message);
+            }
+        }
+
+        function mostrarExito(mensaje) {
+            const alert = document.getElementById('alertSuccess');
+            alert.textContent = mensaje;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        function mostrarError(mensaje) {
+            const alert = document.getElementById('alertError');
+            alert.textContent = mensaje;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        // ==================== EMERGENCIAS DEL CICLO ====================
+        
+        function cargarEmergenciasCicloActivo() {
+            const cicloActivo = ciclosAsistencias.obtenerCicloActivo();
+            const container = document.getElementById('emergenciasGrid');
+            
+            if (!cicloActivo) {
+                container.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">No hay ciclo activo. Las emergencias se mostrarán cuando crees un ciclo.</p>';
+                return;
+            }
+            
+            // Obtener todas las asistencias
+            const asistencias = JSON.parse(localStorage.getItem('asistencias')) || [];
+            
+            // Filtrar solo emergencias del ciclo activo
+            const emergenciasCiclo = asistencias.filter(a => {
+                if (a.tipo !== 'emergencia') return false;
+                return ciclosAsistencias.estaEnCiclo(a.fecha, cicloActivo);
+            });
+            
+            if (emergenciasCiclo.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">No hay emergencias registradas en este ciclo.</p>';
+                return;
+            }
+            
+            // Ordenar por fecha descendente (más reciente primero)
+            emergenciasCiclo.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            
+            // Renderizar cards
+            container.innerHTML = emergenciasCiclo.map(e => renderizarEmergenciaCard(e)).join('');
+        }
+        
+        function renderizarEmergenciaCard(emergencia) {
+            return `
+                <div class="emergencia-card">
+                    <div class="emergencia-fecha">📅 ${formatearFechaCorta(emergencia.fecha)}</div>
+                    <div class="emergencia-tipo-badge">Emergencia</div>
+                    
+                    <div class="emergencia-stats">
+                        <div class="emergencia-stat">
+                            <div class="emergencia-stat-label">Total Asistentes</div>
+                            <div class="emergencia-stat-valor">${emergencia.totalAsistentes || 0}</div>
+                        </div>
+                        <div class="emergencia-stat">
+                            <div class="emergencia-stat-label">Oficiales</div>
+                            <div class="emergencia-stat-valor">${emergencia.totalOficiales || 0} <span style="font-size: 0.7rem;">(Cmd: ${emergencia.oficialesComandancia || 0}, Cía: ${emergencia.oficialesCompania || 0})</span></div>
+                        </div>
+                        <div class="emergencia-stat">
+                            <div class="emergencia-stat-label">Voluntarios</div>
+                            <div class="emergencia-stat-valor">${emergencia.voluntarios || 0}</div>
+                        </div>
+                        <div class="emergencia-stat">
+                            <div class="emergencia-stat-label">Descripción</div>
+                            <div class="emergencia-stat-valor" style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${emergencia.descripcion || emergencia.direccion || 'Sin descripción'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="emergencia-descripcion">
+                        ${emergencia.descripcion || emergencia.direccion || 'Sin descripción'}
+                    </div>
+                    
+                    <button class="btn-ver-detalle" onclick='verDetalleEmergencia(${JSON.stringify(emergencia).replace(/'/g, "&#39;")})'>
+                        🔍 Ver Detalle Completo
+                    </button>
+                </div>
+            `;
+        }
+        
+        function formatearFechaCorta(fecha) {
+            const date = new Date(fecha);
+            const dia = date.getDate();
+            const mes = date.toLocaleDateString('es-ES', { month: 'short' });
+            const año = date.getFullYear();
+            return `${dia} ${mes} ${año}`;
+        }
+        
+        function verDetalleEmergencia(emergencia) {
+            const modal = document.getElementById('modalDetalles');
+            const modalBody = document.getElementById('modalBody');
+            
+            // Construir HTML del modal
+            let html = `
+                <div class="detalle-row">
+                    <div class="detalle-label">📅 Fecha</div>
+                    <div class="detalle-valor">${ciclosAsistencias.formatearFecha(emergencia.fecha)}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">🕐 Hora</div>
+                    <div class="detalle-valor">${emergencia.hora || 'No especificada'}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">🔑 Clave Emergencia</div>
+                    <div class="detalle-valor">${emergencia.claveEmergencia || 'N/A'}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">📍 Dirección</div>
+                    <div class="detalle-valor">${emergencia.direccion || 'No especificada'}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">📝 Descripción</div>
+                    <div class="detalle-valor">${emergencia.descripcion || emergencia.direccion || 'Sin descripción'}</div>
+                </div>
+                
+                ${emergencia.observaciones ? `
+                <div class="detalle-row">
+                    <div class="detalle-label">💭 Observaciones</div>
+                    <div class="detalle-valor">${emergencia.observaciones}</div>
+                </div>
+                ` : ''}
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">👥 Total Asistentes</div>
+                    <div class="detalle-valor"><strong>${emergencia.totalAsistentes || 0}</strong></div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">⭐ Oficiales Comandancia</div>
+                    <div class="detalle-valor">${emergencia.oficialesComandancia || 0}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">👔 Oficiales Compañía</div>
+                    <div class="detalle-valor">${emergencia.oficialesCompania || 0}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">🔧 Cargos de Confianza</div>
+                    <div class="detalle-valor">${emergencia.cargosConfianza || 0}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">🔰 Voluntarios</div>
+                    <div class="detalle-valor">${emergencia.voluntarios || 0}</div>
+                </div>
+                
+                ${emergencia.participantes > 0 || emergencia.canjes > 0 ? `
+                <div class="detalle-row">
+                    <div class="detalle-label">👥 Voluntarios Externos</div>
+                    <div class="detalle-valor">
+                        🤝 Participantes: ${emergencia.participantes || 0}<br>
+                        🔄 Canjes: ${emergencia.canjes || 0}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">👤 Registrado Por</div>
+                    <div class="detalle-valor">${emergencia.registradoPor || 'Sistema'}</div>
+                </div>
+                
+                <div class="detalle-row">
+                    <div class="detalle-label">📆 Fecha de Registro</div>
+                    <div class="detalle-valor">${emergencia.fechaRegistro ? new Date(emergencia.fechaRegistro).toLocaleString('es-ES') : 'No disponible'}</div>
+                </div>
+            `;
+            
+            // Si hay asistentes, mostrar lista
+            if (emergencia.asistentes && emergencia.asistentes.length > 0) {
+                html += `
+                    <div class="detalle-row">
+                        <div class="detalle-label">👥 Lista de Asistentes</div>
+                        <div class="detalle-valor">
+                            <div class="asistentes-lista">
+                                ${emergencia.asistentes.map((a, index) => `
+                                    <div class="asistente-item">
+                                        ${index + 1}. ${a.nombre} 
+                                        ${a.claveBombero ? `<span style="color: #666;">(${a.claveBombero})</span>` : ''}
+                                        ${a.categoria ? `<br><small style="color: #999;">${a.categoria}</small>` : ''}
+                                        ${a.cargo ? `<small style="color: #c41e3a;"> - ${a.cargo}</small>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = html;
+            modal.style.display = 'block';
+        }
+        
+        function cerrarModal() {
+            const modal = document.getElementById('modalDetalles');
+            modal.style.display = 'none';
+        }
+    </script>
+
+    <!-- Scripts Django -->
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/sidebar-django.js' %}?v=8.0"></script>
+    <script>console.log('✅ Admin Ciclos v5.0 + Sidebar v7.0');</script>
+    </div> <!-- Cierre main-content-with-sidebar -->
+</body>
+</html>

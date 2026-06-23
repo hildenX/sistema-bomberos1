@@ -1,0 +1,569 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Voluntario - Sistema de Gestión Bomberil</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form-voluntario-profesional.css' %}">
+</head>
+<body>
+    <div class="main-system">
+        <div class="container">
+            <!-- ==================== HEADER ==================== -->
+            <header class="main-header">
+                <div class="header-container">
+                    <div class="header-brand">
+                        <div class="brand-logo">✏️</div>
+                        <div class="brand-text">
+                            <h1>Editar Voluntario</h1>
+                            <p>Actualizar información del registro</p>
+                        </div>
+                    </div>
+                    <div class="header-user">
+                        <div class="user-avatar">
+                            <span id="userInitials">U</span>
+                        </div>
+                        <div class="user-details">
+                            <div class="user-role" id="userRoleInfo">Usuario</div>
+                            <button class="btn-logout-compact" id="logoutBtn">Cerrar Sesión</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ==================== FORMULARIO ==================== -->
+            <div class="form-container">
+                <!-- INFO ACTUAL -->
+                <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">ℹ️</div>
+                        <h3 style="color: white; margin: 0; font-size: 18px; font-weight: 600;">Información Actual del Voluntario</h3>
+                    </div>
+                    <div id="infoBomberoActual" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                        <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">Cargando datos...</div>
+                    </div>
+                    <div id="fotoActualPreview" style="text-align: center; margin-top: 16px;"></div>
+                </div>
+
+                <div id="mensaje" class="success" style="display: none;"></div>
+
+                <form id="formEditarBombero" class="form-bombero">
+                    <input type="hidden" id="idBombero" name="idBombero">
+                    
+                    <!-- ========== IDENTIFICACIÓN ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">👤</div>
+                        <div class="section-title">
+                            <h3>Identificación del Voluntario</h3>
+                            <p>Información básica y clave única</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="claveBombero">Clave del Bombero <span class="required">*</span></label>
+                        <input type="text" 
+                               id="claveBombero" 
+                               name="claveBombero" 
+                               placeholder="Ej: 693" 
+                               required>
+                    </div>
+
+                    <!-- ========== NOMBRES Y APELLIDOS ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">📝</div>
+                        <div class="section-title">
+                            <h3>Nombres y Apellidos</h3>
+                            <p>Información personal del voluntario</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-3">
+                        <div class="form-group">
+                            <label for="primerNombre">Primer Nombre <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="primerNombre" 
+                                   name="primerNombre" 
+                                   placeholder="Ej: Cristian" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="segundoNombre">Segundo Nombre <span class="optional-badge">Opcional</span></label>
+                            <input type="text" 
+                                   id="segundoNombre" 
+                                   name="segundoNombre" 
+                                   placeholder="Ej: Alejandro">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tercerNombre">Tercer Nombre <span class="optional-badge">Opcional</span></label>
+                            <input type="text" 
+                                   id="tercerNombre" 
+                                   name="tercerNombre" 
+                                   placeholder="Ej: José">
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="primerApellido">Primer Apellido <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="primerApellido" 
+                                   name="primerApellido" 
+                                   placeholder="Ej: Vera" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="segundoApellido">Segundo Apellido <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="segundoApellido" 
+                                   name="segundoApellido" 
+                                   placeholder="Ej: Arriagada" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- ========== PADRINOS ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">👥</div>
+                        <div class="section-title">
+                            <h3>Información de Padrinos</h3>
+                            <p>Padrinos que avalan al nuevo voluntario</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="nombrePrimerPadrino">Nombre Primer Padrino <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="nombrePrimerPadrino" 
+                                   name="nombrePrimerPadrino" 
+                                   placeholder="Ej: Juan Pérez González" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombreSegundoPadrino">Nombre Segundo Padrino <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="nombreSegundoPadrino" 
+                                   name="nombreSegundoPadrino" 
+                                   placeholder="Ej: María López Silva" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- ========== DATOS PERSONALES ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">📋</div>
+                        <div class="section-title">
+                            <h3>Datos Personales</h3>
+                            <p>Información personal y profesional</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de Nacimiento <span class="required">*</span></label>
+                            <input type="date" 
+                                   id="fechaNacimiento" 
+                                   name="fechaNacimiento" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rut">RUT <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="rut" 
+                                   name="rut" 
+                                   placeholder="12.345.678-9" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="profesion">Profesión u Oficio <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="profesion" 
+                                   name="profesion" 
+                                   placeholder="Ingrese profesión u oficio" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="domicilio">Domicilio <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="domicilio" 
+                                   name="domicilio" 
+                                   placeholder="Dirección completa" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- ========== DATOS BOMBERILES ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">🚒</div>
+                        <div class="section-title">
+                            <h3>Datos Bomberiles</h3>
+                            <p>Información específica del cuerpo de bomberos</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="nroRegistro">Número de Registro Nacional <span class="optional-badge">Opcional</span></label>
+                            <input type="text" 
+                                   id="nroRegistro" 
+                                   name="nroRegistro" 
+                                   placeholder="Número de registro">
+                            <small>Registro nacional de bomberos de Chile</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaIngreso">Fecha de Ingreso <span class="required">*</span></label>
+                            <input type="date" 
+                                   id="fechaIngreso" 
+                                   name="fechaIngreso" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="compania">Compañía <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="compania" 
+                                   name="compania" 
+                                   placeholder="Compañía de bomberos" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="grupoSanguineo">Grupo Sanguíneo <span class="required">*</span></label>
+                            <select id="grupoSanguineo" name="grupoSanguineo" required>
+                                <option value="">Seleccione grupo sanguíneo</option>
+                                <option value="A+">A+ (A Positivo)</option>
+                                <option value="A-">A- (A Negativo)</option>
+                                <option value="B+">B+ (B Positivo)</option>
+                                <option value="B-">B- (B Negativo)</option>
+                                <option value="AB+">AB+ (AB Positivo)</option>
+                                <option value="AB-">AB- (AB Negativo)</option>
+                                <option value="O+">O+ (O Positivo)</option>
+                                <option value="O-">O- (O Negativo)</option>
+                            </select>
+                            <small>Importante para emergencias médicas</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estadoBombero">Estado del Voluntario <span class="required">*</span></label>
+                        <select id="estadoBombero" name="estadoBombero" required onchange="mostrarCamposEstado()">
+                            <option value="activo">✅ Activo - En servicio</option>
+                            <option value="renunciado">🔄 Renunciado - Puede reintegrarse</option>
+                            <option value="separado">⏸️ Separado - Por periodo determinado</option>
+                            <option value="expulsado">❌ Expulsado - Permanente</option>
+                            <option value="martir">🕊️ Mártir - Fallecido en acto de servicio</option>
+                            <option value="fallecido">☠️ Fallecido - Fallecido (no en servicio)</option>
+                        </select>
+                        <small>Los estados Renunciado, Separado y Expulsado se asignan automáticamente al aplicar sanciones</small>
+                    </div>
+
+                    <!-- CAMPOS CONDICIONALES PARA MÁRTIR -->
+                    <div id="camposMartirio" style="display: none;">
+                        <div class="form-grid form-grid-2">
+                            <div class="form-group">
+                                <label for="fechaMartirio">Fecha de Martirio <span class="required">*</span></label>
+                                <input type="date" 
+                                       id="fechaMartirio" 
+                                       name="fechaMartirio">
+                                <small>Fecha en que cayó en acto de servicio</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lugarMartirio">Lugar del Martirio <span class="optional-badge">Opcional</span></label>
+                                <input type="text" 
+                                       id="lugarMartirio" 
+                                       name="lugarMartirio" 
+                                       placeholder="Lugar donde ocurrió">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="circunstanciasMartirio">Circunstancias del Martirio <span class="optional-badge">Opcional</span></label>
+                            <textarea id="circunstanciasMartirio" 
+                                      name="circunstanciasMartirio" 
+                                      rows="3"
+                                      placeholder="Descripción de las circunstancias en que ocurrió el martirio..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- CAMPOS CONDICIONALES PARA FALLECIDO -->
+                    <div id="camposFallecimiento" style="display: none;">
+                        <div class="form-grid form-grid-2">
+                            <div class="form-group">
+                                <label for="fechaFallecimiento">Fecha de Fallecimiento <span class="required">*</span></label>
+                                <input type="date" 
+                                       id="fechaFallecimiento" 
+                                       name="fechaFallecimiento">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="causaFallecimiento">Causa del Fallecimiento <span class="optional-badge">Opcional</span></label>
+                                <input type="text" 
+                                       id="causaFallecimiento" 
+                                       name="causaFallecimiento" 
+                                       placeholder="Ej: Enfermedad, Accidente, etc.">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAMPOS CONDICIONALES PARA SEPARADO -->
+                    <div id="camposSeparacion" style="display: none;">
+                        <div class="form-grid form-grid-2">
+                            <div class="form-group">
+                                <label for="fechaSeparacion">Fecha de Separación <span class="required">*</span></label>
+                                <input type="date" 
+                                       id="fechaSeparacion" 
+                                       name="fechaSeparacion"
+                                       onchange="calcularFechaFinSeparacion()">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="aniosSeparacion">Años de Separación <span class="required">*</span></label>
+                                <input type="number" 
+                                       id="aniosSeparacion" 
+                                       name="aniosSeparacion"
+                                       min="1"
+                                       max="10"
+                                       placeholder="Ej: 2"
+                                       onchange="calcularFechaFinSeparacion()">
+                                <small>Entre 1 y 10 años</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fecha de Fin de Separación (calculada)</label>
+                            <input type="date" 
+                                   id="fechaFinSeparacion" 
+                                   name="fechaFinSeparacion"
+                                   readonly
+                                   style="background: #f1f5f9;">
+                            <small>Se calcula automáticamente según los años de separación</small>
+                        </div>
+                    </div>
+
+                    <!-- CAMPOS CONDICIONALES PARA RENUNCIADO -->
+                    <div id="camposRenuncia" style="display: none;">
+                        <div class="form-group">
+                            <label for="fechaRenuncia">Fecha de Renuncia <span class="required">*</span></label>
+                            <input type="date" 
+                                   id="fechaRenuncia" 
+                                   name="fechaRenuncia">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motivoRenuncia">Motivo de la Renuncia <span class="optional-badge">Opcional</span></label>
+                            <textarea id="motivoRenuncia" 
+                                      name="motivoRenuncia" 
+                                      rows="3"
+                                      placeholder="Descripción del motivo de la renuncia..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- CAMPOS CONDICIONALES PARA EXPULSADO -->
+                    <div id="camposExpulsion" style="display: none;">
+                        <div class="form-group">
+                            <label for="fechaExpulsion">Fecha de Expulsión <span class="required">*</span></label>
+                            <input type="date" 
+                                   id="fechaExpulsion" 
+                                   name="fechaExpulsion">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motivoExpulsion">Motivo de la Expulsión <span class="optional-badge">Opcional</span></label>
+                            <textarea id="motivoExpulsion" 
+                                      name="motivoExpulsion" 
+                                      rows="3"
+                                      placeholder="Descripción del motivo de la expulsión..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- ========== CONTACTO ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">📞</div>
+                        <div class="section-title">
+                            <h3>Información de Contacto</h3>
+                            <p>Datos para comunicación</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="telefono">Número de Teléfono <span class="required">*</span></label>
+                            <input type="tel" 
+                                   id="telefono" 
+                                   name="telefono" 
+                                   placeholder="+56 9 1234 5678" 
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico <span class="optional-badge">Opcional</span></label>
+                            <input type="email" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+
+                    <!-- ========== FOTOGRAFÍA ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">📸</div>
+                        <div class="section-title">
+                            <h3>Actualizar Fotografía</h3>
+                            <p>Cambiar imagen de identificación</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fotoBombero">Nueva Fotografía <span class="optional-badge">Opcional</span></label>
+                        <input type="file" 
+                               id="fotoBombero" 
+                               name="fotoBombero" 
+                               accept="image/*"
+                               onchange="editarBomberoSistema.previsualizarFoto(this)">
+                        <small>Formatos permitidos: JPG, PNG. Tamaño máximo: 5MB. Dejar vacío para mantener la foto actual</small>
+                    </div>
+
+                    <div id="previewFoto" class="photo-preview" style="display: none;"></div>
+
+                    <!-- ========== INFORMACIÓN ADICIONAL ========== -->
+                    <div class="section-header">
+                        <div class="section-icon">📄</div>
+                        <div class="section-title">
+                            <h3>Información Adicional</h3>
+                            <p>Datos complementarios del historial bomberil</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="otrosCuerpos">Otros Cuerpos de Bomberos <span class="optional-badge">Opcional</span></label>
+                            <input type="text" 
+                                   id="otrosCuerpos" 
+                                   name="otrosCuerpos" 
+                                   placeholder="Otros cuerpos donde ha servido">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="companiaOpcional">Compañía Adicional <span class="optional-badge">Opcional</span></label>
+                            <input type="text" 
+                                   id="companiaOpcional" 
+                                   name="companiaOpcional" 
+                                   placeholder="Compañía adicional">
+                        </div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="desde">Desde <span class="optional-badge">Opcional</span></label>
+                            <input type="date" 
+                                   id="desde" 
+                                   name="desde">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hasta">Hasta <span class="optional-badge">Opcional</span></label>
+                            <input type="date" 
+                                   id="hasta" 
+                                   name="hasta">
+                        </div>
+                    </div>
+
+                    <!-- ========== BOTONES ========== -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="editarBomberoSistema.volver()">
+                            ← Volver
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            ✓ Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar/ocultar campos según el estado seleccionado
+        function mostrarCamposEstado() {
+            const estado = document.getElementById('estadoBombero').value;
+            
+            // Ocultar todos los campos condicionales
+            document.getElementById('camposMartirio').style.display = 'none';
+            document.getElementById('camposFallecimiento').style.display = 'none';
+            document.getElementById('camposSeparacion').style.display = 'none';
+            document.getElementById('camposRenuncia').style.display = 'none';
+            document.getElementById('camposExpulsion').style.display = 'none';
+            
+            // Limpiar required de todos los campos condicionales
+            document.getElementById('fechaMartirio').removeAttribute('required');
+            document.getElementById('fechaFallecimiento').removeAttribute('required');
+            document.getElementById('fechaSeparacion').removeAttribute('required');
+            document.getElementById('aniosSeparacion').removeAttribute('required');
+            document.getElementById('fechaRenuncia').removeAttribute('required');
+            document.getElementById('fechaExpulsion').removeAttribute('required');
+            
+            // Mostrar campos según el estado y agregar required
+            switch(estado) {
+                case 'martir':
+                    document.getElementById('camposMartirio').style.display = 'block';
+                    document.getElementById('fechaMartirio').setAttribute('required', 'required');
+                    break;
+                case 'fallecido':
+                    document.getElementById('camposFallecimiento').style.display = 'block';
+                    document.getElementById('fechaFallecimiento').setAttribute('required', 'required');
+                    break;
+                case 'separado':
+                    document.getElementById('camposSeparacion').style.display = 'block';
+                    document.getElementById('fechaSeparacion').setAttribute('required', 'required');
+                    document.getElementById('aniosSeparacion').setAttribute('required', 'required');
+                    break;
+                case 'renunciado':
+                    document.getElementById('camposRenuncia').style.display = 'block';
+                    document.getElementById('fechaRenuncia').setAttribute('required', 'required');
+                    break;
+                case 'expulsado':
+                    document.getElementById('camposExpulsion').style.display = 'block';
+                    document.getElementById('fechaExpulsion').setAttribute('required', 'required');
+                    break;
+            }
+        }
+        
+        // Función para calcular la fecha de fin de separación
+        function calcularFechaFinSeparacion() {
+            const fechaSeparacion = document.getElementById('fechaSeparacion').value;
+            const anios = parseInt(document.getElementById('aniosSeparacion').value);
+            
+            if (fechaSeparacion && anios) {
+                const fecha = new Date(fechaSeparacion);
+                fecha.setFullYear(fecha.getFullYear() + anios);
+                
+                // Formatear fecha como YYYY-MM-DD
+                const year = fecha.getFullYear();
+                const month = String(fecha.getMonth() + 1).padStart(2, '0');
+                const day = String(fecha.getDate()).padStart(2, '0');
+                
+                document.getElementById('fechaFinSeparacion').value = `${year}-${month}-${day}`;
+            }
+        }
+    </script>
+
+    <!-- Scripts Django - Usan APIs en lugar de localStorage -->
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/editar-bombero-django.js' %}?v=1.0"></script>
+</body>
+</html>

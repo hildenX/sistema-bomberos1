@@ -1,0 +1,735 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial y Ranking - Sistema P6P</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        /* ==================== ESTILOS DEDICADOS PARA HISTORIAL V2 ==================== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: #f5f5f5 !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .historial-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .historial-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+        }
+
+        .historial-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .historial-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Filtros */
+        .filtros-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filtros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filtro-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filtro-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .filtro-group select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filtro-group select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        /* Layout principal */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        /* Ranking */
+        .ranking-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .ranking-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #c41e3a;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #c41e3a;
+            text-align: center;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .ranking-item:hover {
+            background: #c41e3a;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .ranking-position {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .ranking-item:hover .ranking-position {
+            background: white;
+            color: #c41e3a;
+        }
+
+        .ranking-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ranking-nombre {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ranking-clave {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ranking-asistencias {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #c41e3a;
+            flex-shrink: 0;
+        }
+
+        .ranking-item:hover .ranking-asistencias {
+            color: white;
+        }
+
+        /* Asistencias */
+        .asistencias-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+
+        /* Scrollbar personalizado */
+        .asistencias-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .asistencias-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .asistencias-container::-webkit-scrollbar-thumb {
+            background: #c41e3a;
+            border-radius: 10px;
+        }
+
+        .asistencias-container::-webkit-scrollbar-thumb:hover {
+            background: #8b1429;
+        }
+
+        .asistencias-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #c41e3a;
+        }
+
+        .asistencias-titulo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .asistencias-contador {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Lista de asistencias */
+        .asistencias-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Card de asistencia */
+        .asistencia-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .asistencia-card:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .asistencia-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .asistencia-fecha {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .asistencia-tipo-badge {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .asistencia-body {
+            display: grid;
+            grid-template-columns: 140px 1fr 140px 1fr;
+            gap: 8px 20px;
+            padding: 10px 0;
+        }
+
+        .info-item {
+            display: contents;
+        }
+
+        .info-item-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .info-item-value {
+            color: #333;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        
+        .info-item-full {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 20px;
+            grid-column: 1 / -1;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-ver-detalle {
+            width: 100%;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-ver-detalle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Modal de detalles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: slideDown 0.3s;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ffcccb;
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #c41e3a;
+            border-radius: 10px;
+        }
+
+        .detalle-section {
+            margin-bottom: 25px;
+        }
+
+        .detalle-section h4 {
+            color: #c41e3a;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .detalle-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detalle-row:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            font-weight: 700;
+            color: #666;
+        }
+
+        .detalle-valor {
+            color: #333;
+        }
+
+        .asistentes-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .asistente-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #c41e3a;
+            transition: all 0.2s ease;
+        }
+
+        .asistente-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .asistente-nombre {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .asistente-info {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .botones-accion {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .ranking-container {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filtros-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .asistencia-body {
+                grid-template-columns: 1fr;
+            }
+
+            .asistencia-card-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .asistencia-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .ranking-item {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="historial-container">
+        
+        <!-- HEADER -->
+        <div class="historial-header">
+            <h1>📊 Historial y Ranking de Asistencias</h1>
+            <p>Sistema completo de seguimiento y clasificación de asistencias</p>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="botones-accion">
+            <button class="btn btn-primary" onclick="window.location.href='tipos-asistencia.html'">
+                ➕ Nueva Asistencia
+            </button>
+            <button class="btn btn-primary" onclick="exportarExcel()">
+                📊 Exportar a Excel
+            </button>
+            <button class="btn btn-primary" onclick="reconstruirRanking()" title="Reconstruye el ranking desde las asistencias registradas">
+                🔄 Reconstruir Ranking
+            </button>
+            <button class="btn btn-secondary" onclick="window.location.href='sistema.html'">
+                ← Volver al Sistema
+            </button>
+        </div>
+
+        <!-- INFO CICLO ACTIVO -->
+        <div id="infoCicloActivo"></div>
+
+        <!-- FILTROS -->
+        <div class="filtros-container">
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label>📊 Tipo de Asistencia</label>
+                    <select id="filtroTipo">
+                        <option value="todas">Todas las Asistencias</option>
+                        <option value="emergencia">🚨 Emergencias</option>
+                        <option value="asamblea">🏛️ Asambleas</option>
+                        <option value="ejercicios">💪 Ejercicios</option>
+                        <option value="citaciones">📞 Citaciones</option>
+                        <option value="otras">📋 Otras</option>
+                    </select>
+                </div>
+                <div class="filtro-group" id="grupoFiltroClave">
+                    <label>📻 Clave Radial (solo Emergencias)</label>
+                    <select id="filtroClave">
+                        <!-- Se llena dinámicamente -->
+                    </select>
+                </div>
+                <div class="filtro-group" id="grupoFiltroAsamblea" style="display: none;">
+                    <label>🏛️ Tipo de Asamblea</label>
+                    <select id="filtroAsamblea">
+                        <option value="">Todas</option>
+                        <option value="ordinaria">📋 Ordinaria</option>
+                        <option value="extraordinaria">⚡ Extraordinaria</option>
+                    </select>
+                </div>
+                <div class="filtro-group" id="grupoFiltroEjercicio" style="display: none;">
+                    <label>💪 Tipo de Ejercicio</label>
+                    <select id="filtroEjercicio">
+                        <option value="">Todos</option>
+                        <option value="compania">🏢 Compañía</option>
+                        <option value="cuerpo">🏛️ Cuerpo</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label>🏆 Mostrar Top</label>
+                    <select id="filtroTop">
+                        <option value="10">Top 10</option>
+                        <option value="20">Top 20</option>
+                        <option value="50">Top 50</option>
+                        <option value="999">Todos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYOUT PRINCIPAL -->
+        <div class="content-layout">
+            
+            <!-- RANKING -->
+            <div class="ranking-container">
+                <div class="ranking-header" id="rankingTitulo">
+                    🏆 TOP 10 VOLUNTARIOS
+                </div>
+                <div id="rankingLista">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
+            <!-- ASISTENCIAS -->
+            <div class="asistencias-container">
+                <div class="asistencias-header">
+                    <span class="asistencias-titulo" id="asistenciasTitulo">
+                        📋 Todas las Asistencias
+                    </span>
+                    <span class="asistencias-contador" id="asistenciasContador">
+                        0 registros
+                    </span>
+                </div>
+                <div class="asistencias-lista" id="asistenciasLista">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-text">No hay asistencias registradas</div>
+                    <button class="btn btn-primary" onclick="window.location.href='tipos-asistencia.html'">
+                        ➕ Registrar Primera Asistencia
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DE DETALLES -->
+    <div id="modalDetalles" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitulo">📋 Detalles de la Asistencia</h3>
+                <button class="close-modal" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/claves-radiales.js' %}"></script>
+    <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
+    <script src="{% static 'js/historial-asistencias-django.js' %}?v=18.0"></script>
+    <script>console.log('✅ Historial v18.0 - SIN CIERRE AUTOMÁTICO - SOLO MANUAL');</script>
+</body>
+</html>

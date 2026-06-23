@@ -1,0 +1,741 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Asistencias Individual</title>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info-bombero {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .info-bombero h2 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .info-bombero p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .botones {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .preview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .preview h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .mes-grupo {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .mes-grupo h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            color: #666;
+        }
+        
+        .total-line {
+            border-top: 2px solid #ddd;
+            margin-top: 10px;
+            padding-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Reporte de Asistencias Individual</h1>
+        <p style="color: #666;">Genera un PDF con el resumen de asistencias de un bombero en un período específico</p>
+        
+        <div class="info-bombero" id="infoBombero">
+            <h2>Cargando información del bombero...</h2>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="fechaDesde">📅 Fecha Desde:</label>
+                <input type="date" id="fechaDesde" required>
+            </div>
+            <div class="form-group">
+                <label for="fechaHasta">📅 Fecha Hasta:</label>
+                <input type="date" id="fechaHasta" required>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tipoReporte">📊 Tipo de Reporte:</label>
+                <select id="tipoReporte" onchange="toggleSelectorMes()">
+                    <option value="rango">Rango de Fechas (Libre)</option>
+                    <option value="mensual">Por Mes Específico</option>
+                    <option value="ciclo">Ciclo Completo</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Selector de Mes + Año (cuando se elige "mensual") -->
+        <div class="form-row" id="selectorMesContainer" style="display: none;">
+            <div class="form-group">
+                <label for="mesEspecifico">📅 Mes:</label>
+                <select id="mesEspecifico">
+                    <option value="0">Enero</option>
+                    <option value="1">Febrero</option>
+                    <option value="2">Marzo</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Mayo</option>
+                    <option value="5">Junio</option>
+                    <option value="6">Julio</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Septiembre</option>
+                    <option value="9">Octubre</option>
+                    <option value="10">Noviembre</option>
+                    <option value="11">Diciembre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="anioMensual">📅 Año:</label>
+                <select id="anioMensual">
+                    <!-- Se llena dinámicamente -->
+                </select>
+            </div>
+        </div>
+        
+        <!-- Selector de Ciclo (cuando se elige "ciclo") -->
+        <div class="form-row" id="selectorCicloContainer" style="display: none;">
+            <div class="form-group">
+                <label for="cicloSeleccionado">🔄 Ciclo:</label>
+                <select id="cicloSeleccionado">
+                    <!-- Se llena dinámicamente -->
+                </select>
+            </div>
+        </div>
+        
+        <div class="preview" id="preview" style="display: none;">
+            <h3>📋 Vista Previa del Reporte</h3>
+            <div id="previewContent"></div>
+        </div>
+        
+        <div class="botones">
+            <button class="btn btn-primary" onclick="generarReporte()">
+                📄 Generar PDF
+            </button>
+            <button class="btn btn-primary" onclick="verVistaPrevia()">
+                👁️ Vista Previa
+            </button>
+            <button class="btn btn-secondary" onclick="window.history.back()">
+                ← Volver
+            </button>
+        </div>
+    </div>
+    
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
+    <script src="{% static 'js/reporte-asistencias-django.js' %}?v=7.0"></script>
+    <script>console.log('✅ Reporte Asistencias v7.0 - ESTADÍSTICAS DEL CICLO/PERÍODO CORRECTO');</script>
+    
+    <!-- SCRIPT ANTIGUO COMENTADO PARA REFERENCIA -->
+    <!--<script>
+        class ReporteAsistenciasIndividual {
+            constructor() {
+                this.bomberoId = localStorage.getItem('bomberoIdReporte');
+                this.bombero = null;
+                this.asistencias = [];
+                this.init();
+            }
+            
+            init() {
+                if (!this.bomberoId) {
+                    alert('No se ha seleccionado un bombero');
+                    window.history.back();
+                    return;
+                }
+                
+                this.cargarDatos();
+                this.configurarFechas();
+            }
+            
+            cargarDatos() {
+                // Cargar bombero usando storage
+                const bomberos = storage.getBomberos();
+                this.bombero = bomberos.find(b => b.id == this.bomberoId);
+                
+                if (!this.bombero) {
+                    console.error('❌ Bombero no encontrado. ID buscado:', this.bomberoId);
+                    console.log('📋 Bomberos disponibles:', bomberos.map(b => ({ id: b.id, nombre: b.primerNombre + ' ' + b.primerApellido })));
+                    alert('Bombero no encontrado');
+                    window.history.back();
+                    return;
+                }
+                
+                console.log('✅ Bombero cargado:', this.bombero);
+                
+                // Cargar asistencias
+                this.asistencias = storage.getAsistencias();
+                
+                this.renderizarInfoBombero();
+            }
+            
+            configurarFechas() {
+                const hoy = new Date();
+                const primerDia = new Date(hoy.getFullYear(), 0, 1);
+                
+                document.getElementById('fechaDesde').valueAsDate = primerDia;
+                document.getElementById('fechaHasta').valueAsDate = hoy;
+            }
+            
+            renderizarInfoBombero() {
+                const nombre = Utils.obtenerNombreCompleto(this.bombero);
+                const cargo = this.obtenerCargoActual();
+                
+                document.getElementById('infoBombero').innerHTML = `
+                    <h2>${nombre}</h2>
+                    <p><strong>Clave:</strong> ${this.bombero.claveBombero || 'N/A'} | <strong>RUT:</strong> ${this.bombero.rut || 'N/A'}</p>
+                    <p><strong>Cargo Actual:</strong> ${cargo}</p>
+                `;
+            }
+            
+            obtenerCargoActual() {
+                // Cargar cargos desde storage
+                const cargos = storage.getCargos ? storage.getCargos() : JSON.parse(localStorage.getItem('cargosData') || '[]');
+                const cargosBombero = cargos.filter(c => c.bomberoId == this.bomberoId);
+                
+                if (cargosBombero.length === 0) return 'Sin cargo';
+                
+                // Buscar cargo vigente
+                const hoy = new Date();
+                const cargoVigente = cargosBombero.find(c => {
+                    const inicio = c.fechaInicioCargo ? new Date(c.fechaInicioCargo) : null;
+                    const fin = c.fechaFinCargo ? new Date(c.fechaFinCargo) : null;
+                    
+                    if (inicio && inicio > hoy) return false;
+                    if (fin && fin < hoy) return false;
+                    return true;
+                });
+                
+                return cargoVigente ? cargoVigente.tipoCargo : 'Sin cargo vigente';
+            }
+            
+            filtrarAsistencias() {
+                const fechaDesde = new Date(document.getElementById('fechaDesde').value);
+                const fechaHasta = new Date(document.getElementById('fechaHasta').value);
+                
+                if (!fechaDesde || !fechaHasta) {
+                    alert('Por favor seleccione el rango de fechas');
+                    return null;
+                }
+                
+                if (fechaDesde > fechaHasta) {
+                    alert('La fecha desde debe ser menor que la fecha hasta');
+                    return null;
+                }
+                
+                // Filtrar asistencias del bombero en el período
+                return this.asistencias.filter(a => {
+                    const fechaAsist = new Date(a.fecha);
+                    if (fechaAsist < fechaDesde || fechaAsist > fechaHasta) return false;
+                    
+                    // Verificar si el bombero está en los asistentes
+                    return a.asistentes && a.asistentes.some(asist => asist.bomberoId == this.bomberoId);
+                });
+            }
+            
+            agruparPorMes(asistencias) {
+                const grupos = {};
+                
+                asistencias.forEach(a => {
+                    const fecha = new Date(a.fecha);
+                    const mes = fecha.toLocaleDateString('es-CL', { month: 'long', year: 'numeric' });
+                    
+                    if (!grupos[mes]) {
+                        grupos[mes] = {
+                            emergencias: [],
+                            asambleas: [],
+                            ejercicios: [],
+                            citaciones: [],
+                            directorio: [],
+                            otras: []
+                        };
+                    }
+                    
+                    // Obtener cargo con el que asistió
+                    const asistente = a.asistentes.find(asist => asist.bomberoId == this.bomberoId);
+                    const cargo = asistente ? asistente.categoria : 'Sin cargo';
+                    
+                    const tipo = a.tipo || 'otras';
+                    if (grupos[mes][tipo + 's']) {
+                        grupos[mes][tipo + 's'].push({ fecha: a.fecha, cargo });
+                    } else if (grupos[mes][tipo]) {
+                        grupos[mes][tipo].push({ fecha: a.fecha, cargo });
+                    }
+                });
+                
+                return grupos;
+            }
+            
+            calcularResumen(asistencias) {
+                const resumen = {
+                    emergencias: 0,
+                    asambleas: 0,
+                    ejercicios: 0,
+                    citaciones: 0,
+                    directorio: 0,
+                    otras: 0
+                };
+                
+                asistencias.forEach(a => {
+                    const tipo = a.tipo || 'otras';
+                    if (resumen[tipo + 's'] !== undefined) {
+                        resumen[tipo + 's']++;
+                    } else if (resumen[tipo] !== undefined) {
+                        resumen[tipo]++;
+                    }
+                });
+                
+                return resumen;
+            }
+        }
+        
+        let reporte;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            reporte = new ReporteAsistenciasIndividual();
+        });
+        
+        function verVistaPrevia() {
+            const asistencias = reporte.filtrarAsistencias();
+            if (!asistencias) return;
+            
+            const tipoReporte = document.getElementById('tipoReporte').value;
+            const preview = document.getElementById('preview');
+            const content = document.getElementById('previewContent');
+            
+            preview.style.display = 'block';
+            
+            if (tipoReporte === 'mensual') {
+                const grupos = reporte.agruparPorMes(asistencias);
+                let html = '';
+                
+                for (const [mes, datos] of Object.entries(grupos)) {
+                    const total = datos.emergencias.length + datos.asambleas.length + 
+                                  datos.ejercicios.length + datos.citaciones.length + 
+                                  datos.directorio.length + datos.otras.length;
+                    
+                    html += `
+                        <div class="mes-grupo">
+                            <h4>📅 ${mes.toUpperCase()}</h4>
+                            <div class="stat-line">
+                                <span>🚨 Emergencias:</span>
+                                <span>${datos.emergencias.length}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span>🏛️ Asambleas:</span>
+                                <span>${datos.asambleas.length}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span>💪 Ejercicios:</span>
+                                <span>${datos.ejercicios.length}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span>📞 Citaciones:</span>
+                                <span>${datos.citaciones.length}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span>👔 Directorio:</span>
+                                <span>${datos.directorio.length}</span>
+                            </div>
+                            <div class="stat-line">
+                                <span>📋 Otras:</span>
+                                <span>${datos.otras.length}</span>
+                            </div>
+                            <div class="stat-line total-line">
+                                <span>TOTAL:</span>
+                                <span>${total} asistencias</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                content.innerHTML = html;
+            } else {
+                const resumen = reporte.calcularResumen(asistencias);
+                const total = Object.values(resumen).reduce((a, b) => a + b, 0);
+                
+                content.innerHTML = `
+                    <div class="mes-grupo">
+                        <h4>📊 RESUMEN GENERAL</h4>
+                        <div class="stat-line">
+                            <span>🚨 Total Emergencias:</span>
+                            <span>${resumen.emergencias}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>🏛️ Total Asambleas:</span>
+                            <span>${resumen.asambleas}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>💪 Total Ejercicios:</span>
+                            <span>${resumen.ejercicios}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>📞 Total Citaciones:</span>
+                            <span>${resumen.citaciones}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>👔 Total Directorio:</span>
+                            <span>${resumen.directorio}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>📋 Total Otras:</span>
+                            <span>${resumen.otras}</span>
+                        </div>
+                        <div class="stat-line total-line">
+                            <span>TOTAL GENERAL:</span>
+                            <span>${total} asistencias</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function generarReporte() {
+            const asistencias = reporte.filtrarAsistencias();
+            if (!asistencias) return;
+            
+            const tipoReporte = document.getElementById('tipoReporte').value;
+            const fechaDesde = document.getElementById('fechaDesde').value;
+            const fechaHasta = document.getElementById('fechaHasta').value;
+            
+            // Generar PDF (próxima función)
+            generarPDF(asistencias, tipoReporte, fechaDesde, fechaHasta);
+        }
+        
+        function generarPDF(asistencias, tipoReporte, fechaDesde, fechaHasta) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Colores bomberiles
+            const rojoB = [196, 30, 58];      // #c41e3a
+            const rojoOscuro = [139, 20, 41]; // #8b1429
+            const gris = [100, 100, 100];
+            const negro = [0, 0, 0];
+            
+            let y = 0;
+            
+            // ==================== HEADER CON FONDO ROJO ====================
+            doc.setFillColor(...rojoB);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            // Logo de la compañía (si existe)
+            const logoCompania = localStorage.getItem('logoCompania');
+            if (logoCompania) {
+                try {
+                    doc.addImage(logoCompania, 'PNG', 15, 8, 25, 25);
+                } catch (e) {
+                    console.log('No se pudo cargar el logo');
+                }
+            }
+            
+            // Título en blanco
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('REPORTE DE ASISTENCIAS', 105, 18, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text('Voluntario Individual', 105, 26, { align: 'center' });
+            
+            // Fecha de generación en header
+            doc.setFontSize(8);
+            doc.text(`Generado: ${new Date().toLocaleDateString('es-CL')}`, 105, 32, { align: 'center' });
+            
+            y = 50;
+            
+            // ==================== INFO DEL BOMBERO ====================
+            doc.setTextColor(...negro);
+            
+            // Caja con borde
+            doc.setDrawColor(...rojoB);
+            doc.setLineWidth(0.5);
+            doc.rect(15, y, 180, 28);
+            
+            y += 7;
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...rojoB);
+            doc.text(Utils.obtenerNombreCompleto(reporte.bombero).toUpperCase(), 20, y);
+            
+            y += 7;
+            doc.setFontSize(10);
+            doc.setTextColor(...gris);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Clave: ${reporte.bombero.claveBombero || 'N/A'}`, 20, y);
+            doc.text(`RUT: ${reporte.bombero.rut || 'N/A'}`, 80, y);
+            doc.text(`Cargo: ${reporte.obtenerCargoActual()}`, 140, y);
+            
+            y += 7;
+            doc.setFontSize(9);
+            doc.setTextColor(80, 80, 80);
+            doc.text(`Período: ${new Date(fechaDesde).toLocaleDateString('es-CL')} al ${new Date(fechaHasta).toLocaleDateString('es-CL')}`, 20, y);
+            
+            y += 12;
+            
+            // ==================== RESUMEN POR MES ====================
+            if (tipoReporte === 'mensual') {
+                const grupos = reporte.agruparPorMes(asistencias);
+                
+                // Título de sección
+                doc.setFillColor(240, 240, 240);
+                doc.rect(15, y, 180, 8, 'F');
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...rojoB);
+                doc.text('DETALLE MENSUAL', 20, y + 6);
+                y += 15;
+                
+                for (const [mes, datos] of Object.entries(grupos)) {
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    
+                    // Nombre del mes con fondo
+                    doc.setFillColor(250, 250, 250);
+                    doc.rect(15, y - 2, 180, 7, 'F');
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(...negro);
+                    doc.text(mes.toUpperCase(), 20, y + 3);
+                    y += 10;
+                    
+                    // Tabla de asistencias
+                    const tableData = [
+                        ['Emergencias', datos.emergencias.length],
+                        ['Asambleas', datos.asambleas.length],
+                        ['Ejercicios', datos.ejercicios.length],
+                        ['Citaciones', datos.citaciones.length],
+                        ['Directorio', datos.directorio.length],
+                        ['Otras', datos.otras.length]
+                    ];
+                    
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(...gris);
+                    
+                    tableData.forEach(([tipo, cant]) => {
+                        doc.text(tipo, 25, y);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(...negro);
+                        doc.text(cant.toString(), 185, y, { align: 'right' });
+                        doc.setFont(undefined, 'normal');
+                        doc.setTextColor(...gris);
+                        y += 5;
+                    });
+                    
+                    // Total del mes con fondo
+                    const totalMes = datos.emergencias.length + datos.asambleas.length + 
+                                     datos.ejercicios.length + datos.citaciones.length + 
+                                     datos.directorio.length + datos.otras.length;
+                    
+                    doc.setFillColor(255, 245, 245);
+                    doc.rect(20, y - 2, 170, 7, 'F');
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(...rojoB);
+                    doc.text('TOTAL MES:', 25, y + 3);
+                    doc.text(totalMes.toString() + ' asistencias', 185, y + 3, { align: 'right' });
+                    
+                    y += 12;
+                }
+            }
+            
+            // ==================== RESUMEN GENERAL ====================
+            const resumen = reporte.calcularResumen(asistencias);
+            const totalGeneral = Object.values(resumen).reduce((a, b) => a + b, 0);
+            
+            if (y > 230) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            // Título de sección
+            doc.setFillColor(...rojoB);
+            doc.rect(15, y, 180, 10, 'F');
+            doc.setFontSize(13);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(255, 255, 255);
+            doc.text('RESUMEN GENERAL DEL PERIODO', 105, y + 7, { align: 'center' });
+            y += 18;
+            
+            // Tabla resumen con bordes
+            const resumenData = [
+                { tipo: 'Total Emergencias', cant: resumen.emergencias, color: [231, 76, 60] },
+                { tipo: 'Total Asambleas', cant: resumen.asambleas, color: [52, 152, 219] },
+                { tipo: 'Total Ejercicios', cant: resumen.ejercicios, color: [46, 204, 113] },
+                { tipo: 'Total Citaciones', cant: resumen.citaciones, color: [241, 196, 15] },
+                { tipo: 'Total Directorio', cant: resumen.directorio, color: [155, 89, 182] },
+                { tipo: 'Total Otras', cant: resumen.otras, color: [149, 165, 166] }
+            ];
+            
+            resumenData.forEach(({ tipo, cant, color }) => {
+                // Borde izquierdo de color
+                doc.setDrawColor(...color);
+                doc.setLineWidth(2);
+                doc.line(20, y - 3, 20, y + 2);
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(...gris);
+                doc.text(tipo, 25, y);
+                
+                // Número con color
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...color);
+                doc.setFontSize(12);
+                doc.text(cant.toString(), 185, y, { align: 'right' });
+                
+                y += 8;
+            });
+            
+            y += 5;
+            
+            // TOTAL GENERAL destacado
+            doc.setFillColor(255, 235, 235);
+            doc.rect(15, y - 3, 180, 12, 'F');
+            
+            doc.setDrawColor(...rojoB);
+            doc.setLineWidth(0.8);
+            doc.rect(15, y - 3, 180, 12);
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...rojoB);
+            doc.text('TOTAL GENERAL:', 20, y + 5);
+            
+            doc.setFontSize(16);
+            doc.text(totalGeneral.toString() + ' ASISTENCIAS', 185, y + 5, { align: 'right' });
+            
+            y += 20;
+            
+            // ==================== FOOTER ====================
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'italic');
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Generado el ${new Date().toLocaleDateString('es-CL')} a las ${new Date().toLocaleTimeString('es-CL')}`, 105, 285, { align: 'center' });
+            
+            // Guardar PDF
+            const nombre = Utils.obtenerNombreCompleto(reporte.bombero).replace(/ /g, '_');
+            doc.save(`Asistencias_${nombre}_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            alert('✅ PDF generado exitosamente');
+        }
+    </script>-->
+</body>
+</html>

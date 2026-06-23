@@ -1,0 +1,149 @@
+/* ==================== BOTONES UNIFORMES ==================== */
+/* Garantiza que todos los botones tengan el mismo tamaño y alineación */
+
+.bombero-botones .btn,
+.btn-pdf-ficha,
+.btn-cuotas,
+.btn-beneficios,
+.btn-pdf,
+.btn-asistencias,
+.btn-editar,
+.btn-warning,
+.btn-success,
+.btn-cargos,
+.btn-sanciones,
+.btn-felicitaciones,
+.btn-uniformes,
+.btn-tabla-uniformes,
+.btn-info {
+    /* Tamaño uniforme */
+    min-width: 140px !important;
+    height: 38px !important;
+    padding: 8px 16px !important;
+    
+    /* Tipografía uniforme */
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    
+    /* Espaciado */
+    margin: 4px !important;
+    
+    /* Display y alineación */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    
+    /* Bordes y sombras */
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    
+    /* Transiciones */
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+/* Hover state uniforme */
+.bombero-botones .btn:hover,
+.btn-pdf-ficha:hover,
+.btn-cuotas:hover,
+.btn-beneficios:hover,
+.btn-pdf:hover,
+.btn-asistencias:hover,
+.btn-editar:hover,
+.btn-warning:hover,
+.btn-success:hover,
+.btn-cargos:hover,
+.btn-sanciones:hover,
+.btn-felicitaciones:hover,
+.btn-uniformes:hover,
+.btn-tabla-uniformes:hover,
+.btn-info:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Contenedor de botones con flex wrap */
+.bombero-botones {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+    margin-top: 12px !important;
+}
+
+/* Botones del header también uniformes */
+.actions-container .btn,
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+    min-width: 180px !important;
+    height: 42px !important;
+    padding: 10px 20px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+/* Botones específicos del header: Info, Excel, PDF */
+.btn-info,
+.btn-excel {
+    min-width: 160px !important;
+    max-width: 180px !important;
+    height: 42px !important;
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+    .bombero-botones .btn,
+    .btn-pdf-ficha,
+    .btn-cuotas,
+    .btn-beneficios,
+    .btn-pdf,
+    .btn-asistencias,
+    .btn-editar,
+    .btn-warning,
+    .btn-success,
+    .btn-cargos,
+    .btn-sanciones,
+    .btn-felicitaciones,
+    .btn-uniformes,
+    .btn-tabla-uniformes,
+    .btn-info {
+        min-width: 120px !important;
+        height: 36px !important;
+        font-size: 0.75rem !important;
+        padding: 6px 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .bombero-botones .btn,
+    .btn-pdf-ficha,
+    .btn-cuotas,
+    .btn-beneficios,
+    .btn-pdf,
+    .btn-asistencias,
+    .btn-editar,
+    .btn-warning,
+    .btn-success,
+    .btn-cargos,
+    .btn-sanciones,
+    .btn-felicitaciones,
+    .btn-uniformes,
+    .btn-tabla-uniformes,
+    .btn-info {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+}

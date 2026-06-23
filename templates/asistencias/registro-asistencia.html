@@ -1,0 +1,1065 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Emergencias - Sistema Bomberos</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js\' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <style>
+        .btn-mapa {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .btn-mapa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+        
+        .mapa-preview {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+            animation: slideDown 0.4s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .mapa-preview.activo {
+            display: block;
+        }
+        
+        .mapa-header {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mapa-titulo {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .btn-cerrar-mapa {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .btn-cerrar-mapa:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .mapa-contenido {
+            width: 100%;
+            height: 350px;
+            background: #f5f5f5;
+            position: relative;
+        }
+        
+        .mapa-contenido iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .mapa-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 500px;
+            }
+        }
+        
+        /* Dropdown de sugerencias */
+        .sugerencias-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .sugerencias-dropdown.activo {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        .sugerencia-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+        
+        .sugerencia-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sugerencia-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .sugerencia-item.seleccionado {
+            background: #e3f2fd;
+        }
+        
+        .sugerencia-texto {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .sugerencia-principal {
+            color: #333;
+        }
+        
+        .sugerencia-separador {
+            color: #999;
+            margin: 0 4px;
+        }
+        
+        .sugerencia-icono {
+            color: #4285f4;
+            font-size: 1.1rem;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ESTILOS PARA EXTERNOS */
+        .externos-lista {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .externo-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .externo-item:hover {
+            background: #e9ecef;
+            border-color: #c41e3a;
+        }
+        
+        .externo-item span {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .btn-eliminar {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-eliminar:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+</head>
+<body>
+    <div class="page-container asistencias-page">
+        <div class="container">
+            <div class="page-header asistencias-header" style="background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
+                <button type="button" class="btn btn-volver" onclick="window.location.href='tipos-asistencia.html'" style="position: absolute; left: 20px; top: 20px;">
+                    ← Volver
+                </button>
+                <div class="header-logo" style="margin-bottom: 15px;">
+                    <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                </div>
+                <h2>🚨 REGISTRO DE ASISTENCIA A EMERGENCIAS</h2>
+                <p>Sistema de Control de Asistencia de Voluntarios</p>
+            </div>
+
+            <div class="page-content">
+                <!-- DATOS DE LA EMERGENCIA -->
+                <div class="datos-emergencia">
+                    <h3>📋 Datos de la Emergencia</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fechaEmergencia">Fecha <span class="required">*</span></label>
+                            <input type="date" id="fechaEmergencia" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaInicio">Hora de Inicio <span class="required">*</span></label>
+                            <input type="time" id="horaInicio" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="horaTermino">Hora de Término <span class="required">*</span></label>
+                            <input type="time" id="horaTermino" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="claveEmergencia">Clave Radial <span class="required">*</span></label>
+                            <select id="claveEmergencia" name="claveEmergencia" required>
+                                <!-- Se llena dinámicamente con claves-radiales.js -->
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="direccionEmergencia">Dirección <span class="required">*</span></label>
+                            <div style="position: relative;">
+                                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                    <div style="flex: 1; position: relative;">
+                                        <input type="text" 
+                                               id="direccionEmergencia" 
+                                               placeholder="Buscar dirección en Puerto Montt..." 
+                                               required 
+                                               autocomplete="off"
+                                               style="width: 100%;">
+                                        
+                                        <!-- Dropdown de sugerencias -->
+                                        <div id="sugerenciasDireccion" class="sugerencias-dropdown">
+                                            <!-- Se llena dinámicamente -->
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="buscarEnMapa()" class="btn-mapa" title="Buscar dirección en Google Maps">
+                                        🗺️ Ver en Mapa
+                                    </button>
+                                    <button type="button" onclick="abrirMapaCompleto()" class="btn-mapa" title="Abrir mapa grande para buscar">
+                                        📍 Mapa Grande
+                                    </button>
+                                </div>
+                                <small style="color: #999; display: block; margin-top: 5px;">💡 Empieza a escribir para ver sugerencias de direcciones en Puerto Montt</small>
+                            </div>
+                            
+                            <!-- Mapa embebido que aparece al buscar -->
+                            <div id="mapaPreview" class="mapa-preview">
+                                <div class="mapa-header">
+                                    <span class="mapa-titulo">📍 Ubicación de la emergencia</span>
+                                    <button type="button" onclick="cerrarMapa()" class="btn-cerrar-mapa">×</button>
+                                </div>
+                                <div id="mapaContenido" class="mapa-contenido">
+                                    <div class="mapa-loading">
+                                        <div class="spinner"></div>
+                                        <p>Cargando mapa...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="observaciones">Observaciones</label>
+                            <textarea id="observaciones" rows="3" placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESTADÍSTICAS -->
+                <div class="estadisticas-asistencia">
+                    <div class="stat-box">
+                        <div class="stat-label">Total de Personas</div>
+                        <div class="stat-value" id="totalPersonas">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Asistentes Seleccionados</div>
+                        <div class="stat-value" id="asistentesSeleccionados">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Porcentaje de Asistencia</div>
+                        <div class="stat-value" id="porcentajeAsistencia">0%</div>
+                    </div>
+                </div>
+
+                <!-- LISTAS DE VOLUNTARIOS (8 CATEGORÍAS) -->
+                <div class="voluntarios-container">
+                    
+                    <!-- MÁRTIRES -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🕊️</span>
+                                VOLUNTARIOS MÁRTIRES
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('martir')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('martir')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaMartires" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- OFICIALES DE COMANDANCIA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">⭐</span>
+                                OFICIALES DE COMANDANCIA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('comandancia')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('comandancia')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaGenerales" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- OFICIALES DE COMPAÑÍA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">👔</span>
+                                OFICIALES DE COMPAÑÍA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('compania')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('compania')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaCompania" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- CARGOS DE CONFIANZA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🔧</span>
+                                CARGOS DE CONFIANZA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('confianza')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('confianza')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaCargosConfianza" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- VOLUNTARIOS INSIGNES -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🏆</span>
+                                VOLUNTARIOS INSIGNES
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('insigne')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('insigne')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaInsignes" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- V.H. DEL CUERPO -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🎖️</span>
+                                V.H. DEL CUERPO
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('honorarioCuerpo')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('honorarioCuerpo')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaHonorariosCuerpo" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- V.H. DE COMPAÑÍA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🏅</span>
+                                V.H. DE COMPAÑÍA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('honorarioCia')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('honorarioCia')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaHonorariosCia" class="voluntarios-lista"></div>
+                    </div>
+
+                    <!-- VOLUNTARIOS -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono">🔰</span>
+                                VOLUNTARIOS
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('voluntario')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('voluntario')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaVoluntarios" class="voluntarios-lista"></div>
+                    </div>
+
+                </div>
+
+                <!-- VOLUNTARIOS PARTICIPANTES Y CANJES -->
+                <div class="voluntarios-externos-container">
+                    <h3>👥 VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
+                    <p class="info-text">Agrega voluntarios de otras compañías o cuerpos de bomberos</p>
+                    
+                    <div class="externos-grid">
+                        <!-- Voluntarios Participantes -->
+                        <div class="externos-section">
+                            <h4>🤝 Voluntarios Participantes</h4>
+                            <div class="externos-input-group">
+                                <input type="text" 
+                                       id="inputParticipante" 
+                                       placeholder="Nombre del voluntario participante"
+                                       list="listaParticipantes"
+                                       class="externos-input">
+                                <button type="button" 
+                                        class="btn btn-success btn-sm" 
+                                        onclick="if(asistencias) asistencias.agregarParticipante()">
+                                    AGREGAR
+                                </button>
+                            </div>
+                            <datalist id="listaParticipantes"></datalist>
+                            <div id="participantesSeleccionados" class="externos-lista"></div>
+                        </div>
+
+                        <!-- Voluntarios Canjes -->
+                        <div class="externos-section">
+                            <h4>🔄 Voluntarios Canjes</h4>
+                            <div class="externos-input-group">
+                                <input type="text" 
+                                       id="inputCanje" 
+                                       placeholder="Nombre y compañía de origen"
+                                       list="listaCanjes"
+                                       class="externos-input">
+                                <button type="button" 
+                                        class="btn btn-success btn-sm" 
+                                        onclick="if(asistencias) asistencias.agregarCanje()">
+                                    AGREGAR
+                                </button>
+                            </div>
+                            <datalist id="listaCanjes"></datalist>
+                            <div id="canjesSeleccionados" class="externos-lista"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESUMEN DETALLADO DE ASISTENCIA -->
+                <div class="resumen-detallado">
+                    <h3>📊 RESUMEN DETALLADO DE ASISTENCIA</h3>
+                    <div class="resumen-grid">
+                        <div class="resumen-item">
+                            <span class="resumen-label">Total Asistentes:</span>
+                            <span class="resumen-valor" id="resumenTotal">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Oficiales Total:</span>
+                            <span class="resumen-valor" id="resumenOficiales">0</span>
+                        </div>
+                        <div class="resumen-item resumen-sub">
+                            <span class="resumen-label">• Of. Comandancia:</span>
+                            <span class="resumen-valor" id="resumenComandancia">0</span>
+                        </div>
+                        <div class="resumen-item resumen-sub">
+                            <span class="resumen-label">• Of. Compañía:</span>
+                            <span class="resumen-valor" id="resumenCompania">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Cargos de Confianza:</span>
+                            <span class="resumen-valor" id="resumenConfianza">0</span>
+                        </div>
+                        <div class="resumen-item">
+                            <span class="resumen-label">Voluntarios:</span>
+                            <span class="resumen-valor" id="resumenVoluntarios">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="botones-accion">
+                    <button type="button" class="btn btn-success btn-lg" onclick="asistencias.guardarRegistro()">
+                        💾 Guardar Asistencia
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='tipos-asistencia.html'">
+                        ← Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/claves-radiales.js' %}"></script>
+    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=12.0"></script>
+    <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
+    <script src="{% static 'js/cargar-logo-header.js' %}?v=1.0"></script>
+    <script>console.log('✅ Emergencias v12.0 - Con logos dinámicos');</script>
+    
+    <script>
+        // Verificar que claves-radiales.js se haya cargado correctamente
+        console.log('[INIT] Verificando funciones de claves-radiales.js...');
+        console.log('[INIT] CLAVES_RADIALES existe?', typeof CLAVES_RADIALES !== 'undefined');
+        console.log('[INIT] obtenerClavesSeleccionables existe?', typeof obtenerClavesSeleccionables === 'function');
+        console.log('[INIT] obtenerDescripcionClave existe?', typeof obtenerDescripcionClave === 'function');
+    </script>
+    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=12.0"></script>
+    <script>console.log('✅ Emergencias v12.0 - DEBUG TOTAL DE CLAVE');</script>
+    
+    <script>
+        // ==================== FUNCIONALIDAD DE AUTOCOMPLETADO Y MAPA ====================
+        
+        let timeoutAutocompletado;
+        let sugerenciasActuales = [];
+        let indiceSugerenciaSeleccionada = -1;
+        
+        /**
+         * Autocompletado de direcciones usando Google Places
+         */
+        function inicializarAutocompletado() {
+            const inputDireccion = document.getElementById('direccionEmergencia');
+            const dropdownSugerencias = document.getElementById('sugerenciasDireccion');
+            
+            // Evento: escribir en el input
+            inputDireccion.addEventListener('input', function() {
+                clearTimeout(timeoutAutocompletado);
+                const texto = this.value.trim();
+                
+                if (texto.length >= 3) {
+                    timeoutAutocompletado = setTimeout(() => {
+                        buscarDirecciones(texto);
+                        // Actualizar mapa automáticamente mientras escribe
+                        actualizarMapaAutomatico(texto);
+                    }, 500); // Espera 500ms después de dejar de escribir
+                } else {
+                    ocultarSugerencias();
+                    cerrarMapa(); // Cerrar mapa si borra el texto
+                }
+            });
+            
+            // Evento: navegar con flechas
+            inputDireccion.addEventListener('keydown', function(e) {
+                const dropdown = document.getElementById('sugerenciasDireccion');
+                
+                if (!dropdown.classList.contains('activo')) return;
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    indiceSugerenciaSeleccionada = Math.min(
+                        indiceSugerenciaSeleccionada + 1,
+                        sugerenciasActuales.length - 1
+                    );
+                    actualizarSeleccionVisual();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    indiceSugerenciaSeleccionada = Math.max(
+                        indiceSugerenciaSeleccionada - 1,
+                        0
+                    );
+                    actualizarSeleccionVisual();
+                } else if (e.key === 'Enter' && indiceSugerenciaSeleccionada >= 0) {
+                    e.preventDefault();
+                    seleccionarSugerencia(indiceSugerenciaSeleccionada);
+                } else if (e.key === 'Escape') {
+                    ocultarSugerencias();
+                }
+            });
+            
+            // Cerrar dropdown al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!inputDireccion.contains(e.target) && !dropdownSugerencias.contains(e.target)) {
+                    ocultarSugerencias();
+                }
+            });
+        }
+        
+        /**
+         * Buscar direcciones usando Google Geocoding API
+         */
+        async function buscarDirecciones(texto) {
+            try {
+                // Agregar Puerto Montt al contexto de búsqueda
+                const textoBusqueda = texto.includes('Puerto Montt') ? texto : `${texto}, Puerto Montt, Chile`;
+                
+                // Usar Google Geocoding API
+                const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(textoBusqueda)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&language=es&region=cl`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.status === 'OK' && data.results.length > 0) {
+                    sugerenciasActuales = data.results.slice(0, 5).map(result => ({
+                        direccion: result.formatted_address,
+                        componentes: result.address_components,
+                        lat: result.geometry.location.lat,
+                        lng: result.geometry.location.lng
+                    }));
+                    
+                    mostrarSugerencias(sugerenciasActuales);
+                } else {
+                    ocultarSugerencias();
+                }
+            } catch (error) {
+                console.error('Error al buscar direcciones:', error);
+            }
+        }
+        
+        /**
+         * Mostrar sugerencias en el dropdown (estilo Google)
+         */
+        function mostrarSugerencias(sugerencias) {
+            const dropdown = document.getElementById('sugerenciasDireccion');
+            
+            if (sugerencias.length === 0) {
+                ocultarSugerencias();
+                return;
+            }
+            
+            let html = '';
+            
+            sugerencias.forEach((sug, index) => {
+                // Extraer componentes
+                const calle = extraerComponente(sug.componentes, ['route', 'street_address']) || '';
+                const numero = extraerComponente(sug.componentes, ['street_number']) || '';
+                const ciudad = extraerComponente(sug.componentes, ['locality', 'administrative_area_level_3']) || 'puerto montt';
+                const region = extraerComponente(sug.componentes, ['administrative_area_level_1']) || 'los lagos';
+                const pais = 'chile';
+                const codigoPostal = extraerComponente(sug.componentes, ['postal_code']) || '';
+                
+                // Formato Google: "calle numero, ciudad, region, pais, codigo postal"
+                let direccionCompleta = '';
+                if (calle && numero) {
+                    direccionCompleta = `${calle} ${numero}`;
+                } else if (calle) {
+                    direccionCompleta = calle;
+                } else {
+                    direccionCompleta = sug.direccion.split(',')[0];
+                }
+                
+                // Agregar ciudad, región, país en minúsculas
+                direccionCompleta += `, ${ciudad}, ${region}, ${pais}`;
+                if (codigoPostal) {
+                    direccionCompleta += `, ${codigoPostal}`;
+                }
+                
+                html += `
+                    <div class="sugerencia-item" onclick="seleccionarSugerencia(${index})">
+                        <div class="sugerencia-texto">
+                            <span class="sugerencia-icono">📍</span>
+                            <span class="sugerencia-principal">${direccionCompleta}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            dropdown.innerHTML = html;
+            dropdown.classList.add('activo');
+            indiceSugerenciaSeleccionada = -1;
+        }
+        
+        /**
+         * Extraer componente de dirección
+         */
+        function extraerComponente(componentes, tipos) {
+            for (let tipo of tipos) {
+                const comp = componentes.find(c => c.types.includes(tipo));
+                if (comp) return comp.long_name;
+            }
+            return null;
+        }
+        
+        /**
+         * Seleccionar una sugerencia
+         */
+        function seleccionarSugerencia(index) {
+            if (index >= 0 && index < sugerenciasActuales.length) {
+                const sugerencia = sugerenciasActuales[index];
+                document.getElementById('direccionEmergencia').value = sugerencia.direccion;
+                ocultarSugerencias();
+                
+                // Auto-mostrar en el mapa inmediatamente
+                actualizarMapaAutomatico(sugerencia.direccion);
+            }
+        }
+        
+        /**
+         * Actualizar selección visual
+         */
+        function actualizarSeleccionVisual() {
+            const items = document.querySelectorAll('.sugerencia-item');
+            items.forEach((item, index) => {
+                if (index === indiceSugerenciaSeleccionada) {
+                    item.classList.add('seleccionado');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('seleccionado');
+                }
+            });
+        }
+        
+        /**
+         * Ocultar sugerencias
+         */
+        function ocultarSugerencias() {
+            const dropdown = document.getElementById('sugerenciasDireccion');
+            dropdown.classList.remove('activo');
+            sugerenciasActuales = [];
+            indiceSugerenciaSeleccionada = -1;
+        }
+        
+        // ==================== FUNCIONALIDAD DE MAPA ====================
+        
+        /**
+         * Actualizar mapa automáticamente (sin botón)
+         */
+        function actualizarMapaAutomatico(texto) {
+            if (!texto || texto.length < 3) {
+                cerrarMapa();
+                return;
+            }
+            
+            // Agregar "Puerto Montt, Chile" si no está incluido
+            let direccionCompleta = texto;
+            if (!texto.toLowerCase().includes('puerto montt')) {
+                direccionCompleta = `${texto}, Puerto Montt, Chile`;
+            } else if (!texto.toLowerCase().includes('chile')) {
+                direccionCompleta = `${texto}, Chile`;
+            }
+            
+            // Mostrar el contenedor del mapa con animación
+            const mapaPreview = document.getElementById('mapaPreview');
+            const mapaContenido = document.getElementById('mapaContenido');
+            
+            mapaPreview.classList.add('activo');
+            
+            // Mostrar loading
+            mapaContenido.innerHTML = `
+                <div class="mapa-loading">
+                    <div class="spinner"></div>
+                    <p>Actualizando ubicación...</p>
+                </div>
+            `;
+            
+            // Construir URL del mapa embebido
+            const urlMapa = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(direccionCompleta)}&zoom=16`;
+            
+            // Cargar iframe después de 400ms (efecto de búsqueda más rápido)
+            setTimeout(() => {
+                mapaContenido.innerHTML = `
+                    <iframe 
+                        src="${urlMapa}"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                `;
+            }, 400);
+            
+            console.log('🗺️ Mapa actualizado automáticamente:', direccionCompleta);
+        }
+        
+        /**
+         * Buscar dirección y mostrar mapa embebido (botón manual)
+         */
+        function buscarEnMapa() {
+            const direccion = document.getElementById('direccionEmergencia').value.trim();
+            
+            if (!direccion) {
+                alert('⚠️ Por favor, escribe una dirección primero');
+                document.getElementById('direccionEmergencia').focus();
+                return;
+            }
+            
+            // Agregar "Puerto Montt, Chile" si no está incluido
+            let direccionCompleta = direccion;
+            if (!direccion.toLowerCase().includes('puerto montt')) {
+                direccionCompleta = `${direccion}, Puerto Montt, Chile`;
+            } else if (!direccion.toLowerCase().includes('chile')) {
+                direccionCompleta = `${direccion}, Chile`;
+            }
+            
+            // Mostrar el contenedor del mapa con animación
+            const mapaPreview = document.getElementById('mapaPreview');
+            const mapaContenido = document.getElementById('mapaContenido');
+            
+            mapaPreview.classList.add('activo');
+            
+            // Mostrar loading
+            mapaContenido.innerHTML = `
+                <div class="mapa-loading">
+                    <div class="spinner"></div>
+                    <p>Buscando "${direccion}" en Puerto Montt...</p>
+                </div>
+            `;
+            
+            // Construir URL del mapa embebido
+            const urlMapa = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(direccionCompleta)}&zoom=16`;
+            
+            // Cargar iframe después de 800ms (efecto de búsqueda)
+            setTimeout(() => {
+                mapaContenido.innerHTML = `
+                    <iframe 
+                        src="${urlMapa}"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                `;
+            }, 800);
+            
+            console.log('🗺️ Mostrando mapa embebido (manual):', direccionCompleta);
+        }
+        
+        /**
+         * Cerrar el mapa embebido
+         */
+        function cerrarMapa() {
+            const mapaPreview = document.getElementById('mapaPreview');
+            mapaPreview.classList.remove('activo');
+        }
+        
+        /**
+         * Abrir mapa grande interactivo para seleccionar ubicación
+         */
+        function abrirMapaCompleto() {
+            const direccion = document.getElementById('direccionEmergencia').value.trim();
+            
+            // Coordenadas de Puerto Montt, Chile
+            const puertoMonttLat = -41.4693;
+            const puertoMonttLng = -72.9424;
+            
+            let urlMapa;
+            
+            if (direccion) {
+                // Si hay dirección, buscarla
+                let direccionCompleta = direccion;
+                if (!direccion.toLowerCase().includes('puerto montt')) {
+                    direccionCompleta = `${direccion}, Puerto Montt, Chile`;
+                }
+                urlMapa = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionCompleta)}`;
+            } else {
+                // Si no hay dirección, mostrar Puerto Montt centrado
+                urlMapa = `https://www.google.com/maps/@${puertoMonttLat},${puertoMonttLng},14z`;
+            }
+            
+            // Abrir en nueva pestaña
+            const ventana = window.open(urlMapa, '_blank', 'width=1200,height=800');
+            
+            // Dar instrucciones al usuario
+            setTimeout(() => {
+                if (!direccion) {
+                    alert('💡 Tip: Busca la dirección en el mapa y cópiala aquí.\n\nEl mapa está centrado en Puerto Montt.');
+                }
+            }, 500);
+            
+            console.log('🗺️ Abriendo mapa completo de Puerto Montt');
+        }
+        
+        
+        // Inicializar autocompletado cuando cargue la página
+        // USAR window.onload en lugar de DOMContentLoaded para asegurar que TODOS los scripts estén cargados
+        window.addEventListener('load', function() {
+            // Verificar que CLAVES_RADIALES esté definido
+            if (typeof CLAVES_RADIALES !== 'undefined') {
+                console.log('✅ CLAVES_RADIALES disponible con', Object.keys(CLAVES_RADIALES).length, 'claves padre');
+            } else {
+                console.error('❌ CLAVES_RADIALES no está definido');
+            }
+            
+            // Esperar un poco para asegurar que todos los scripts estén cargados
+            setTimeout(function() {
+                inicializarAutocompletado();
+                inicializarSelectorClaves();
+                console.log('✅ Funcionalidad de mapas y autocompletado cargada');
+                console.log('📍 Ubicación configurada: Puerto Montt, Chile');
+                console.log('🗺️ Mapa embebido listo - Estilo Mercado Libre');
+                console.log('🔍 Autocompletado de direcciones activado');
+                console.log('📻 Claves radiales cargadas');
+            }, 100);
+        });
+        
+        // Inicializar selector de claves radiales
+        function inicializarSelectorClaves() {
+            const selector = document.getElementById('claveEmergencia');
+            if (!selector) {
+                console.error('[CLAVES] Selector claveEmergencia no encontrado');
+                return;
+            }
+            
+            let claves = [];
+            
+            // Intentar usar la función del archivo externo
+            if (typeof obtenerClavesSeleccionables === 'function') {
+                console.log('[CLAVES] Usando función de claves-radiales.js');
+                claves = obtenerClavesSeleccionables();
+            } 
+            // FALLBACK: Generar claves inline si la función no está disponible
+            else if (typeof CLAVES_RADIALES !== 'undefined') {
+                console.warn('[CLAVES] Función obtenerClavesSeleccionables no disponible, usando fallback inline');
+                
+                for (const [codigoPadre, datos] of Object.entries(CLAVES_RADIALES)) {
+                    const tieneSubclaves = datos.subclaves && Object.keys(datos.subclaves).length > 0;
+                    
+                    if (!tieneSubclaves) {
+                        // Agregar clave sin hijos
+                        claves.push({
+                            value: codigoPadre,
+                            text: `${codigoPadre} - ${datos.nombre}`
+                        });
+                    } else {
+                        // Agregar solo las subclaves
+                        for (const [codigoHijo, descripcion] of Object.entries(datos.subclaves)) {
+                            claves.push({
+                                value: codigoHijo,
+                                text: `${codigoHijo} - ${descripcion}`
+                            });
+                        }
+                    }
+                }
+            } else {
+                console.error('[CLAVES] CLAVES_RADIALES no está definido');
+                return;
+            }
+            
+            console.log('[CLAVES] Claves seleccionables cargadas:', claves.length);
+            
+            // Poblar selector
+            selector.innerHTML = '<option value="">Seleccione una clave radial</option>';
+            
+            for (const clave of claves) {
+                const option = document.createElement('option');
+                option.value = clave.value;
+                option.textContent = clave.text;
+                selector.appendChild(option);
+            }
+            
+            console.log('[CLAVES] Selector inicializado con', claves.length, 'opciones');
+        }
+    </script>
+</body>
+</html>

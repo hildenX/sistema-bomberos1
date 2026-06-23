@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Sistema de Felicitaciones</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        .felicitaciones-header {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+        }
+        .btn-felicitacion {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border: none;
+        }
+        .btn-felicitacion:hover {
+            background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        .felicitacion-card {
+            border-left: 4px solid #28a745 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container felicitaciones-page">
+        <div class="container">
+            <div class="page-header felicitaciones-header">
+                <h2>🏆 SISTEMA DE FELICITACIONES Y RECONOCIMIENTOS</h2>
+                <p>Registro de Méritos y Reconocimientos Institucionales</p>
+            </div>
+
+            <div class="page-content">
+                <div id="mensajeFelicitaciones" class="mensaje-global" style="display: none;"></div>
+
+                <div class="bombero-info">
+                    <h3>👤 Información del Bombero</h3>
+                    <div class="bombero-datos" id="bomberoDatosFelicitaciones">
+                        <!-- Datos cargados por JavaScript -->
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <h3>📋 Registro de Nueva Felicitación</h3>
+                    
+                    <form id="formFelicitacion">
+                        <input type="hidden" id="bomberoFelicitacionId" name="bomberoFelicitacionId">
+                        
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="tipoFelicitacion" class="required">Tipo de Felicitación</label>
+                                <select id="tipoFelicitacion" name="tipoFelicitacion" required>
+                                    <option value="">Seleccione el tipo de felicitación</option>
+                                    <option value="destacado">⭐ Desempeño Destacado</option>
+                                    <option value="merito">🏅 Mérito Extraordinario</option>
+                                    <option value="valor">💪 Acto de Valor</option>
+                                    <option value="servicio">🎖️ Servicio Distinguido</option>
+                                    <option value="antiguedad">📅 Reconocimiento por Antigüedad</option>
+                                    <option value="otra">📌 Otra Felicitación</option>
+                                </select>
+                                <div class="error" id="error-tipoFelicitacion"></div>
+                            </div>
+
+                            <div class="form-group full-width" id="grupo-nombreFelicitacion" style="display: none;">
+                                <label for="nombreFelicitacion" class="required">Nombre de la Felicitación</label>
+                                <input type="text" id="nombreFelicitacion" name="nombreFelicitacion" 
+                                       placeholder="Especifique el nombre o título de la felicitación">
+                                <div class="error" id="error-nombreFelicitacion"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="companiaOtorgante" class="opcional">Compañía Otorgante</label>
+                                <input type="text" id="companiaOtorgante" name="companiaOtorgante" 
+                                       placeholder="Especificar si es otorgada por una compañía">
+                                <div class="error" id="error-companiaOtorgante"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="autoridadOtorgante" class="opcional">Autoridad Otorgante</label>
+                                <select id="autoridadOtorgante" name="autoridadOtorgante">
+                                    <option value="">Seleccione autoridad otorgante (opcional)</option>
+                                    <option value="Comandancia">Comandancia</option>
+                                    <option value="Capitanía">Capitanía</option>
+                                    <option value="Consejo de Oficiales">Consejo de Oficiales</option>
+                                    <option value="Junta de Cuerpo">Junta de Cuerpo</option>
+                                </select>
+                                <div class="error" id="error-autoridadOtorgante"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fechaFelicitacion" class="required">Fecha de Felicitación</label>
+                                <input type="date" id="fechaFelicitacion" name="fechaFelicitacion" required>
+                                <div class="error" id="error-fechaFelicitacion"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="oficioNumeroFelicitacion" class="required">Identificador del Documento</label>
+                                <input type="text" id="oficioNumeroFelicitacion" name="oficioNumeroFelicitacion" required 
+                                       placeholder="ID único del documento oficial">
+                                <div class="error" id="error-oficioNumeroFelicitacion"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fechaOficioFelicitacion" class="opcional">Fecha de Registro</label>
+                                <input type="date" id="fechaOficioFelicitacion" name="fechaOficioFelicitacion" readonly 
+                                       class="campo-automatico">
+                                <div class="error" id="error-fechaOficioFelicitacion"></div>
+                                <div class="info-ayuda">
+                                    📅 Se establece automáticamente con la fecha actual
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="motivo" class="required">Descripción del Mérito</label>
+                                <textarea id="motivo" name="motivo" required rows="4" 
+                                          placeholder="Describa detalladamente el mérito, acción destacada o motivo de la felicitación"></textarea>
+                                <div class="error" id="error-motivo"></div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="documentoFelicitacion" class="opcional">📎 Adjuntar Documento</label>
+                                <input type="file" 
+                                       id="documentoFelicitacion" 
+                                       name="documentoFelicitacion" 
+                                       accept="image/*,.pdf,.doc,.docx">
+                                <div class="info-ayuda" style="margin-top: 8px;">
+                                    📄 Puede adjuntar el documento oficial de la felicitación (PDF, imagen o Word). Máximo 10MB.
+                                </div>
+                                <div id="previewDocumento" class="preview-documento" style="display: none; margin-top: 15px;">
+                                    <img id="previewImageDocumento" src="" alt="Vista previa" style="max-width: 200px; max-height: 200px; display: none; border-radius: 8px; margin-bottom: 10px;">
+                                    <p id="previewFileNameDocumento" style="font-size: 0.9rem; color: #666;"></p>
+                                </div>
+                                <div class="error" id="error-documentoFelicitacion"></div>
+                            </div>
+                        </div>
+
+                        <div class="buttons">
+                            <button type="submit" class="btn btn-felicitacion">✅ Registrar Felicitación</button>
+                            <button type="button" class="btn btn-secondary" onclick="felicitacionesSistema.limpiarFormulario()">Limpiar Formulario</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="list-container">
+                    <div class="list-header">
+                        <h3>🏆 Historial de Felicitaciones</h3>
+                        <div class="acciones-lista">
+                            <button type="button" class="btn btn-excel" onclick="felicitacionesSistema.exportarExcel()">
+                                📊 Descargar Excel
+                            </button>
+                            <button type="button" class="btn btn-pdf" onclick="felicitacionesSistema.generarPDF()">
+                                📄 Generar Certificado PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="contador">
+                        Total de felicitaciones registradas: <strong id="totalFelicitaciones">0</strong>
+                    </div>
+                    
+                    <div id="listaFelicitaciones" class="lista-items"></div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-volver" onclick="felicitacionesSistema.volverAlSistema()">
+                        ← Regresar al Sistema Principal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/felicitaciones.js' %}?v=5.0"></script>
+</body>
+</html>

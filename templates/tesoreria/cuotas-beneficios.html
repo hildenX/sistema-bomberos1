@@ -1,0 +1,368 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto SEIS - Cuotas Sociales</title>
+    
+    <!-- Verificación de exención se hace en el JS después de cargar desde API -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js\' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js\' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cuotas.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <style>
+        /* ESTILOS MODAL ESTUDIANTE */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.55);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 0;
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.15);
+            max-width: 580px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from { transform: translateY(-30px) scale(0.97); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            border-bottom: none;
+            padding: 22px 28px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            border-radius: 18px 18px 0 0;
+        }
+        .modal-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .modal-content form {
+            padding: 28px;
+        }
+        .modal-content .buttons {
+            padding: 0 28px 28px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .close-modal {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.5);
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .close-modal:hover {
+            background: white;
+            color: #c41e3a;
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container cuotas-page">
+        <div class="container">
+            <div class="page-header cuotas-header">
+                <h2>💳 SISTEMA DE CUOTAS SOCIALES</h2>
+                <p>Control de Pagos Mensuales</p>
+            </div>
+
+            <div class="page-content">
+                <div id="mensajeCuotas" class="mensaje-global" style="display: none;"></div>
+
+                <!-- Información del Bombero -->
+                <div class="bombero-info">
+                    <h3>Información del Voluntario</h3>
+                    <div class="bombero-datos" id="bomberoDatosCuotas"></div>
+                    
+                    <!-- Estado de Cuotas -->
+                    <div id="estadoCuotasInfo" style="margin: 15px 0; padding: 10px; border-radius: 8px; display: none;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                    
+                    <!-- Botones de Acción -->
+                    <div class="acciones-voluntario">
+                        <button type="button" id="btnActivarEstudiante" class="btn btn-success" onclick="cuotasSistemaDjango.abrirModalEstudiante()" title="Activar Estudiante" style="display: none;">
+                            ➕ ACTIVAR ESTUDIANTE
+                        </button>
+                        <button type="button" id="btnToggleCuotas" class="btn" onclick="cuotasSistemaDjango.toggleCuotas()" title="Activar/Desactivar Cuotas" style="display: none;">
+                            <!-- Texto dinámico -->
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="generarPDFCuotas()" title="Generar PDF de Cuotas">
+                            📄 Generar PDF Cuotas
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.volverAlSistema()">
+                            ⬅️ Volver
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulario Cuota Social -->
+                <div class="form-container">
+                    <h3>Registrar Pago de Cuota Social</h3>
+                    
+<form id="formCuotaSocial">
+    <input type="hidden" id="bomberoCuotaId" name="bomberoCuotaId">
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="tipoCuota" class="required">Tipo de Cuota</label>
+            <select id="tipoCuota" name="tipoCuota" required onchange="cuotasSistemaDjango.cambioTipoCuota()">
+                <option value="">Cargando precios...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="anioCuota" class="required">Año</label>
+            <input type="number" id="anioCuota" name="anioCuota" required 
+                   min="2020" max="2030" value="2025">
+        </div>
+
+        <div class="form-group">
+            <label for="fechaPagoCuota" class="required">Fecha de Pago</label>
+            <input type="date" id="fechaPagoCuota" name="fechaPagoCuota" required>
+        </div>
+        <div class="form-group">
+    <label for="formaPagoCuota" class="required">Forma de Pago</label>
+    <select id="formaPagoCuota" name="formaPagoCuota" required onchange="cuotasSistemaDjango.toggleCuentaCuota()">
+        <option value="">Seleccione forma de pago</option>
+        <option value="Efectivo">💵 Efectivo</option>
+        <option value="Transferencia">🏦 Transferencia Bancaria</option>
+    </select>
+</div>
+<div class="form-group" id="cuentaCuotaGrupo" style="display:none">
+    <label for="cuentaBancariaCuota" class="required">Cuenta bancaria destino</label>
+    <select id="cuentaBancariaCuota" name="cuentaBancariaCuota">
+        <option value="">— Seleccionar cuenta —</option>
+    </select>
+</div>
+<div class="form-group full-width" id="comprobanteCuotaGrupo" style="display:none">
+    <label for="numComprobanteCuota" class="opcional">N° Comprobante / Referencia</label>
+    <input type="text" id="numComprobanteCuota" name="numComprobanteCuota" placeholder="Ej: 12345678">
+</div>
+<div class="form-group full-width" id="archivoCuotaGrupo" style="display:none">
+    <label for="comprobanteCuota" class="opcional">Adjuntar comprobante (imagen o PDF)</label>
+    <input type="file"
+           id="comprobanteCuota"
+           name="comprobanteCuota"
+           accept="image/*,application/pdf"
+           onchange="cuotasSistemaDjango.previsualizarComprobante(this)">
+    <div id="previewComprobanteCuota" class="previsualizacion-archivo"></div>
+    <input type="hidden" id="comprobanteCuotaB64">
+</div>
+
+        <!-- CHECKBOXES DE MESES -->
+        <div class="form-group full-width">
+            <label class="required">Seleccione los meses a pagar</label>
+            <div class="meses-checkbox-grid">
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="1">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Enero</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="2">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Febrero</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="3">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Marzo</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="4">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Abril</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="5">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Mayo</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="6">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Junio</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="7">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Julio</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="8">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Agosto</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="9">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Septiembre</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="10">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Octubre</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="11">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Noviembre</span>
+                </label>
+                <label class="checkbox-mes">
+                    <input type="checkbox" name="meses" value="12">
+                    <span class="checkbox-custom">✓</span>
+                    <span class="mes-label">Diciembre</span>
+                </label>
+            </div>
+            <div class="meses-seleccionados-info">
+                <strong>Total a pagar:</strong> <span id="totalAPagar">$0</span>
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label for="observacionesCuota" class="opcional">Observaciones</label>
+            <textarea id="observacionesCuota" name="observacionesCuota" rows="2" 
+                      placeholder="Observaciones adicionales (opcional)"></textarea>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button type="submit" class="btn btn-cuota">✅ Registrar Pago de Cuota(s)</button>
+        <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.limpiarFormularioCuota()">Limpiar</button>
+    </div>
+</form>
+                </div>
+
+                <!-- ============ SELECTOR DE AÑOS (NUEVO) ============ -->
+                <div id="selectorAñosContainer">
+                    <!-- Se genera dinámicamente por JavaScript -->
+                </div>
+                <!-- ================================================== -->
+
+                <!-- Grid de Meses -->
+                <div class="cuotas-grid">
+                    <h3>📊 Estado de Cuotas del Año <span id="anioActualCuotas">2025</span></h3>
+                    <div id="gridMesesCuotas" class="meses-grid"></div>
+                </div>
+
+                <!-- Historial de Cuotas -->
+                <div class="list-container">
+                    <div class="list-header">
+                        <h3>📚 Historial de Pagos de Cuotas</h3>
+                    </div>
+                    
+                    <div class="contador">
+                        Total de pagos: <strong id="totalPagosCuotas">0</strong>
+                    </div>
+                    
+                    <div id="listaCuotas" class="lista-items"></div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.volverAlSistema()">
+                        ← Regresar al Sistema Principal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ACTIVAR ESTUDIANTE -->
+    <div id="modalEstudiante" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>➕ Activar Estudiante</h3>
+                <button type="button" class="close-modal" onclick="cuotasSistemaDjango.cerrarModalEstudiante()">&times;</button>
+            </div>
+            
+            <form id="formActivarEstudiante" onsubmit="cuotasSistemaDjango.guardarEstudiante(event)">
+                <div class="form-group">
+                    <label for="cicloEstudiante" class="required">Ciclo</label>
+                    <select id="cicloEstudiante" name="cicloEstudiante" required>
+                        <option value="">Cargando ciclos...</option>
+                    </select>
+                    <small style="color: #666;">Selecciona el ciclo al cual se le asigna estudiante</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="mesInicioEstudiante" class="required">Mes de Inicio</label>
+                    <select id="mesInicioEstudiante" name="mesInicioEstudiante" required>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <small style="color: #666;">Desde qué mes empieza a cobrar cuota estudiante</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="certificadoEstudiante" class="required">Certificado de Alumno Regular</label>
+                    <input type="file" id="certificadoEstudiante" name="certificadoEstudiante"
+                           accept="application/pdf" required>
+                    <small style="color: #666;">PDF o imagen del certificado de alumno regular</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacionesEstudiante">Observaciones</label>
+                    <textarea id="observacionesEstudiante" name="observacionesEstudiante" rows="3" 
+                              placeholder="Observaciones adicionales (opcional)"></textarea>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-success">✅ Activar Estudiante</button>
+                    <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.cerrarModalEstudiante()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/cuotas-django.js' %}?v=17.0"></script> 
+</body>
+</html>

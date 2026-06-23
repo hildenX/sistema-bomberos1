@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de Beneficios - Sistema Bomberos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pagar-beneficio.css' %}?v=2.0">
+</head>
+<body>
+<div class="pb-wrap">
+
+    <!-- ========== HEADER ========== -->
+    <div class="pb-header">
+        <div class="pb-header-top">
+            <div>
+                <h1>Pago de Beneficios</h1>
+                <p>Registro de tarjetas vendidas por voluntario</p>
+            </div>
+            <button class="btn-pb volver" onclick="window.location.href='/sistema.html'">← Volver</button>
+        </div>
+        <div class="pb-summary">
+            <div class="pb-sum-card">
+                <div class="pb-sum-icon">⚠️</div>
+                <div>
+                    <div class="pb-sum-label">Beneficios Pendientes</div>
+                    <div class="pb-sum-value" id="statPendientes">0</div>
+                </div>
+            </div>
+            <div class="pb-sum-divider"></div>
+            <div class="pb-sum-card">
+                <div class="pb-sum-icon">💰</div>
+                <div>
+                    <div class="pb-sum-label">Deuda Total</div>
+                    <div class="pb-sum-value" id="statDeuda">$0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== NOTIFICACIÓN ========== -->
+    <div id="pbNotif" class="pb-notif" style="display:none"></div>
+
+    <!-- ========== INFO VOLUNTARIO ========== -->
+    <div class="pb-card">
+        <div class="pb-card-header">
+            <h2>Información del Voluntario</h2>
+        </div>
+        <div class="pb-vol-info" id="volInfo">
+            <div class="pb-vol-skeleton">Cargando...</div>
+        </div>
+    </div>
+
+    <!-- ========== BENEFICIOS ASIGNADOS ========== -->
+    <div class="pb-card">
+        <div class="pb-card-header">
+            <h2>Beneficios Asignados</h2>
+            <select id="filtroAnioBenef" onchange="filtrarBeneficios()" style="padding:7px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;background:white;">
+                <option value="">Todos los años</option>
+            </select>
+        </div>
+        <div id="listaBeneficios" class="pb-benefits-list"></div>
+    </div>
+
+    <!-- ========== HISTORIAL (tabs) ========== -->
+    <div class="pb-card">
+        <!-- Tabs + PDF -->
+        <div class="pb-tabs-header">
+            <div class="pb-tabs">
+                <button id="tabPagos" class="pb-tab activa" onclick="verTab('pagos')">💰 Pagos</button>
+                <button id="tabLiberaciones" class="pb-tab" onclick="verTab('liberaciones')" style="display:none">🔓 Liberaciones</button>
+                <button id="tabRifa" class="pb-tab" onclick="verTab('rifa')" style="display:none">🎟 Rifa</button>
+            </div>
+            <button class="btn-pb pdf" onclick="generarPDF()">📄 Descargar PDF</button>
+        </div>
+
+        <!-- Panel Pagos -->
+        <div id="panelPagos">
+            <div class="pb-filtros-hist">
+                <select id="filtroAnioHistorial" onchange="filtrarHistorial()">
+                    <option value="">Todos los años</option>
+                </select>
+                <select id="filtroMesHistorial" onchange="filtrarHistorial()">
+                    <option value="">Todos los meses</option>
+                    <option value="01">Enero</option><option value="02">Febrero</option>
+                    <option value="03">Marzo</option><option value="04">Abril</option>
+                    <option value="05">Mayo</option><option value="06">Junio</option>
+                    <option value="07">Julio</option><option value="08">Agosto</option>
+                    <option value="09">Septiembre</option><option value="10">Octubre</option>
+                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                </select>
+                <select id="filtroBeneficioHistorial" onchange="filtrarHistorial()">
+                    <option value="">Todos los beneficios</option>
+                </select>
+            </div>
+            <div class="pb-hist-contador" id="histContador">Total de pagos realizados: <strong>0</strong></div>
+            <div id="listaHistorial" class="pb-hist-list"></div>
+            <div id="paginacionPagos"></div>
+        </div>
+
+        <!-- Panel Rifa -->
+        <div id="panelRifa" style="display:none">
+            <div id="rifaContent" style="padding:16px"></div>
+        </div>
+
+        <!-- Panel Liberaciones -->
+        <div id="panelLiberaciones" style="display:none">
+            <div class="pb-filtros-hist">
+                <select id="filtroAnioLib" onchange="filtrarLiberaciones()">
+                    <option value="">Todos los años</option>
+                </select>
+                <select id="filtroMesLib" onchange="filtrarLiberaciones()">
+                    <option value="">Todos los meses</option>
+                    <option value="01">Enero</option><option value="02">Febrero</option>
+                    <option value="03">Marzo</option><option value="04">Abril</option>
+                    <option value="05">Mayo</option><option value="06">Junio</option>
+                    <option value="07">Julio</option><option value="08">Agosto</option>
+                    <option value="09">Septiembre</option><option value="10">Octubre</option>
+                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                </select>
+                <select id="filtroBeneficioLib" onchange="filtrarLiberaciones()">
+                    <option value="">Todos los beneficios</option>
+                </select>
+            </div>
+            <div class="pb-lib-resumen" id="libResumen" style="padding:0 0 12px"></div>
+            <div id="listaLiberaciones" class="pb-lib-list"></div>
+            <div id="paginacionLiberaciones"></div>
+        </div>
+    </div>
+
+    <!-- ========== VOLVER ABAJO ========== -->
+    <div class="pb-bottom-nav">
+        <button class="btn-pb volver-abajo" onclick="window.location.href='/sistema.html'">← Volver al Sistema Principal</button>
+    </div>
+
+</div>
+
+<!-- ========== MODAL PAGAR ========== -->
+<div id="modalPagar" class="pb-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalPagar')">
+    <div class="pb-modal">
+        <div class="pb-modal-header pago">
+            <div>
+                <h3>Registrar Pago de Beneficio</h3>
+                <p id="modalPagarSubtitle"></p>
+            </div>
+            <button class="pb-modal-close" onclick="cerrarModal('modalPagar')">✕</button>
+        </div>
+        <form id="formPagar" class="pb-modal-body">
+            <input type="hidden" id="pagarAsignacionId">
+            <div id="pbPagarInfo" class="pb-modal-info"></div>
+            <div class="pb-form-grid">
+                <div class="pb-form-group">
+                    <label>Tarjetas Vendidas <span class="req">*</span></label>
+                    <input type="number" id="pagarCantidad" required min="1" placeholder="Cantidad vendida"
+                           oninput="calcularMontoPago()">
+                </div>
+                <div class="pb-form-group">
+                    <label>Monto a Pagar (CLP)</label>
+                    <input type="number" id="pagarMonto" readonly class="campo-calc">
+                </div>
+                <div class="pb-form-group">
+                    <label>Fecha de Pago <span class="req">*</span></label>
+                    <input type="date" id="pagarFecha" required>
+                </div>
+                <div class="pb-form-group">
+                    <label>Método de Pago <span class="req">*</span></label>
+                    <select id="pagarMetodo" required onchange="toggleComprobante()">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="comprobanteGrupo" style="display:none">
+                    <label>Cuenta bancaria destino <span class="req">*</span></label>
+                    <select id="pagarCuenta">
+                        <option value="">— Seleccionar cuenta —</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="pagarComprobanteGrupo" style="display:none">
+                    <label>N° Comprobante / Referencia</label>
+                    <input type="text" id="pagarComprobante" placeholder="Ej: 12345678">
+                </div>
+                <div class="pb-form-group full-width" id="pagarArchivoGrupo" style="display:none">
+                    <label>Adjuntar comprobante (imagen o PDF)</label>
+                    <input type="file" id="pagarArchivoComp" accept="image/*,application/pdf" onchange="previsualizarCompBenef(this)">
+                    <img id="prevCompBenef" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
+                    <div id="prevCompBenefPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <input type="hidden" id="pagarArchivoB64">
+                </div>
+                <div class="pb-form-group full-width">
+                    <label>Observaciones <span class="opcional">(opcional)</span></label>
+                    <textarea id="pagarObs" rows="2" placeholder="Observaciones adicionales"></textarea>
+                </div>
+            </div>
+            <div class="pb-modal-footer">
+                <button type="submit" class="btn-pb submit">Registrar Pago</button>
+                <button type="button" class="btn-pb cancel" onclick="cerrarModal('modalPagar')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========== MODAL VENTA EXTRA ========== -->
+<div id="modalExtra" class="pb-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalExtra')">
+    <div class="pb-modal">
+        <div class="pb-modal-header extra">
+            <div>
+                <h3>Registrar Venta Extra</h3>
+                <p id="modalExtraSubtitle"></p>
+            </div>
+            <button class="pb-modal-close" onclick="cerrarModal('modalExtra')">✕</button>
+        </div>
+        <form id="formExtra" class="pb-modal-body">
+            <input type="hidden" id="extraAsignacionId">
+            <input type="hidden" id="extraPrecioUnitario">
+            <div id="pbExtraInfo" class="pb-modal-info"></div>
+            <div class="pb-form-grid">
+                <div class="pb-form-group">
+                    <label>Tarjetas Extras a Vender <span class="req">*</span></label>
+                    <input type="number" id="extraCantidad" required min="1" placeholder="Cantidad extra"
+                           oninput="calcularMontoExtra()">
+                </div>
+                <div class="pb-form-group">
+                    <label>Monto Total</label>
+                    <input type="number" id="extraMonto" readonly class="campo-calc">
+                </div>
+                <div class="pb-form-group">
+                    <label>Fecha de Pago <span class="req">*</span></label>
+                    <input type="date" id="extraFecha" required>
+                </div>
+                <div class="pb-form-group">
+                    <label>Método de Pago</label>
+                    <select id="extraMetodo" onchange="toggleExtraCuenta()">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="extraCuentaGrupo" style="display:none">
+                    <label>Cuenta bancaria destino <span class="req">*</span></label>
+                    <select id="extraCuenta">
+                        <option value="">— Seleccionar cuenta —</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="extraComprobanteGrupo" style="display:none">
+                    <label>N° Comprobante / Referencia</label>
+                    <input type="text" id="extraComprobante" placeholder="Ej: 12345678">
+                </div>
+                <div class="pb-form-group full-width" id="extraArchivoGrupo" style="display:none">
+                    <label>Adjuntar comprobante (imagen o PDF)</label>
+                    <input type="file" id="extraArchivoComp" accept="image/*,application/pdf" onchange="previsualizarCompExtra(this)">
+                    <img id="prevCompExtra" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
+                    <div id="prevCompExtraPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <input type="hidden" id="extraArchivoB64">
+                </div>
+                <div class="pb-form-group full-width">
+                    <label>Observaciones <span class="opcional">(opcional)</span></label>
+                    <textarea id="extraObs" rows="2" placeholder="Observaciones adicionales"></textarea>
+                </div>
+            </div>
+            <div class="pb-modal-footer">
+                <button type="submit" class="btn-pb submit extra-btn">Registrar Venta Extra</button>
+                <button type="button" class="btn-pb cancel" onclick="cerrarModal('modalExtra')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========== MODAL LIBERAR ========== -->
+<div id="modalLiberar" class="pb-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalLiberar')">
+    <div class="pb-modal">
+        <div class="pb-modal-header liberar">
+            <div>
+                <h3>Liberar Tarjetas Asignadas</h3>
+                <p id="modalLiberarSubtitle"></p>
+            </div>
+            <button class="pb-modal-close" onclick="cerrarModal('modalLiberar')">✕</button>
+        </div>
+        <div class="pb-modal-body">
+            <div class="pb-warning-box">
+                <strong>⚠️ ADVERTENCIA:</strong> Esta acción reducirá o eliminará las tarjetas asignadas al voluntario.
+            </div>
+            <div id="pbLiberarInfo" class="pb-modal-info"></div>
+            <form id="formLiberar">
+                <input type="hidden" id="liberarAsignacionId">
+                <div class="pb-form-group" style="margin-bottom:16px">
+                    <label>Tipo de Liberación <span class="req">*</span></label>
+                    <div class="pb-radio-group">
+                        <label class="pb-radio-opt">
+                            <input type="radio" name="tipoLib" value="parcial" onchange="toggleCantidadLiberar()">
+                            <span>Liberar Parcialmente (algunas tarjetas)</span>
+                        </label>
+                        <label class="pb-radio-opt">
+                            <input type="radio" name="tipoLib" value="total" checked onchange="toggleCantidadLiberar()">
+                            <span>Liberar Todas las Tarjetas</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="pb-form-group" id="cantidadLiberarGrupo" style="display:none; margin-bottom:16px">
+                    <label>Cantidad a Liberar <span class="req">*</span></label>
+                    <input type="number" id="liberarCantidad" min="1" placeholder="Número de tarjetas">
+                </div>
+                <div class="pb-form-group" style="margin-bottom:16px">
+                    <label>Autorizado por <span class="req">*</span></label>
+                    <input type="text" id="liberarAutorizadoPor" required
+                           placeholder="Ej: Director, Capitán, Teniente...">
+                </div>
+                <div class="pb-form-group" style="margin-bottom:0">
+                    <label>Motivo de la Liberación <span class="req">*</span></label>
+                    <textarea id="liberarMotivo" rows="3" required placeholder="Ej: El voluntario no puede asistir al evento"></textarea>
+                </div>
+                <div class="pb-modal-footer">
+                    <button type="submit" class="btn-pb submit liberar-btn">Liberar Tarjetas</button>
+                    <button type="button" class="btn-pb cancel" onclick="cerrarModal('modalLiberar')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========== MODAL PAGAR RIFA ========== -->
+<div id="modalPagarRifa" class="pb-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalPagarRifa')">
+    <div class="pb-modal">
+        <div class="pb-modal-header pago">
+            <div>
+                <h3>Registrar Pago de Rifa</h3>
+                <p id="modalRifaSubtitle"></p>
+            </div>
+            <button class="pb-modal-close" onclick="cerrarModal('modalPagarRifa')">✕</button>
+        </div>
+        <form id="formPagarRifa" class="pb-modal-body" onsubmit="submitPagarRifa(event)">
+            <div class="pb-form-grid">
+                <div class="pb-form-group full-width">
+                    <label>Talonarios a pagar <span class="req">*</span></label>
+                    <input type="number" id="rifaTalonariosPagar" required min="1" placeholder="Ej: 1" oninput="calcularMontoRifa()">
+                    <small id="rifaFormula" style="color:#059669;font-weight:600;margin-top:4px;display:none"></small>
+                </div>
+                <div class="pb-form-group">
+                    <label>Monto calculado (CLP)</label>
+                    <input type="number" id="rifaPagarMonto" readonly placeholder="—" style="background:#f9fafb;font-weight:700;color:#059669;cursor:default">
+                </div>
+                <div class="pb-form-group">
+                    <label>Fecha de Pago <span class="req">*</span></label>
+                    <input type="date" id="rifaPagarFecha" required>
+                </div>
+                <div class="pb-form-group">
+                    <label>Método de Pago <span class="req">*</span></label>
+                    <select id="rifaPagarMetodo" required onchange="toggleRifaCuenta()">
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="rifaCuentaGrupo" style="display:none">
+                    <label>Cuenta bancaria destino <span class="req">*</span></label>
+                    <select id="rifaPagarCuenta">
+                        <option value="">— Seleccionar cuenta —</option>
+                    </select>
+                </div>
+                <div class="pb-form-group full-width" id="rifaComprobanteGrupo" style="display:none">
+                    <label>N° Comprobante / Referencia</label>
+                    <input type="text" id="rifaPagarComprobante" placeholder="Ej: 12345678">
+                </div>
+                <div class="pb-form-group full-width" id="rifaArchivoGrupo" style="display:none">
+                    <label>Adjuntar comprobante (imagen o PDF)</label>
+                    <input type="file" id="rifaPagarArchivo" accept="image/*,application/pdf" onchange="previsualizarCompRifa(this)">
+                    <img id="prevCompRifa" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
+                    <div id="prevCompRifaPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <input type="hidden" id="rifaPagarArchivoB64">
+                </div>
+                <div class="pb-form-group full-width">
+                    <label>Observaciones <span class="opcional">(opcional)</span></label>
+                    <textarea id="rifaPagarObs" rows="2" placeholder="Observaciones adicionales"></textarea>
+                </div>
+            </div>
+            <div class="pb-modal-footer">
+                <button type="submit" class="btn-pb submit">Registrar Pago Rifa</button>
+                <button type="button" class="btn-pb cancel" onclick="cerrarModal('modalPagarRifa')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========== MODAL LIBERAR RIFA ========== -->
+<div id="modalLiberarRifa" class="pb-modal-overlay" style="display:none" onclick="cerrarModalFondo(event,'modalLiberarRifa')">
+    <div class="pb-modal">
+        <div class="pb-modal-header liberar">
+            <div>
+                <h3>Liberar Talonarios de Rifa</h3>
+                <p id="modalRifaLibSubtitle"></p>
+            </div>
+            <button class="pb-modal-close" onclick="cerrarModal('modalLiberarRifa')">✕</button>
+        </div>
+        <div class="pb-modal-body">
+            <form id="formLiberarRifa" onsubmit="submitLiberarRifa(event)">
+                <div class="pb-form-group" style="margin-bottom:16px">
+                    <label>Cantidad de Talonarios a Liberar <span class="req">*</span></label>
+                    <input type="number" id="rifaLiberarCantidad" required min="1" placeholder="Cantidad de talonarios">
+                </div>
+                <div class="pb-form-group" style="margin-bottom:16px">
+                    <label>Autorizado por <span class="req">*</span></label>
+                    <input type="text" id="rifaLiberarAutorizadoPor" required placeholder="Ej: Capitán, Director...">
+                </div>
+                <div class="pb-form-group" style="margin-bottom:0">
+                    <label>Motivo <span class="req">*</span></label>
+                    <textarea id="rifaLiberarMotivo" rows="3" required placeholder="Motivo de la liberación"></textarea>
+                </div>
+                <div class="pb-modal-footer">
+                    <button type="submit" class="btn-pb submit liberar-btn">Liberar Talonarios</button>
+                    <button type="button" class="btn-pb cancel" onclick="cerrarModal('modalLiberarRifa')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/utils.js' %}"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/pagar-beneficio-django.js' %}?v=3.0"></script>
+</body>
+</html>

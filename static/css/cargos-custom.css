@@ -1,0 +1,155 @@
+/* Estilos personalizados para el módulo de Cargos */
+
+.cargo-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.cargo-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.cargo-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.cargo-card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff9800;
+}
+
+.btn-editar-cargo {
+    background: white;
+    border: 2px solid #ff9800;
+    color: #ff9800;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-editar-cargo:hover {
+    background: #ff9800;
+    color: white;
+}
+
+.cargo-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cargo-detail-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.cargo-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.cargo-value {
+    color: #666;
+}
+
+/* Botones superiores */
+.section-header-cargos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-header-cargos h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.header-actions-cargos {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-export-pdf {
+    background: #c8102e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-export-pdf:hover {
+    background: #a00d25;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(200, 16, 46, 0.3);
+}
+
+.btn-export-excel {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-export-excel:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Contador */
+.contador {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.contador strong {
+    color: #c8102e;
+    font-size: 20px;
+}
+
+/* Lista de cargos vacía */
+.mensaje-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.mensaje-vacio p {
+    font-size: 18px;
+    margin: 0;
+}

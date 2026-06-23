@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Voluntario</title>
+    <style>
+        :root { --bg:#f1ece4; --panel:#fffdfa; --ink:#1e1a18; --muted:#6d6258; --line:#e2d6c8; --accent:#b32025; --accent-dark:#7f1418; --soft:#f8efe2; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Georgia, "Times New Roman", serif; background:linear-gradient(180deg, #ede5db, #f7f3ee); color:var(--ink); }
+        .shell { width:min(1220px, calc(100% - 32px)); margin:24px auto 40px; }
+        .hero { background:linear-gradient(135deg, #201716, #5a1b1d); color:#fff; padding:28px; border-radius:28px; display:flex; justify-content:space-between; gap:20px; align-items:flex-start; }
+        .hero h1 { margin:0 0 8px; font-size:2rem; }
+        .hero p { margin:4px 0; color:#f4ddd5; }
+        .hero .actions { display:flex; gap:12px; flex-wrap:wrap; }
+        .hero button { border:none; border-radius:999px; padding:12px 18px; cursor:pointer; font-weight:700; }
+        .hero .secondary-btn { background:#f6ede6; color:#2a1f1c; }
+        .hero .primary-btn { background:linear-gradient(135deg, var(--accent), var(--accent-dark)); color:#fff; }
+        .alert { margin-top:14px; font-weight:700; color:#ffd8d8; }
+        .grid { display:grid; grid-template-columns:2fr 1.15fr; gap:20px; margin-top:20px; }
+        .panel { background:var(--panel); border-radius:24px; padding:22px; box-shadow:0 18px 50px rgba(44,34,28,.08); border:1px solid rgba(255,255,255,.7); }
+        .stack { display:grid; gap:20px; }
+        .panel h2 { margin:0 0 16px; font-size:1.35rem; }
+        .debt-card, .request-card { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; padding:16px 0; border-top:1px solid var(--line); }
+        .debt-card:first-child, .request-card:first-child { border-top:none; padding-top:0; }
+        .debt-card h4, .request-card h4 { margin:0 0 6px; font-size:1.05rem; }
+        .debt-card p, .request-card p { margin:4px 0; color:var(--muted); }
+        .primary-btn, .secondary-btn, .danger-btn { border:none; border-radius:14px; padding:12px 16px; cursor:pointer; font-weight:700; }
+        .primary-btn { background:linear-gradient(135deg, var(--accent), var(--accent-dark)); color:#fff; }
+        .secondary-btn { background:#ece0d2; color:#3c2b22; }
+        .danger-btn { background:#f6d7d7; color:#832c2c; }
+        .empty-state { padding:18px; border-radius:16px; background:var(--soft); color:var(--muted); }
+        .pill { display:inline-block; padding:8px 10px; border-radius:999px; font-size:.85rem; font-weight:700; }
+        .pill.warning { background:#f8e7bb; color:#76530c; }
+        form { display:grid; gap:14px; }
+        .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        label { display:block; font-weight:700; margin-bottom:6px; }
+        input, select, textarea { width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:#fff; font:inherit; }
+        textarea { min-height:110px; resize:vertical; }
+        .form-msg { min-height:24px; font-weight:700; }
+        .form-error { color:#b32025; }
+        .form-ok { color:#1f7a46; }
+        @media (max-width: 960px) { .grid { grid-template-columns:1fr; } .field-row { grid-template-columns:1fr; } .hero { flex-direction:column; } }
+    </style>
+</head>
+<body>
+    <div id="portalPanel" class="shell">
+        <section class="hero">
+            <div>
+                <h1 id="portalNombre">Portal Voluntario</h1>
+                <p>RUT: <span id="portalRut"></span></p>
+                <p>Usuario portal: <strong id="portalUsuario"></strong></p>
+                <div id="portalAvisoClave" class="alert"></div>
+            </div>
+            <div class="actions">
+                <button class="secondary-btn" onclick="cerrarSesionPortal()">Cerrar sesión</button>
+            </div>
+        </section>
+
+        <div class="grid">
+            <div class="stack">
+                <section class="panel">
+                    <h2>Cuotas del ciclo activo</h2>
+                    <div id="cuotasPendientes"></div>
+                </section>
+
+                <section class="panel">
+                    <h2>Beneficios pendientes</h2>
+                    <div id="beneficiosPendientes"></div>
+                </section>
+
+                <section class="panel">
+                    <h2>Rifas pendientes</h2>
+                    <div id="rifasPendientes"></div>
+                </section>
+
+                <section class="panel">
+                    <h2>Historial de solicitudes</h2>
+                    <div id="solicitudesHistorial"></div>
+                </section>
+            </div>
+
+            <div class="stack">
+                <section id="solicitudFormPanel" class="panel">
+                    <h2 id="solicitudTitulo">Nueva solicitud de pago</h2>
+                    <form id="solicitudForm" enctype="multipart/form-data">
+                        <input id="tipo_pago" name="tipo_pago" type="hidden">
+                        <input id="cuota_mes" name="cuota_mes" type="hidden">
+                        <input id="cuota_anio" name="cuota_anio" type="hidden">
+                        <input id="asignacion_beneficio_id" name="asignacion_beneficio_id" type="hidden">
+                        <input id="asignacion_rifa_id" name="asignacion_rifa_id" type="hidden">
+
+                        <div>
+                            <label for="nombre_pago">Nombre del pago</label>
+                            <input id="nombre_pago" name="nombre_pago" required>
+                        </div>
+
+                        <div class="field-row">
+                            <div>
+                                <label for="monto_solicitado">Monto</label>
+                                <input id="monto_solicitado" name="monto_solicitado" type="number" min="1" required>
+                            </div>
+                            <div>
+                                <label for="fecha_pago">Fecha de pago</label>
+                                <input id="fecha_pago" name="fecha_pago" type="date" required>
+                            </div>
+                        </div>
+
+                        <div id="tipoBloqueBeneficio" style="display:none">
+                            <div class="field-row">
+                                <div>
+                                    <label for="tipo_pago_beneficio">Tipo de rendición</label>
+                                    <select id="tipo_pago_beneficio" name="tipo_pago_beneficio">
+                                        <option value="normal">Normal</option>
+                                        <option value="extra">Extra</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="cantidad">Cantidad</label>
+                                    <input id="cantidad" name="cantidad" type="number" min="1" value="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tipoBloqueCuota" style="display:none" class="empty-state">Se enviará la cuota seleccionada del ciclo activo.</div>
+                        <div id="tipoBloqueRifa" style="display:none" class="empty-state">Adjunta el comprobante del pago realizado para la rifa.</div>
+
+                        <div>
+                            <label for="cuenta_bancaria_destino_id">Cuenta bancaria destino</label>
+                            <select id="cuenta_bancaria_destino_id" name="cuenta_bancaria_destino_id" required></select>
+                        </div>
+
+                        <div>
+                            <label for="numero_comprobante">Número de comprobante</label>
+                            <input id="numero_comprobante" name="numero_comprobante">
+                        </div>
+
+                        <div>
+                            <label for="descripcion">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" placeholder="Ej: transferencia realizada desde BancoEstado"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="comprobante">Voucher o comprobante</label>
+                            <input id="comprobante" name="comprobante" type="file" accept="image/*,application/pdf">
+                        </div>
+
+                        <button class="primary-btn" type="submit">Enviar solicitud</button>
+                        <div id="solicitudError" class="form-msg form-error"></div>
+                        <div id="solicitudOk" class="form-msg form-ok"></div>
+                    </form>
+                </section>
+
+                <section class="panel">
+                    <h2>Cambiar contraseña</h2>
+                    <form id="passwordForm">
+                        <div>
+                            <label for="current_password">Contraseña actual</label>
+                            <input id="current_password" name="current_password" type="password" required>
+                        </div>
+                        <div>
+                            <label for="new_password">Nueva contraseña</label>
+                            <input id="new_password" name="new_password" type="password" required>
+                        </div>
+                        <button class="secondary-btn" type="submit">Actualizar contraseña</button>
+                        <div id="passwordMsg" class="form-msg"></div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/portal-voluntario.js' %}"></script>
+</body>
+</html>
