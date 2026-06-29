@@ -258,11 +258,11 @@ def importar_masiva(request):
                     })
                     continue
                 
-                # Validaciones obligatorias
-                if not all([primer_nombre, primer_apellido, segundo_apellido, rut, fecha_ingreso, primer_padrino, segundo_padrino]):
+                # Validaciones obligatorias (padrinos y fecha de ingreso ahora opcionales)
+                if not all([primer_nombre, primer_apellido, rut]):
                     errores.append({
                         'fila': row_num,
-                        'error': 'Faltan campos obligatorios (Primer Nombre, Primer Apellido, Segundo Apellido, RUT, Fecha Ingreso, Padrinos)'
+                        'error': 'Faltan campos obligatorios (Primer Nombre, Primer Apellido, RUT)'
                     })
                     continue
                 
