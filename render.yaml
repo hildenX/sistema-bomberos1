@@ -1,0 +1,24 @@
+databases:
+  - name: bomberos-db
+    plan: free
+    databaseName: bomberos
+    user: bomberos
+
+services:
+  - type: web
+    name: bomberos
+    runtime: python
+    plan: free
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bomberos-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DEBUG
+        value: "True"

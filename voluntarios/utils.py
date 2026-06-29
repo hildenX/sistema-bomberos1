@@ -41,7 +41,7 @@ class VoluntarioUtils:
         
         for i in range(len(cuerpo) - 1, -1, -1):
             suma += int(cuerpo[i]) * multiplo
-            multiplo = 7 if multiplo == 2 else multiplo + 1
+            multiplo = 2 if multiplo == 7 else multiplo + 1
         
         resto = suma % 11
         dv_calculado = 11 - resto
