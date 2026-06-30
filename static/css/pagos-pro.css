@@ -232,9 +232,10 @@ body.pp-light {
     .form-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
     .form-group.full-width { grid-column: 1 / -1 !important; }
 
-    /* Meses: 2 columnas legibles */
-    .meses-checkbox-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-    .meses-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    /* Meses: 2 columnas que SÍ se achican (minmax(0,1fr) evita el desborde) */
+    .meses-checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+    .meses-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .checkbox-mes, .mes-card { min-width: 0 !important; }
 
     /* Botones de acción / formulario: a lo ancho y apilados */
     .acciones-voluntario, .buttons, .navigation-buttons {

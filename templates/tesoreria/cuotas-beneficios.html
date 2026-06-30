@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cuotas.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=6">
     <style>
         /* ESTILOS MODAL ESTUDIANTE */
         .modal {
@@ -135,8 +135,9 @@
             /* Formulario a una columna y datos legibles */
             .form-grid { grid-template-columns: 1fr !important; }
             .form-group.full-width { grid-column: 1 / -1 !important; }
-            .meses-checkbox-grid { grid-template-columns: repeat(2, 1fr) !important; }
-            .meses-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .meses-checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            .meses-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            .checkbox-mes, .mes-card { min-width: 0 !important; }
             .bombero-datos { grid-template-columns: 1fr !important; }
             .container { padding-left: 8px !important; padding-right: 8px !important; }
         }
