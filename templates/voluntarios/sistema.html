@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Proyecto SEIS - Sistema Principal</title>
     <script>
         // Guard de sesion: si no hay usuario logueado, redirigir al login de inmediato
@@ -30,6 +33,48 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        /* ====== RESPONSIVE MÓVIL (inline para evitar caché) ====== */
+        @media (max-width: 900px) {
+            .main-content-with-sidebar { margin-left: 0 !important; }
+            .sidebar-toggle { display: block !important; }
+        }
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden !important; max-width: 100% !important; }
+            .sidebar { transform: translateX(-100%) !important; transition: transform .3s ease !important; z-index: 1200 !important; }
+            .sidebar.collapsed, .sidebar.open, .sidebar.active { transform: translateX(0) !important; }
+
+            .main-content-with-sidebar, .main-system, #mainSystem, .container,
+            #containerPrincipal, .registros, #listaBomberos {
+                margin-left: 0 !important; max-width: 100% !important; width: 100% !important;
+                box-sizing: border-box !important; overflow-x: hidden !important;
+            }
+
+            /* Tarjeta: apilar foto arriba + contenido abajo */
+            .bombero-card {
+                display: block !important; width: 100% !important; height: auto !important;
+                overflow: visible !important; padding: 12px !important; box-sizing: border-box !important;
+            }
+            .bombero-foto-wrapper { width: 100% !important; display: flex !important; justify-content: center !important; margin: 0 auto 10px !important; }
+            .bombero-foto, .bombero-sin-foto { width: 90px !important; height: 90px !important; }
+            .bombero-contenido { width: 100% !important; min-width: 0 !important; display: block !important; }
+
+            .bombero-top { display: block !important; }
+            .bombero-nombre { font-size: 1.05rem !important; line-height: 1.3 !important; word-break: break-word !important; }
+            .bombero-clave { word-break: break-word !important; }
+
+            .bombero-botones { display: flex !important; flex-wrap: wrap !important; width: 100% !important; gap: 6px !important; margin-top: 10px !important; justify-content: stretch !important; }
+            .bombero-botones .btn, .bombero-botones button {
+                flex: 1 1 100% !important; min-width: 0 !important; width: 100% !important;
+                font-size: 0.8rem !important; padding: 10px 8px !important; white-space: normal !important;
+            }
+
+            /* Datos en una sola columna y sin desbordar */
+            .info-grid, .registro-info { display: grid !important; grid-template-columns: 1fr !important; gap: 8px !important; width: 100% !important; }
+            .info-col, .info-value, .info-label { word-break: break-word !important; min-width: 0 !important; max-width: 100% !important; }
+            .categoria-box { max-width: 100% !important; }
+            .bombero-numero { position: static !important; display: inline-block !important; margin-bottom: 6px !important; }
         }
     </style>
 </head>
