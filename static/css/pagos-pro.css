@@ -1,0 +1,159 @@
+/* ============================================================
+   PAGOS PRO - UI/UX + Responsive para Cuotas y Beneficios
+   Cargado al final para refinar y hacer responsivas ambas pantallas.
+   ============================================================ */
+
+:root {
+    --pp-brand: #c41e3a;
+    --pp-brand-dark: #8b1429;
+    --pp-ink: #1f2937;
+    --pp-muted: #6b7280;
+    --pp-line: #e5e7eb;
+    --pp-bg: #f3f5f9;
+    --pp-radius: 14px;
+    --pp-shadow: 0 10px 30px -14px rgba(15, 23, 42, 0.25);
+    --pp-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+/* ====================== CUOTAS ====================== */
+
+.cuotas-header,
+.page-header.cuotas-header {
+    background: linear-gradient(135deg, #101317 0%, #1b2430 100%) !important;
+    color: #fff !important;
+    border-radius: var(--pp-radius) var(--pp-radius) 0 0 !important;
+    position: relative;
+    overflow: hidden;
+}
+.cuotas-header::before {
+    content: "";
+    position: absolute; inset: 0 auto 0 0; width: 5px;
+    background: linear-gradient(180deg, #f8d77c, var(--pp-brand));
+}
+.cuotas-header h2 { letter-spacing: -0.02em; }
+
+.form-container,
+.bombero-info,
+.cuotas-grid,
+.list-container {
+    border-radius: var(--pp-radius) !important;
+    box-shadow: var(--pp-shadow-sm) !important;
+    border: 1px solid var(--pp-line) !important;
+}
+
+/* Inputs y selects más prolijos */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    border-radius: 10px !important;
+    border: 1.5px solid var(--pp-line) !important;
+    transition: border-color .18s ease, box-shadow .18s ease !important;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: rgba(196, 30, 58, 0.45) !important;
+    box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.08) !important;
+    outline: none !important;
+}
+
+/* Total a pagar destacado */
+.meses-seleccionados-info {
+    background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand-dark)) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 24px -10px rgba(196, 30, 58, 0.5) !important;
+}
+.meses-seleccionados-info #totalAPagar { font-weight: 800 !important; }
+
+/* Checkbox de meses con hover */
+.checkbox-mes {
+    border-radius: 10px !important;
+    transition: transform .15s ease, box-shadow .15s ease !important;
+}
+.checkbox-mes:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: var(--pp-shadow-sm) !important;
+}
+
+/* Botón principal con peso */
+.btn-cuota {
+    background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand-dark)) !important;
+    box-shadow: 0 10px 22px -10px rgba(196, 30, 58, 0.55) !important;
+    transition: transform .18s ease, box-shadow .18s ease !important;
+}
+.btn-cuota:hover { transform: translateY(-2px) !important; }
+
+/* ====================== BENEFICIOS ====================== */
+
+.pb-card { box-shadow: var(--pp-shadow-sm) !important; }
+.pb-sum-card { transition: transform .2s ease, box-shadow .2s ease !important; }
+.pb-sum-card:hover { transform: translateY(-2px) !important; box-shadow: var(--pp-shadow-sm) !important; }
+.pb-tab.activa { font-weight: 800 !important; }
+
+/* ====================== RESPONSIVE (ambas) ====================== */
+
+@media (max-width: 1024px) {
+    .form-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+@media (max-width: 768px) {
+    html, body { overflow-x: hidden !important; }
+
+    /* Contenedores a ancho completo */
+    .page-content, .form-container, .bombero-info, .cuotas-grid,
+    .list-container, .pb-card, .pb-header {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .container, .main-content, body > .pb-wrap, .pb-wrap {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* ---- CUOTAS ---- */
+    .form-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .form-group.full-width { grid-column: 1 / -1 !important; }
+
+    /* Meses: 2 columnas legibles */
+    .meses-checkbox-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+    .meses-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+    /* Botones de acción / formulario: a lo ancho y apilados */
+    .acciones-voluntario, .buttons, .navigation-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .acciones-voluntario .btn, .buttons .btn, .navigation-buttons .btn {
+        width: 100% !important;
+    }
+    .bombero-datos { grid-template-columns: 1fr !important; }
+
+    /* ---- BENEFICIOS ---- */
+    .pb-header-top { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+    .pb-header-top .btn-pb.volver { width: 100% !important; }
+    .pb-summary { flex-direction: column !important; gap: 10px !important; }
+    .pb-sum-divider { display: none !important; }
+    .pb-sum-card { width: 100% !important; }
+    .pb-card-header { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+    .pb-tabs-header { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+    .pb-tabs { flex-wrap: wrap !important; }
+    .pb-filtros-hist { flex-direction: column !important; }
+    .pb-filtros-hist select { width: 100% !important; }
+    .pb-benefits-list, .pb-hist-list, .pb-lib-list { overflow-x: auto !important; }
+
+    /* Modales a pantalla casi completa */
+    .modal-content, .pb-modal {
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 12px auto !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .meses-checkbox-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
