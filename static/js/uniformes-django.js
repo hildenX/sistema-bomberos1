@@ -191,48 +191,25 @@ class SistemaUniformesDjango {
     async configurarVisibilidadPorRol() {
         const user = await this.getCurrentUser();
         const rol = user?.rol || '';
-        
         console.log('[UNIFORMES] Usuario con rol:', rol);
-        console.log('[UNIFORMES] ⭐ TODAS las tarjetas visibles para todos los roles (permisos de registro por implementar)');
-        
-        // TODO: Implementar permisos de REGISTRO (no visibilidad) por rol
-        // Por ahora todas las tarjetas son visibles para todos
-        
-        /* SISTEMA DE PERMISOS DESHABILITADO - TODAS LAS TARJETAS VISIBLES
-        const cardsBasicas = ['cardEstructural', 'cardForestal', 'cardRescate', 'cardHazmat'];
-        
+
+        const TODAS = [
+            'cardEstructural', 'cardForestal', 'cardRescate', 'cardHazmat',
+            'cardTenida', 'cardAccesorios', 'cardParada',
+            'cardUsar', 'cardAgreste', 'cardUm6', 'cardGersa'
+        ];
+        const mostrarSolo = (visibles) => {
+            TODAS.forEach(id => {
+                const card = document.getElementById(id);
+                if (card) card.style.display = visibles.includes(id) ? '' : 'none';
+            });
+        };
+
         if (rol === 'Tesorero') {
-            // Solo ve Accesorios y Tenida
-            cardsBasicas.forEach(id => {
-                const card = document.getElementById(id);
-                if (card) card.style.display = 'none';
-            });
-            const cardAccesorios = document.getElementById('cardAccesorios');
-            const cardTenida = document.getElementById('cardTenida');
-            if (cardAccesorios) cardAccesorios.style.display = 'block';
-            if (cardTenida) cardTenida.style.display = 'block';
+            // El tesorero solo ve estas 3 categorías
+            mostrarSolo(['cardTenida', 'cardAccesorios', 'cardParada']);
         }
-        else if (rol === 'Director') {
-            // Solo ve Parada
-            cardsBasicas.forEach(id => {
-                const card = document.getElementById(id);
-                if (card) card.style.display = 'none';
-            });
-            const cardParada = document.getElementById('cardParada');
-            if (cardParada) cardParada.style.display = 'block';
-        }
-        else if (rol === 'Capitán' || rol === 'Ayudante') {
-            // Ve básicas + especialidades
-            const cardUsar = document.getElementById('cardUsar');
-            const cardAgreste = document.getElementById('cardAgreste');
-            const cardUm6 = document.getElementById('cardUm6');
-            const cardGersa = document.getElementById('cardGersa');
-            if (cardUsar) cardUsar.style.display = 'block';
-            if (cardAgreste) cardAgreste.style.display = 'block';
-            if (cardUm6) cardUm6.style.display = 'block';
-            if (cardGersa) cardGersa.style.display = 'block';
-        }
-        */
+        // Otros roles: todas las categorías visibles (comportamiento por defecto)
     }
 
     async getCurrentUser() {
