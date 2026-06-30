@@ -35,6 +35,22 @@
             50% { opacity: 0.8; transform: scale(1.05); }
         }
 
+        /* Selector de estado: oculto en desktop (ahí se usan los botones) */
+        .filtro-estado-select {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            margin: 16px auto;
+            padding: 12px 14px;
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            background: #fff;
+            color: #1a202c;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         /* ====== RESPONSIVE MÓVIL (inline para evitar caché) ====== */
         @media (max-width: 900px) {
             .main-content-with-sidebar { margin-left: 0 !important; }
@@ -42,6 +58,11 @@
         }
         @media (max-width: 768px) {
             html, body { overflow-x: hidden !important; max-width: 100% !important; }
+
+            /* En celular: ocultar los 8 botones grandes y mostrar el selector */
+            .filtros-estado-container { display: none !important; }
+            .filtro-estado-select { display: block !important; }
+
             .sidebar { transform: translateX(-100%) !important; transition: transform .3s ease !important; z-index: 1200 !important; }
             .sidebar.collapsed, .sidebar.open, .sidebar.active { transform: translateX(0) !important; }
 
@@ -209,8 +230,21 @@
                                placeholder="🔍 Buscar por nombre, clave, RUT, compañía...">
                     </div>
 
+                    <!-- Selector de estado (se muestra en celular; clickea el botón correspondiente) -->
+                    <select id="filtroEstadoSelect" class="filtro-estado-select"
+                            onchange="var b=document.querySelector('.btn-filtro-estado[data-estado='+this.value+']'); if(b){b.click();}">
+                        <option value="todos">📊 Todos</option>
+                        <option value="activo">✅ Activos</option>
+                        <option value="suspendido">⏸️ Suspendidos</option>
+                        <option value="renunciado">🔄 Renunciados</option>
+                        <option value="separado">⏸️ Separados</option>
+                        <option value="expulsado">❌ Expulsados</option>
+                        <option value="martir">🕊️ Mártires</option>
+                        <option value="fallecido">☠️ Fallecidos</option>
+                    </select>
+
                     <div class="filtros-estado-container" style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                        <button class="btn-filtro-estado active" data-estado="todos" 
+                        <button class="btn-filtro-estado active" data-estado="todos"
                                 style="padding: 8px 16px; border: 2px solid #4caf50; background: #4caf50; color: white; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                             📊 Todos
                         </button>
