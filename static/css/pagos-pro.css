@@ -17,13 +17,40 @@
 
 /* ====================== CUOTAS (estilo "beneficios": pro y limpio) ====================== */
 
-/* Container centrado tipo .pb-wrap */
+/* Fondo claro suave en vez del navy duro (mata el gradient del body) */
+body.pp-light {
+    background: #eef1f6 !important;
+    background-image: none !important;
+}
+
+/* Container más ancho y centrado tipo .pb-wrap */
 .cuotas-page .container {
-    max-width: 1000px !important;
+    max-width: 1120px !important;
     margin: 0 auto !important;
-    padding: 0 16px 40px !important;
+    padding: 16px 16px 40px !important;
     background: transparent !important;
 }
+
+/* Meses con colores suaves/pastel (se diferencian sin ser tan duros) */
+.cuotas-page .mes-card {
+    border-radius: 12px !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
+    transition: transform .15s ease, box-shadow .15s ease !important;
+}
+.cuotas-page .mes-card:hover { transform: translateY(-2px) !important; box-shadow: var(--pp-shadow-sm) !important; }
+.cuotas-page .mes-card.pendiente {
+    background: rgba(196, 30, 58, 0.08) !important;
+    border-color: rgba(196, 30, 58, 0.2) !important;
+}
+.cuotas-page .mes-card.pendiente .mes-nombre { color: #b91c1c !important; }
+.cuotas-page .mes-card.pendiente .mes-estado { color: #c44 !important; }
+.cuotas-page .mes-card.pagado {
+    background: rgba(21, 128, 61, 0.1) !important;
+    border-color: rgba(21, 128, 61, 0.22) !important;
+}
+.cuotas-page .mes-card.pagado .mes-nombre,
+.cuotas-page .mes-card.pagado .mes-estado { color: #15803d !important; }
 
 /* Header rojo degradado, redondeado abajo (igual que .pb-header) */
 .cuotas-page .cuotas-header,
