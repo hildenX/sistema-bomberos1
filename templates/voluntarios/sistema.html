@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto SEIS - Sistema Principal</title>
+    <script>
+        // Guard de sesion: si no hay usuario logueado, redirigir al login de inmediato
+        if (!localStorage.getItem('currentUser')) {
+            window.location.replace('/');
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -19,6 +25,7 @@
     <link rel="stylesheet" href="{% static 'css/botones-uniformes.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/fix-fotos-definitivo.css' %}?v=1">
     <link rel="stylesheet" href="{% static 'css/fix-tarjetas-datos.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/responsive-mobile.css' %}?v=1">
     <style>
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -230,6 +237,17 @@
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=30.0"></script>
     <script src="{% static 'js/sistema-django.js' %}?v=20251125181200"></script>
-    <script>console.log('✅ Sistema actualizado - Finanzas Django');</script>
+    <script>
+        console.log('✅ Sistema actualizado - Finanzas Django');
+        // Validar la sesión contra el servidor; si caducó, al login
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (window.checkAuth) {
+                    const ok = await window.checkAuth();
+                    if (!ok) window.location.replace('/');
+                }
+            } catch (e) { window.location.replace('/'); }
+        });
+    </script>
 </body>
 </html>
