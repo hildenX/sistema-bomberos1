@@ -270,58 +270,28 @@ class SistemaBomberos {
     }
 
     async cargarSancionesParaDeteccion() {
-        // Cargar sanciones de suspensión activas para cada voluntario
-        console.log('[LOAD] Iniciando carga de sanciones...');
-        
-        for (const bombero of this.bomberos) {
-            try {
-                const response = await fetch(`/api/sanciones/?voluntario=${bombero.id}`, {
-                    credentials: 'include'
+        // Carga TODAS las sanciones en UN solo request (antes era 1 por bombero -> lento en remoto)
+        console.log('[LOAD] Cargando sanciones (bulk)...');
+        this.sancionesActivas = [];
+        try {
+            const response = await fetch('/api/sanciones/', { credentials: 'include' });
+            if (response.ok) {
+                const data = await response.json();
+                const sanciones = Array.isArray(data) ? data : (data.results || []);
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                this.sancionesActivas = sanciones.filter(s => {
+                    if (s.tipo_sancion !== 'suspension') return false;
+                    if (!s.fecha_hasta) return false;
+                    const desde = new Date(s.fecha_desde); desde.setHours(0, 0, 0, 0);
+                    const hasta = new Date(s.fecha_hasta); hasta.setHours(0, 0, 0, 0);
+                    return desde <= hoy && hoy <= hasta;
                 });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const sanciones = Array.isArray(data) ? data : (data.results || []);
-                    
-                    // Filtrar suspensiones activas
-                    const hoy = new Date();
-                    hoy.setHours(0, 0, 0, 0);
-                    
-                    const suspensiones = sanciones.filter(s => {
-                        if (s.tipo_sancion !== 'suspension') return false;
-                        
-                        if (!s.fecha_hasta) return false; // Sin fecha hasta = no es suspensión válida
-                        
-                        const desde = new Date(s.fecha_desde);
-                        desde.setHours(0, 0, 0, 0);
-                        
-                        const hasta = new Date(s.fecha_hasta);
-                        hasta.setHours(0, 0, 0, 0);
-                        
-                        const activa = desde <= hoy && hoy <= hasta;
-                        if (activa) {
-                            console.log(`[LOAD] ⚠️ Suspensión activa: ${s.fecha_desde} a ${s.fecha_hasta}`);
-                        }
-                        
-                        return activa;
-                    });
-                    
-                    if (suspensiones.length > 0) {
-                        this.sancionesActivas.push(...suspensiones);
-                        console.log(`[LOAD] Bombero ${bombero.claveBombero} tiene ${suspensiones.length} suspensión(es) activa(s)`);
-                    }
-                }
-            } catch (error) {
-                console.error(`[ERROR] Cargando sanciones para ${bombero.id}:`, error);
             }
+        } catch (error) {
+            console.error('[ERROR] Cargando sanciones:', error);
         }
-        
-        console.log('[LOAD] ✅ Sanciones cargadas. Total suspendidos:', this.sancionesActivas.length);
-        
-        if (this.sancionesActivas.length > 0) {
-            console.log('[LOAD] IDs de bomberos suspendidos:', this.sancionesActivas.map(s => s.voluntario));
-            console.log('[LOAD] Sanciones activas completas:', this.sancionesActivas);
-        }
+        console.log('[LOAD] ✅ Sanciones activas:', this.sancionesActivas.length);
     }
 
     async cargarCargosVigentes() {
@@ -333,67 +303,41 @@ class SistemaBomberos {
         hoy.setHours(0, 0, 0, 0);
         console.log('[LOAD] Fecha de hoy:', hoy.toISOString().split('T')[0]);
         
-        for (const bombero of this.bomberos) {
-            try {
-                console.log(`[LOAD] Revisando bombero ID ${bombero.id} (${bombero.claveBombero})...`);
-                
-                const response = await fetch(`/api/cargos/?voluntario=${bombero.id}`, {
-                    credentials: 'include'
-                });
-                
-                console.log(`[LOAD]   Response status: ${response.status}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(`[LOAD]   Data recibida:`, data);
-                    
-                    // La API devuelve {count, results} paginado
-                    const cargos = Array.isArray(data) ? data : (data.results || []);
-                    console.log(`[LOAD]   Cargos extraídos:`, cargos.length, cargos);
-                    
-                    if (cargos.length > 0) {
-                        // Filtrar cargos vigentes (sin fecha_fin o fecha_fin >= hoy)
-                        const vigentes = cargos.filter(c => {
-                            console.log(`[LOAD]     Evaluando: ${c.nombre_cargo}, fecha_fin: ${c.fecha_fin}`);
-                            
-                            if (!c.fecha_fin) {
-                                console.log(`[LOAD]       ✅ Vigente (sin fecha fin)`);
-                                return true;
-                            }
-                            
-                            const fechaFin = new Date(c.fecha_fin);
-                            fechaFin.setHours(0, 0, 0, 0);
-                            const esVigente = fechaFin >= hoy;
-                            
-                            console.log(`[LOAD]       ${esVigente ? '✅' : '❌'} fecha_fin: ${fechaFin.toISOString().split('T')[0]} ${esVigente ? '>=' : '<'} ${hoy.toISOString().split('T')[0]}`);
-                            
-                            return esVigente;
-                        });
-                        
-                        console.log(`[LOAD]   Vigentes encontrados:`, vigentes.length);
-                        
-                        // Obtener el más reciente
-                        if (vigentes.length > 0) {
-                            const masReciente = vigentes.sort((a, b) => {
-                                const fechaA = new Date(a.fecha_inicio || a.anio);
-                                const fechaB = new Date(b.fecha_inicio || b.anio);
-                                return fechaB - fechaA;
-                            })[0];
-                            
-                            this.cargosVigentes[bombero.id] = masReciente;
-                            console.log(`[LOAD] ✅ Cargo vigente para ${bombero.claveBombero}: ${masReciente.nombre_cargo}`);
-                        }
-                    } else {
-                        console.log(`[LOAD]   Sin cargos para este bombero`);
-                    }
+        // Carga TODOS los cargos en UN solo request y agrupa por voluntario
+        try {
+            const response = await fetch('/api/cargos/', { credentials: 'include' });
+            if (response.ok) {
+                const data = await response.json();
+                const cargos = Array.isArray(data) ? data : (data.results || []);
+
+                const porVol = {};
+                for (const c of cargos) {
+                    if (c.voluntario == null) continue;
+                    (porVol[c.voluntario] = porVol[c.voluntario] || []).push(c);
                 }
-            } catch (error) {
-                console.error(`[ERROR] Cargando cargos para ${bombero.id}:`, error);
+
+                Object.keys(porVol).forEach(volId => {
+                    const vigentes = porVol[volId].filter(c => {
+                        if (!c.fecha_fin) return true;
+                        const fechaFin = new Date(c.fecha_fin);
+                        fechaFin.setHours(0, 0, 0, 0);
+                        return fechaFin >= hoy;
+                    });
+                    if (vigentes.length > 0) {
+                        const masReciente = vigentes.sort((a, b) => {
+                            const fechaA = new Date(a.fecha_inicio || a.anio);
+                            const fechaB = new Date(b.fecha_inicio || b.anio);
+                            return fechaB - fechaA;
+                        })[0];
+                        this.cargosVigentes[volId] = masReciente;
+                    }
+                });
             }
+        } catch (error) {
+            console.error('[ERROR] Cargando cargos:', error);
         }
-        
+
         console.log('[LOAD] ✅ Cargos vigentes cargados:', Object.keys(this.cargosVigentes).length);
-        console.log('[LOAD] IDs con cargo vigente:', Object.keys(this.cargosVigentes));
     }
 
     guardarDatos() {
