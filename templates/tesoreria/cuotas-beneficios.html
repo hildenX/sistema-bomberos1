@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cuotas.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=4">
     <style>
         /* ESTILOS MODAL ESTUDIANTE */
         .modal {
@@ -98,10 +98,13 @@
         @media (max-width: 768px) {
             html, body { overflow-x: hidden !important; }
 
-            /* No recortar los botones que sobresalen */
+            /* Tarjetas con clip limpio (los botones ya son ancho completo, no sobresalen) */
             .cuotas-page .bombero-info,
             .cuotas-page .form-container,
-            .cuotas-page .list-container { overflow: visible !important; }
+            .cuotas-page .cuotas-grid,
+            .cuotas-page .list-container { overflow: hidden !important; }
+            .cuotas-page .meses-grid,
+            .cuotas-page #gridMesesCuotas { box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; }
 
             /* Botones de acción del voluntario: ancho completo, texto que envuelve */
             .acciones-voluntario {
