@@ -1,4 +1,4 @@
-﻿/* rifa-entregar.js â€” Entrega de talonarios v2.1 */
+/* rifa-entregar.js — Entrega de talonarios v2.1 */
 'use strict';
 
 const API = '/api/voluntarios';
@@ -25,7 +25,7 @@ async function cargarCuentasBancarias() {
         const res = await fetch(`${API}/cuentas-bancarias-simple/`);
         if (!res.ok) return;
         cuentasBancarias = await res.json();
-        const opts = '<option value="">â€” Seleccionar â€”</option>' +
+        const opts = '<option value="">— Seleccionar —</option>' +
             cuentasBancarias.filter(c => c.activa)
                 .map(c => `<option value="${c.id}">${c.nombre} (${c.banco})</option>`).join('');
         el('pagarCuenta').innerHTML = opts;
@@ -33,11 +33,11 @@ async function cargarCuentasBancarias() {
 }
 
 // ---------------------------------------------------------------------------
-// NotificaciÃ³n
+// Notificación
 // ---------------------------------------------------------------------------
 function mostrarNotif(msg, tipo = 'ok') {
     const n = el('reNotif');
-    n.innerHTML = `<span>${tipo === 'ok' ? 'âœ…' : 'âŒ'}</span> ${msg}`;
+    n.innerHTML = `<span>${tipo === 'ok' ? '✅' : '❌'}</span> ${msg}`;
     n.className = `re-notif ${tipo}`;
     n.style.display = 'flex';
     setTimeout(() => { n.style.display = 'none'; }, 5000);
@@ -48,7 +48,7 @@ function mostrarNotif(msg, tipo = 'ok') {
 // ---------------------------------------------------------------------------
 async function cargarRifa() {
     if (!rifaId) {
-        el('tablaWrap').innerHTML = '<div class="loading">No se especificÃ³ una rifa</div>';
+        el('tablaWrap').innerHTML = '<div class="loading">No se especificó una rifa</div>';
         return;
     }
     try {
@@ -60,7 +60,7 @@ async function cargarRifa() {
         asignaciones = data.asignaciones || [];
 
         el('rifaTitulo').textContent    = rifa.nombre;
-        el('rifaSubtitulo').textContent = `${clp(rifa.precio_numero)} por nÃºmero Â· ${rifa.numeros_por_talonario} nÃºmeros/talonario Â· Cierre: ${new Date(rifa.fecha_cierre + 'T12:00:00').toLocaleDateString('es-CL')}`;
+        el('rifaSubtitulo').textContent = `${clp(rifa.precio_numero)} por número · ${rifa.numeros_por_talonario} números/talonario · Cierre: ${new Date(rifa.fecha_cierre + 'T12:00:00').toLocaleDateString('es-CL')}`;
 
         actualizarStats();
         actualizarRecaudado();
@@ -120,7 +120,7 @@ function renderTabla() {
         el('tablaWrap').innerHTML = `
             <div class="re-table-wrap">
                 <div class="empty-state">
-                    <div class="icon">ðŸ”</div>
+                    <div class="icon">🔍</div>
                     <h3>Sin resultados</h3>
                     <p>No hay asignaciones que coincidan con los filtros</p>
                 </div>
@@ -131,7 +131,7 @@ function renderTabla() {
     const filas = lista.map(a => {
         const numeros = a.numeros || [];
         const numerosStr = numeros.length
-            ? `<div class="nums-chips">${numeros.map(r => `<span class="nums-chip">${r.desde}â€“${r.hasta}</span>`).join('')}</div>`
+            ? `<div class="nums-chips">${numeros.map(r => `<span class="nums-chip">${r.desde}–${r.hasta}</span>`).join('')}</div>`
             : '<span style="color:#9ca3af;font-size:0.78rem">Sin asignar</span>';
 
         const pct = a.monto_total > 0 ? Math.round(a.monto_pagado / a.monto_total * 100) : 0;
@@ -144,28 +144,28 @@ function renderTabla() {
         const sinPagos = !a.pagos || a.pagos.length === 0;
         let acciones = '';
         if (a.estado === 'no_retirada') {
-            acciones = `<button class="btn-re primary sm" onclick="abrirModalEntregar(${a.id})">ðŸ“¦ Entregar</button>`;
+            acciones = `<button class="btn-re primary sm" onclick="abrirModalEntregar(${a.id})">📦 Entregar</button>`;
         } else if (a.estado === 'retirada') {
-            acciones  = `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">ðŸ‘ Ver</button>`;
+            acciones  = `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>`;
             if (sinPagos) {
-                acciones += ` <button class="btn-re success sm" onclick="abrirModalPagar(${a.id}, false)">ðŸ’° Pagar</button>`;
+                acciones += ` <button class="btn-re success sm" onclick="abrirModalPagar(${a.id}, false)">💰 Pagar</button>`;
             }
-            acciones += ` <button class="btn-re warning sm" onclick="abrirModalLiberar(${a.id})">ðŸ”“ Liberar</button>`;
+            acciones += ` <button class="btn-re warning sm" onclick="abrirModalLiberar(${a.id})">🔓 Liberar</button>`;
         } else if (a.estado === 'pagada') {
-            acciones  = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">ðŸ‘ Ver</button>` : '';
-            acciones += ` <button class="btn-re warning sm" onclick="abrirModalPagar(${a.id}, true)">ðŸ’°+ Extra</button>`;
+            acciones  = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>` : '';
+            acciones += ` <button class="btn-re warning sm" onclick="abrirModalPagar(${a.id}, true)">💰+ Extra</button>`;
         } else if (a.estado === 'liberada') {
-            acciones = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">ðŸ‘ Ver</button>` : '';
+            acciones = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>` : '';
         }
 
         return `
         <tr>
             <td>
                 <div class="vol-nombre">${a.voluntario_nombre}</div>
-                <div class="vol-clave">${a.voluntario_clave || 'â€”'}</div>
+                <div class="vol-clave">${a.voluntario_clave || '—'}</div>
             </td>
             <td style="text-align:center;white-space:nowrap">
-                <strong>${a.antiguedad}</strong><span style="font-size:.74rem;color:#9ca3af"> aÃ±os</span>
+                <strong>${a.antiguedad}</strong><span style="font-size:.74rem;color:#9ca3af"> años</span>
             </td>
             <td style="text-align:center;font-weight:600;color:#374151">${a.talonarios_asignados}</td>
             <td>${numerosStr}</td>
@@ -181,9 +181,9 @@ function renderTabla() {
                 <thead>
                     <tr>
                         <th>Voluntario</th>
-                        <th style="text-align:center">AntigÃ¼edad</th>
+                        <th style="text-align:center">Antigüedad</th>
                         <th style="text-align:center">Talonarios</th>
-                        <th>NÃºmeros</th>
+                        <th>Números</th>
                         <th>Monto / Pago</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -199,7 +199,7 @@ function estadoLabel(e) {
 }
 
 // ---------------------------------------------------------------------------
-// Ver nÃºmeros â€” modal
+// Ver números — modal
 // ---------------------------------------------------------------------------
 function verNumeros(asigId) {
     const a = asignaciones.find(x => x.id === asigId);
@@ -207,12 +207,12 @@ function verNumeros(asigId) {
     const numeros = a.numeros || [];
     el('verNumsSubtitulo').textContent = a.voluntario_nombre;
     if (!numeros.length) {
-        el('verNumsContenido').innerHTML = '<p style="color:#9ca3af;text-align:center;padding:20px 0">Sin nÃºmeros asignados</p>';
+        el('verNumsContenido').innerHTML = '<p style="color:#9ca3af;text-align:center;padding:20px 0">Sin números asignados</p>';
     } else {
         const total = numeros.reduce((s, r) => s + (r.hasta - r.desde + 1), 0);
         el('verNumsContenido').innerHTML = `
             <p style="font-size:0.82rem;color:#6b7280;margin:0 0 14px">
-                <strong>${numeros.length}</strong> rango(s) Â· <strong>${total}</strong> nÃºmeros en total
+                <strong>${numeros.length}</strong> rango(s) · <strong>${total}</strong> números en total
             </p>
             <div class="nums-grid">
                 ${numeros.map(r => `<span class="num-rango-tag">${r.desde} &ndash; ${r.hasta}</span>`).join('')}
@@ -231,12 +231,12 @@ function abrirModalEntregar(asigId) {
     el('infoVolModal').innerHTML = `
         <div class="info-nombre">${asignacionActiva.voluntario_nombre}</div>
         <div class="info-row">
-            <span>Clave: <strong>${asignacionActiva.voluntario_clave || 'â€”'}</strong></span>
-            <span>AntigÃ¼edad: <strong>${asignacionActiva.antiguedad} aÃ±os</strong></span>
+            <span>Clave: <strong>${asignacionActiva.voluntario_clave || '—'}</strong></span>
+            <span>Antigüedad: <strong>${asignacionActiva.antiguedad} años</strong></span>
             <span>Talonarios: <strong>${asignacionActiva.talonarios_asignados}</strong></span>
         </div>
         <div class="info-row">
-            <span>NÃºmeros esperados: <strong>${esperado}</strong></span>
+            <span>Números esperados: <strong>${esperado}</strong></span>
             <span>Monto: <strong>${clp(asignacionActiva.monto_total)}</strong></span>
         </div>`;
     el('rangosLista').innerHTML = '';
@@ -273,7 +273,7 @@ el('numsIndividuales').addEventListener('input', function() {
     if (nums.length > 0) {
         const ok    = nums.length === esperado;
         const color = ok ? '#059669' : '#d97706';
-        el('contadorIndividual').innerHTML = `<span style="color:${color};font-weight:700">${nums.length}</span> nÃºmero(s) ingresado(s) ${esperado ? `Â· se esperan <strong>${esperado}</strong>` : ''}`;
+        el('contadorIndividual').innerHTML = `<span style="color:${color};font-weight:700">${nums.length}</span> número(s) ingresado(s) ${esperado ? `· se esperan <strong>${esperado}</strong>` : ''}`;
     } else {
         el('contadorIndividual').textContent = '';
     }
@@ -284,9 +284,9 @@ function agregarRango() {
     div.className = 'rango-row';
     div.innerHTML = `
         <input type="number" placeholder="Desde" min="1" class="rango-desde" oninput="actualizarContadorRangos()">
-        <span style="color:#9ca3af;padding:0 2px">â€”</span>
+        <span style="color:#9ca3af;padding:0 2px">—</span>
         <input type="number" placeholder="Hasta" min="1" class="rango-hasta" oninput="actualizarContadorRangos()">
-        <button class="btn-rm" onclick="this.parentElement.remove(); actualizarContadorRangos()">âœ•</button>`;
+        <button class="btn-rm" onclick="this.parentElement.remove(); actualizarContadorRangos()">✕</button>`;
     el('rangosLista').appendChild(div);
 }
 
@@ -306,7 +306,7 @@ function actualizarContadorRangos() {
     }
     const ok    = total === esperado && validos;
     const color = ok ? '#059669' : (total > esperado ? '#dc2626' : '#d97706');
-    el('contadorRangos').innerHTML = `<span style="color:${color};font-weight:700">${total}</span> nÃºmero(s) Â· se esperan <strong>${esperado}</strong>`;
+    el('contadorRangos').innerHTML = `<span style="color:${color};font-weight:700">${total}</span> número(s) · se esperan <strong>${esperado}</strong>`;
 }
 
 function obtenerRangos() {
@@ -343,24 +343,24 @@ function obtenerNumerosFinales() {
 }
 
 function validarNumerosFinales(rangos) {
-    if (!rangos.length) return 'Debes ingresar al menos un nÃºmero o rango';
+    if (!rangos.length) return 'Debes ingresar al menos un número o rango';
     for (const r of rangos) {
-        if (r.desde < 1) return `Los nÃºmeros deben ser mayores a 0`;
-        if (r.desde > r.hasta) return `Rango invÃ¡lido: ${r.desde}â€“${r.hasta}`;
+        if (r.desde < 1) return `Los números deben ser mayores a 0`;
+        if (r.desde > r.hasta) return `Rango inválido: ${r.desde}–${r.hasta}`;
     }
     // Validar solapamiento entre rangos
     for (let i = 0; i < rangos.length; i++) {
         for (let j = i + 1; j < rangos.length; j++) {
             if (rangos[i].desde <= rangos[j].hasta && rangos[j].desde <= rangos[i].hasta)
-                return `Los rangos ${rangos[i].desde}â€“${rangos[i].hasta} y ${rangos[j].desde}â€“${rangos[j].hasta} se solapan`;
+                return `Los rangos ${rangos[i].desde}–${rangos[i].hasta} y ${rangos[j].desde}–${rangos[j].hasta} se solapan`;
         }
     }
-    // Validar total de nÃºmeros
+    // Validar total de números
     if (asignacionActiva && rifa) {
         const esperado   = asignacionActiva.talonarios_asignados * rifa.numeros_por_talonario;
         const ingresados = rangos.reduce((s, r) => s + (r.hasta - r.desde + 1), 0);
         if (ingresados !== esperado) {
-            return `La cantidad de nÃºmeros no coincide: se ingresaron ${ingresados} pero se esperan ${esperado} (${asignacionActiva.talonarios_asignados} talonarios Ã— ${rifa.numeros_por_talonario} nÃºmeros)`;
+            return `La cantidad de números no coincide: se ingresaron ${ingresados} pero se esperan ${esperado} (${asignacionActiva.talonarios_asignados} talonarios × ${rifa.numeros_por_talonario} números)`;
         }
     }
     return null;
@@ -373,7 +373,7 @@ async function guardarEntrega() {
     el('errorRangos').style.display = 'none';
 
     const btn = document.querySelector('#modalEntregar .modal-footer .btn-re.primary');
-    setLoading(btn, true, 'âœ… Confirmar Entrega');
+    setLoading(btn, true, '✅ Confirmar Entrega');
 
     try {
         const resp = await fetch(`${API}/asignar-numeros-rifa/`, {
@@ -392,15 +392,15 @@ async function guardarEntrega() {
         actualizarStats();
         renderTabla();
     } catch (_) {
-        el('errorRangos').textContent = 'Error de conexiÃ³n';
+        el('errorRangos').textContent = 'Error de conexión';
         el('errorRangos').style.display = 'block';
     } finally {
-        setLoading(btn, false, 'âœ… Confirmar Entrega');
+        setLoading(btn, false, '✅ Confirmar Entrega');
     }
 }
 
 // ---------------------------------------------------------------------------
-// Utilidad: botÃ³n cargando
+// Utilidad: botón cargando
 // ---------------------------------------------------------------------------
 function setLoading(btn, loading, textoOriginal) {
     if (!btn) return;
@@ -417,21 +417,21 @@ function abrirModalPagar(asigId, extra = false) {
     if (!asignacionPagar) return;
     esExtra = extra;
 
-    const numeros = (asignacionPagar.numeros || []).map(r => `${r.desde}â€“${r.hasta}`).join(', ') || 'â€”';
+    const numeros = (asignacionPagar.numeros || []).map(r => `${r.desde}–${r.hasta}`).join(', ') || '—';
     const pagos   = asignacionPagar.pagos || [];
     const pct     = asignacionPagar.monto_total > 0
         ? Math.round(asignacionPagar.monto_pagado / asignacionPagar.monto_total * 100) : 0;
 
-    el('modalPagar').querySelector('h3').textContent = extra ? 'ðŸ’°+ Pago Extra de Rifa' : 'ðŸ’° Registrar Pago';
+    el('modalPagar').querySelector('h3').textContent = extra ? '💰+ Pago Extra de Rifa' : '💰 Registrar Pago';
     el('modalPagar').querySelector('.modal-header p').textContent = extra
-        ? 'Pago adicional por nÃºmeros vendidos extra'
+        ? 'Pago adicional por números vendidos extra'
         : 'Pago de talonarios asignados';
 
     el('infoVolPagar').innerHTML = `
         <div class="info-nombre">${asignacionPagar.voluntario_nombre}</div>
         <div class="info-row">
             <span>Talonarios: <strong>${asignacionPagar.talonarios_asignados}</strong></span>
-            <span>NÃºmeros: <strong>${numeros}</strong></span>
+            <span>Números: <strong>${numeros}</strong></span>
         </div>
         <div class="info-montos">
             <div class="info-monto-box">
@@ -452,7 +452,7 @@ function abrirModalPagar(asigId, extra = false) {
         <div class="section-sep">Pagos anteriores</div>
         <table class="hist-table" style="margin-bottom:4px">
             <thead><tr>
-                <th>Fecha</th><th>Monto</th><th>MÃ©todo</th><th>Comprobante</th>
+                <th>Fecha</th><th>Monto</th><th>Método</th><th>Comprobante</th>
             </tr></thead>
             <tbody>${pagos.map(p => `
                 <tr>
@@ -490,7 +490,7 @@ function abrirModalPagar(asigId, extra = false) {
 }
 
 function fmtFecha(f) {
-    if (!f) return 'â€”';
+    if (!f) return '—';
     const [y, m, d] = f.substring(0, 10).split('-');
     return `${d}/${m}/${y}`;
 }
@@ -504,7 +504,7 @@ function calcularMontoPago() {
     }
     const monto = talonarios * rifa.numeros_por_talonario * rifa.precio_numero;
     el('pagarMonto').value = Math.round(monto);
-    el('pagarFormula').textContent = `${talonarios} talonario(s) Ã— ${rifa.numeros_por_talonario} nÃºms Ã— ${clp(rifa.precio_numero)} = ${clp(monto)}`;
+    el('pagarFormula').textContent = `${talonarios} talonario(s) × ${rifa.numeros_por_talonario} núms × ${clp(rifa.precio_numero)} = ${clp(monto)}`;
     el('pagarFormula').style.display = 'block';
 }
 
@@ -554,7 +554,7 @@ async function guardarPago() {
     el('errorPagar').style.display = 'none';
 
     const btn = document.querySelector('#modalPagar .modal-footer .btn-re.primary');
-    setLoading(btn, true, 'ðŸ’° Registrar Pago');
+    setLoading(btn, true, '💰 Registrar Pago');
 
     const body = {
         asignacion_id:     asignacionPagar.id,
@@ -595,9 +595,9 @@ async function guardarPago() {
         actualizarRecaudado();
         renderTabla();
     } catch (_) {
-        showErr('Error de conexiÃ³n');
+        showErr('Error de conexión');
     } finally {
-        setLoading(btn, false, 'ðŸ’° Registrar Pago');
+        setLoading(btn, false, '💰 Registrar Pago');
     }
 }
 
@@ -635,13 +635,13 @@ async function guardarLiberacion() {
 
     if (!cantidad || cantidad < 1) { showErr('Ingresa la cantidad de talonarios'); return; }
     if (asignacionLiberar && cantidad > asignacionLiberar.talonarios_asignados) {
-        showErr(`No puedes liberar mÃ¡s de ${asignacionLiberar.talonarios_asignados} talonarios asignados`); return;
+        showErr(`No puedes liberar más de ${asignacionLiberar.talonarios_asignados} talonarios asignados`); return;
     }
     if (!motivo) { showErr('Ingresa el motivo'); return; }
     el('errorLiberar').style.display = 'none';
 
     const btn = document.querySelector('#modalLiberar .modal-footer .btn-re.danger');
-    setLoading(btn, true, 'ðŸ”“ Confirmar LiberaciÃ³n');
+    setLoading(btn, true, '🔓 Confirmar Liberación');
 
     try {
         const resp = await fetch(`${API}/liberar-rifa-simple/`, {
@@ -667,9 +667,9 @@ async function guardarLiberacion() {
         actualizarStats();
         renderTabla();
     } catch (_) {
-        showErr('Error de conexiÃ³n');
+        showErr('Error de conexión');
     } finally {
-        setLoading(btn, false, 'ðŸ”“ Confirmar LiberaciÃ³n');
+        setLoading(btn, false, '🔓 Confirmar Liberación');
     }
 }
 
