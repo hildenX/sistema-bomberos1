@@ -192,8 +192,10 @@ class SistemaCuotasDjango {
             }
             
             // 2. Cargar pagos de cuotas (filtrar por año del ciclo activo)
+            // cache: 'no-store' -> evita que el navegador devuelva la lista vieja despues de registrar un pago
             const response = await fetch(`${API_BASE}/pagos-cuotas-simple/?voluntario_id=${this.bomberoActual.id}&anio=${this.anioActual}`, {
-                credentials: 'include'
+                credentials: 'include',
+                cache: 'no-store'
             });
             
             if (!response.ok) {
@@ -357,6 +359,7 @@ class SistemaCuotasDjango {
             
             // Recargar datos y actualizar interfaz
             await this.cargarDatos();
+            await this.cargarEstadoCuotas();
             this.renderizarGridMeses();
             this.actualizarEstadoCheckboxes();
             this.renderizarHistorialCuotas();
@@ -586,7 +589,8 @@ class SistemaCuotasDjango {
     async cargarEstadoCuotas() {
         try {
             const response = await fetch(`${API_BASE}/${this.bomberoActual.id}/estado-cuotas-simple/`, {
-                credentials: 'include'
+                credentials: 'include',
+                cache: 'no-store'
             });
             
             if (response.ok) {
