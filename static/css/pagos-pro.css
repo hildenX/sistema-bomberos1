@@ -98,6 +98,25 @@ body.pp-light {
     box-sizing: border-box !important;
 }
 
+/* ===== CONTENCIÓN TOTAL: nada se desborda de su tarjeta =====
+   (la causa real: inputs con width:100% + padding sin border-box) */
+.cuotas-page *,
+.cuotas-page *::before,
+.cuotas-page *::after { box-sizing: border-box !important; }
+
+.cuotas-page .page-content { width: 100% !important; max-width: 100% !important; }
+.cuotas-page .container { overflow-x: hidden !important; }
+
+.cuotas-page .form-grid,
+.cuotas-page .meses-checkbox-grid,
+.cuotas-page .meses-seleccionados-info,
+.cuotas-page .form-container input,
+.cuotas-page .form-container select,
+.cuotas-page .form-container textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
 /* Títulos de card: limpios, fondo blanco + borde inferior (como .pb-card-header) */
 .cuotas-page .bombero-info > h3,
 .cuotas-page .form-container > h3,
