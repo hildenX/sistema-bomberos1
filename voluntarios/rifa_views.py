@@ -481,16 +481,16 @@ def pagar_rifa_simple(request):
                 observaciones=obs_final,
             )
 
-            if metodo_pago == 'transferencia' and cuenta:
-                MovimientoFinanciero.objects.create(
-                    tipo='ingreso',
-                    categoria='rifa',
-                    descripcion=f"{'Pago extra' if es_extra else 'Pago'} rifa {asignacion.rifa.nombre} — {asignacion.voluntario}",
-                    monto=monto,
-                    fecha=fecha_pago,
-                    cuenta_bancaria=cuenta,
-                    pago_rifa=pago,
-                )
+            # Registrar el ingreso SIEMPRE (efectivo -> caja virtual, transferencia -> cuenta)
+            MovimientoFinanciero.objects.create(
+                tipo='ingreso',
+                categoria='rifa',
+                descripcion=f"{'Pago extra' if es_extra else 'Pago'} rifa {asignacion.rifa.nombre} — {asignacion.voluntario}",
+                monto=monto,
+                fecha=fecha_pago,
+                cuenta_bancaria=cuenta,  # None cuando es efectivo
+                pago_rifa=pago,
+            )
 
             asignacion.monto_pagado += monto
             if not es_extra:
