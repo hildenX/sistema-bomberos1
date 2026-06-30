@@ -15,30 +15,85 @@
     --pp-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
-/* ====================== CUOTAS ====================== */
+/* ====================== CUOTAS (estilo "beneficios": pro y limpio) ====================== */
 
-.cuotas-header,
+/* Container centrado tipo .pb-wrap */
+.cuotas-page .container {
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    padding: 0 16px 40px !important;
+    background: transparent !important;
+}
+
+/* Header rojo degradado, redondeado abajo (igual que .pb-header) */
+.cuotas-page .cuotas-header,
 .page-header.cuotas-header {
-    background: linear-gradient(135deg, #101317 0%, #1b2430 100%) !important;
+    background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%) !important;
     color: #fff !important;
-    border-radius: var(--pp-radius) var(--pp-radius) 0 0 !important;
+    border-radius: 0 0 20px 20px !important;
+    padding: 26px 30px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 4px 20px rgba(196, 30, 58, 0.3) !important;
     position: relative;
     overflow: hidden;
 }
-.cuotas-header::before {
-    content: "";
-    position: absolute; inset: 0 auto 0 0; width: 5px;
-    background: linear-gradient(180deg, #f8d77c, var(--pp-brand));
-}
-.cuotas-header h2 { letter-spacing: -0.02em; }
+.cuotas-page .cuotas-header::before { display: none !important; }
+.cuotas-page .cuotas-header h2 { color: #fff !important; letter-spacing: -0.01em !important; margin: 0 !important; }
+.cuotas-page .cuotas-header p { color: rgba(255,255,255,0.85) !important; margin: 6px 0 0 !important; }
 
-.form-container,
-.bombero-info,
-.cuotas-grid,
-.list-container {
-    border-radius: var(--pp-radius) !important;
-    box-shadow: var(--pp-shadow-sm) !important;
-    border: 1px solid var(--pp-line) !important;
+/* Cards blancas limpias con sombra suave (igual que .pb-card) */
+.cuotas-page .bombero-info,
+.cuotas-page .form-container,
+.cuotas-page .cuotas-grid,
+.cuotas-page .list-container,
+.cuotas-page .selector-años-container {
+    background: #fff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07) !important;
+    border: none !important;
+    margin-bottom: 18px !important;
+    overflow: visible !important;
+    padding: 0 !important;
+}
+
+/* Títulos de card: limpios, fondo blanco + borde inferior (como .pb-card-header) */
+.cuotas-page .bombero-info > h3,
+.cuotas-page .form-container > h3,
+.cuotas-page .cuotas-grid > h3,
+.cuotas-page .list-container .list-header h3,
+.cuotas-page .list-container .list-header {
+    background: #fff !important;
+    color: #1f2937 !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    padding: 18px 22px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    border-radius: 12px 12px 0 0 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/* Padding interno del contenido de las cards */
+.cuotas-page .form-container > form,
+.cuotas-page .acciones-voluntario,
+.cuotas-page .bombero-datos,
+.cuotas-page #estadoCuotasInfo,
+.cuotas-page #gridMesesCuotas,
+.cuotas-page #listaCuotas,
+.cuotas-page .contador { padding-left: 22px !important; padding-right: 22px !important; }
+.cuotas-page .form-container > form { padding: 22px !important; }
+.cuotas-page .acciones-voluntario { padding: 16px 22px 22px !important; }
+.cuotas-page #gridMesesCuotas,
+.cuotas-page #listaCuotas { padding-top: 16px !important; padding-bottom: 16px !important; }
+
+/* Datos del voluntario como mini-grid prolijo */
+.cuotas-page .bombero-datos {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 14px !important;
+    padding-top: 16px !important;
+    padding-bottom: 18px !important;
 }
 
 /* Inputs y selects más prolijos */
