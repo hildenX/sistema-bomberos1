@@ -243,9 +243,11 @@ def rifas_simple(request):
                 hoy = timezone.now().date()
 
                 for voluntario in voluntarios:
-                    if not voluntario.fecha_ingreso:
-                        continue
-                    antiguedad = relativedelta(hoy, voluntario.fecha_ingreso).years
+                    # Sin fecha de ingreso -> se trata como voluntario regular (antiguedad 0)
+                    if voluntario.fecha_ingreso:
+                        antiguedad = relativedelta(hoy, voluntario.fecha_ingreso).years
+                    else:
+                        antiguedad = 0
 
                     if antiguedad >= 50:
                         talonarios = tal_insignes
