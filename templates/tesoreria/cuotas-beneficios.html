@@ -93,6 +93,50 @@
             color: #c41e3a;
             transform: rotate(90deg);
         }
+
+        /* ===== RESPONSIVE MÓVIL CUOTAS (inline, forzado) ===== */
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden !important; }
+
+            /* No recortar los botones que sobresalen */
+            .cuotas-page .bombero-info,
+            .cuotas-page .form-container,
+            .cuotas-page .list-container { overflow: visible !important; }
+
+            /* Botones de acción del voluntario: ancho completo, texto que envuelve */
+            .acciones-voluntario {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+            .buttons { display: flex !important; flex-direction: column !important; gap: 8px !important; }
+            .navigation-buttons { display: flex !important; flex-direction: column !important; }
+
+            .acciones-voluntario .btn,
+            .buttons .btn,
+            .navigation-buttons .btn {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                height: auto !important;
+                box-sizing: border-box !important;
+                font-size: 0.9rem !important;
+                padding: 12px 10px !important;
+            }
+
+            /* Formulario a una columna y datos legibles */
+            .form-grid { grid-template-columns: 1fr !important; }
+            .form-group.full-width { grid-column: 1 / -1 !important; }
+            .meses-checkbox-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .meses-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .bombero-datos { grid-template-columns: 1fr !important; }
+            .container { padding-left: 8px !important; padding-right: 8px !important; }
+        }
     </style>
 </head>
 <body>
