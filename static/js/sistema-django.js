@@ -243,13 +243,18 @@ class SistemaBomberos {
             
             console.log('[DATA] Datos recibidos de la API:', this.bomberos);
             
-            // ORDENAR POR ANTIGÜEDAD: fecha de ingreso más antigua primero
+            // Fecha base para la antigüedad: la efectiva (reconocida) si existe, si no la de ingreso
+            this.bomberos.forEach((b) => {
+                b.fechaAntiguedad = b.fechaIngresoEfectiva || b.fechaIngreso || b.fecha_ingreso;
+            });
+
+            // ORDENAR POR ANTIGÜEDAD: la más antigua (reconocida) primero
             this.bomberos.sort((a, b) => {
-                const fechaA = new Date(a.fechaIngreso || a.fecha_ingreso);
-                const fechaB = new Date(b.fechaIngreso || b.fecha_ingreso);
+                const fechaA = new Date(a.fechaAntiguedad);
+                const fechaB = new Date(b.fechaAntiguedad);
                 return fechaA - fechaB; // Más antiguo primero
             });
-            
+
             // Asignar número de posición por antigüedad a cada bombero
             this.bomberos.forEach((b, index) => {
                 b.posicionPorAntiguedad = index + 1;
@@ -718,9 +723,9 @@ renderizarBomberos() {
             fechaNacimiento: bombero.fechaNacimiento
         });
         
-        const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaIngreso);
+        const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaAntiguedad);
         const edad = Utils.calcularEdad(bombero.fechaNacimiento);
-        const categoria = Utils.calcularCategoriaBombero(bombero.fechaIngreso);
+        const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
         
         console.log('DEBUG Cálculos:', { edad, antiguedad, categoria });
         
@@ -954,7 +959,7 @@ async cambiarEstadoBombero(id) {
         const bombero = this.bomberos.find(b => b.id === parseInt(id));
         if (!bombero) return;
 
-        const categoria = Utils.calcularCategoriaBombero(bombero.fechaIngreso);
+        const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
         const categoriaTexto = categoria.categoria || categoria;
         const estadoActual = bombero.cuotasActivas !== false; // Por defecto true
         const nuevoEstado = !estadoActual;
@@ -1521,7 +1526,7 @@ async cambiarEstadoBombero(id) {
             yPos += 7;
 
             // Antigüedad
-            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaIngreso);
+            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaAntiguedad);
             doc.setFont(undefined, 'bold');
             doc.text('Antigüedad:', margin, yPos);
             doc.setFont(undefined, 'normal');
@@ -1529,7 +1534,7 @@ async cambiarEstadoBombero(id) {
             yPos += 7;
 
             // Categoría
-            const categoria = Utils.calcularCategoriaBombero(bombero.fechaIngreso);
+            const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
             doc.setFont(undefined, 'bold');
             doc.text('Categoría:', margin, yPos);
             doc.setFont(undefined, 'normal');
@@ -1926,7 +1931,7 @@ async cambiarEstadoBombero(id) {
         
         this.bomberos.forEach(bombero => {
             // VALIDAR SI PUEDE PAGAR CUOTAS (categoría + estado)
-            const categoria = Utils.calcularCategoriaBombero(bombero.fechaIngreso);
+            const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
             const categoriaTexto = categoria.categoria || categoria;
             const esHonorarioCompania = categoriaTexto === 'Voluntario Honorario de Compañía';
             const esHonorarioCuerpo = categoriaTexto === 'Voluntario Honorario del Cuerpo';
@@ -2155,9 +2160,9 @@ async cambiarEstadoBombero(id) {
     try {
         const datosExcel = this.bomberos.map((bombero, index) => {
             const nombreCompleto = Utils.obtenerNombreCompleto(bombero);
-            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaIngreso);
+            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaAntiguedad);
             const edad = Utils.calcularEdad(bombero.fechaNacimiento);
-            const categoria = Utils.calcularCategoriaBombero(bombero.fechaIngreso);
+            const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
 
             return {
                 'N°': index + 1,
@@ -2687,7 +2692,7 @@ async generarPDFConsultaVoluntarios() {
 
             // Datos del bombero
             const nombreCompleto = Utils.obtenerNombreCompleto(bombero).toUpperCase();
-            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaIngreso);
+            const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaAntiguedad);
             const claveBombero = bombero.claveBombero || 'N/A';
             const compania = bombero.compania || 'N/A';
             const fechaIngreso = bombero.fechaIngreso ? 
