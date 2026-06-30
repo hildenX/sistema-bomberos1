@@ -435,6 +435,7 @@ class VoluntarioSerializer(serializers.ModelSerializer):
             'claveBombero': instance.clave_bombero or '',
             'fechaNacimiento': instance.fecha_nacimiento.isoformat() if instance.fecha_nacimiento else None,
             'fechaIngreso': instance.fecha_ingreso.isoformat() if instance.fecha_ingreso else None,
+            'fechaIngresoEfectiva': instance.fecha_ingreso_efectiva.isoformat() if instance.fecha_ingreso_efectiva else None,
             'profesion': instance.profesion or '',
             'domicilio': instance.domicilio or '',
             'telefono': instance.telefono or '',
@@ -474,7 +475,7 @@ class VoluntarioSerializer(serializers.ModelSerializer):
             # Campos calculados
             'nombreCompleto': instance.nombre_completo(),
             'edad': instance.edad() if instance.fecha_nacimiento else 0,
-            'antiguedad': instance.antiguedad_detallada() if instance.fecha_ingreso else {'años': 0, 'meses': 0, 'dias': 0},
+            'antiguedad': instance.antiguedad_detallada() if instance.fecha_base_antiguedad else {'años': 0, 'meses': 0, 'dias': 0},
         }
         
         return ret

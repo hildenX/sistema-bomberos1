@@ -37,9 +37,9 @@ def listar_voluntarios_simple(request):
         
         for vol in voluntarios:
             # Calcular categoría
-            if vol.fecha_ingreso:
-                antiguedad = (date.today() - vol.fecha_ingreso).days // 365
-                
+            if vol.fecha_base_antiguedad:
+                antiguedad = (date.today() - vol.fecha_base_antiguedad).days // 365
+
                 if antiguedad < 20:
                     categoria = 'Voluntario'
                 elif antiguedad < 25:
@@ -112,9 +112,9 @@ def obtener_voluntario_simple(request, voluntario_id):
         vol = Voluntario.objects.get(id=voluntario_id)
         
         # Calcular categoría
-        if vol.fecha_ingreso:
-            antiguedad = (date.today() - vol.fecha_ingreso).days // 365
-            
+        if vol.fecha_base_antiguedad:
+            antiguedad = (date.today() - vol.fecha_base_antiguedad).days // 365
+
             if antiguedad < 20:
                 categoria = 'Voluntario'
             elif antiguedad < 25:

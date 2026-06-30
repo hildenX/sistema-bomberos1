@@ -83,7 +83,8 @@ def _rifa_to_dict(rifa, include_stats=True):
 def _asignacion_to_dict(asig, include_pagos=False):
     vol = asig.voluntario
     hoy = timezone.now().date()
-    antiguedad = relativedelta(hoy, vol.fecha_ingreso).years if vol.fecha_ingreso else 0
+    _fbase = vol.fecha_base_antiguedad
+    antiguedad = relativedelta(hoy, _fbase).years if _fbase else 0
     d = {
         'id':                 asig.id,
         'voluntario_id':      vol.id,
@@ -243,9 +244,10 @@ def rifas_simple(request):
                 hoy = timezone.now().date()
 
                 for voluntario in voluntarios:
-                    # Sin fecha de ingreso -> se trata como voluntario regular (antiguedad 0)
-                    if voluntario.fecha_ingreso:
-                        antiguedad = relativedelta(hoy, voluntario.fecha_ingreso).years
+                    # Antiguedad reconocida (fecha efectiva si existe). Sin fecha -> regular (0)
+                    _fbase = voluntario.fecha_base_antiguedad
+                    if _fbase:
+                        antiguedad = relativedelta(hoy, _fbase).years
                     else:
                         antiguedad = 0
 

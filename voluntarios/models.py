@@ -39,6 +39,10 @@ class Voluntario(models.Model):
     
     # Datos de bombero
     fecha_ingreso = models.DateField(blank=True, null=True)
+    # Fecha base para calcular la antiguedad reconocida (ajustada por reintegros / servicio
+    # previo reconocido). Si esta seteada, se usa ESTA en vez de fecha_ingreso para la
+    # antiguedad y la categoria (Honorario / Insigne). Si es None, se usa fecha_ingreso.
+    fecha_ingreso_efectiva = models.DateField(blank=True, null=True)
     nro_registro = models.CharField(max_length=50, blank=True, null=True)
     compania = models.CharField(max_length=100, blank=True, null=True)
     
@@ -141,17 +145,26 @@ class Voluntario(models.Model):
             (today.month, today.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
         )
     
+    @property
+    def fecha_base_antiguedad(self):
+        """
+        Fecha que se usa para calcular la antiguedad reconocida.
+        Usa fecha_ingreso_efectiva (ajustada por reintegros / servicio previo)
+        si existe; si no, cae a la fecha_ingreso real.
+        """
+        return self.fecha_ingreso_efectiva or self.fecha_ingreso
+
     def antiguedad_detallada(self):
         """Calcula la antigüedad en años, meses y días"""
         from datetime import date
-        
+
         # Si está congelada, usar fecha de congelamiento
         if self.antiguedad_congelada and self.fecha_congelamiento:
             fecha_hasta = self.fecha_congelamiento
         else:
             fecha_hasta = date.today()
-        
-        fecha_desde = self.fecha_ingreso
+
+        fecha_desde = self.fecha_base_antiguedad
         
         años = fecha_hasta.year - fecha_desde.year
         meses = fecha_hasta.month - fecha_desde.month

@@ -216,7 +216,7 @@ class VoluntarioUtils:
             }
         
         # Verificar antigüedad (Honorarios e Insignes no pagan)
-        categoria = VoluntarioUtils.calcular_categoria_bombero(voluntario.fecha_ingreso)
+        categoria = VoluntarioUtils.calcular_categoria_bombero(voluntario.fecha_base_antiguedad)
         if categoria['categoria'] != 'Voluntario':
             return {
                 'puede': False,
