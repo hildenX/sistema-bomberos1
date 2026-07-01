@@ -174,13 +174,17 @@ class Utils {
     static filtrarBomberos(bomberos, termino) {
         if (!termino) return bomberos;
         
-        const terminoLower = termino.toLowerCase();
+        // Busca por palabras: cada palabra debe aparecer en algún campo.
+        // Así "cristian vera" encuentra a "Cristian Alejandro Vera Arriagada".
+        const palabras = termino.toLowerCase().trim().split(/\s+/).filter(Boolean);
         return bomberos.filter(bombero => {
-            const nombreCompleto = this.obtenerNombreCompleto(bombero).toLowerCase();
-            return nombreCompleto.includes(terminoLower) ||
-                   (bombero.claveBombero && bombero.claveBombero.toLowerCase().includes(terminoLower)) ||
-                   (bombero.rut && bombero.rut.toLowerCase().includes(terminoLower)) ||
-                   (bombero.compania && bombero.compania.toLowerCase().includes(terminoLower));
+            const texto = [
+                this.obtenerNombreCompleto(bombero),
+                bombero.claveBombero || '',
+                bombero.rut || '',
+                bombero.compania || ''
+            ].join(' ').toLowerCase();
+            return palabras.every(p => texto.includes(p));
         });
     }
 

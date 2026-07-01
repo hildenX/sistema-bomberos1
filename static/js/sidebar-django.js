@@ -356,7 +356,7 @@ function abrirModalLogoCompania() {
     // Cargar el script del gestor si no está cargado
     if (typeof GestorLogos === 'undefined') {
         const script = document.createElement('script');
-        script.src = '/static/js/gestor-logos.js?v=2.0';
+        script.src = '/static/js/gestor-logos.js?v=2.1';
         script.onload = () => {
             window.inicializarGestorLogos();
         };
