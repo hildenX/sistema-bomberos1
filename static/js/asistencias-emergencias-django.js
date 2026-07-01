@@ -158,7 +158,8 @@ class SistemaAsistenciasEmergencias {
 
         for (const bombero of this.bomberos) {
             const cargo = this.cargosVigentes[bombero.id];
-            const categoria = Utils.calcularCategoriaBombero(bombero);
+            // Usar la antigüedad ya calculada por el backend (respeta honorarios/insignes).
+            const anos = (bombero.antiguedad_anos != null) ? bombero.antiguedad_anos : 0;
 
             // Clasificar según estado y categoría
             if ((bombero.estado_bombero || bombero.estadoBombero) === 'martir') {
@@ -169,11 +170,11 @@ class SistemaAsistenciasEmergencias {
                 clasificados.compania.push({ bombero, cargo });
             } else if (cargo && this.esCargoConfianza(cargo.nombre_cargo)) {
                 clasificados.confianza.push({ bombero, cargo });
-            } else if (categoria.categoria === 'Voluntario Insigne') {
+            } else if (anos >= 50) {
                 clasificados.insignes.push({ bombero, cargo });
-            } else if (categoria.categoria === 'V.H. del Cuerpo') {
+            } else if (anos >= 25) {
                 clasificados.honorariosCuerpo.push({ bombero, cargo });
-            } else if (categoria.categoria === 'V.H. de Compañía') {
+            } else if (anos >= 20) {
                 clasificados.honorariosCia.push({ bombero, cargo });
             } else {
                 clasificados.voluntarios.push({ bombero, cargo });
