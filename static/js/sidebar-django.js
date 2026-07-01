@@ -2,6 +2,40 @@
 // Flag para evitar múltiples inicializaciones
 let _sidebarIniciado = false;
 
+// Refresca los logos reales del sistema desde la API (sidebar + PDFs).
+// Se llama al iniciar y cada vez que se cambia un contexto en el gestor de logos.
+function _logoSrc(logo) {
+    if (!logo || !logo.imagen) return '';
+    return logo.imagen.startsWith('data:') ? logo.imagen : 'data:image/png;base64,' + logo.imagen;
+}
+window.refrescarLogosSistema = async function () {
+    const sidebarLogo = document.querySelector('.sidebar-logo');
+    // --- Logo del SIDEBAR ---
+    try {
+        const r = await fetch('/api/logos/sidebar/', { credentials: 'include' });
+        if (r.ok) {
+            const src = _logoSrc(await r.json());
+            if (sidebarLogo && src) {
+                sidebarLogo.innerHTML = `<img src="${src}" alt="Logo" style="width:70%;height:70%;object-fit:contain;border-radius:8px;margin:auto;">`;
+                localStorage.setItem('logoSidebar', src);
+            }
+        } else if (r.status === 404) {
+            if (sidebarLogo) sidebarLogo.innerHTML = '🚒';
+            localStorage.removeItem('logoSidebar');
+        }
+    } catch (e) { /* offline: se queda el cache */ }
+    // --- Logo para PDFs (los PDFs leen localStorage 'logoCompania') ---
+    try {
+        const r = await fetch('/api/logos/pdfs/', { credentials: 'include' });
+        if (r.ok) {
+            const src = _logoSrc(await r.json());
+            if (src) localStorage.setItem('logoCompania', src);
+        } else if (r.status === 404) {
+            localStorage.removeItem('logoCompania');
+        }
+    } catch (e) { /* ignore */ }
+};
+
 async function initSidebar() {
     // Evitar múltiples inicializaciones
     if (_sidebarIniciado) {
@@ -43,12 +77,14 @@ async function initSidebar() {
         }
     }
 
-    // Actualizar logo de compañía si existe
-    const logoCompania = localStorage.getItem('logoCompania');
+    // Mostrar el logo del sidebar cacheado al toque (evita parpadeo) y luego refrescar desde la API
+    const logoSidebarCache = localStorage.getItem('logoSidebar');
     const sidebarLogo = document.querySelector('.sidebar-logo');
-    if (logoCompania && sidebarLogo) {
-        sidebarLogo.innerHTML = `<img src="${logoCompania}" alt="Logo" style="width: 70%; height: 70%; object-fit: contain; border-radius: 8px; margin: auto;">`;
+    if (logoSidebarCache && sidebarLogo) {
+        sidebarLogo.innerHTML = `<img src="${logoSidebarCache}" alt="Logo" style="width: 70%; height: 70%; object-fit: contain; border-radius: 8px; margin: auto;">`;
     }
+    // Cargar los logos reales (sidebar + PDFs) desde la API
+    window.refrescarLogosSistema();
 
     // Actualizar info de usuario en sidebar
     const roleElement = document.getElementById('sidebarUserRole');
@@ -356,7 +392,7 @@ function abrirModalLogoCompania() {
     // Cargar el script del gestor si no está cargado
     if (typeof GestorLogos === 'undefined') {
         const script = document.createElement('script');
-        script.src = '/static/js/gestor-logos.js?v=2.1';
+        script.src = '/static/js/gestor-logos.js?v=2.2';
         script.onload = () => {
             window.inicializarGestorLogos();
         };

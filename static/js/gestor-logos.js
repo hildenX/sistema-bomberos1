@@ -98,6 +98,8 @@
             });
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             if (typeof mostrarNotificacionModal === 'function') mostrarNotificacionModal('Actualizado ✅', 'success');
+            cargarLista();
+            if (window.refrescarLogosSistema) window.refrescarLogosSistema();
         } catch (e) {
             alert('No se pudo actualizar: ' + e.message);
             cargarLista();
@@ -114,6 +116,7 @@
             });
             if (!resp.ok && resp.status !== 204) throw new Error('HTTP ' + resp.status);
             cargarLista();
+            if (window.refrescarLogosSistema) window.refrescarLogosSistema();
         } catch (e) {
             alert('No se pudo eliminar: ' + e.message);
         }
@@ -146,6 +149,7 @@
                 });
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 cargarLista();
+                if (window.refrescarLogosSistema) window.refrescarLogosSistema();
             } catch (err) {
                 alert('No se pudo subir el logo: ' + err.message);
                 cargarLista();
