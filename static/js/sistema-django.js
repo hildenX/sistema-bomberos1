@@ -811,9 +811,6 @@ renderizarBomberos() {
 
         return `
             <div class="bombero-card" style="${cardStyle}">
-                <!-- Número por antigüedad -->
-                <div class="bombero-numero">#${posicionPorAntiguedad}</div>
-                
                 <!-- Foto izquierda -->
                 <div class="bombero-foto-wrapper">
                     ${bombero.foto ? `

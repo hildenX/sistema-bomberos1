@@ -128,10 +128,7 @@ class CrearBomberoSistema {
             return;
         }
 
-        if (!datos.nombrePrimerPadrino || !datos.nombreSegundoPadrino) {
-            this.mostrarNotificacion('Los dos padrinos son obligatorios', 'error');
-            return;
-        }
+        // Padrinos son opcionales
 
         // Preparar datos para enviar a Django
         const voluntarioData = {

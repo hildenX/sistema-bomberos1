@@ -256,10 +256,7 @@ class EditarBomberoSistema {
             return;
         }
 
-        if (!datos.nombrePrimerPadrino || !datos.nombreSegundoPadrino) {
-            this.mostrarNotificacion('Los dos padrinos son obligatorios', 'error');
-            return;
-        }
+        // Padrinos son opcionales
 
         // Preparar datos para Django (misma estructura que crear)
         const voluntarioData = {
