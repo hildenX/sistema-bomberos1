@@ -74,9 +74,9 @@ class CrearBomberoSistema {
 
         const file = input.files[0];
         
-        // Validar tamaño (5MB máximo)
-        if (file.size > 5 * 1024 * 1024) {
-            this.mostrarNotificacion('La foto no debe superar 5MB', 'error');
+        // Validar tamaño (15MB máximo — igual se comprime automáticamente al cargar)
+        if (file.size > 15 * 1024 * 1024) {
+            this.mostrarNotificacion('La foto no debe superar 15MB', 'error');
             input.value = '';
             if (preview) preview.innerHTML = '';
             this.fotoNueva = null;
@@ -92,25 +92,24 @@ class CrearBomberoSistema {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.fotoNueva = e.target.result;
-            
+        // Comprimir/redimensionar automáticamente para que la foto quede liviana
+        Utils.comprimirImagen(file).then((dataUrl) => {
+            this.fotoNueva = dataUrl;
+
             // Solo mostrar preview si el elemento existe
             if (preview) {
                 preview.style.display = 'block';
                 preview.innerHTML = `
                     <div style="text-align: center; margin-top: 10px;">
-                        <img src="${e.target.result}" alt="Vista previa" 
+                        <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 2px solid #4caf50; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Foto cargada - Se guardará al crear</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Foto cargada (optimizada) - Se guardará al crear</p>
                     </div>
                 `;
             }
-            
-            console.log('[FOTO] Nueva foto cargada correctamente');
-        };
-        reader.readAsDataURL(file);
+
+            console.log('[FOTO] Nueva foto comprimida y cargada');
+        }).catch(() => this.mostrarNotificacion('No se pudo procesar la imagen', 'error'));
     }
 
     async manejarSubmit(event) {

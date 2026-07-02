@@ -141,8 +141,8 @@ class Utils {
                 return;
             }
 
-            if (archivo.size > 5 * 1024 * 1024) {
-                reject(new Error('La imagen no debe superar los 5MB'));
+            if (archivo.size > 15 * 1024 * 1024) {
+                reject(new Error('La imagen no debe superar los 15MB'));
                 return;
             }
 
@@ -153,18 +153,49 @@ class Utils {
         });
     }
 
+    // Comprime/redimensiona una imagen a un dataURL liviano (para fotos de voluntarios).
+    // Una foto de 10MB queda en ~100-250KB. Devuelve Promise<string dataURL>.
+    static comprimirImagen(archivo, maxDim = 800, calidad = 0.82) {
+        return new Promise((resolve, reject) => {
+            if (!archivo) { resolve(null); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width, height = img.height;
+                    if (width > maxDim || height > maxDim) {
+                        if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+                        else { width = Math.round(width * maxDim / height); height = maxDim; }
+                    }
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', calidad));
+                    } catch (err) {
+                        resolve(e.target.result); // fallback: imagen original
+                    }
+                };
+                img.onerror = () => resolve(e.target.result);
+                img.src = e.target.result;
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(archivo);
+        });
+    }
+
     static validarImagen(archivo) {
         if (!archivo) return true;
         
         const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        const maxSize = 5 * 1024 * 1024;
+        const maxSize = 15 * 1024 * 1024;
         
         if (!tiposPermitidos.includes(archivo.type)) {
             return 'Solo se permiten imágenes JPEG, PNG, GIF o WebP';
         }
         
         if (archivo.size > maxSize) {
-            return 'La imagen no debe superar los 5MB';
+            return 'La imagen no debe superar los 15MB';
         }
         
         return true;

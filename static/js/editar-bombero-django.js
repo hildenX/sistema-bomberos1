@@ -204,8 +204,8 @@ class EditarBomberoSistema {
 
         const file = input.files[0];
         
-        if (file.size > 5 * 1024 * 1024) {
-            this.mostrarNotificacion('La foto no debe superar 5MB', 'error');
+        if (file.size > 15 * 1024 * 1024) {
+            this.mostrarNotificacion('La foto no debe superar 15MB', 'error');
             input.value = '';
             if (preview) preview.innerHTML = '';
             this.fotoNueva = null;
@@ -220,26 +220,25 @@ class EditarBomberoSistema {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.fotoNueva = e.target.result;
-            
+        // Comprimir/redimensionar automáticamente para que la foto quede liviana
+        Utils.comprimirImagen(file).then((dataUrl) => {
+            this.fotoNueva = dataUrl;
+
             // Solo mostrar preview si el elemento existe
             if (preview) {
                 preview.style.display = 'block';
                 preview.innerHTML = `
                     <div style="text-align: center; margin-top: 10px;">
                         <p style="font-weight: 600; color: #ff9800; margin-bottom: 10px;">📸 Nueva Foto (Vista Previa):</p>
-                        <img src="${e.target.result}" alt="Vista previa" 
+                        <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 3px solid #ff9800; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Nueva foto cargada - Se guardará al actualizar</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Nueva foto cargada (optimizada) - Se guardará al actualizar</p>
                     </div>
                 `;
             }
-            
-            console.log('[FOTO] Nueva foto cargada correctamente');
-        };
-        reader.readAsDataURL(file);
+
+            console.log('[FOTO] Nueva foto comprimida y cargada');
+        }).catch(() => this.mostrarNotificacion('No se pudo procesar la imagen', 'error'));
     }
 
     async manejarSubmit(event) {
