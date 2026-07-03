@@ -16,6 +16,8 @@ class SistemaAsistenciasGenericas {
             participantes: {},
             canjes: {}
         };
+        // Si viene ?editar=<id> en la URL, entramos en modo edición
+        this.editarId = new URLSearchParams(window.location.search).get('editar');
         this.init();
     }
 
@@ -32,8 +34,57 @@ class SistemaAsistenciasGenericas {
         this.inicializarFechaHora();
         this.renderizarVoluntarios();
         this.cargarListasExternos();
-        
+
+        if (this.editarId) {
+            await this.cargarParaEditar();
+        }
+
         console.log(`[${this.tipo.toUpperCase()}] ✅ Sistema inicializado`);
+    }
+
+    // Carga una asistencia existente y prellena el formulario (modo edición)
+    async cargarParaEditar() {
+        try {
+            const [rEv, rDet] = await Promise.all([
+                fetch(`/api/eventos-asistencia/${this.editarId}/`, { credentials: 'include' }),
+                fetch(`/api/detalles-asistencia/?evento=${this.editarId}`, { credentials: 'include' })
+            ]);
+            if (!rEv.ok) { Utils.mostrarNotificacion('No se pudo cargar la asistencia a editar', 'error'); return; }
+            const ev = await rEv.json();
+            const detData = rDet.ok ? await rDet.json() : [];
+            const detalles = Array.isArray(detData) ? detData : (detData.results || []);
+
+            // Campos comunes
+            const fechaInput = document.querySelector('input[type="date"]');
+            if (fechaInput && ev.fecha) fechaInput.value = ev.fecha;
+            const hi = document.getElementById('horaInicio'); if (hi && ev.hora_inicio) hi.value = String(ev.hora_inicio).slice(0, 5);
+            const ht = document.getElementById('horaTermino'); if (ht && ev.hora_termino) ht.value = String(ev.hora_termino).slice(0, 5);
+
+            // Campos específicos por tipo
+            const setVal = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+            setVal('tipoAsamblea', ev.tipo_asamblea);
+            setVal('tipoEjercicio', ev.tipo_ejercicio);
+            setVal('nombreCitacion', ev.nombre_citacion);
+            setVal('motivoOtras', ev.motivo_otras);
+
+            // Marcar los asistentes que ya estaban
+            const idsPresentes = new Set(detalles.filter(d => !d.es_externo && d.voluntario).map(d => String(d.voluntario)));
+            document.querySelectorAll('.voluntarios-lista input[type="checkbox"]').forEach(cb => {
+                cb.checked = idsPresentes.has(String(cb.dataset.id));
+            });
+            this.actualizarEstadisticas();
+
+            // Aviso visual + cambiar el texto del botón de guardar
+            document.querySelectorAll('button').forEach(b => {
+                if (/guardar|registrar/i.test(b.textContent)) b.textContent = '💾 Actualizar Asistencia';
+            });
+            const aviso = document.createElement('div');
+            aviso.style.cssText = 'background:#fff3cd;border:2px solid #f59e0b;color:#92400e;padding:12px 16px;border-radius:10px;margin:12px auto;font-weight:700;text-align:center;max-width:900px;';
+            aviso.textContent = '✏️ Estás EDITANDO una asistencia existente. Al guardar se actualizará.';
+            (document.querySelector('.container') || document.body).prepend(aviso);
+        } catch (e) {
+            console.error('[EDITAR] error', e);
+        }
     }
 
     async cargarDatos() {
@@ -589,22 +640,40 @@ class SistemaAsistenciasGenericas {
 
             console.log(`[${this.tipo.toUpperCase()}] 📤 Datos a enviar:`, eventoData);
 
-            // Guardar evento
-            const responseEvento = await fetch('/api/eventos-asistencia/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                credentials: 'include',
-                body: JSON.stringify(eventoData)
-            });
-
-            if (!responseEvento.ok) {
-                throw new Error('Error al guardar evento');
+            // Guardar / actualizar evento
+            let eventoGuardado;
+            if (this.editarId) {
+                // MODO EDICIÓN: actualizar el evento y reemplazar sus detalles
+                delete eventoData.id_evento; // conservar el id_evento original
+                const resp = await fetch(`/api/eventos-asistencia/${this.editarId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    credentials: 'include',
+                    body: JSON.stringify(eventoData)
+                });
+                if (!resp.ok) throw new Error('Error al actualizar evento');
+                eventoGuardado = await resp.json();
+                // Borrar los asistentes anteriores (se recrean abajo)
+                const rDet = await fetch(`/api/detalles-asistencia/?evento=${this.editarId}`, { credentials: 'include' });
+                const dData = rDet.ok ? await rDet.json() : [];
+                const viejos = Array.isArray(dData) ? dData : (dData.results || []);
+                for (const d of viejos) {
+                    await fetch(`/api/detalles-asistencia/${d.id}/`, {
+                        method: 'DELETE',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        credentials: 'include'
+                    });
+                }
+            } else {
+                const responseEvento = await fetch('/api/eventos-asistencia/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    credentials: 'include',
+                    body: JSON.stringify(eventoData)
+                });
+                if (!responseEvento.ok) throw new Error('Error al guardar evento');
+                eventoGuardado = await responseEvento.json();
             }
-
-            const eventoGuardado = await responseEvento.json();
             console.log(`[${this.tipo.toUpperCase()}] ✅ Evento guardado:`, eventoGuardado);
 
             // Guardar detalles
@@ -667,7 +736,7 @@ class SistemaAsistenciasGenericas {
                 });
             }
 
-            Utils.mostrarNotificacion('✅ Asistencia registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(this.editarId ? '✅ Asistencia actualizada' : '✅ Asistencia registrada exitosamente', 'success');
             
             setTimeout(() => {
                 window.location.href = '/historial-asistencias.html';

@@ -885,6 +885,15 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
             return EventoAsistenciaListSerializer
         return EventoAsistenciaSerializer
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # El Secretario solo ve / edita / borra las asistencias que él mismo registró.
+        from .permissions import obtener_rol_usuario, RolBomberos
+        user = self.request.user
+        if user.is_authenticated and obtener_rol_usuario(user) == RolBomberos.SECRETARIO:
+            qs = qs.filter(registrado_por=user)
+        return qs
+
     def perform_create(self, serializer):
         serializer.save(registrado_por=self.request.user)
 

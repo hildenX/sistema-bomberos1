@@ -390,8 +390,25 @@ class HistorialAsistencias {
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
                     🔍 Ver Detalle Completo
                 </button>
+                ${(this.puedeEditar() || this.puedeEliminar()) ? `
+                <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
+                    ${(this.puedeEditar() && asistencia.tipo !== 'emergencia') ? `<button onclick='event.stopPropagation(); editarAsistencia("${asistencia.tipo}", ${asistencia.id})' style="flex:1; background:#fff; color:#f57c00; border:2px solid #f57c00; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✏️ Editar</button>` : ''}
+                    ${this.puedeEliminar() ? `<button onclick='event.stopPropagation(); eliminarAsistencia(${asistencia.id})' style="flex:1; background:#fff; color:#dc2626; border:2px solid #dc2626; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">🗑️ Eliminar</button>` : ''}
+                </div>` : ''}
             </div>
         `;
+    }
+
+    puedeEditar() {
+        return !!(window.currentUser && window.currentUser.permissions &&
+                  window.currentUser.permissions.asistencias &&
+                  window.currentUser.permissions.asistencias.edit);
+    }
+
+    puedeEliminar() {
+        return !!(window.currentUser && window.currentUser.permissions &&
+                  window.currentUser.permissions.asistencias &&
+                  window.currentUser.permissions.asistencias.delete);
     }
 
     async renderizarRanking() {
@@ -774,6 +791,49 @@ async function verDetalleAsistencia(asistencia) {
 
 function cerrarModal() {
     document.getElementById('modalDetalles').style.display = 'none';
+}
+
+function _getCookieHist(name) {
+    let v = null;
+    if (document.cookie) {
+        document.cookie.split(';').forEach(c => {
+            c = c.trim();
+            if (c.startsWith(name + '=')) v = decodeURIComponent(c.substring(name.length + 1));
+        });
+    }
+    return v;
+}
+
+// Ir a la página de registro en modo edición
+function editarAsistencia(tipo, id) {
+    const paginas = {
+        emergencia: 'registro-asistencia.html',
+        asamblea: 'registro-asamblea.html',
+        ejercicios: 'registro-ejercicios.html',
+        citaciones: 'registro-citaciones.html',
+        otras: 'registro-otras.html',
+        directorio: 'registro-directorio.html'
+    };
+    const pag = paginas[tipo];
+    if (!pag) { alert('Este tipo de asistencia no se puede editar.'); return; }
+    window.location.href = `/${pag}?editar=${id}`;
+}
+
+// Eliminar una asistencia (con confirmación)
+async function eliminarAsistencia(id) {
+    if (!confirm('¿Eliminar esta asistencia? Esta acción no se puede deshacer.')) return;
+    try {
+        const resp = await fetch(`/api/eventos-asistencia/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': _getCookieHist('csrftoken') },
+            credentials: 'include'
+        });
+        if (!resp.ok && resp.status !== 204) throw new Error('HTTP ' + resp.status);
+        if (window.Utils) Utils.mostrarNotificacion('Asistencia eliminada ✅', 'success');
+        setTimeout(() => location.reload(), 600);
+    } catch (e) {
+        alert('No se pudo eliminar: ' + e.message);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
