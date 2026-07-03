@@ -179,6 +179,20 @@ class CargoViewSet(viewsets.ModelViewSet):
     ordering_fields = ['anio', 'fecha_inicio', 'nombre_cargo']
     ordering = ['-anio', '-fecha_inicio']
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        vigente = self.request.query_params.get('vigente')
+        if vigente in ('true', 'True', '1'):
+            # Vigente = hoy está entre fecha_inicio y fecha_fin.
+            # (fecha_inicio nula = ya empezó; fecha_fin nula = sigue en ejercicio)
+            hoy = timezone.now().date()
+            qs = qs.filter(
+                Q(fecha_inicio__isnull=True) | Q(fecha_inicio__lte=hoy)
+            ).filter(
+                Q(fecha_fin__isnull=True) | Q(fecha_fin__gte=hoy)
+            )
+        return qs
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 

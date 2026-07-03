@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
-    <link rel="stylesheet" href="{% static 'css/cargos-custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cargos-custom.css' %}?v=2">
 </head>
 <body>
     <div class="page-container cargos-page">
@@ -40,10 +40,8 @@
                         <input type="hidden" id="cargoIdEditando" name="cargoIdEditando">
                         
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="añoCargo" class="opcional">Año</label>
-                                <input type="number" id="añoCargo" name="añoCargo" min="1950" max="2030"
-                                       placeholder="Ej: 2024">
+                            <div class="form-group" style="display:none">
+                                <input type="hidden" id="añoCargo" name="añoCargo">
                                 <div class="error" id="error-añoCargo"></div>
                             </div>
 
@@ -172,7 +170,7 @@
     <!-- Scripts -->
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
-    <script src="{% static 'js/cargos-django.js' %}?v=9.0"></script>
+    <script src="{% static 'js/cargos-django.js' %}?v=9.1"></script>
     <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
 </body>
 </html>

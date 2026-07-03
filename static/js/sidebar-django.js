@@ -173,7 +173,7 @@ function generarMenuSegunRol(role) {
         );
     }
 
-    if (role !== 'Tesorero' && role !== 'Secretario') {
+    if (role !== 'Tesorero') {
         const asistenciaItems = [];
 
         if (['Capit\u00e1n', 'Ayudante', 'Super Administrador'].includes(role)) {

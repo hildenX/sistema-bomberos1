@@ -484,6 +484,8 @@ class SistemaUniformesDjango {
                 <option value="pantalon_blanco">Pantalón Blanco</option>
                 <option value="cinturon_negro">Cinturón Negro</option>
                 <option value="cinturon_blanco">Cinturón Blanco</option>
+                <option value="cinturon_tricolor">Cinturón Tricolor</option>
+                <option value="casco_parada">Casco de Parada</option>
                 <option value="otro">Otro</option>
             `,
             'usar': `
@@ -1024,9 +1026,11 @@ class SistemaUniformesDjango {
     }
     
     formatearNombreComponente(componente) {
-        // Manejo especial para cinturones
+        // Manejo especial para cinturones y artículos de parada
         if (componente === 'cinturon_negro') return 'Cinturón Negro';
         if (componente === 'cinturon_blanco') return 'Cinturón Blanco';
+        if (componente === 'cinturon_tricolor') return 'Cinturón Tricolor';
+        if (componente === 'casco_parada') return 'Casco de Parada';
         return componente.replace(/_/g, ' ').split(' ').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
     }
     

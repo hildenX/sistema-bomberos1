@@ -191,8 +191,9 @@ class SistemaCargos {
         console.log('[CARGOS] ===== GUARDANDO CARGO =====');
 
         // Obtener valores
-        const anio = document.getElementById('añoCargo')?.value;
         const fechaInicio = document.getElementById('fechaInicioCargo')?.value;
+        // Año automático (el campo está oculto): se toma del "Desde" o el año actual
+        const anio = fechaInicio ? parseInt(fechaInicio.slice(0, 4)) : new Date().getFullYear();
         const fechaFin = document.getElementById('fechaFinCargo')?.value;
         const observaciones = document.getElementById('observacionesCargo')?.value;
 
@@ -221,11 +222,6 @@ class SistemaCargos {
             return;
         }
 
-        // Validar año
-        if (!anio) {
-            Utils.mostrarNotificacion('El año es obligatorio', 'error');
-            return;
-        }
 
         // Preparar datos
         const datosCargo = {
