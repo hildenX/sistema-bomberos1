@@ -885,14 +885,28 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
             return EventoAsistenciaListSerializer
         return EventoAsistenciaSerializer
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # El Secretario solo ve / edita / borra las asistencias que él mismo registró.
+    def _secretario_no_dueno(self, obj):
+        # True si el usuario es Secretario y NO registró esta asistencia
         from .permissions import obtener_rol_usuario, RolBomberos
         user = self.request.user
-        if user.is_authenticated and obtener_rol_usuario(user) == RolBomberos.SECRETARIO:
-            qs = qs.filter(registrado_por=user)
-        return qs
+        return (user.is_authenticated
+                and obtener_rol_usuario(user) == RolBomberos.SECRETARIO
+                and obj.registrado_por_id != user.id)
+
+    def update(self, request, *args, **kwargs):
+        if self._secretario_no_dueno(self.get_object()):
+            return Response({'error': 'Solo puedes editar las asistencias que registraste.'}, status=403)
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        if self._secretario_no_dueno(self.get_object()):
+            return Response({'error': 'Solo puedes editar las asistencias que registraste.'}, status=403)
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        if self._secretario_no_dueno(self.get_object()):
+            return Response({'error': 'Solo puedes eliminar las asistencias que registraste.'}, status=403)
+        return super().destroy(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(registrado_por=self.request.user)

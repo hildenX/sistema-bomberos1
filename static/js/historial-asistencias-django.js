@@ -59,7 +59,8 @@ class HistorialAsistencias {
                     voluntarios: e.voluntarios,
                     participantes: e.participantes,
                     canjes: e.canjes,
-                    observaciones: e.observaciones || ''
+                    observaciones: e.observaciones || '',
+                    registradoPorNombre: e.registrado_por_nombre || ''
                 };
                 
                 // Debug para emergencias
@@ -390,7 +391,7 @@ class HistorialAsistencias {
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
                     🔍 Ver Detalle Completo
                 </button>
-                ${(this.puedeEditar() || this.puedeEliminar()) ? `
+                ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
                     ${(this.puedeEditar() && asistencia.tipo !== 'emergencia') ? `<button onclick='event.stopPropagation(); editarAsistencia("${asistencia.tipo}", ${asistencia.id})' style="flex:1; background:#fff; color:#f57c00; border:2px solid #f57c00; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✏️ Editar</button>` : ''}
                     ${this.puedeEliminar() ? `<button onclick='event.stopPropagation(); eliminarAsistencia(${asistencia.id})' style="flex:1; background:#fff; color:#dc2626; border:2px solid #dc2626; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">🗑️ Eliminar</button>` : ''}
@@ -409,6 +410,15 @@ class HistorialAsistencias {
         return !!(window.currentUser && window.currentUser.permissions &&
                   window.currentUser.permissions.asistencias &&
                   window.currentUser.permissions.asistencias.delete);
+    }
+
+    // El Secretario solo puede editar/eliminar las asistencias que él registró.
+    // Los demás roles (Director, Super Admin) pueden gestionar todas.
+    puedeGestionar(asistencia) {
+        if (window.currentUser && window.currentUser.role === 'Secretario') {
+            return asistencia.registradoPorNombre === window.currentUser.username;
+        }
+        return true;
     }
 
     async renderizarRanking() {
@@ -583,7 +593,15 @@ async function verDetalleAsistencia(asistencia) {
     const modalBody = document.getElementById('modalBody');
     const modalTitulo = document.getElementById('modalTitulo');
     
-    modalTitulo.textContent = `🚨 Detalles de Emergencia`;
+    const titulosDetalle = {
+        emergencia: '🚨 Detalles de Emergencia',
+        asamblea: '🏛️ Detalles de Asamblea',
+        ejercicios: '💪 Detalles de Ejercicios',
+        citaciones: '📋 Detalles de la Citación',
+        otras: '📌 Detalles de la Actividad',
+        directorio: '🏛️ Detalles del Directorio'
+    };
+    modalTitulo.textContent = titulosDetalle[asistencia.tipo] || '📋 Detalles de Asistencia';
     modalBody.innerHTML = '<div style="text-align:center; padding:40px;"><p>Cargando...</p></div>';
     modal.style.display = 'block';
     
