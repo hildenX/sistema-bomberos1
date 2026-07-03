@@ -542,11 +542,18 @@ class HistorialAsistencias {
     formatearFecha(fecha) {
         if (!fecha) return 'Fecha no disponible';
         try {
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-CL', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            // Fecha-only 'YYYY-MM-DD': construir en hora LOCAL para no correr un día por UTC
+            let date;
+            const m = typeof fecha === 'string' && fecha.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (m) {
+                date = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+            } else {
+                date = new Date(fecha);
+            }
+            return date.toLocaleDateString('es-CL', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
         } catch (error) {
             return fecha;
