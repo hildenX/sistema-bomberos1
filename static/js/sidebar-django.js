@@ -176,7 +176,7 @@ function generarMenuSegunRol(role) {
     if (role !== 'Tesorero') {
         const asistenciaItems = [];
 
-        if (['Capit\u00e1n', 'Ayudante', 'Super Administrador'].includes(role)) {
+        if (['Capit\u00e1n', 'Ayudante', 'Secretario', 'Super Administrador'].includes(role)) {
             asistenciaItems.push(
                 { icono: '\u2705', texto: 'Registrar Asistencia', url: '/tipos-asistencia.html' }
             );

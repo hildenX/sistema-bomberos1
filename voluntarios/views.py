@@ -179,6 +179,13 @@ class CargoViewSet(viewsets.ModelViewSet):
     ordering_fields = ['anio', 'fecha_inicio', 'nombre_cargo']
     ordering = ['-anio', '-fecha_inicio']
 
+    def get_permissions(self):
+        # Leer cargos (para clasificar en asistencias) lo puede hacer cualquier
+        # usuario autenticado; crear/editar/borrar sigue requiriendo permiso del módulo.
+        if self.action in ('list', 'retrieve', 'por_voluntario', 'por_anio', 'estadisticas'):
+            return [IsAuthenticated()]
+        return super().get_permissions()
+
     def get_queryset(self):
         qs = super().get_queryset()
         vigente = self.request.query_params.get('vigente')

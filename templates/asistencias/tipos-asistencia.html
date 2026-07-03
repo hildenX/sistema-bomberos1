@@ -218,6 +218,17 @@
 
         // Cargar logo cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', cargarLogoHeader);
+
+        // El Secretario solo registra: Asamblea, Citaciones, Otras y Directorio
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const u = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (u.role === 'Secretario') {
+                    document.querySelectorAll('.tipo-card.emergencia, .tipo-card.ejercicios')
+                        .forEach(c => c.style.display = 'none');
+                }
+            } catch (e) {}
+        });
     </script>
 </body>
 </html>
