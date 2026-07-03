@@ -130,6 +130,12 @@ class Utils {
 
     static formatearFecha(fecha) {
         if (!fecha) return '';
+        // Fecha-only 'YYYY-MM-DD': formatear directo para NO correr un día por UTC
+        // (ej: 2025-01-01 en Chile se mostraba como 31-12-2024).
+        if (typeof fecha === 'string') {
+            const m = fecha.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+        }
         return new Date(fecha).toLocaleDateString('es-CL');
     }
 
