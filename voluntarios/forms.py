@@ -1,10 +1,8 @@
 from django import forms
 from .models import (
     Voluntario, Cargo, Sancion, 
-    Asistencia, TipoAsistencia,
-    Uniforme, EntregaUniforme,
-    Cuota, PagoCuota, Beneficio, AsignacionBeneficio,
-    Felicitacion
+    Asistencia, Uniforme, EntregaUniforme,
+    Cuota, PagoCuota, Beneficio, Felicitacion
 )
 
 class VoluntarioForm(forms.ModelForm):

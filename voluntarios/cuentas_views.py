@@ -5,7 +5,7 @@ IMPORTANTE: Este endpoint NO requiere autenticación ni CSRF.
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.utils import timezone
 import json
 from decimal import Decimal

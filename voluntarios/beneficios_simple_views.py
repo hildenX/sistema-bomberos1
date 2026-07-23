@@ -17,8 +17,7 @@ from .models import (
 )
 from .utils_email import enviar_comprobante_beneficio
 from dateutil.relativedelta import relativedelta
-from .serializers import PagoBeneficioSerializer
-from .permissions import autorizar_request, obtener_accion_desde_request, RolBomberos
+from .permissions import autorizar_request, obtener_accion_desde_request
 
 
 def _autorizar_beneficios(request, accion=None):
@@ -400,7 +399,7 @@ def pagar_beneficio_simple(request):
             except Exception as e:
                 print(f'[BENEFICIO] Error al enviar email: {str(e)}')
         else:
-            print(f'[BENEFICIO] ⚠️ El voluntario NO tiene email configurado')
+            print('[BENEFICIO] ⚠️ El voluntario NO tiene email configurado')
         
         return JsonResponse({
             'mensaje': 'Pago registrado exitosamente',
@@ -508,7 +507,7 @@ def venta_extra_simple(request):
             except Exception as e:
                 print(f'[BENEFICIO EXTRA] Error al enviar email: {str(e)}')
         else:
-            print(f'[BENEFICIO EXTRA] ⚠️ El voluntario NO tiene email configurado')
+            print('[BENEFICIO EXTRA] ⚠️ El voluntario NO tiene email configurado')
         
         return JsonResponse({
             'mensaje': 'Venta extra registrada exitosamente',

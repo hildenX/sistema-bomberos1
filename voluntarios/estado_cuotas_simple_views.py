@@ -145,7 +145,7 @@ def activar_estudiante_simple(request, voluntario_id):
             
             # Guardar certificado
             file_name = f'certificados_estudiante/{voluntario_id}_{timezone.now().strftime("%Y%m%d_%H%M%S")}_{certificado.name}'
-            file_path = default_storage.save(file_name, certificado)
+            default_storage.save(file_name, certificado)
             
             # Activar estudiante
             estado.es_estudiante = True

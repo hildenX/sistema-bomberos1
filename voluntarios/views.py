@@ -4,36 +4,31 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Q
 from django.utils import timezone
 from rest_framework.views import APIView
-from datetime import datetime, date
 
 from .models import (
-    Voluntario, Cargo, Sancion, Felicitacion,
-    TipoAsistencia, Asistencia,
+    Voluntario, Cargo, Felicitacion,
     EventoAsistencia, DetalleAsistencia, VoluntarioExterno,
     RankingAsistencia, CicloAsistencia,
-    Uniforme, PiezaUniforme, ContadorUniformes, Cuota, PagoCuota,
+    Uniforme, PiezaUniforme, Cuota, PagoCuota,
     Beneficio, AsignacionBeneficio, PagoBeneficio,
     LogoCompania
 )
 
 from .serializers import (
-    VoluntarioSerializer, VoluntarioListSerializer,
+    VoluntarioSerializer,
     CargoSerializer, FelicitacionSerializer, UserSerializer,
     EventoAsistenciaSerializer, EventoAsistenciaListSerializer,
     DetalleAsistenciaSerializer, VoluntarioExternoSerializer,
     RankingAsistenciaSerializer, CicloAsistenciaSerializer,
-    UniformeSerializer, CrearUniformeSerializer, PiezaUniformeSerializer,
-    CuotaSerializer, PagoCuotaSerializer,
+    UniformeSerializer, CrearUniformeSerializer, CuotaSerializer, PagoCuotaSerializer,
     BeneficioSerializer, AsignacionBeneficioSerializer, PagoBeneficioSerializer,
     LogoCompaniaSerializer
 )
 
 # Importar serializers de sanciones desde el archivo dedicado
-from .sancion_serializers import SancionSerializer, ReintegroSerializer
 from .permissions import PermisosPorModulo, obtener_rol_usuario
 
 
@@ -423,7 +418,6 @@ class UniformeViewSet(viewsets.ModelViewSet):
     def devolver_pieza(self, request, pk=None):
         """Devuelve una pieza individual"""
         from django.utils import timezone
-        from .models import PiezaUniforme
         
         pieza_id = request.data.get('pieza_id')
         if not pieza_id:
@@ -468,7 +462,6 @@ class UniformeViewSet(viewsets.ModelViewSet):
     def actualizar_pieza(self, request, pk=None):
         """Actualiza estado o condiciÃ³n de una pieza"""
         from django.utils import timezone
-        from .models import PiezaUniforme
         
         pieza_id = request.data.get('pieza_id')
         campo = request.data.get('campo')  # 'estado_fisico' o 'condicion'
@@ -552,7 +545,6 @@ class UniformeViewSet(viewsets.ModelViewSet):
         """Genera PDF del comprobante de devoluciÃ³n de pieza"""
         from django.http import HttpResponse
         from .pdf_uniformes import generar_pdf_devolucion
-        from .models import PiezaUniforme
         import unicodedata
         import re
         
@@ -1028,7 +1020,7 @@ class RankingAsistenciaViewSet(viewsets.ModelViewSet):
         anio = request.data.get('anio', timezone.now().year)
 
         # Obtener todos los eventos del aÃ±o
-        eventos = EventoAsistencia.objects.filter(fecha__year=anio)
+        EventoAsistencia.objects.filter(fecha__year=anio)
 
         # Limpiar ranking existente
         RankingAsistencia.objects.filter(anio=anio).delete()

@@ -51,7 +51,7 @@ def pdf_cuotas_voluntario(request, voluntario_id, anio=None):
             logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
             if logo:
                 logo_base64 = logo.imagen
-        except:
+        except Exception:
             pass
         
         # Generar PDF
@@ -115,7 +115,7 @@ def pdf_deudores_cuotas(request, anio=None):
             logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
             if logo:
                 logo_base64 = logo.imagen
-        except:
+        except Exception:
             pass
         
         # Generar PDF

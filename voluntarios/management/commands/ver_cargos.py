@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from voluntarios.models import Cargo, Voluntario
+from voluntarios.models import Cargo
 
 class Command(BaseCommand):
     help = 'Listar todos los cargos registrados en la base de datos'
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             if cargo.fecha_fin:
                 self.stdout.write(f'   📆 Hasta: {cargo.fecha_fin}')
             else:
-                self.stdout.write(f'   📆 Hasta: Vigente')
+                self.stdout.write('   📆 Hasta: Vigente')
                 
             if cargo.observaciones:
                 self.stdout.write(f'   📝 Obs: {cargo.observaciones[:50]}...')

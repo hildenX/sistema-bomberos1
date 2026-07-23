@@ -1,29 +1,22 @@
 import random
 import unicodedata
 from datetime import timedelta
-from decimal import Decimal
-
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import Q, Sum
 from django.utils import timezone
 
 from .models import (
     AsignacionBeneficio,
     AsignacionRifa,
     CicloCuotas,
-    CuentaBancaria,
     MovimientoFinanciero,
     PagoRifa,
     PortalVoluntarioProfile,
     SolicitudPagoPortal,
-    Voluntario,
 )
 from .utils_tesoreria import (
     obtener_precio_cuota,
     puede_pagar_cuotas,
-    registrar_pago_beneficio,
-    registrar_pago_cuota,
 )
 
 

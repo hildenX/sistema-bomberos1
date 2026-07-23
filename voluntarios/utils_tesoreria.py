@@ -6,7 +6,7 @@ Convierte la lógica JavaScript de P6P a Python/Django
 from django.db import transaction
 from django.db.models import Sum, Q
 from django.utils import timezone
-from datetime import datetime, date
+from datetime import date
 from decimal import Decimal
 import json
 
@@ -223,7 +223,6 @@ def registrar_pago_cuota(voluntario_id, mes, anio, monto, datos_pago, usuario):
     """
     Registra un pago de cuota y crea el movimiento financiero automáticamente
     """
-    from django.contrib.auth.models import User
     
     voluntario = Voluntario.objects.get(id=voluntario_id)
     
@@ -255,7 +254,7 @@ def registrar_pago_cuota(voluntario_id, mes, anio, monto, datos_pago, usuario):
     meses_nombre = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
     
-    movimiento = MovimientoFinanciero.objects.create(
+    MovimientoFinanciero.objects.create(
         tipo='ingreso',
         categoria='cuota',
         monto=monto,
@@ -446,7 +445,7 @@ def registrar_pago_beneficio(asignacion_id, tipo_pago, cantidad_tarjetas, monto,
     
     # Crear movimiento financiero automático
     tipo_texto = "Extra" if tipo_pago == 'extra' else "Normal"
-    movimiento = MovimientoFinanciero.objects.create(
+    MovimientoFinanciero.objects.create(
         tipo='ingreso',
         categoria='beneficio',
         monto=monto,
@@ -493,7 +492,7 @@ def liberar_tarjetas(asignacion_id, cantidad, motivo, usuario):
     if asignacion.historial_liberaciones:
         try:
             historial = json.loads(asignacion.historial_liberaciones)
-        except:
+        except (json.JSONDecodeError, ValueError):
             historial = []
     
     historial.append({

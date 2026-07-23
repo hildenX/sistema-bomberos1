@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Sancion, Reintegro, Voluntario
-from datetime import date, timedelta
+from .models import Sancion, Reintegro
+from datetime import date
 
 
 class SancionSerializer(serializers.ModelSerializer):

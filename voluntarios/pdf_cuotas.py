@@ -6,7 +6,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import Color, black, white, green, red, grey
+from reportlab.lib.colors import Color, black, white
 from datetime import datetime
 from decimal import Decimal
 
@@ -48,9 +48,9 @@ def generar_pdf_cuotas(voluntario, anio, pagos_dict, deuda_total, logo_base64=No
             c.setFillColor(white)
             c.rect(margin_x - 1*mm, y_position - 31*mm, 27*mm, 32*mm, fill=True, stroke=False)
             c.drawImage(logo_img, margin_x, y_position - 30*mm, width=25*mm, height=25*mm, preserveAspectRatio=True)
-        except:
+        except Exception:
             pass
-    
+
     # Título con estilo
     c.setFillColorRGB(0.1, 0.1, 0.1)
     c.setFont("Helvetica-Bold", 20)
@@ -143,9 +143,6 @@ def generar_pdf_cuotas(voluntario, anio, pagos_dict, deuda_total, logo_base64=No
     cell_width = 45 * mm
     cell_height = 20 * mm
     cols = 4
-    
-    mes_actual = datetime.now().month
-    anio_actual = datetime.now().year
     
     for i, mes_nombre in enumerate(meses_nombres):
         mes_num = i + 1
@@ -270,7 +267,7 @@ def generar_pdf_cuotas(voluntario, anio, pagos_dict, deuda_total, logo_base64=No
     
     c.setFont("Helvetica-Oblique", 6)
     c.drawString(margin_x, 9*mm, f"🚒 Sistema de Gestión Bomberil - {datetime.now().year}")
-    c.drawString(width - margin_x - 25*mm, 9*mm, f"Página 1 de 1")
+    c.drawString(width - margin_x - 25*mm, 9*mm, "Página 1 de 1")
     
     # Finalizar PDF
     c.showPage()

@@ -1,7 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from voluntarios.models import Voluntario
 
 class Command(BaseCommand):
     help = 'Crear usuarios y grupos del sistema con sus permisos'

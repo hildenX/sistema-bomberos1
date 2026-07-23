@@ -8,7 +8,6 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import Color, black, white
 from datetime import datetime
-import os
 
 
 # Colores por tipo de uniforme (RGB normalizado 0-1)

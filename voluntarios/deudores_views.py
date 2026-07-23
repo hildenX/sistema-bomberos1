@@ -4,7 +4,7 @@ Vista simplificada para obtener deudores con toda la información necesaria
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from .models import Voluntario, AsignacionBeneficio, Beneficio
+from .models import AsignacionBeneficio
 from .utils_tesoreria import calcular_deudores_cuotas
 from datetime import datetime
 from .permissions import autorizar_request

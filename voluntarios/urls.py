@@ -8,7 +8,6 @@ from .views import (
     EventoAsistenciaViewSet, DetalleAsistenciaViewSet,
     VoluntarioExternoViewSet, RankingAsistenciaViewSet, CicloAsistenciaViewSet,
     LogoCompaniaViewSet,
-    LoginView, LogoutView, CurrentUserView
 )
 from .sancion_views import SancionViewSet, ReintegroViewSet
 from .views_tesoreria import (

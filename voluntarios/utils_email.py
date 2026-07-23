@@ -78,11 +78,11 @@ def enviar_comprobante_cuota(pago, voluntario):
             'voluntario': voluntario,
             'mes_nombre': MESES.get(pago.mes, f'Mes {pago.mes}'),
         }
-        print(f'[EMAIL DEBUG] Renderizando template HTML...')
+        print('[EMAIL DEBUG] Renderizando template HTML...')
         
         # Renderizar template HTML
         html_content = render_to_string('emails/comprobante_cuota.html', context)
-        print(f'[EMAIL DEBUG] ✅ Template renderizado correctamente')
+        print('[EMAIL DEBUG] ✅ Template renderizado correctamente')
         
         # Crear texto plano alternativo (para clientes de email que no soporten HTML)
         # Formatear fecha correctamente
@@ -116,7 +116,7 @@ def enviar_comprobante_cuota(pago, voluntario):
         from_email = settings.DEFAULT_FROM_EMAIL
         to_email = [voluntario.email]
         
-        print(f'[EMAIL DEBUG] Preparando email...')
+        print('[EMAIL DEBUG] Preparando email...')
         print(f'[EMAIL DEBUG]   Subject: {subject}')
         print(f'[EMAIL DEBUG]   From: {from_email}')
         print(f'[EMAIL DEBUG]   To: {to_email}')
@@ -139,14 +139,14 @@ def enviar_comprobante_cuota(pago, voluntario):
             msg.attach(filename, pdf_buffer.read(), 'application/pdf')
             print(f'[EMAIL DEBUG] ✅ PDF adjuntado: {filename}')
         else:
-            print(f'[EMAIL DEBUG] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
+            print('[EMAIL DEBUG] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
         
-        print(f'[EMAIL DEBUG] Enviando email por SMTP...')
+        print('[EMAIL DEBUG] Enviando email por SMTP...')
         
         # Enviar email
         result = msg.send(fail_silently=False)
         
-        print(f'[EMAIL DEBUG] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
+        print('[EMAIL DEBUG] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
         print(f'[EMAIL DEBUG] Result: {result}')
         print('=' * 60)
         
@@ -154,11 +154,11 @@ def enviar_comprobante_cuota(pago, voluntario):
         return True
         
     except Exception as e:
-        print(f'[EMAIL DEBUG] ❌❌❌ ERROR AL ENVIAR EMAIL!')
+        print('[EMAIL DEBUG] ❌❌❌ ERROR AL ENVIAR EMAIL!')
         print(f'[EMAIL DEBUG] Error: {str(e)}')
         print(f'[EMAIL DEBUG] Tipo: {type(e).__name__}')
         import traceback
-        print(f'[EMAIL DEBUG] Traceback:')
+        print('[EMAIL DEBUG] Traceback:')
         traceback.print_exc()
         print('=' * 60)
         logger.error(f'Error al enviar comprobante a {voluntario.email}: {str(e)}')
@@ -195,11 +195,11 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
             'voluntario': voluntario,
             'beneficio': beneficio,
         }
-        print(f'[EMAIL BENEFICIO] Renderizando template HTML...')
+        print('[EMAIL BENEFICIO] Renderizando template HTML...')
         
         # Renderizar template HTML
         html_content = render_to_string('emails/comprobante_beneficio.html', context)
-        print(f'[EMAIL BENEFICIO] ✅ Template renderizado correctamente')
+        print('[EMAIL BENEFICIO] ✅ Template renderizado correctamente')
         
         # Formatear fecha correctamente
         if hasattr(pago_beneficio.fecha_pago, 'strftime'):
@@ -230,7 +230,7 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         from_email = settings.DEFAULT_FROM_EMAIL
         to_email = [voluntario.email]
         
-        print(f'[EMAIL BENEFICIO] Preparando email...')
+        print('[EMAIL BENEFICIO] Preparando email...')
         print(f'[EMAIL BENEFICIO]   Subject: {subject}')
         print(f'[EMAIL BENEFICIO]   To: {to_email}')
         
@@ -249,14 +249,14 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
             msg.attach(filename, pdf_buffer.read(), 'application/pdf')
             print(f'[EMAIL BENEFICIO] ✅ PDF adjuntado: {filename}')
         else:
-            print(f'[EMAIL BENEFICIO] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
+            print('[EMAIL BENEFICIO] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
         
-        print(f'[EMAIL BENEFICIO] Enviando email por SMTP...')
+        print('[EMAIL BENEFICIO] Enviando email por SMTP...')
         
         # Enviar email
         result = msg.send(fail_silently=False)
         
-        print(f'[EMAIL BENEFICIO] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
+        print('[EMAIL BENEFICIO] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
         print(f'[EMAIL BENEFICIO] Result: {result}')
         print('=' * 60)
         
@@ -264,7 +264,7 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         return True
         
     except Exception as e:
-        print(f'[EMAIL BENEFICIO] ❌❌❌ ERROR AL ENVIAR EMAIL!')
+        print('[EMAIL BENEFICIO] ❌❌❌ ERROR AL ENVIAR EMAIL!')
         print(f'[EMAIL BENEFICIO] Error: {str(e)}')
         import traceback
         traceback.print_exc()

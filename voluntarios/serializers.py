@@ -2,9 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from datetime import datetime
 from .models import (
-    Voluntario, Cargo, Sancion, TipoAsistencia, Asistencia, 
-    Uniforme, PiezaUniforme, ContadorUniformes, Cuota, PagoCuota, 
-    Beneficio, AsignacionBeneficio, PagoBeneficio, Felicitacion, Reintegro,
+    Voluntario, Cargo, Sancion, TipoAsistencia, Asistencia,
+    Uniforme, PiezaUniforme, Cuota, PagoCuota,
+    Beneficio, AsignacionBeneficio, PagoBeneficio, Felicitacion,
     EventoAsistencia, DetalleAsistencia, VoluntarioExterno, RankingAsistencia, CicloAsistencia,
     ConfiguracionCuotas, EstadoCuotasBombero, MovimientoFinanciero, CicloCuotas,
     LogoCompania
@@ -109,7 +109,7 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                 # Limpiar foto pendiente si no hay foto nueva
                 if hasattr(self, '_foto_pendiente'):
                     delattr(self, '_foto_pendiente')
-                print(f"[FOTO] No hay foto en los datos")
+                print("[FOTO] No hay foto en los datos")
             
             # Mapeo de campos camelCase a snake_case
             field_mapping = {
@@ -203,7 +203,7 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                 # Si no es base64 válido, NO hacer nada
                 print(f"[FOTO CREATE] Ignorando valor no válido: type={type(foto_base64)}, len={len(str(foto_base64)) if foto_base64 else 0}")
         else:
-            print(f"[FOTO CREATE] Sin foto en datos")
+            print("[FOTO CREATE] Sin foto en datos")
         
         # Limpiar foto pendiente después de procesarla
         if hasattr(self, '_foto_pendiente'):
@@ -336,7 +336,7 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                 # Si no es base64 válido, NO hacer nada (no se actualiza la foto)
                 print(f"[FOTO UPDATE] Ignorando valor no válido: type={type(foto_base64)}, len={len(str(foto_base64)) if foto_base64 else 0}")
         else:
-            print(f"[FOTO UPDATE] Sin foto en datos - mantendrá foto actual")
+            print("[FOTO UPDATE] Sin foto en datos - mantendrá foto actual")
         
         # Limpiar foto pendiente después de procesarla
         if hasattr(self, '_foto_pendiente'):
@@ -652,57 +652,6 @@ class CuotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cuota
         fields = '__all__'
-
-class PagoCuotaSerializer(serializers.ModelSerializer):
-    voluntario_nombre = serializers.SerializerMethodField()
-    cuota_info = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = PagoCuota
-        fields = '__all__'
-        read_only_fields = ['created_at', 'created_by']
-    
-    def get_voluntario_nombre(self, obj):
-        return obj.voluntario.nombre_completo()
-    
-    def get_cuota_info(self, obj):
-        return str(obj.cuota)
-
-class BeneficioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Beneficio
-        fields = '__all__'
-
-class AsignacionBeneficioSerializer(serializers.ModelSerializer):
-    voluntario_nombre = serializers.SerializerMethodField()
-    beneficio_nombre = serializers.SerializerMethodField()
-    monto_pendiente = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = AsignacionBeneficio
-        fields = '__all__'
-        read_only_fields = ['created_at', 'created_by']
-    
-    def get_voluntario_nombre(self, obj):
-        return obj.voluntario.nombre_completo()
-    
-    def get_beneficio_nombre(self, obj):
-        return obj.beneficio.nombre
-    
-    def get_monto_pendiente(self, obj):
-        return obj.monto_pendiente
-
-class PagoBeneficioSerializer(serializers.ModelSerializer):
-    asignacion_info = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = PagoBeneficio
-        fields = '__all__'
-        read_only_fields = ['created_at', 'created_by']
-    
-    def get_asignacion_info(self, obj):
-        return f"{obj.asignacion.voluntario.nombre_completo()} - {obj.asignacion.beneficio.nombre}"
-
 
 # ==================== FELICITACIONES ====================
 

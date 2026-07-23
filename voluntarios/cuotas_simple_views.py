@@ -5,12 +5,10 @@ IMPORTANTE: Este endpoint NO requiere autenticación ni CSRF
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.utils.decorators import method_decorator
 from django.db import transaction
 from decimal import Decimal
 import json
 from .models import PagoCuota, Voluntario, MovimientoFinanciero, CuentaBancaria
-from django.contrib.auth.models import User
 from .utils_email import enviar_comprobante_cuota
 from .permissions import autorizar_request, obtener_accion_desde_request
 
@@ -115,7 +113,7 @@ def pagos_cuotas_simple(request):
             
             # Enviar comprobante por email automáticamente
             email_enviado = False
-            print(f'[EMAIL] Verificando envío de comprobante...')
+            print('[EMAIL] Verificando envío de comprobante...')
             print(f'[EMAIL] Voluntario: {voluntario.nombre} {voluntario.apellido_paterno}')
             print(f'[EMAIL] Email del voluntario: {voluntario.email}')
             
@@ -126,13 +124,13 @@ def pagos_cuotas_simple(request):
                     if email_enviado:
                         print(f'[EMAIL] OK Comprobante enviado exitosamente a {voluntario.email}')
                     else:
-                        print(f'[EMAIL] FALLO No se pudo enviar el comprobante')
+                        print('[EMAIL] FALLO No se pudo enviar el comprobante')
                 except Exception as e:
                     print(f'[EMAIL] ERROR al enviar email: {str(e)}')
                     import traceback
                     traceback.print_exc()
             else:
-                print(f'[EMAIL] AVISO El voluntario NO tiene email configurado')
+                print('[EMAIL] AVISO El voluntario NO tiene email configurado')
             
             # Retornar el pago creado
             return JsonResponse({

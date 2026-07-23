@@ -8,7 +8,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
 from decimal import Decimal, InvalidOperation
-from datetime import datetime, date
+from datetime import date
 import json
 import re
 

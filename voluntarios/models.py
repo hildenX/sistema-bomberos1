@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-import json
 
 class Voluntario(models.Model):
     """

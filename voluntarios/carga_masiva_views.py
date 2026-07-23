@@ -8,7 +8,7 @@ from django.db import transaction
 from .models import Voluntario
 from .utils import VoluntarioUtils
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 import io
 import time

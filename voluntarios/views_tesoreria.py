@@ -6,7 +6,6 @@ Convierte las llamadas localStorage del P6P a endpoints REST
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from decimal import Decimal
@@ -747,7 +746,7 @@ class CicloCuotasViewSet(viewsets.ModelViewSet):
         """Obtiene estadísticas detalladas del ciclo"""
         try:
             ciclo = self.get_object()
-            from django.db.models import Sum, Count, Q
+            from django.db.models import Sum
             
             # Pagos del año
             pagos = PagoCuota.objects.filter(anio=ciclo.anio)
@@ -759,7 +758,6 @@ class CicloCuotasViewSet(viewsets.ModelViewSet):
             voluntarios_pagaron = pagos.values('voluntario').distinct().count()
             
             # Total de voluntarios activos (que deberían pagar)
-            from .utils_tesoreria import puede_pagar_cuotas
             voluntarios_activos = Voluntario.objects.filter(
                 estado_bombero='activo'
             ).count()

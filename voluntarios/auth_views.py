@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 from datetime import datetime
-from .permissions import obtener_permisos_usuario, RolBomberos, obtener_rol_usuario
+from .permissions import obtener_permisos_usuario, obtener_rol_usuario
 
 
 # Usuarios por defecto del p6p
@@ -89,7 +89,7 @@ def login_view(request):
             print(f"[SESSION] Key: {request.session.session_key}")
             print(f"[SESSION] Saved: {request.session.session_key is not None}")
             print(f"[USER] Autenticado: {request.user.is_authenticated}")
-            print(f"[COOKIES] Will set sessionid cookie")
+            print("[COOKIES] Will set sessionid cookie")
             
             # Obtener permisos
             permisos_data = obtener_permisos_usuario(user)
