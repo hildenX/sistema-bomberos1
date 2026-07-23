@@ -7,193 +7,328 @@
 }
 
 :root {
-    --rojo:       #c0392b;
-    --rojo-hover: #a93226;
-    --rojo-claro: #e74c3c;
-    --fondo:      #1c1c1e;
-    --fondo-card: #2c2c2e;
-    --borde:      #3a3a3c;
-    --texto:      #f2f2f7;
-    --texto-sub:  #aeaeb2;
-    --input-bg:   #3a3a3c;
-    --input-foco: #48484a;
-    --error:      #ff453a;
-    --exito:      #30d158;
-    --radius:     14px;
-    --sombra:     0 20px 60px rgba(0, 0, 0, 0.5);
+    --rojo:        #c0392b;
+    --rojo-hover:  #a93226;
+    --rojo-oscuro: #7b1414;
+    --rojo-deep:   #1a0505;
+    --dorado:      #c8942a;
+    --dorado-claro:#e5b84a;
+    --fondo:       #0e0e0e;
+    --panel-brand: #120404;
+    --panel-form:  #111111;
+    --borde:       #252525;
+    --texto:       #f0f0f0;
+    --texto-sub:   #888888;
+    --input-bg:    #1c1c1c;
+    --input-foco:  #222222;
+    --error:       #ff4545;
+    --exito:       #2ecc71;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+html, body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--fondo);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     -webkit-font-smoothing: antialiased;
 }
 
-/* ---- CARD ---- */
+/* ===== LAYOUT SPLIT ===== */
 .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+}
+
+.login-split {
+    display: flex;
     width: 100%;
     min-height: 100vh;
+}
+
+/* ===== PANEL IZQUIERDO: BRANDING ===== */
+.brand-panel {
+    width: 420px;
+    flex-shrink: 0;
+    background: var(--panel-brand);
+    background-image:
+        radial-gradient(ellipse at 30% 20%, rgba(192, 57, 43, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(123, 20, 20, 0.25) 0%, transparent 55%);
+    border-right: 1px solid rgba(200, 148, 42, 0.15);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-panel-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 60px 40px;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Decoración de esquina */
+.brand-corner-deco {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    border-bottom-left-radius: 100%;
+    background: rgba(200, 148, 42, 0.05);
+    border: 1px solid rgba(200, 148, 42, 0.1);
+    pointer-events: none;
+}
+
+.brand-corner-deco::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: -1px;
+    width: 80px;
+    height: 80px;
+    border-bottom-left-radius: 100%;
+    background: rgba(200, 148, 42, 0.04);
+    border: 1px solid rgba(200, 148, 42, 0.08);
+}
+
+/* ---- Escudo / Logo ---- */
+.brand-emblem {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
 }
 
-.login-screen.hidden {
-    display: none;
+.brand-shield {
+    width: 148px;
+    height: auto;
+    filter: drop-shadow(0 8px 32px rgba(192, 57, 43, 0.35))
+            drop-shadow(0 2px 8px rgba(0,0,0,0.6));
 }
 
-.login-card {
-    background: var(--fondo-card);
-    border: 1px solid var(--borde);
-    border-radius: var(--radius);
-    padding: 48px 40px 36px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: var(--sombra);
+/* Cuando el usuario ponga su logo real */
+.brand-logo-img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.5));
 }
 
-/* ---- HEADER ---- */
-.login-header {
+/* ---- Textos de branding ---- */
+.brand-text {
     text-align: center;
-    margin-bottom: 36px;
 }
 
-.login-logo {
-    width: 72px;
-    height: 72px;
-    margin: 0 auto 20px;
-}
-
-.login-logo svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 4px 12px rgba(192, 57, 43, 0.5));
-}
-
-.login-title {
-    color: var(--texto);
-    font-size: 1.6rem;
+.brand-tag {
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: -0.3px;
-    margin-bottom: 6px;
+    letter-spacing: 3px;
+    color: var(--dorado);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.9;
 }
 
-.login-subtitle {
+.brand-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--texto);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+}
+
+.brand-motto {
+    font-size: 0.85rem;
     color: var(--texto-sub);
-    font-size: 0.9rem;
+    line-height: 1.6;
     font-weight: 400;
 }
 
-/* ---- FORMULARIO ---- */
+/* ---- Footer de branding ---- */
+.brand-footer-text {
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(200, 148, 42, 0.15);
+    width: 100%;
+    text-align: center;
+}
+
+.brand-footer-text span {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(200, 148, 42, 0.5);
+}
+
+/* ===== PANEL DERECHO: FORMULARIO ===== */
+.form-panel {
+    flex: 1;
+    background: var(--panel-form);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+}
+
+.form-panel-inner {
+    width: 100%;
+    max-width: 380px;
+}
+
+/* ---- Cabecera del form ---- */
+.form-header {
+    margin-bottom: 36px;
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--texto);
+    letter-spacing: -0.4px;
+    margin-bottom: 6px;
+}
+
+.form-subtitle {
+    font-size: 0.875rem;
+    color: var(--texto-sub);
+}
+
+/* ===== FORMULARIO ===== */
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
 }
 
 .form-label {
+    font-size: 0.78rem;
+    font-weight: 600;
     color: var(--texto-sub);
-    font-size: 0.82rem;
-    font-weight: 500;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+}
+
+/* ---- Input con icono ---- */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #444;
+    display: flex;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.input-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 .form-input {
     width: 100%;
-    padding: 13px 16px;
+    padding: 13px 16px 13px 44px;
     background: var(--input-bg);
     border: 1.5px solid var(--borde);
     border-radius: 10px;
     color: var(--texto);
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
     outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .form-input::placeholder {
-    color: #636366;
+    color: #3a3a3a;
 }
 
 .form-input:focus {
     border-color: var(--rojo);
     background: var(--input-foco);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
 }
 
-.form-input.error {
-    border-color: var(--error);
+.form-input:focus ~ .input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: var(--rojo);
 }
 
-/* ---- TOGGLE CONTRASEÑA ---- */
-.input-wrapper {
-    position: relative;
-}
-
-.input-wrapper .form-input {
-    padding-right: 48px;
-}
-
+/* ---- Toggle contraseña ---- */
 .toggle-password {
     position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 13px;
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--texto-sub);
+    color: #444;
     padding: 4px;
     line-height: 0;
     transition: color 0.2s;
 }
 
 .toggle-password:hover {
-    color: var(--texto);
+    color: var(--texto-sub);
 }
 
 .toggle-password svg {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
 }
 
-/* ---- ALERTAS ---- */
+/* Password input tiene padding también a la derecha */
+#password {
+    padding-right: 44px;
+}
+
+/* ---- Alertas ---- */
 .form-alert {
     display: none;
-    padding: 12px 14px;
-    border-radius: 10px;
-    font-size: 0.88rem;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 0.855rem;
     font-weight: 500;
-    text-align: center;
+    line-height: 1.4;
 }
 
 .form-alert.show {
     display: block;
 }
 
-.error-message {
-    background: rgba(255, 69, 58, 0.15);
+.error-alert {
+    background: rgba(255, 69, 58, 0.1);
     color: var(--error);
-    border: 1px solid rgba(255, 69, 58, 0.3);
+    border: 1px solid rgba(255, 69, 58, 0.25);
 }
 
-.success-message {
-    background: rgba(48, 209, 88, 0.15);
+/* alias para compatibilidad con auth_django.js */
+.error-message { background: rgba(255, 69, 58, 0.1); color: var(--error); border: 1px solid rgba(255, 69, 58, 0.25); }
+.success-message { background: rgba(46, 204, 113, 0.1); color: var(--exito); border: 1px solid rgba(46, 204, 113, 0.25); }
+.error-message.show, .success-message.show { display: block; }
+
+.success-alert {
+    background: rgba(46, 204, 113, 0.1);
     color: var(--exito);
-    border: 1px solid rgba(48, 209, 88, 0.3);
+    border: 1px solid rgba(46, 204, 113, 0.25);
 }
 
-/* ---- BOTÓN ---- */
+/* ---- Botón submit ---- */
 .submit-btn {
     width: 100%;
     padding: 14px;
@@ -201,38 +336,37 @@ body {
     border: none;
     border-radius: 10px;
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    letter-spacing: 0.3px;
+    font-family: inherit;
+    letter-spacing: 0.2px;
     cursor: pointer;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-    margin-top: 4px;
+    margin-top: 6px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
 }
 
 .submit-btn:hover:not(:disabled) {
     background: var(--rojo-hover);
-    box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+    box-shadow: 0 4px 20px rgba(192, 57, 43, 0.35);
 }
 
 .submit-btn:active:not(:disabled) {
-    transform: scale(0.98);
+    transform: scale(0.985);
 }
 
 .submit-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
 }
 
-/* Spinner dentro del botón */
 .btn-spinner {
     display: none;
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
     border: 2px solid rgba(255,255,255,0.3);
     border-top-color: #fff;
     border-radius: 50%;
@@ -240,52 +374,116 @@ body {
     flex-shrink: 0;
 }
 
-.submit-btn.loading .btn-spinner {
-    display: inline-block;
+.submit-btn.loading .btn-spinner { display: inline-block; }
+.submit-btn.loading .btn-text    { opacity: 0.75; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Divisor ---- */
+.form-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 0;
 }
 
-.submit-btn.loading .btn-text {
-    opacity: 0.7;
+.form-divider::before,
+.form-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--borde);
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.form-divider span {
+    font-size: 0.78rem;
+    color: #3a3a3a;
+    font-weight: 500;
 }
 
-/* ---- FOOTER ---- */
-.login-footer {
-    margin-top: 28px;
+/* ---- Footer del form ---- */
+.form-footer {
+    margin-top: 16px;
     text-align: center;
 }
 
 .portal-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     color: var(--texto-sub);
     font-size: 0.85rem;
     text-decoration: none;
-    transition: color 0.2s;
+    padding: 10px 20px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    font-weight: 500;
+}
+
+.portal-link svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
 }
 
 .portal-link:hover {
-    color: var(--rojo-claro);
+    color: var(--dorado);
+    border-color: rgba(200, 148, 42, 0.35);
+    background: rgba(200, 148, 42, 0.06);
 }
 
-/* ---- RESPONSIVE ---- */
+/* ===== RESPONSIVE ===== */
+@media (max-width: 820px) {
+    .login-split {
+        flex-direction: column;
+    }
+
+    .brand-panel {
+        width: 100%;
+        flex-shrink: 0;
+    }
+
+    .brand-panel-inner {
+        flex-direction: row;
+        padding: 28px 32px;
+        gap: 24px;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .brand-corner-deco { display: none; }
+
+    .brand-shield { width: 80px; }
+
+    .brand-text { text-align: left; }
+    .brand-tag  { margin-bottom: 4px; }
+    .brand-name { font-size: 1.3rem; margin-bottom: 4px; }
+    .brand-motto { font-size: 0.78rem; }
+
+    .brand-footer-text { display: none; }
+
+    .form-panel {
+        padding: 36px 24px 48px;
+    }
+}
+
 @media (max-width: 480px) {
-    .login-card {
-        padding: 36px 24px 28px;
+    .brand-panel-inner {
+        padding: 22px 20px;
+        gap: 16px;
     }
 
-    .login-title {
-        font-size: 1.4rem;
+    .brand-shield { width: 64px; }
+    .brand-name   { font-size: 1.15rem; }
+
+    .form-panel-inner {
+        max-width: 100%;
     }
+
+    .form-title { font-size: 1.5rem; }
 }
 
-/* ---- CLASES DE COMPATIBILIDAD con auth_django.js ---- */
-.error-message.show,
-.success-message.show {
-    display: block;
-}
-
-.loading {
-    pointer-events: none;
-}
+/* ===== COMPATIBILIDAD auth_django.js ===== */
+.login-screen.hidden { display: none; }
+.loading { pointer-events: none; }

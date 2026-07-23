@@ -4,79 +4,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión - Bomberos</title>
+    <title>Sistema de Gestión — Bomberos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-    <div class="login-screen" id="loginScreen">
 
-        <div class="login-card">
+<div class="login-screen">
+    <div class="login-split">
 
-            <div class="login-header">
-                <div class="login-logo">
-                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <circle cx="32" cy="32" r="30" fill="#c0392b" stroke="#922b21" stroke-width="2"/>
-                        <path d="M32 10 C28 18 20 22 20 30 C20 38 26 44 32 46 C38 44 44 38 44 30 C44 22 36 18 32 10Z" fill="#e74c3c"/>
-                        <path d="M32 20 C30 25 26 27 26 32 C26 37 29 40 32 41 C35 40 38 37 38 32 C38 27 34 25 32 20Z" fill="#ffeaa7"/>
-                        <path d="M32 26 C31 29 29 30 29 33 C29 35.5 30.5 37 32 37 C33.5 37 35 35.5 35 33 C35 30 33 29 32 26Z" fill="#fdcb6e"/>
+        <!-- ===== PANEL IZQUIERDO: BRANDING ===== -->
+        <div class="brand-panel">
+            <div class="brand-panel-inner">
+
+                <div class="brand-emblem">
+                    <!-- Logo compañía: pon el archivo en static/img/logo_bomba.png y descomenta la línea: -->
+                    <!-- <img src="{% static 'img/logo_bomba.png' %}" alt="Logo Compañía" class="brand-logo-img"> -->
+                    <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" class="brand-shield" aria-hidden="true">
+                        <!-- Escudo exterior -->
+                        <path d="M60 4 L108 22 L108 78 Q108 116 60 136 Q12 116 12 78 L12 22 Z"
+                              fill="#4a0e0e" stroke="#c8942a" stroke-width="2.5"/>
+                        <!-- Escudo interior -->
+                        <path d="M60 14 L100 30 L100 77 Q100 110 60 128 Q20 110 20 77 L20 30 Z"
+                              fill="#3a0808"/>
+                        <!-- Llama grande -->
+                        <path d="M60 38 C54 50 44 55 44 66 C44 77 52 84 60 86 C68 84 76 77 76 66 C76 55 66 50 60 38Z"
+                              fill="#c0392b"/>
+                        <!-- Llama media -->
+                        <path d="M60 50 C57 57 51 60 51 68 C51 74 55.5 78 60 79 C64.5 78 69 74 69 68 C69 60 63 57 60 50Z"
+                              fill="#e74c3c"/>
+                        <!-- Llama centro -->
+                        <path d="M60 59 C58.5 63 56 65 56 69 C56 72 57.8 74 60 74 C62.2 74 64 72 64 69 C64 65 61.5 63 60 59Z"
+                              fill="#f5a623"/>
+                        <!-- Línea decorativa superior -->
+                        <path d="M28 26 L92 26" stroke="#c8942a" stroke-width="1" opacity="0.5"/>
+                        <!-- Texto BOMBEROS -->
+                        <text x="60" y="101" text-anchor="middle" fill="#c8942a"
+                              font-size="8.5" font-family="Inter,Arial,sans-serif"
+                              font-weight="700" letter-spacing="3">BOMBEROS</text>
+                        <!-- Línea decorativa inferior -->
+                        <path d="M36 107 L60 103 L84 107" fill="none" stroke="#c8942a" stroke-width="1.2"/>
+                        <!-- Estrellas decorativas -->
+                        <circle cx="32" cy="60" r="2.5" fill="#c8942a" opacity="0.6"/>
+                        <circle cx="88" cy="60" r="2.5" fill="#c8942a" opacity="0.6"/>
+                        <circle cx="32" cy="52" r="1.5" fill="#c8942a" opacity="0.4"/>
+                        <circle cx="88" cy="52" r="1.5" fill="#c8942a" opacity="0.4"/>
+                        <circle cx="32" cy="68" r="1.5" fill="#c8942a" opacity="0.4"/>
+                        <circle cx="88" cy="68" r="1.5" fill="#c8942a" opacity="0.4"/>
                     </svg>
                 </div>
-                <h1 class="login-title">Sistema de Bomberos</h1>
-                <p class="login-subtitle">Gestión de Personal Voluntario</p>
+
+                <div class="brand-text">
+                    <p class="brand-tag">CUERPO DE BOMBEROS</p>
+                    <h1 class="brand-name">Compañía de<br>Bomberos</h1>
+                    <p class="brand-motto">Voluntarios al Servicio<br>de la Comunidad</p>
+                </div>
+
+                <div class="brand-footer-text">
+                    <span>Sistema de Gestión Interna</span>
+                </div>
+
             </div>
+            <!-- Decoración esquina -->
+            <div class="brand-corner-deco" aria-hidden="true"></div>
+        </div>
 
-            <form id="loginForm" class="login-form" novalidate>
-                <div class="form-group">
-                    <label for="username" class="form-label">Usuario</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        class="form-input"
-                        placeholder="Ingresa tu usuario"
-                        autocomplete="username"
-                        required
-                        autofocus
-                    >
+        <!-- ===== PANEL DERECHO: FORMULARIO ===== -->
+        <div class="form-panel">
+            <div class="form-panel-inner">
+
+                <div class="form-header">
+                    <h2 class="form-title">Iniciar Sesión</h2>
+                    <p class="form-subtitle">Ingresa tus credenciales para continuar</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <div class="input-wrapper">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-input"
-                            placeholder="Ingresa tu contraseña"
-                            autocomplete="current-password"
-                            required
-                        >
-                        <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
-                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </button>
+                <form id="loginForm" class="login-form" novalidate autocomplete="on">
+
+                    <div class="form-group">
+                        <label for="username" class="form-label">Usuario</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="form-input"
+                                placeholder="Nombre de usuario"
+                                autocomplete="username"
+                                required
+                                autofocus
+                            >
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </span>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="Contraseña"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-alert error-alert" id="errorMessage" role="alert" aria-live="assertive"></div>
+                    <div class="form-alert success-alert" id="successMessage" role="status" aria-live="polite"></div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="btn-text">Iniciar Sesión</span>
+                        <span class="btn-spinner" aria-hidden="true"></span>
+                    </button>
+
+                </form>
+
+                <div class="form-divider">
+                    <span>o</span>
                 </div>
 
-                <div class="form-alert error-message" id="errorMessage" role="alert" aria-live="polite"></div>
-                <div class="form-alert success-message" id="successMessage" role="status" aria-live="polite"></div>
+                <div class="form-footer">
+                    <a href="/portal/" class="portal-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Acceso Portal Voluntarios
+                    </a>
+                </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">Iniciar Sesión</span>
-                    <span class="btn-spinner" aria-hidden="true"></span>
-                </button>
-            </form>
-
-            <div class="login-footer">
-                <a href="/portal/" class="portal-link">Acceso Portal Voluntarios</a>
             </div>
         </div>
 
     </div>
+</div>
 
-    <script src="{% static 'js/auth_django.js' %}"></script>
+<script src="{% static 'js/auth_django.js' %}"></script>
 </body>
 </html>
