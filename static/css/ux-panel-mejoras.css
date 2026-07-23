@@ -90,6 +90,55 @@ body,
     align-items: center !important;
     gap: 10px !important;
     border-radius: 0 !important;
+    justify-content: flex-start !important;
+}
+
+/* El grupo de botones del header (Excel, PDF, Info) va a la derecha */
+.registros-header .registros-buttons {
+    margin-left: auto !important;
+    display: flex !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+}
+
+/* Botones dentro del header — neutral oscuro (no confundir con acciones de tarjeta) */
+.registros-header .btn-info {
+    background: #252525 !important;
+    color: #aaa !important;
+    border: 1px solid var(--p-border2) !important;
+    font-size: 0.72rem !important;
+}
+.registros-header .btn-info:hover {
+    background: #2e2e2e !important;
+    color: var(--p-text) !important;
+    box-shadow: none !important;
+}
+
+.registros-header .btn-excel {
+    background: #1a3a1a !important;
+    color: #86efac !important;
+    border: 1px solid #2d5a2d !important;
+    font-size: 0.72rem !important;
+    border-radius: 7px !important;
+    padding: 7px 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+.registros-header .btn-excel:hover {
+    background: #1e4a1e !important;
+    color: #bbf7d0 !important;
+}
+
+.registros-header .btn-pdf {
+    background: #2a1a1a !important;
+    color: #fca5a5 !important;
+    border: 1px solid #4a2a2a !important;
+    font-size: 0.72rem !important;
+}
+.registros-header .btn-pdf:hover {
+    background: #3a2020 !important;
+    color: #fecaca !important;
+    box-shadow: none !important;
 }
 
 .registros-header::before {
@@ -498,22 +547,18 @@ input[placeholder*="Buscar"]:focus {
 
 /* ================================================================
    TEXTOS GENERALES QUE NECESITAN INVERTIRSE
+   (span excluido a propósito: los badges usan inline color)
    ================================================================ */
 .main-content-with-sidebar h1,
 .main-content-with-sidebar h2,
 .main-content-with-sidebar h3,
 .main-content-with-sidebar h4,
 .main-content-with-sidebar p,
-.main-content-with-sidebar span,
 .main-content-with-sidebar label,
 .main-content-with-sidebar td,
 .main-content-with-sidebar th {
     color: var(--p-text) !important;
 }
-
-/* Excepciones: badges de estado que tienen su propio color */
-.estado-badge,
-.badge { color: inherit !important; }
 
 /* ================================================================
    SIDEBAR LOGO
