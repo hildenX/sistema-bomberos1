@@ -578,6 +578,92 @@ input[placeholder*="Buscar"]:focus {
     transform: translateY(-1px) !important;
 }
 
+/* Editar — azul pizarra */
+.btn-editar,
+.btn-edit {
+    background: var(--p-slate) !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+}
+.btn-editar:hover,
+.btn-edit:hover {
+    background: var(--p-slate-h) !important;
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Cargos — azul oscuro */
+.btn-cargos {
+    background: #1e3a5f !important;
+    color: #93c5fd !important;
+    border: none !important;
+}
+.btn-cargos:hover {
+    background: #1e40af !important;
+    color: #bfdbfe !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Sanciones — naranja oscuro */
+.btn-sanciones {
+    background: #431407 !important;
+    color: #fdba74 !important;
+    border: none !important;
+}
+.btn-sanciones:hover {
+    background: #7c2d12 !important;
+    color: #fed7aa !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Ficha PDF — mismo que btn-info (pizarra) */
+.btn-pdf-ficha {
+    background: var(--p-slate) !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+}
+.btn-pdf-ficha:hover {
+    background: var(--p-slate-h) !important;
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Reintegrar */
+.btn-reintegrar {
+    background: #14532d !important;
+    color: #86efac !important;
+    border: none !important;
+}
+.btn-reintegrar:hover {
+    background: #166534 !important;
+    color: #bbf7d0 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Tamaño uniforme para TODOS los botones de tarjeta */
+.bombero-botones .btn-editar,
+.bombero-botones .btn-edit,
+.bombero-botones .btn-cargos,
+.bombero-botones .btn-sanciones,
+.bombero-botones .btn-pdf-ficha,
+.bombero-botones .btn-reintegrar {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    min-width: unset !important;
+    box-shadow: none !important;
+}
+
 /* ================================================================
    SCROLLBAR OSCURO
    ================================================================ */
