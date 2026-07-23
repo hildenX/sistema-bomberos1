@@ -4,37 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 Sistema de Bomberos - Login</title>
+    <title>Sistema de Gestión - Bomberos</title>
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
     <div class="login-screen" id="loginScreen">
-        <div class="background-particles" id="particles"></div>
-        
-        <div class="login-container">
-            <h1 class="login-title">🔥 Sistema de Bomberos</h1>
-            <form id="loginForm">
-                <div class="login-form-group">
-                    <label for="username" class="login-label">Usuario</label>
-                    <input type="text" id="username" name="username" class="login-input" placeholder="Ingresa tu usuario" required autofocus>
+
+        <div class="login-card">
+
+            <div class="login-header">
+                <div class="login-logo">
+                    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="32" cy="32" r="30" fill="#c0392b" stroke="#922b21" stroke-width="2"/>
+                        <path d="M32 10 C28 18 20 22 20 30 C20 38 26 44 32 46 C38 44 44 38 44 30 C44 22 36 18 32 10Z" fill="#e74c3c"/>
+                        <path d="M32 20 C30 25 26 27 26 32 C26 37 29 40 32 41 C35 40 38 37 38 32 C38 27 34 25 32 20Z" fill="#ffeaa7"/>
+                        <path d="M32 26 C31 29 29 30 29 33 C29 35.5 30.5 37 32 37 C33.5 37 35 35.5 35 33 C35 30 33 29 32 26Z" fill="#fdcb6e"/>
+                    </svg>
                 </div>
-                
-                <div class="login-form-group">
-                    <label for="password" class="login-label">Contraseña</label>
-                    <input type="password" id="password" name="password" class="login-input" placeholder="Ingresa tu contraseña" required>
+                <h1 class="login-title">Sistema de Bomberos</h1>
+                <p class="login-subtitle">Gestión de Personal Voluntario</p>
+            </div>
+
+            <form id="loginForm" class="login-form" novalidate>
+                <div class="form-group">
+                    <label for="username" class="form-label">Usuario</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-input"
+                        placeholder="Ingresa tu usuario"
+                        autocomplete="username"
+                        required
+                        autofocus
+                    >
                 </div>
-                
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-input"
+                            placeholder="Ingresa tu contraseña"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-alert error-message" id="errorMessage" role="alert" aria-live="polite"></div>
+                <div class="form-alert success-message" id="successMessage" role="status" aria-live="polite"></div>
+
                 <button type="submit" class="submit-btn" id="submitBtn">
-                    🔥 INICIAR SESIÓN
+                    <span class="btn-text">Iniciar Sesión</span>
+                    <span class="btn-spinner" aria-hidden="true"></span>
                 </button>
-                
-                <div class="error-message" id="errorMessage"></div>
-                <div class="success-message" id="successMessage"></div>
             </form>
+
+            <div class="login-footer">
+                <a href="/portal/" class="portal-link">Acceso Portal Voluntarios</a>
+            </div>
         </div>
+
     </div>
 
-    <!-- Auth Django - Usa APIs en lugar de localStorage -->
     <script src="{% static 'js/auth_django.js' %}"></script>
 </body>
 </html>
