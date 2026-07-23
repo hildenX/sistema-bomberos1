@@ -111,12 +111,16 @@ html, body {
             drop-shadow(0 2px 8px rgba(0,0,0,0.6));
 }
 
-/* Cuando el usuario ponga su logo real */
+/* Logo real de la compañía */
 .brand-logo-img {
-    width: 140px;
-    height: 140px;
+    width: 148px;
+    height: 148px;
     object-fit: contain;
-    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
+}
+
+.brand-shield-hidden {
+    display: none;
 }
 
 /* ---- Textos de branding ---- */
