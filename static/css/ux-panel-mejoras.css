@@ -1,0 +1,355 @@
+/* ================================================================
+   UX PANEL MEJORAS — sobreescribe estilos existentes
+   Principios: consistencia, jerarquía, minimalismo
+   ================================================================ */
+
+/* ---- Variables globales del sistema ---- */
+:root {
+    --ux-rojo:      #c0392b;
+    --ux-rojo-dark: #922b21;
+    --ux-dorado:    #c8942a;
+    --ux-slate-900: #0f172a;
+    --ux-slate-800: #1e293b;
+    --ux-slate-700: #334155;
+    --ux-slate-600: #475569;
+    --ux-slate-200: #e2e8f0;
+    --ux-slate-100: #f1f5f9;
+    --ux-slate-50:  #f8fafc;
+    --ux-text:      #1e293b;
+    --ux-text-sub:  #64748b;
+    --ux-border:    #e2e8f0;
+    --ux-shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --ux-shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* ================================================================
+   BANNER DE BIENVENIDA
+   ================================================================ */
+.header-bienvenida,
+.welcome-header,
+[id*="bienvenida"],
+[class*="bienvenida"] {
+    background: linear-gradient(135deg, #1a0505 0%, #2d0808 50%, #1a0505 100%) !important;
+    border: none !important;
+    border-bottom: 3px solid var(--ux-rojo) !important;
+    border-left: none !important;
+    color: #f0f0f0 !important;
+    padding: 18px 28px !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+}
+
+.header-bienvenida *,
+.welcome-header * {
+    color: #f0f0f0 !important;
+    border-left: none !important;
+}
+
+/* Acento rojo a la izquierda del banner */
+.header-bienvenida::before,
+.welcome-header::before {
+    content: '' !important;
+    display: block !important;
+    width: 4px !important;
+    height: 32px !important;
+    background: var(--ux-rojo) !important;
+    border-radius: 2px !important;
+    flex-shrink: 0 !important;
+}
+
+/* ================================================================
+   FONDO PRINCIPAL DEL ÁREA DE CONTENIDO
+   ================================================================ */
+.main-system,
+.container,
+#containerPrincipal,
+.main-content-with-sidebar > div {
+    background: var(--ux-slate-50) !important;
+}
+
+/* ================================================================
+   CARDS DE VOLUNTARIOS — más refinadas
+   ================================================================ */
+.bombero-card {
+    background: #ffffff !important;
+    border: 1px solid var(--ux-border) !important;
+    border-left: 3px solid var(--ux-rojo) !important;
+    border-radius: 8px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 8px !important;
+    box-shadow: var(--ux-shadow-sm) !important;
+    transition: box-shadow 0.2s ease, transform 0.15s ease !important;
+}
+
+.bombero-card:hover {
+    box-shadow: var(--ux-shadow-md) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ================================================================
+   SISTEMA DE BOTONES UNIFICADO
+   Los 6 colores arcoíris → 3 categorías semánticas coherentes
+
+   ROJO  (#c0392b): Acciones financieras críticas (Cuotas, PDF Deudas)
+   PIZARRA (#334155): Acciones de documentos/info (Ficha PDF, Beneficios)
+   NEUTRO (#475569): Acciones de gestión (Uniformes, Tabla)
+   ================================================================ */
+
+/* BASE UNIFICADO: todos los botones de acción */
+.btn-cuotas,
+.btn-beneficios,
+.btn-uniformes,
+.btn-pdf,
+.btn-warning,
+.btn-success,
+.btn-info,
+.btn-tabla-uniformes {
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    padding: 7px 12px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    box-shadow: none !important;
+    min-width: unset !important;
+}
+
+.btn-cuotas:active,
+.btn-beneficios:active,
+.btn-uniformes:active,
+.btn-pdf:active,
+.btn-warning:active,
+.btn-success:active,
+.btn-info:active {
+    transform: scale(0.96) !important;
+}
+
+/* --- FICHA PDF: pizarra oscuro --- */
+.btn-info {
+    background: var(--ux-slate-700) !important;
+    color: #f0f0f0 !important;
+}
+.btn-info:hover {
+    background: var(--ux-slate-800) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(51,65,85,0.3) !important;
+    color: #fff !important;
+}
+
+/* --- CUOTAS: rojo institucional (acción financiera clave) --- */
+.btn-cuotas {
+    background: var(--ux-rojo) !important;
+    color: #fff !important;
+}
+.btn-cuotas:hover {
+    background: var(--ux-rojo-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 10px rgba(192,57,43,0.35) !important;
+    color: #fff !important;
+}
+
+/* --- BENEFICIOS: verde oscuro apagado --- */
+.btn-beneficios,
+.btn-success {
+    background: #166534 !important;
+    color: #d1fae5 !important;
+}
+.btn-beneficios:hover,
+.btn-success:hover {
+    background: #14532d !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(22,101,52,0.3) !important;
+    color: #ecfdf5 !important;
+}
+
+/* --- PDF DEUDAS: rojo oscuro (acción crítica) --- */
+.btn-pdf {
+    background: #7f1d1d !important;
+    color: #fecaca !important;
+}
+.btn-pdf:hover {
+    background: #991b1b !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(127,29,29,0.4) !important;
+    color: #fff !important;
+}
+
+/* --- UNIFORMES y TABLA: slate neutro --- */
+.btn-uniformes,
+.btn-warning,
+.btn-tabla-uniformes {
+    background: var(--ux-slate-600) !important;
+    color: var(--ux-slate-100) !important;
+}
+.btn-uniformes:hover,
+.btn-warning:hover,
+.btn-tabla-uniformes:hover {
+    background: var(--ux-slate-700) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 8px rgba(71,85,105,0.3) !important;
+    color: #fff !important;
+}
+
+/* Contenedor de botones: spacing refinado */
+.bombero-botones {
+    gap: 5px !important;
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--ux-border) !important;
+}
+
+/* ================================================================
+   BOTONES DE FILTRO DE ESTADO
+   Antes: 7 colores rellenos distintos
+   Ahora: outline neutral + activo con color semántico
+   ================================================================ */
+.filtros-estado-container button,
+.btn-filtro,
+button[onclick*="filtrar"],
+.filtro-btn {
+    background: #fff !important;
+    color: var(--ux-text) !important;
+    border: 1.5px solid var(--ux-border) !important;
+    border-radius: 20px !important;
+    padding: 5px 14px !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    box-shadow: none !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
+}
+
+.filtros-estado-container button:hover,
+.btn-filtro:hover {
+    border-color: var(--ux-rojo) !important;
+    color: var(--ux-rojo) !important;
+    background: #fff5f5 !important;
+}
+
+/* Filtro activo/seleccionado */
+.filtros-estado-container button.active,
+.filtros-estado-container button[data-estado="todos"],
+.btn-filtro.active {
+    background: var(--ux-rojo) !important;
+    color: #fff !important;
+    border-color: var(--ux-rojo) !important;
+}
+
+/* ================================================================
+   BUSCADOR
+   ================================================================ */
+.buscador-container input,
+input[type="search"],
+input[placeholder*="Buscar"] {
+    border: 1.5px solid var(--ux-border) !important;
+    border-radius: 8px !important;
+    padding: 10px 16px 10px 40px !important;
+    font-size: 0.9rem !important;
+    background: #fff !important;
+    color: var(--ux-text) !important;
+    box-shadow: var(--ux-shadow-sm) !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.buscador-container input:focus,
+input[type="search"]:focus,
+input[placeholder*="Buscar"]:focus {
+    outline: none !important;
+    border-color: var(--ux-rojo) !important;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.1) !important;
+}
+
+/* ================================================================
+   HEADER DE SECCIÓN "Bomberos Registrados"
+   ================================================================ */
+.registros-header {
+    background: #fff !important;
+    border-bottom: 2px solid var(--ux-border) !important;
+    padding: 14px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.registros-header::before {
+    content: '' !important;
+    display: block !important;
+    width: 3px !important;
+    height: 20px !important;
+    background: var(--ux-rojo) !important;
+    border-radius: 2px !important;
+    flex-shrink: 0 !important;
+}
+
+.registros-header h3 {
+    color: var(--ux-text) !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* ================================================================
+   FOTO DE VOLUNTARIO
+   ================================================================ */
+.bombero-card img,
+.foto-voluntario {
+    border-radius: 50% !important;
+    border: 2px solid var(--ux-border) !important;
+    width: 44px !important;
+    height: 44px !important;
+    object-fit: cover !important;
+}
+
+/* ================================================================
+   NOMBRE Y DATOS DEL VOLUNTARIO
+   ================================================================ */
+.bombero-info h4,
+.voluntario-nombre {
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    color: var(--ux-text) !important;
+    margin-bottom: 2px !important;
+}
+
+.bombero-info p,
+.voluntario-detalle {
+    font-size: 0.78rem !important;
+    color: var(--ux-text-sub) !important;
+}
+
+/* ================================================================
+   SIDEBAR: reemplaza emoji logo por imagen real
+   ================================================================ */
+.sidebar-logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+}
+
+/* ================================================================
+   SCROLLBAR DEL ÁREA PRINCIPAL
+   ================================================================ */
+.registros::-webkit-scrollbar,
+#listaBomberos::-webkit-scrollbar {
+    width: 6px !important;
+}
+.registros::-webkit-scrollbar-thumb,
+#listaBomberos::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 99px !important;
+}
+.registros::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
+}
