@@ -49,10 +49,8 @@ html, body {
 .brand-panel {
     width: 420px;
     flex-shrink: 0;
-    background: var(--panel-brand);
-    background-image:
-        radial-gradient(ellipse at 30% 20%, rgba(192, 57, 43, 0.18) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 80%, rgba(123, 20, 20, 0.25) 0%, transparent 55%);
+    background: rgba(10, 2, 2, 0.82);
+    backdrop-filter: blur(2px);
     border-right: 1px solid rgba(200, 148, 42, 0.15);
     display: flex;
     flex-direction: column;
@@ -174,7 +172,8 @@ html, body {
 /* ===== PANEL DERECHO: FORMULARIO ===== */
 .form-panel {
     flex: 1;
-    background: var(--panel-form);
+    background: rgba(17, 17, 17, 0.88);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -486,6 +485,88 @@ html, body {
     }
 
     .form-title { font-size: 1.5rem; }
+}
+
+/* ===== CANVAS FUEGO ===== */
+#fireCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+#fireCanvas.visible {
+    opacity: 1;
+}
+
+.login-screen {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== PRELOADER ===== */
+#preloader {
+    position: fixed;
+    inset: 0;
+    background: #0a0202;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.preloader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.preloader-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 24px rgba(192,57,43,0.5));
+    animation: preloader-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes preloader-pulse {
+    0%, 100% { transform: scale(1);   filter: drop-shadow(0 0 20px rgba(192,57,43,0.4)); }
+    50%       { transform: scale(1.06); filter: drop-shadow(0 0 36px rgba(192,57,43,0.7)); }
+}
+
+.preloader-bar {
+    width: 180px;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.preloader-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--rojo), var(--dorado));
+    border-radius: 99px;
+    transition: width 0.15s ease;
+}
+
+.preloader-text {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
 }
 
 /* ===== COMPATIBILIDAD auth_django.js ===== */

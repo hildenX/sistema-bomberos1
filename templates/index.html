@@ -12,65 +12,41 @@
 </head>
 <body>
 
-<div class="login-screen">
+<!-- ===== PRELOADER ===== -->
+<div id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+        <img src="{% static 'img/logobomba.png' %}" alt="Logo" class="preloader-logo">
+        <div class="preloader-bar"><div class="preloader-fill"></div></div>
+        <p class="preloader-text">Cargando sistema…</p>
+    </div>
+</div>
+
+<!-- ===== FONDO FUEGO (canvas) ===== -->
+<canvas id="fireCanvas" aria-hidden="true"></canvas>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<div class="login-screen" id="loginScreen">
     <div class="login-split">
 
-        <!-- ===== PANEL IZQUIERDO: BRANDING ===== -->
+        <!-- PANEL IZQUIERDO: BRANDING -->
         <div class="brand-panel">
             <div class="brand-panel-inner">
-
                 <div class="brand-emblem">
                     <img src="{% static 'img/logobomba.png' %}" alt="Logo Compañía de Bomberos" class="brand-logo-img">
-                    <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" class="brand-shield brand-shield-hidden" aria-hidden="true">
-                        <!-- Escudo exterior -->
-                        <path d="M60 4 L108 22 L108 78 Q108 116 60 136 Q12 116 12 78 L12 22 Z"
-                              fill="#4a0e0e" stroke="#c8942a" stroke-width="2.5"/>
-                        <!-- Escudo interior -->
-                        <path d="M60 14 L100 30 L100 77 Q100 110 60 128 Q20 110 20 77 L20 30 Z"
-                              fill="#3a0808"/>
-                        <!-- Llama grande -->
-                        <path d="M60 38 C54 50 44 55 44 66 C44 77 52 84 60 86 C68 84 76 77 76 66 C76 55 66 50 60 38Z"
-                              fill="#c0392b"/>
-                        <!-- Llama media -->
-                        <path d="M60 50 C57 57 51 60 51 68 C51 74 55.5 78 60 79 C64.5 78 69 74 69 68 C69 60 63 57 60 50Z"
-                              fill="#e74c3c"/>
-                        <!-- Llama centro -->
-                        <path d="M60 59 C58.5 63 56 65 56 69 C56 72 57.8 74 60 74 C62.2 74 64 72 64 69 C64 65 61.5 63 60 59Z"
-                              fill="#f5a623"/>
-                        <!-- Línea decorativa superior -->
-                        <path d="M28 26 L92 26" stroke="#c8942a" stroke-width="1" opacity="0.5"/>
-                        <!-- Texto BOMBEROS -->
-                        <text x="60" y="101" text-anchor="middle" fill="#c8942a"
-                              font-size="8.5" font-family="Inter,Arial,sans-serif"
-                              font-weight="700" letter-spacing="3">BOMBEROS</text>
-                        <!-- Línea decorativa inferior -->
-                        <path d="M36 107 L60 103 L84 107" fill="none" stroke="#c8942a" stroke-width="1.2"/>
-                        <!-- Estrellas decorativas -->
-                        <circle cx="32" cy="60" r="2.5" fill="#c8942a" opacity="0.6"/>
-                        <circle cx="88" cy="60" r="2.5" fill="#c8942a" opacity="0.6"/>
-                        <circle cx="32" cy="52" r="1.5" fill="#c8942a" opacity="0.4"/>
-                        <circle cx="88" cy="52" r="1.5" fill="#c8942a" opacity="0.4"/>
-                        <circle cx="32" cy="68" r="1.5" fill="#c8942a" opacity="0.4"/>
-                        <circle cx="88" cy="68" r="1.5" fill="#c8942a" opacity="0.4"/>
-                    </svg>
                 </div>
-
                 <div class="brand-text">
                     <p class="brand-tag">CUERPO DE BOMBEROS</p>
                     <h1 class="brand-name">Compañía de<br>Bomberos</h1>
                     <p class="brand-motto">Voluntarios al Servicio<br>de la Comunidad</p>
                 </div>
-
                 <div class="brand-footer-text">
                     <span>Sistema de Gestión Interna</span>
                 </div>
-
             </div>
-            <!-- Decoración esquina -->
             <div class="brand-corner-deco" aria-hidden="true"></div>
         </div>
 
-        <!-- ===== PANEL DERECHO: FORMULARIO ===== -->
+        <!-- PANEL DERECHO: FORMULARIO -->
         <div class="form-panel">
             <div class="form-panel-inner">
 
@@ -90,16 +66,8 @@
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
                             </span>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                class="form-input"
-                                placeholder="Nombre de usuario"
-                                autocomplete="username"
-                                required
-                                autofocus
-                            >
+                            <input type="text" id="username" name="username" class="form-input"
+                                   placeholder="Nombre de usuario" autocomplete="username" required autofocus>
                         </div>
                     </div>
 
@@ -112,15 +80,8 @@
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                                 </svg>
                             </span>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                class="form-input"
-                                placeholder="Contraseña"
-                                autocomplete="current-password"
-                                required
-                            >
+                            <input type="password" id="password" name="password" class="form-input"
+                                   placeholder="Contraseña" autocomplete="current-password" required>
                             <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
                                 <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -140,9 +101,7 @@
 
                 </form>
 
-                <div class="form-divider">
-                    <span>o</span>
-                </div>
+                <div class="form-divider"><span>o</span></div>
 
                 <div class="form-footer">
                     <a href="/portal/" class="portal-link">
@@ -162,6 +121,29 @@
     </div>
 </div>
 
+<script src="{% static 'js/fire.js' %}"></script>
 <script src="{% static 'js/auth_django.js' %}"></script>
+<script>
+// Preloader
+(function () {
+    const pre = document.getElementById('preloader');
+    const fill = pre.querySelector('.preloader-fill');
+    let prog = 0;
+
+    const interval = setInterval(() => {
+        prog = Math.min(prog + Math.random() * 18, 90);
+        fill.style.width = prog + '%';
+    }, 120);
+
+    window.addEventListener('load', () => {
+        clearInterval(interval);
+        fill.style.width = '100%';
+        setTimeout(() => {
+            pre.classList.add('hidden');
+            window.dispatchEvent(new Event('fireStart'));
+        }, 350);
+    });
+})();
+</script>
 </body>
 </html>
