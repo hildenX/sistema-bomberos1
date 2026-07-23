@@ -8,7 +8,7 @@
 
     // Resolución interna (baja = más rendimiento, sigue viéndose bien escalado)
     const FW = 200;
-    const FH = 120;
+    const FH = 160;  // más filas = más espacio para que el calor se disipe en punta
 
     const pixels = new Uint8Array(FW * FH);
 
@@ -79,17 +79,18 @@
         for (let y = 0; y < FH - 1; y++) {
             for (let x = 0; x < FW; x++) {
                 const src   = (y + 1) * FW + x;
-                const decay = Math.floor(Math.random() * 3); // 0, 1 o 2
+                const decay = Math.floor(Math.random() * 4); // 0-3: más decay = puntas más afiladas
                 const heat  = Math.max(0, pixels[src] - decay);
                 // Se desplaza ligeramente a la izquierda = efecto de viento/ondulación
                 const dstX  = (x - (decay > 0 ? 1 : 0) + FW) % FW;
                 pixels[y * FW + dstX] = heat;
             }
         }
-        // Re-inyectar calor en la base con variación aleatoria (hace que las llamas pulsen)
+        // Re-inyectar calor variable en la base (variación = llamas de distintas alturas)
         for (let x = 0; x < FW; x++) {
-            const base = pixels[(FH - 1) * FW + x];
-            pixels[(FH - 1) * FW + x] = base > 0 ? Math.min(255, base + Math.floor(Math.random() * 4) - 1) : 255;
+            // Varía entre 180-255 para crear llamas de distinta altura, no todas iguales
+            pixels[(FH - 1) * FW + x] = 180 + Math.floor(Math.random() * 76);
+            pixels[(FH - 2) * FW + x] = 160 + Math.floor(Math.random() * 80);
         }
     }
 
@@ -120,8 +121,8 @@
 
         ctx.clearRect(0, 0, W, H);
 
-        // Las llamas ocupan la parte inferior (~55% de pantalla) y se ven desde abajo
-        const destH = H * 0.62;
+        // Las llamas ocupan casi toda la pantalla para que las puntas mueran naturalmente
+        const destH = H * 0.90;
         const destY = H - destH;
 
         // Ligero blur para suavizar los píxeles escalados → llamas más fluidas
