@@ -736,3 +736,315 @@ input[placeholder*="Buscar"]:focus {
         justify-content: center !important;
     }
 }
+
+/* ================================================================
+   SIDEBAR — REFINAMIENTO VISUAL COMPLETO
+   ================================================================ */
+
+/* Sidebar por defecto (no tesorero/capitán/secretario):
+   cambia el gradiente azul por oscuro rojo que armoniza con el tema */
+.sidebar:not(.sidebar-tesorero):not(.sidebar-capitan):not(.sidebar-secretario) {
+    background: linear-gradient(180deg, #1a0404 0%, #0d0101 100%) !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6), 1px 0 0 rgba(192,57,43,0.15) !important;
+}
+
+/* Header del sidebar — más elegante */
+.sidebar-header {
+    padding: 20px 16px 16px !important;
+    background: rgba(0,0,0,0.35) !important;
+    border-bottom: 1px solid rgba(192,57,43,0.2) !important;
+    gap: 14px !important;
+}
+
+.sidebar-tesorero .sidebar-header {
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Logo más grande y con halo sutil */
+.sidebar-logo-img {
+    width: 46px !important;
+    height: 46px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 0 8px rgba(192,57,43,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.6)) !important;
+    flex-shrink: 0 !important;
+    border-radius: 6px !important;
+}
+
+/* Título del sidebar */
+.sidebar-title h1 {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+    color: #f0f0f0 !important;
+}
+
+.sidebar-title span {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.65rem !important;
+    color: rgba(200,148,42,0.8) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    opacity: 1 !important;
+}
+
+/* Sección usuario — con pastilla de rol */
+.sidebar-user {
+    padding: 12px 16px !important;
+    background: rgba(0,0,0,0.2) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+.sidebar-user-role {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    color: var(--p-dorado) !important;
+    margin-bottom: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.sidebar-user-role::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 6px !important;
+    height: 6px !important;
+    background: #22c55e !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 6px rgba(34,197,94,0.6) !important;
+    flex-shrink: 0 !important;
+}
+
+.sidebar-user-name {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #f0f0f0 !important;
+    opacity: 1 !important;
+    line-height: 1.3 !important;
+}
+
+/* Títulos de sección nav */
+.sidebar-section-title {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1.8px !important;
+    text-transform: uppercase !important;
+    color: rgba(255,255,255,0.3) !important;
+    padding: 16px 16px 6px !important;
+    opacity: 1 !important;
+    margin-top: 4px !important;
+}
+
+/* Línea separadora entre secciones */
+.sidebar-section:not(:first-child) > .sidebar-section-title {
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    padding-top: 16px !important;
+    margin-top: 8px !important;
+}
+
+/* Links del sidebar — Inter, más refinados */
+.sidebar-link {
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    padding: 9px 16px !important;
+    border-left: 3px solid transparent !important;
+    border-radius: 0 !important;
+    margin: 1px 0 !important;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease !important;
+}
+
+/* Hover — todo el sidebar usa rojo */
+.sidebar-link:hover {
+    background: rgba(192,57,43,0.12) !important;
+    border-left-color: var(--p-rojo) !important;
+    transform: translateX(2px) !important;
+}
+
+/* Activo — acento rojo prominente */
+.sidebar-link.active {
+    background: rgba(192,57,43,0.18) !important;
+    border-left-color: var(--p-rojo) !important;
+    transform: translateX(2px) !important;
+}
+
+/* Override: tesorero usa dorado en hover/active */
+.sidebar-tesorero .sidebar-link:hover {
+    background: rgba(200,148,42,0.12) !important;
+    border-left-color: var(--p-dorado) !important;
+}
+
+.sidebar-tesorero .sidebar-link.active {
+    background: rgba(200,148,42,0.18) !important;
+    border-left-color: var(--p-dorado) !important;
+}
+
+/* Icono y texto */
+.sidebar-icon {
+    font-size: 1.1rem !important;
+    margin-right: 11px !important;
+    min-width: 22px !important;
+    text-align: center !important;
+}
+
+.sidebar-text {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.1px !important;
+}
+
+/* Footer — logout más refinado */
+.sidebar-footer {
+    padding: 12px 14px !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    background: rgba(0,0,0,0.25) !important;
+}
+
+.sidebar-logout {
+    padding: 9px 14px !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    background: rgba(192,57,43,0.15) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgba(192,57,43,0.3) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.sidebar-logout:hover {
+    background: rgba(192,57,43,0.3) !important;
+    color: #fff !important;
+    border-color: rgba(192,57,43,0.5) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Toggle móvil — cambiar azul por rojo */
+.sidebar-toggle {
+    background: var(--p-rojo) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 12px rgba(192,57,43,0.4) !important;
+    border-radius: 8px !important;
+}
+
+/* ================================================================
+   CONTENIDO — REFINAMIENTO INFO GRID Y CONTADOR
+   ================================================================ */
+
+/* Textos del info grid (profesión, domicilio, etc.) que eran grises claros */
+.registro-info span,
+.bombero-card .registro-info span,
+.bombero-card [class*="label"],
+.info-label,
+.info-col strong {
+    color: var(--p-text-dim) !important;
+    font-size: 0.62rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+}
+
+.registro-info strong,
+.bombero-card .registro-info strong,
+.info-value,
+.info-col span {
+    color: var(--p-text) !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+}
+
+/* Separador de la info grid */
+.registro-info {
+    border-top: 1px solid var(--p-border) !important;
+    padding-top: 8px !important;
+    margin-top: 8px !important;
+    gap: 4px 12px !important;
+}
+
+/* Contador de bomberos */
+.contador {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    color: var(--p-text-dim) !important;
+    padding: 10px 16px !important;
+    background: var(--p-surface) !important;
+    border-bottom: 1px solid var(--p-border) !important;
+    text-align: left !important;
+    letter-spacing: 0.2px !important;
+}
+
+.contador strong {
+    color: var(--p-dorado) !important;
+    font-weight: 700 !important;
+}
+
+/* Nombre del voluntario (era #212121 en tema claro) */
+.registro-nombre {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--p-text) !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+}
+
+/* RUN/clave debajo del nombre */
+.registro-run,
+.bombero-clave,
+.bombero-card .bombero-clave {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--p-text-sub) !important;
+    font-size: 0.72rem !important;
+}
+
+/* Categoría badge — forzar colores dark */
+.categoria-badge {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    padding: 3px 8px !important;
+    border-radius: 20px !important;
+}
+
+/* Edad / antigüedad */
+.bombero-nombre {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--p-text) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+}
+
+/* Edad y antigüedad — era texto negro */
+.bombero-card .bombero-top span,
+.bombero-card .bombero-extra,
+.bombero-card [class*="edad"],
+.bombero-card [class*="antig"] {
+    color: var(--p-text-sub) !important;
+    font-size: 0.78rem !important;
+}
+
+/* Separador vertical entre edad y antigüedad */
+.bombero-card .bombero-extra .separador,
+.bombero-card .bombero-extra span.sep {
+    color: var(--p-border2) !important;
+    margin: 0 6px !important;
+}
+
+/* ================================================================
+   FOTO DEL VOLUNTARIO — borde dorado en insigne
+   ================================================================ */
+.bombero-card.insigne .bombero-foto,
+.bombero-card [class*="insigne"] ~ .bombero-foto-wrapper img {
+    border-color: var(--p-dorado) !important;
+    box-shadow: 0 0 0 2px rgba(200,148,42,0.3) !important;
+}
