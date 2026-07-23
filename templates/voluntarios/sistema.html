@@ -112,7 +112,7 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">🚒</div>
+            <img src="{% static 'img/logobomba.png' %}" class="sidebar-logo-img" alt="Logo Bomberos">
             <div class="sidebar-title">
                 <h1>Proyecto SEIS</h1>
                 <span>Sistema Bomberos</span>
@@ -209,12 +209,11 @@
                 <div id="mensaje" class="success" style="display: none;"></div>
                 
                 <!-- Botón para crear nuevo voluntario -->
-                <div id="contenedorCrearVoluntario" style="text-align: center; margin: 30px 0; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(46, 125, 50, 0.1) 100%); border-radius: 15px; border: 2px dashed rgba(76, 175, 80, 0.3);">
-                    <button type="button"
-                            id="btnCrearVoluntario"
+                <div id="contenedorCrearVoluntario" class="crear-voluntario-container">
+                    <button type="button" id="btnCrearVoluntario"
                             onclick="sistemaBomberos.irACrear()"
-                            style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); color: white; border: none; padding: 18px 50px; font-size: 1.3rem; font-weight: 600; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3); transition: all 0.3s;">
-                        ➕ CREAR NUEVO VOLUNTARIO
+                            class="btn-crear-voluntario">
+                        + Registrar Nuevo Voluntario
                     </button>
                 </div>
 
@@ -252,39 +251,15 @@
                         <option value="fallecido">☠️ Fallecidos</option>
                     </select>
 
-                    <div class="filtros-estado-container" style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                        <button class="btn-filtro-estado active" data-estado="todos"
-                                style="padding: 8px 16px; border: 2px solid #4caf50; background: #4caf50; color: white; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            📊 Todos
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="activo"
-                                style="padding: 8px 16px; border: 2px solid #4caf50; background: white; color: #4caf50; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ✅ Activos
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="suspendido"
-                                style="padding: 8px 16px; border: 2px solid #ff9800; background: white; color: #ff9800; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ⏸️ Suspendidos
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="renunciado"
-                                style="padding: 8px 16px; border: 2px solid #f59e0b; background: white; color: #f59e0b; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            🔄 Renunciados
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="separado"
-                                style="padding: 8px 16px; border: 2px solid #ef4444; background: white; color: #ef4444; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ⏸️ Separados
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="expulsado"
-                                style="padding: 8px 16px; border: 2px solid #dc2626; background: white; color: #dc2626; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ❌ Expulsados
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="martir"
-                                style="padding: 8px 16px; border: 2px solid #9c27b0; background: white; color: #9c27b0; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            🕊️ Mártires
-                        </button>
-                        <button class="btn-filtro-estado" data-estado="fallecido"
-                                style="padding: 8px 16px; border: 2px solid #6b7280; background: white; color: #6b7280; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            ☠️ Fallecidos
-                        </button>
+                    <div class="filtros-estado-container">
+                        <button class="btn-filtro-estado active" data-estado="todos">Todos</button>
+                        <button class="btn-filtro-estado" data-estado="activo">Activos</button>
+                        <button class="btn-filtro-estado" data-estado="suspendido">Suspendidos</button>
+                        <button class="btn-filtro-estado" data-estado="renunciado">Renunciados</button>
+                        <button class="btn-filtro-estado" data-estado="separado">Separados</button>
+                        <button class="btn-filtro-estado" data-estado="expulsado">Expulsados</button>
+                        <button class="btn-filtro-estado" data-estado="martir">Mártires</button>
+                        <button class="btn-filtro-estado" data-estado="fallecido">Fallecidos</button>
                     </div>
 
                     <div id="infoCategorias" class="info-categorias" style="display: none;">

@@ -153,48 +153,73 @@ input[placeholder*="Buscar"]:focus {
 /* ================================================================
    FILTROS DE ESTADO
    ================================================================ */
-.filtros-estado-container,
-[class*="filtros-estado"] {
+.filtros-estado-container {
     background: var(--p-surface) !important;
-    padding: 12px 20px !important;
+    padding: 14px 20px !important;
     border-bottom: 1px solid var(--p-border) !important;
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
+    align-items: center !important;
 }
 
-.filtros-estado-container button,
-.btn-filtro,
-button[onclick*="filtrar"],
-.filtro-btn {
+.btn-filtro-estado {
     background: var(--p-card) !important;
     color: var(--p-text-sub) !important;
     border: 1px solid var(--p-border2) !important;
     border-radius: 20px !important;
-    padding: 5px 14px !important;
-    font-size: 0.7rem !important;
+    padding: 6px 16px !important;
+    font-size: 0.72rem !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: 0.6px !important;
     box-shadow: none !important;
+    font-family: 'Inter', sans-serif !important;
 }
 
-.filtros-estado-container button:hover,
-.btn-filtro:hover {
+.btn-filtro-estado:hover {
     border-color: var(--p-rojo) !important;
     color: var(--p-rojo) !important;
     background: rgba(192,57,43,0.08) !important;
 }
 
-/* Filtro "TODOS" activo */
-.filtros-estado-container button.active,
-.filtros-estado-container button:first-child,
-.btn-filtro.active {
+.btn-filtro-estado.active {
     background: var(--p-rojo) !important;
     color: #fff !important;
     border-color: var(--p-rojo) !important;
+}
+
+/* ================================================================
+   BOTÓN CREAR VOLUNTARIO
+   ================================================================ */
+.crear-voluntario-container {
+    padding: 20px 20px 4px !important;
+    background: var(--p-bg) !important;
+}
+
+.btn-crear-voluntario {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: transparent !important;
+    color: var(--p-rojo) !important;
+    border: 1.5px dashed var(--p-rojo) !important;
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    font-family: 'Inter', sans-serif !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    letter-spacing: 0.3px !important;
+}
+
+.btn-crear-voluntario:hover {
+    background: rgba(192,57,43,0.08) !important;
+    border-style: solid !important;
+    color: var(--p-rojo) !important;
 }
 
 /* ================================================================
@@ -489,6 +514,38 @@ button[onclick*="filtrar"],
 /* Excepciones: badges de estado que tienen su propio color */
 .estado-badge,
 .badge { color: inherit !important; }
+
+/* ================================================================
+   SIDEBAR LOGO
+   ================================================================ */
+.sidebar-logo-img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)) !important;
+    flex-shrink: 0 !important;
+    border-radius: 4px !important;
+}
+
+/* ================================================================
+   SIDEBAR WIDGETS — forzar tema oscuro (los de amarillo/azul)
+   ================================================================ */
+.sidebar-nav .card,
+.sidebar [class*="card"],
+.sidebar [class*="widget"],
+.sidebar [class*="alert"],
+.sidebar [id*="widget"] {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--p-border) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    color: var(--p-text) !important;
+}
+
+/* Forzar texto claro en TODOS los elementos del sidebar */
+.sidebar * {
+    color: inherit !important;
+}
 
 /* ================================================================
    RESPONSIVE MOBILE
