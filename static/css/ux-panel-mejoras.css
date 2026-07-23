@@ -305,24 +305,39 @@ input[placeholder*="Buscar"]:focus {
 }
 
 /* ================================================================
+   FORM CONTAINER — padding mínimo para aprovechar ancho
+   ================================================================ */
+.form-container {
+    padding: 12px 12px !important;
+}
+
+/* ================================================================
    SECCIÓN REGISTROS
    ================================================================ */
 .registros {
     border: 1px solid var(--p-border) !important;
     border-radius: 8px !important;
-    margin-top: 16px !important;
+    margin-top: 8px !important;
     overflow: hidden !important;
+    padding: 0 !important;
 }
 
 /* ================================================================
    LISTA DE BOMBEROS
    ================================================================ */
 #listaBomberos {
-    padding: 12px 16px !important;
+    padding: 8px 10px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
     background: var(--p-bg) !important;
+}
+
+/* Cards 100% ancho, sin márgenes laterales */
+.bombero-card,
+.registro-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* ================================================================
