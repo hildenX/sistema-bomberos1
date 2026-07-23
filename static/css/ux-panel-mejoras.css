@@ -348,7 +348,7 @@ input[placeholder*="Buscar"]:focus {
     border: 1px solid var(--p-border) !important;
     border-left: 3px solid var(--p-rojo) !important;
     border-radius: var(--p-radius) !important;
-    padding: 16px 20px !important;
+    padding: 10px 14px !important;
     margin-bottom: 0 !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
     transition: box-shadow 0.2s ease, transform 0.15s ease, border-left-color 0.2s !important;
@@ -373,8 +373,8 @@ input[placeholder*="Buscar"]:focus {
 .foto-voluntario {
     border-radius: 50% !important;
     border: 2px solid var(--p-border2) !important;
-    width: 48px !important;
-    height: 48px !important;
+    width: 38px !important;
+    height: 38px !important;
     object-fit: cover !important;
 }
 
@@ -383,17 +383,17 @@ input[placeholder*="Buscar"]:focus {
    ================================================================ */
 .bombero-info h4,
 .voluntario-nombre {
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
     color: var(--p-text) !important;
-    margin-bottom: 3px !important;
+    margin-bottom: 2px !important;
     letter-spacing: -0.1px !important;
 }
 
 .bombero-info p,
 .voluntario-detalle,
 .bombero-card p {
-    font-size: 0.8rem !important;
+    font-size: 0.75rem !important;
     color: var(--p-text-sub) !important;
     margin: 0 !important;
 }
@@ -413,9 +413,9 @@ input[placeholder*="Buscar"]:focus {
 .bombero-card .info-grid {
     background: rgba(255,255,255,0.03) !important;
     border: 1px solid var(--p-border) !important;
-    border-radius: 6px !important;
-    padding: 10px 14px !important;
-    margin-top: 10px !important;
+    border-radius: 5px !important;
+    padding: 6px 10px !important;
+    margin-top: 6px !important;
 }
 
 .bombero-card .datos-extra dt,
@@ -453,15 +453,15 @@ input[placeholder*="Buscar"]:focus {
 .bombero-card [class*="insigne"],
 .bombero-card [class*="destacado"],
 .bombero-card [class*="distincion"] {
-    background: rgba(200,148,42,0.1) !important;
-    border: 1px solid rgba(200,148,42,0.25) !important;
+    background: rgba(200,148,42,0.08) !important;
+    border: 1px solid rgba(200,148,42,0.2) !important;
     border-left: 3px solid var(--p-dorado) !important;
-    border-radius: 6px !important;
+    border-radius: 5px !important;
     color: var(--p-dorado) !important;
-    padding: 7px 12px !important;
-    font-size: 0.8rem !important;
+    padding: 4px 10px !important;
+    font-size: 0.72rem !important;
     font-weight: 600 !important;
-    margin: 8px 0 !important;
+    margin: 5px 0 !important;
 }
 
 /* ================================================================
@@ -470,9 +470,9 @@ input[placeholder*="Buscar"]:focus {
 .bombero-botones {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
-    margin-top: 14px !important;
-    padding-top: 12px !important;
+    gap: 5px !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
     border-top: 1px solid var(--p-border) !important;
 }
 
@@ -486,10 +486,10 @@ input[placeholder*="Buscar"]:focus {
 .btn-info,
 .btn-tabla-uniformes {
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.72rem !important;
+    font-size: 0.68rem !important;
     font-weight: 600 !important;
-    padding: 7px 13px !important;
-    border-radius: 7px !important;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
     border: none !important;
     cursor: pointer !important;
     transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease !important;
