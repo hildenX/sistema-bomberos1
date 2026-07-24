@@ -465,6 +465,25 @@ body.pp-light { background: var(--td-bg) !important; }
   color: var(--td-text) !important;
   border-bottom: 1px solid var(--td-border) !important;
 }
+/* Volunteer data area and action strip inside cuotas card */
+.cuotas-page .bombero-datos {
+  background: var(--td-card) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.cuotas-page .bombero-datos * { color: var(--td-text) !important; }
+.acciones-voluntario {
+  background: #141414 !important;
+  border-top: 1px solid var(--td-border) !important;
+}
+.cuotas-page .form-container {
+  background: var(--td-card) !important;
+}
+.cuotas-page #estadoCuotasInfo {
+  background: var(--td-card) !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
 /* Month cards */
 .mes-card {
   background: #1a1a1a !important;
@@ -505,6 +524,13 @@ body.pp-light { background: var(--td-bg) !important; }
 
 /* Beneficios page (pagar-beneficio.css) */
 .pb-wrap { background: var(--td-bg) !important; }
+/* "Total de pagos realizados" strip */
+.pb-hist-contador {
+  background: #141414 !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-muted) !important;
+}
+.pb-hist-contador strong { color: var(--td-text) !important; }
 .pb-card {
   background: var(--td-card) !important;
   border: 1px solid var(--td-border) !important;
