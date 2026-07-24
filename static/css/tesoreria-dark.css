@@ -22,9 +22,33 @@
 
 /* ── Body & Root ── */
 html, body {
+  background: var(--td-bg) !important;
   background-color: var(--td-bg) !important;
+  background-image: none !important;
+  background-attachment: scroll !important;
   color: var(--td-text) !important;
   font-family: var(--td-font) !important;
+}
+
+/* Override CSS variables que páginas inline usan para blanco */
+:root {
+  --bg: #0f0f0f !important;
+  --panel: #141414 !important;
+  --panel-soft: #1a1a1a !important;
+  --panel-strong: #1a1a1a !important;
+  --ink: #e8e8e8 !important;
+  --ink-soft: #ccc !important;
+  --muted: #666 !important;
+  --line: #2a2a2a !important;
+  --line-soft: #222 !important;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4) !important;
+  --shadow: 0 18px 44px -18px rgba(0,0,0,0.6) !important;
+  --shadow-lift: 0 26px 60px -22px rgba(0,0,0,0.7) !important;
+  --brand-soft: rgba(192,57,43,0.15) !important;
+  --success-soft: rgba(39,174,96,0.15) !important;
+  --warning-soft: rgba(180,83,9,0.18) !important;
+  --danger-soft: rgba(185,28,28,0.18) !important;
+  --info-soft: rgba(37,99,235,0.15) !important;
 }
 
 /* ── Generic wrappers / containers ── */
@@ -599,8 +623,216 @@ body.pp-light { background: var(--td-bg) !important; }
 .pago-card .pago-monto,
 .pago-card p { color: var(--td-text) !important; }
 
-/* Beneficios page (pagar-beneficio.css) */
-.pb-wrap { background: var(--td-bg) !important; }
+/* ══════════════════════════════════════════════
+   PAGAR-BENEFICIO  —  Rediseño Profesional
+   ══════════════════════════════════════════════ */
+
+/* Wrapper full-width */
+.pb-wrap {
+  background: #0a0a0a !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 20px 24px !important;
+  box-sizing: border-box !important;
+  min-height: 100vh !important;
+}
+
+/* ── HEADER ── */
+.pb-header {
+  background: linear-gradient(160deg, #1a0408 0%, #8b0000 40%, #c0392b 70%, #8b0000 100%) !important;
+  border-radius: 0 !important;
+  margin: 0 -20px !important;
+  padding: 28px 32px 0 !important;
+  border-bottom: 2px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.6) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.pb-header::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -40px !important; right: -40px !important;
+  width: 220px !important; height: 220px !important;
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.pb-header-top {
+  justify-content: center !important;
+  text-align: center !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 20px !important;
+}
+.pb-header-top > button.btn-pb.volver {
+  position: absolute !important;
+  top: 22px !important;
+  right: 28px !important;
+}
+.pb-header-top h1 {
+  font-size: 1.8rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
+  margin: 0 !important;
+}
+.pb-header-top p {
+  font-size: 0.75rem !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,0.5) !important;
+  margin: 0 !important;
+}
+
+/* Stats strip */
+.pb-summary {
+  background: rgba(0,0,0,0.35) !important;
+  border-radius: 0 !important;
+  padding: 14px 32px !important;
+  gap: 0 !important;
+  border-top: 1px solid rgba(255,255,255,0.1) !important;
+  justify-content: center !important;
+}
+.pb-sum-card {
+  gap: 14px !important;
+  padding: 4px 32px !important;
+}
+.pb-sum-label {
+  font-size: 0.65rem !important;
+  letter-spacing: 0.12em !important;
+  opacity: 0.6 !important;
+}
+.pb-sum-value {
+  font-size: 1.6rem !important;
+  font-weight: 900 !important;
+  color: #fff !important;
+  text-shadow: 0 0 20px rgba(255,80,80,0.4) !important;
+}
+.pb-sum-divider {
+  background: rgba(255,255,255,0.15) !important;
+  margin: 0 4px !important;
+}
+
+/* ── CARDS ── */
+.pb-card {
+  background: #141414 !important;
+  border-radius: 10px !important;
+  border: 1px solid #222 !important;
+  margin: 10px auto !important;
+  max-width: 1100px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  overflow: hidden !important;
+}
+.pb-card + .pb-card {
+  border-top: 1px solid #222 !important;
+}
+
+.pb-card-header {
+  background: #1a1a1a !important;
+  border-bottom: 1px solid #252525 !important;
+  padding: 14px 22px !important;
+}
+.pb-card-header h2 {
+  color: #fff !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.pb-card-header h2::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 3px !important;
+  height: 16px !important;
+  background: #c0392b !important;
+  border-radius: 2px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Vol info grid */
+.pb-vol-info {
+  padding: 16px 22px !important;
+  gap: 10px !important;
+  border-bottom: none !important;
+}
+.pb-vol-item .label {
+  color: #555 !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.1em !important;
+}
+.pb-vol-item .value {
+  color: #e8e8e8 !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+/* Benefit cards */
+.pb-bcard {
+  background: #1c1c1c !important;
+  border: 1px solid #2a2a2a !important;
+  border-left: 3px solid #c0392b !important;
+  border-radius: 6px !important;
+}
+.pb-bcard:hover {
+  border-color: #3a3a3a !important;
+  border-left-color: #e74c3c !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+.pb-bcard.completo { border-left-color: #27ae60 !important; }
+.pb-bcard.liberado { border-left-color: #555 !important; }
+
+/* Tabs */
+.pb-tabs-header {
+  background: #1a1a1a !important;
+  border-bottom: 1px solid #252525 !important;
+  padding: 12px 22px !important;
+}
+.pb-tab {
+  background: transparent !important;
+  color: #888 !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 8px 14px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  transition: color 0.2s, border-color 0.2s !important;
+}
+.pb-tab.activa, .pb-tab:hover {
+  color: #e8e8e8 !important;
+  border-bottom-color: #c0392b !important;
+  background: transparent !important;
+}
+
+/* Filter selects */
+.pb-filtros-hist {
+  padding: 12px 22px !important;
+  background: #111 !important;
+  border-bottom: 1px solid #222 !important;
+  gap: 10px !important;
+}
+
+/* Notif */
+.pb-notif {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border-left-width: 3px !important;
+}
+.pb-notif.success { background: #0d1f12 !important; color: #4ade80 !important; border-left-color: #16a34a !important; }
+.pb-notif.error   { background: #1f0d0d !important; color: #f87171 !important; border-left-color: #dc2626 !important; }
+.pb-notif.info    { background: #0d1526 !important; color: #60a5fa !important; border-left-color: #2563eb !important; }
+
+/* Bottom padding */
+.pb-wrap > *:last-child {
+  padding-bottom: 24px !important;
+}
 /* "Total de pagos realizados" strip */
 .pb-hist-contador {
   background: #141414 !important;
@@ -780,16 +1012,232 @@ body.pp-light { background: var(--td-bg) !important; }
   color: #93c5fd !important;
 }
 
-/* ── solicitudes-pagos-portal ── */
-.solicitudes-main, .sp-main, .main-content-sp {
-  background: var(--td-bg) !important;
-  color: var(--td-text) !important;
+/* ══════════════════════════════════════════════
+   SOLICITUDES-PAGOS-PORTAL — Dark override total
+   ══════════════════════════════════════════════ */
+
+/* Shell container */
+.shell {
+  background: transparent !important;
 }
-.solicitud-item, .sp-card {
-  background: var(--td-card) !important;
-  border: 1px solid var(--td-border) !important;
-  color: var(--td-text) !important;
+
+/* Metric cards (PENDIENTES / PAGADOS / TOTAL) */
+.metric-card {
+  background: #141414 !important;
+  border: 1px solid #252525 !important;
+  color: #e8e8e8 !important;
+  border-left: 3px solid #333 !important;
 }
+.metric-card:hover {
+  border-color: #3a3a3a !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5) !important;
+}
+.metric-card.is-pending {
+  border-left: 3px solid #e74c3c !important;
+}
+.metric-card.is-paid {
+  border-left: 3px solid #27ae60 !important;
+}
+.metric-card.is-total {
+  border-left: 3px solid #3b82f6 !important;
+}
+.metric-icon {
+  border-radius: 10px !important;
+}
+.metric-card.is-pending .metric-icon {
+  background: rgba(231,76,60,0.12) !important;
+  color: #e74c3c !important;
+}
+.metric-card.is-paid .metric-icon {
+  background: rgba(39,174,96,0.12) !important;
+  color: #27ae60 !important;
+}
+.metric-card.is-total .metric-icon {
+  background: rgba(59,130,246,0.12) !important;
+  color: #3b82f6 !important;
+}
+.metric-label { color: #666 !important; }
+.metric-value.is-pending { color: #e74c3c !important; }
+.metric-value.is-paid   { color: #27ae60 !important; }
+.metric-value.is-total  { color: #93c5fd !important; }
+.metric-chip.is-neutral { background: rgba(59,130,246,0.12) !important; color: #60a5fa !important; }
+.metric-chip.is-alert   { background: rgba(231,76,60,0.12) !important; color: #e74c3c !important; }
+.metric-chip.is-ok      { background: rgba(39,174,96,0.12) !important; color: #27ae60 !important; }
+
+/* Toolbar con filtros */
+.toolbar {
+  background: #141414 !important;
+  border-color: #252525 !important;
+}
+.search-input,
+.filter-select {
+  background: #1c1c1c !important;
+  border-color: #333 !important;
+  color: #e8e8e8 !important;
+}
+.search-input:focus,
+.filter-select:focus {
+  border-color: #c0392b !important;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.2) !important;
+}
+.search-box label,
+.filter-box label {
+  color: #555 !important;
+}
+
+/* Quick-filter buttons */
+.quick-filter {
+  background: #1c1c1c !important;
+  border-color: #2a2a2a !important;
+  color: #777 !important;
+}
+.quick-filter:hover,
+.quick-filter.is-active {
+  background: rgba(192,57,43,0.15) !important;
+  border-color: rgba(192,57,43,0.4) !important;
+  color: #e74c3c !important;
+  box-shadow: none !important;
+}
+
+/* Panel principal (lista de solicitudes) */
+.panel {
+  background: #141414 !important;
+  border-color: #222 !important;
+  color: #e8e8e8 !important;
+}
+.panel-head h2 { color: #e8e8e8 !important; }
+.panel-head p  { color: #555 !important; }
+.hero-badge {
+  background: rgba(192,57,43,0.15) !important;
+  border-color: rgba(192,57,43,0.3) !important;
+  color: #e74c3c !important;
+}
+.hero-badge::after { color: #666 !important; }
+
+/* Request cards */
+.request-card {
+  background: #1a1a1a !important;
+  border-color: #252525 !important;
+  color: #e8e8e8 !important;
+}
+.request-card:hover {
+  border-color: #333 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+.request-topline h3 { color: #e8e8e8 !important; }
+.request-subtitle   { color: #666 !important; }
+.request-meta-grid {
+  background: #111 !important;
+  border-color: #222 !important;
+}
+.request-meta-grid > div {
+  background: #161616 !important;
+  color: #e8e8e8 !important;
+}
+.request-meta-grid span { color: #555 !important; }
+.request-meta-grid strong { color: #e8e8e8 !important; }
+.request-index {
+  background: rgba(192,57,43,0.12) !important;
+  border-color: rgba(192,57,43,0.2) !important;
+  color: #e74c3c !important;
+}
+.request-description {
+  background: #111 !important;
+  border-color: #222 !important;
+}
+.request-description p { color: #aaa !important; }
+.request-feedback {
+  background: #1a1500 !important;
+  border-color: #3a3000 !important;
+}
+.request-feedback p { color: #d4a017 !important; }
+.request-links { color: #555 !important; }
+
+/* Request actions panel */
+.request-actions {
+  background: #111 !important;
+  border-color: #222 !important;
+}
+.request-actions.is-closed {
+  background: #141414 !important;
+  border-color: #222 !important;
+}
+.request-actions-title { color: #555 !important; }
+.secondary-btn {
+  background: linear-gradient(135deg, #1a2744, #1e3a5f) !important;
+  color: #60a5fa !important;
+}
+.danger-btn {
+  background: linear-gradient(135deg, #2d0e0e, #3d1111) !important;
+  color: #f87171 !important;
+}
+
+/* Status pills */
+.status-pill.is-pending  { background: rgba(192,57,43,0.18) !important; color: #e74c3c !important; }
+.status-pill.is-paid     { background: rgba(39,174,96,0.15) !important; color: #27ae60 !important; }
+.status-pill.is-observed { background: rgba(180,83,9,0.18) !important;  color: #f59e0b !important; }
+.status-pill.is-rejected { background: rgba(185,28,28,0.18) !important; color: #ef4444 !important; }
+.status-pill.is-expired  { background: #222 !important; color: #666 !important; }
+
+/* Empty state & loading */
+.empty-state,
+.loading-state {
+  background: #141414 !important;
+  border: 1px dashed #333 !important;
+  color: #555 !important;
+}
+.empty-icon {
+  background: rgba(192,57,43,0.1) !important;
+  color: #c0392b !important;
+}
+
+/* Pagination */
+.pagination-bar {
+  border-top-color: #222 !important;
+}
+.pagination-status { color: #555 !important; }
+.pager-btn {
+  background: #1c1c1c !important;
+  border-color: #333 !important;
+  color: #e8e8e8 !important;
+}
+.pager-btn.is-current {
+  background: #c0392b !important;
+  border-color: #c0392b !important;
+  color: #fff !important;
+}
+
+/* Modal */
+.modal-dialog {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+  box-shadow: 0 32px 90px rgba(0,0,0,0.6) !important;
+}
+.modal-dialog h3 { color: #e8e8e8 !important; }
+.modal-dialog p  { color: #888 !important; }
+.modal-dialog textarea {
+  background: #111 !important;
+  border-color: #333 !important;
+  color: #e8e8e8 !important;
+}
+.modal-btn.is-cancel {
+  background: #252525 !important;
+  color: #aaa !important;
+}
+.modal-backdrop {
+  background: rgba(0,0,0,0.6) !important;
+}
+
+/* Verify panel (approved/rejected state) */
+.verify-mark {
+  background: rgba(39,174,96,0.12) !important;
+}
+.verify-title { color: #e8e8e8 !important; }
+.verify-sub   { color: #666 !important; }
+.verify-meta { border-top-color: #333 !important; }
+.verify-meta .verify-row span  { color: #555 !important; }
+.verify-meta .verify-row strong { color: #e8e8e8 !important; }
+.verify-mark .verify-stamp { border-color: #1a1a1a !important; }
 
 /* ── reasignar-beneficios ── */
 .card {
@@ -819,6 +1267,54 @@ body.pp-light { background: var(--td-bg) !important; }
   color: var(--td-text) !important;
 }
 
+/* ── Modal Deudores (sidebar-django.js, inline styles) ── */
+#modalDeudores > div {
+  background: linear-gradient(to bottom, #1a1a1a, #141414) !important;
+  border: 1px solid #2a2a2a !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+}
+#modalDeudores h2 {
+  color: #e8e8e8 !important;
+}
+/* Header separator */
+#modalDeudores > div > div:first-child {
+  border-bottom-color: #2a2a2a !important;
+}
+/* Close button */
+#modalDeudores button[onclick*="cerrarModal"] {
+  background: #252525 !important;
+  color: #888 !important;
+}
+/* Stat cards (cuotas vencidas / beneficios pendientes) */
+#modalDeudores > div > div:nth-child(2) > div:first-child {
+  background: linear-gradient(135deg, #1a1500, #1f1a00) !important;
+  border-left-color: #f59e0b !important;
+  box-shadow: 0 2px 12px rgba(245,158,11,0.15) !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:first-child > div:first-child {
+  color: #f59e0b !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:first-child > div:nth-child(2) {
+  color: #fbbf24 !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:first-child > div:nth-child(3) {
+  color: #b45309 !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:last-child {
+  background: linear-gradient(135deg, #1a0d18, #1f0a1a) !important;
+  border-left-color: #ec4899 !important;
+  box-shadow: 0 2px 12px rgba(236,72,153,0.15) !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:last-child > div:first-child {
+  color: #ec4899 !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:last-child > div:nth-child(2) {
+  color: #f472b6 !important;
+}
+#modalDeudores > div > div:nth-child(2) > div:last-child > div:nth-child(3) {
+  color: #be185d !important;
+}
+
 /* ── Warning / info popups / notification boxes ── */
 .popup, .popup-content, .popup-box {
   background: var(--td-card) !important;
@@ -833,4 +1329,511 @@ body.pp-light { background: var(--td-bg) !important; }
   background: #1f1a0d !important;
   border: 1px solid #854d0e !important;
   color: #fcd34d !important;
+}
+
+/* ── Full-width: quitar todo padding/margin, border-radius y overflow de los wrappers ── */
+.cuotas-page,
+.page-container.cuotas-page {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+.cuotas-page .container {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 12px 12px !important;
+}
+
+/* ── Header rediseñado — full bleed ── */
+.cuotas-page .cuotas-header,
+.page-header.cuotas-header {
+  margin: 0 -12px 0 !important;
+  border-radius: 0 0 0 0 !important;
+  background: linear-gradient(180deg, #a01020 0%, #c0392b 50%, #a01020 100%) !important;
+  padding: 22px 30px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border-bottom: 2px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
+}
+.cuotas-page .cuotas-header h2 {
+  font-size: 1.7rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+  margin: 0 !important;
+  color: #fff !important;
+}
+.cuotas-page .cuotas-header p {
+  font-size: 0.82rem !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,0.65) !important;
+  margin: 5px 0 0 !important;
+  font-weight: 500 !important;
+}
+
+/* ── Eliminar padding enorme de .page-content heredado de cargos-sanciones.css ── */
+.cuotas-page .page-content {
+  padding: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ── Reduce gap between cards ── */
+.cuotas-page .bombero-info,
+.cuotas-page .form-container,
+.cuotas-page .cuotas-grid,
+.cuotas-page .list-container,
+.cuotas-page .selector-años-container {
+  margin-top: 0 !important;
+  margin-bottom: 6px !important;
+  border-radius: 0 !important;
+}
+
+/* ── File input dark ── */
+input[type="file"] {
+  background: #1c1c1c !important;
+  color: var(--td-text) !important;
+  border: 1.5px solid var(--td-border) !important;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  width: 100% !important;
+}
+input[type="file"]::file-selector-button {
+  background: var(--td-red) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+  margin-right: 10px !important;
+}
+
+/* ══════════════════════════════════════════════
+   DEUDORES-CUOTAS & DEUDORES-BENEFICIOS — Dark
+   ══════════════════════════════════════════════ */
+.page-wrap {
+  background: transparent !important;
+}
+.page-wrap .page-header {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}
+.page-wrap .resumen-card {
+  background: linear-gradient(135deg, #1a1500 0%, #1f1a00 100%) !important;
+  border-left-color: #f59e0b !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+}
+.page-wrap .resumen-label {
+  color: #b45309 !important;
+}
+.page-wrap .resumen-valor.naranja { color: #fbbf24 !important; }
+.page-wrap .resumen-valor.verde   { color: #34d399 !important; }
+.page-wrap .resumen-valor.rosa    { color: #f472b6 !important; }
+.page-wrap .resumen-divider {
+  background: rgba(180, 83, 9, 0.3) !important;
+}
+.page-wrap .tabla-card {
+  background: #141414 !important;
+  border: 1px solid #252525 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+}
+.page-wrap .tabla-toolbar {
+  background: #1a1a1a !important;
+  border-bottom-color: #252525 !important;
+}
+.page-wrap .tabla-toolbar span {
+  color: #888 !important;
+}
+.page-wrap thead {
+  background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important;
+}
+.page-wrap tbody tr {
+  border-bottom-color: #222 !important;
+}
+.page-wrap tbody tr:hover {
+  background: #1c1c1c !important;
+}
+.page-wrap tbody td {
+  color: #ccc !important;
+}
+.page-wrap tbody td:first-child {
+  color: #888 !important;
+}
+.page-wrap .td-deuda { color: #34d399 !important; }
+.page-wrap .td-meses { color: #f87171 !important; }
+.page-wrap .td-clave { color: #888 !important; }
+.page-wrap .td-beneficio { color: #f472b6 !important; }
+.page-wrap .td-tarjetas { color: #888 !important; }
+.page-wrap .empty-state {
+  color: #666 !important;
+}
+.page-wrap #loadingMsg {
+  color: #888 !important;
+}
+.page-wrap .anio-selector {
+  background: #1c1c1c !important;
+  border-color: #333 !important;
+  color: #e8e8e8 !important;
+}
+.page-wrap .anio-selector:focus {
+  border-color: #c41e3a !important;
+}
+.page-wrap .btn-close {
+  background: #252525 !important;
+  color: #aaa !important;
+  border: 1px solid #333 !important;
+}
+.page-wrap .btn-close:hover {
+  background: #333 !important;
+  color: #e8e8e8 !important;
+}
+.page-wrap .btn-volver {
+  background: linear-gradient(135deg, #252525, #1c1c1c) !important;
+  border: 1px solid #333 !important;
+  color: #ccc !important;
+}
+.page-wrap .btn-volver:hover {
+  background: linear-gradient(135deg, #333, #2a2a2a) !important;
+  color: #fff !important;
+}
+
+/* ══════════════════════════════════════════════
+   RIFAS — Dark theme profesional
+   ══════════════════════════════════════════════ */
+
+/* Wrapper */
+.rif-wrap {
+  max-width: 100% !important;
+  padding: 0 0 60px !important;
+}
+
+/* Header — full bleed, no border-radius */
+.rif-header {
+  background: linear-gradient(180deg, #1a0a0e 0%, #2a0a12 40%, #3d0c18 100%) !important;
+  border-radius: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 32px 36px 0 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
+  border-bottom: 1px solid rgba(196,30,58,0.25) !important;
+}
+.rif-titulo {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #fff !important;
+}
+.rif-subtitulo {
+  color: rgba(255,255,255,0.45) !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+}
+
+/* Header buttons */
+.btn-rif.volver {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
+}
+.btn-rif.volver:hover {
+  background: rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+.btn-rif.nuevo {
+  background: linear-gradient(135deg, #c41e3a, #a01530) !important;
+  color: #fff !important;
+  border: 1px solid rgba(196,30,58,0.5) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+}
+.btn-rif.nuevo:hover {
+  background: linear-gradient(135deg, #d42a46, #b81d38) !important;
+  box-shadow: 0 4px 16px rgba(196,30,58,0.4) !important;
+}
+
+/* Stats bar */
+.rif-stats-bar {
+  background: rgba(0,0,0,0.35) !important;
+  border-radius: 0 !important;
+  margin: 0 -36px !important;
+  padding: 0 36px !important;
+  border-top: 1px solid rgba(255,255,255,0.05) !important;
+}
+.rif-stat {
+  border-right-color: rgba(255,255,255,0.06) !important;
+  padding: 18px 24px !important;
+}
+.rif-stat:hover {
+  background: rgba(255,255,255,0.03) !important;
+}
+.rif-stat-num {
+  color: #f0c040 !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+}
+.rif-stat-label {
+  color: rgba(255,255,255,0.4) !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* Notification */
+.rif-notif.ok {
+  background: rgba(39,174,96,0.1) !important;
+  border-color: rgba(39,174,96,0.3) !important;
+  color: #34d399 !important;
+}
+.rif-notif.err {
+  background: rgba(231,76,60,0.1) !important;
+  border-color: rgba(231,76,60,0.3) !important;
+  color: #f87171 !important;
+}
+
+/* Grid */
+.rifas-grid {
+  padding: 28px 28px !important;
+  gap: 22px !important;
+}
+
+/* ── Rifa Card ── */
+.rifa-card {
+  background: #141414 !important;
+  border: 1px solid #222 !important;
+  border-radius: 14px !important;
+  padding: 24px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s !important;
+}
+.rifa-card:hover {
+  border-color: #333 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+  transform: translateY(-2px) !important;
+}
+.rifa-nombre {
+  color: #f0f0f0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+}
+.rifa-ciclo {
+  color: #666 !important;
+}
+
+/* Badge estado */
+.badge-estado.activa {
+  background: rgba(39,174,96,0.15) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(39,174,96,0.25) !important;
+}
+.badge-estado.cerrada {
+  background: rgba(255,255,255,0.05) !important;
+  color: #666 !important;
+  border: 1px solid #333 !important;
+}
+
+/* Info line */
+.rifa-info {
+  color: #888 !important;
+}
+.rifa-info strong {
+  color: #ccc !important;
+}
+
+/* Stats mini grid */
+.stat-mini {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 10px !important;
+  padding: 12px 8px !important;
+}
+.stat-mini-val {
+  color: #e8e8e8 !important;
+  font-size: 1.2rem !important;
+}
+.stat-mini-lbl {
+  color: #666 !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.08em !important;
+}
+.stat-mini.sin-ret {
+  border-bottom: 2px solid rgba(217,119,6,0.4) !important;
+}
+.stat-mini.sin-ret .stat-mini-val { color: #fbbf24 !important; }
+.stat-mini.retirada {
+  border-bottom: 2px solid rgba(37,99,235,0.4) !important;
+}
+.stat-mini.retirada .stat-mini-val { color: #60a5fa !important; }
+.stat-mini.pagada {
+  border-bottom: 2px solid rgba(5,150,105,0.4) !important;
+}
+.stat-mini.pagada .stat-mini-val { color: #34d399 !important; }
+.stat-mini.liberada {
+  border-bottom: 2px solid rgba(255,255,255,0.1) !important;
+}
+.stat-mini.liberada .stat-mini-val { color: #666 !important; }
+
+/* Recaudado box */
+.rifa-recaudado {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 10px !important;
+}
+.rec-val {
+  color: #e8e8e8 !important;
+}
+.rec-lbl {
+  color: #666 !important;
+}
+.rec-item.transf .rec-val { color: #60a5fa !important; }
+.rec-item.efec .rec-val   { color: #34d399 !important; }
+.rec-item.rec-total .rec-val { color: #f0c040 !important; }
+/* Dividers inside recaudado */
+.rec-divider {
+  background: #2a2a2a !important;
+}
+
+/* Progress bar */
+.rifa-progress-header {
+  color: #666 !important;
+}
+.rifa-progress-pct {
+  color: #ccc !important;
+}
+.rifa-progress-track {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  height: 10px !important;
+  border-radius: 5px !important;
+}
+.rifa-progress-fill {
+  background: linear-gradient(90deg, #c41e3a 0%, #e04060 100%) !important;
+  border-radius: 5px !important;
+}
+
+/* Action buttons in cards */
+.rifa-actions .btn-rif.primary {
+  background: linear-gradient(135deg, #c41e3a, #a01530) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(196,30,58,0.25) !important;
+}
+.rifa-actions .btn-rif.primary:hover {
+  background: linear-gradient(135deg, #d42a46, #b81d38) !important;
+  box-shadow: 0 4px 16px rgba(196,30,58,0.4) !important;
+}
+.rifa-actions .btn-rif.danger {
+  background: linear-gradient(135deg, #450a0a, #7f1d1d) !important;
+  border: 1px solid rgba(127,29,29,0.5) !important;
+  color: #fca5a5 !important;
+}
+.rifa-actions .btn-rif.danger:hover {
+  background: linear-gradient(135deg, #5a0e0e, #991b1b) !important;
+}
+
+/* Empty state */
+.rif-wrap .empty-state {
+  color: #666 !important;
+}
+.rif-wrap .empty-state h3 {
+  color: #aaa !important;
+}
+.rif-wrap .loading {
+  color: #666 !important;
+}
+
+/* ── Modal dark ── */
+.modal-overlay {
+  background: rgba(0,0,0,0.75) !important;
+  backdrop-filter: blur(6px) !important;
+}
+.modal-box {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.6) !important;
+}
+.modal-header {
+  background: linear-gradient(135deg, #2a0a12 0%, #3d0c18 100%) !important;
+  border-bottom: 1px solid rgba(196,30,58,0.2) !important;
+}
+.modal-header h3 {
+  color: #fff !important;
+}
+.modal-body {
+  background: #1a1a1a !important;
+  color: #e8e8e8 !important;
+}
+.modal-body p {
+  color: #ccc !important;
+}
+.modal-footer {
+  background: #141414 !important;
+  border-top-color: #2a2a2a !important;
+}
+.form-group label {
+  color: #aaa !important;
+}
+.form-group input,
+.form-group select {
+  background: #111 !important;
+  border-color: #333 !important;
+  color: #e8e8e8 !important;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #c41e3a !important;
+  box-shadow: 0 0 0 3px rgba(196,30,58,0.15) !important;
+}
+.form-group input::placeholder {
+  color: #555 !important;
+}
+.btn-rif.secondary {
+  background: #252525 !important;
+  color: #aaa !important;
+  border: 1px solid #333 !important;
+}
+.btn-rif.secondary:hover {
+  background: #333 !important;
+  color: #e8e8e8 !important;
+}
+/* Modal error/warning boxes */
+.modal-box div[style*="fef2f2"],
+.modal-body div[style*="fef2f2"] {
+  background: rgba(127,29,29,0.2) !important;
+  border-color: rgba(127,29,29,0.4) !important;
+  color: #fca5a5 !important;
+}
+#nrError {
+  background: rgba(127,29,29,0.2) !important;
+  border-color: rgba(127,29,29,0.4) !important;
+  color: #fca5a5 !important;
+}
+
+/* ── Mobile: remove even the small side padding on narrow screens ── */
+@media (max-width: 768px) {
+  .cuotas-page .container,
+  .cuotas-page .bombero-info,
+  .cuotas-page .form-container,
+  .cuotas-page .cuotas-grid,
+  .cuotas-page .list-container,
+  .cuotas-page .selector-años-container,
+  .page-content {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }

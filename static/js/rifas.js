@@ -84,9 +84,9 @@ function renderRifaCard(r) {
         </div>
 
         <div class="rifa-info">
-            📅 Cierre: <strong>${new Date(r.fecha_cierre + 'T12:00:00').toLocaleDateString('es-CL')}</strong>
-            &nbsp;·&nbsp; 💵 <strong>${clp(r.precio_numero)}</strong>/nro
-            &nbsp;·&nbsp; 📋 <strong>${r.numeros_por_talonario}</strong> nros/talonario
+            Cierre: <strong>${new Date(r.fecha_cierre + 'T12:00:00').toLocaleDateString('es-CL')}</strong>
+            &nbsp;·&nbsp; <strong>${clp(r.precio_numero)}</strong>/nro
+            &nbsp;·&nbsp; <strong>${r.numeros_por_talonario}</strong> nros/talonario
         </div>
 
         <div class="rifa-stats-grid">
@@ -111,17 +111,17 @@ function renderRifaCard(r) {
         <div class="rifa-recaudado">
             <div class="rec-item transf">
                 <div class="rec-val">${clp(recTransf)}</div>
-                <div class="rec-lbl">💳 Transf.</div>
+                <div class="rec-lbl">Transf.</div>
             </div>
-            <div style="width:1px;background:#e5e7eb;margin:4px 0"></div>
+            <div class="rec-divider"></div>
             <div class="rec-item efec">
                 <div class="rec-val">${clp(recEfec)}</div>
-                <div class="rec-lbl">💵 Efectivo</div>
+                <div class="rec-lbl">Efectivo</div>
             </div>
-            <div style="width:1px;background:#e5e7eb;margin:4px 0"></div>
-            <div class="rec-item">
-                <div class="rec-val" style="color:#c41e3a">${clp(recTotal)}</div>
-                <div class="rec-lbl">🏦 Total</div>
+            <div class="rec-divider"></div>
+            <div class="rec-item rec-total">
+                <div class="rec-val">${clp(recTotal)}</div>
+                <div class="rec-lbl">Total</div>
             </div>
         </div>
 
@@ -137,10 +137,10 @@ function renderRifaCard(r) {
 
         <div class="rifa-actions">
             ${r.estado === 'activa'
-                ? `<button class="btn-rif primary" onclick="window.location.href='/rifa-entregar.html?id=${r.id}'">📦 Gestionar Entrega →</button>`
+                ? `<button class="btn-rif primary" onclick="window.location.href='/rifa-entregar.html?id=${r.id}'">Gestionar Entrega →</button>`
                 : ''}
             ${puedeCerrar
-                ? `<button class="btn-rif danger" onclick="pedirCerrarRifa(${r.id}, '${r.nombre}')">🔒 Cerrar Rifa</button>`
+                ? `<button class="btn-rif danger" onclick="pedirCerrarRifa(${r.id}, '${r.nombre}')">Cerrar Rifa</button>`
                 : ''}
         </div>
     </div>`;

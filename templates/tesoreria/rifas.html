@@ -122,6 +122,8 @@
         .rec-lbl  { font-size: 0.62rem; text-transform: uppercase; color: #9ca3af; margin-top: 1px; letter-spacing: 0.3px; }
         .rec-item.transf .rec-val { color: #2563eb; }
         .rec-item.efec   .rec-val { color: #059669; }
+        .rec-item.rec-total .rec-val { color: #c41e3a; }
+        .rec-divider { width: 1px; background: #e5e7eb; margin: 4px 0; }
 
         /* Progreso */
         .rifa-progress-wrap { display: flex; flex-direction: column; gap: 4px; }
@@ -178,7 +180,7 @@
         .empty-state p  { margin: 4px 0; font-size: 0.875rem; }
         .loading { text-align: center; padding: 50px; color: #9ca3af; font-size: 0.9rem; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=3">
 </head>
 <body>
 <div class="rif-wrap">
@@ -187,7 +189,7 @@
     <div class="rif-header">
         <div class="rif-header-top">
             <div>
-                <h1 class="rif-titulo">🎟 Rifas Anuales</h1>
+                <h1 class="rif-titulo">Rifas Anuales</h1>
                 <p class="rif-subtitulo">Gestión de rifas y control de recaudación</p>
             </div>
             <div class="rif-header-btns">
@@ -306,6 +308,6 @@
     </div>
 </div>
 
-<script src="{% static 'js/rifas.js' %}?v=2.0"></script>
+<script src="{% static 'js/rifas.js' %}?v=3.0"></script>
 </body>
 </html>

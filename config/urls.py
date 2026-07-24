@@ -134,6 +134,7 @@ urlpatterns = [
     # ==================== FINANZAS ====================
     path('cuotas-beneficios.html', template('tesoreria/cuotas-beneficios.html'), name='cuotas_beneficios'),
     path('deudores-cuotas.html', template('tesoreria/deudores-cuotas.html'), name='deudores_cuotas'),
+    path('deudores-beneficios.html', template('tesoreria/deudores-beneficios.html'), name='deudores_beneficios'),
     path('beneficios.html', template('tesoreria/beneficios.html'), name='beneficios'),
     path('pagar-beneficio.html', template('tesoreria/pagar-beneficio.html'), name='pagar_beneficio'),
     path('finanzas.html', template('tesoreria/finanzas.html'), name='finanzas'),

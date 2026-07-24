@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deudores de Cuotas</title>
+    <title>Deudores de Beneficios</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <style>
@@ -19,7 +19,7 @@
         }
         /* Header */
         .page-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
             color: white;
             border-radius: 16px;
             padding: 22px 28px;
@@ -29,7 +29,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
-            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.25);
+            box-shadow: 0 4px 20px rgba(190, 24, 93, 0.25);
         }
         .page-header h1 {
             margin: 0;
@@ -50,7 +50,7 @@
         }
         /* Resumen */
         .resumen-card {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
             border-radius: 14px;
             padding: 20px 28px;
             margin-bottom: 22px;
@@ -58,8 +58,8 @@
             justify-content: space-around;
             align-items: center;
             gap: 20px;
-            border-left: 5px solid #f59e0b;
-            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.15);
+            border-left: 5px solid #ec4899;
+            box-shadow: 0 2px 10px rgba(236, 72, 153, 0.15);
         }
         .resumen-item {
             text-align: center;
@@ -67,7 +67,7 @@
         .resumen-label {
             font-size: 0.78rem;
             font-weight: 700;
-            color: #78350f;
+            color: #831843;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             margin-bottom: 6px;
@@ -77,12 +77,12 @@
             font-weight: 800;
             line-height: 1;
         }
-        .resumen-valor.naranja { color: #d97706; }
-        .resumen-valor.verde   { color: #059669; }
+        .resumen-valor.rosa { color: #ec4899; }
+        .resumen-valor.verde { color: #059669; }
         .resumen-divider {
             width: 1px;
             height: 50px;
-            background: rgba(120, 53, 15, 0.2);
+            background: rgba(131, 24, 67, 0.2);
         }
         /* Tabla */
         .tabla-card {
@@ -111,7 +111,7 @@
             border-collapse: collapse;
         }
         thead {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
+            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
             color: white;
         }
         thead th {
@@ -136,9 +136,10 @@
         }
         tbody td:first-child { color: #888; font-weight: 600; }
         .td-deuda { text-align: right; font-weight: 700; color: #059669; }
-        .td-meses { color: #c41e3a; font-weight: 600; font-size: 0.85rem; }
+        .td-beneficio { color: #831843; font-weight: 600; font-size: 0.85rem; }
         .td-clave { color: #6b7280; }
-        /* Estado vacío */
+        .td-tarjetas { text-align: center; color: #6b7280; }
+        /* Estado vacio */
         .empty-state {
             padding: 60px 20px;
             text-align: center;
@@ -153,38 +154,6 @@
             font-size: 1rem;
         }
         /* Botones */
-        .btn-pdf {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
-            color: white;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.25);
-            text-decoration: none;
-        }
-        .btn-pdf:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(196, 30, 58, 0.35);
-        }
-        .btn-close {
-            background: #f3f4f6;
-            color: #374151;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .btn-close:hover { background: #e5e7eb; }
         .btn-volver {
             background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
             color: white;
@@ -199,11 +168,24 @@
             gap: 8px;
             transition: all 0.2s ease;
             box-shadow: 0 2px 8px rgba(55, 65, 81, 0.25);
+            text-decoration: none;
         }
         .btn-volver:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 14px rgba(55, 65, 81, 0.35);
         }
+        .btn-close {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .btn-close:hover { background: #e5e7eb; }
         /* Print styles */
         @media print {
             body { background: white; }
@@ -211,18 +193,6 @@
             .tabla-card { box-shadow: none; }
             .resumen-card { border: 1px solid #ccc; }
         }
-        /* Selector año */
-        .anio-selector {
-            background: white;
-            border: 1.5px solid #dde0e8;
-            border-radius: 8px;
-            padding: 9px 14px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-        }
-        .anio-selector:focus { outline: none; border-color: #c41e3a; }
     </style>
     <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=2">
 </head>
@@ -232,16 +202,12 @@
     <!-- Header -->
     <div class="page-header no-print">
         <div>
-            <h1>Deudores de Cuotas Sociales</h1>
-            <p id="subtitulo">Cargando datos...</p>
+            <h1>Deudores de Beneficios</h1>
+            <p id="subtitulo">Voluntarios con beneficios pendientes de pago</p>
         </div>
         <div class="header-actions">
-            <select id="selectorAnio" class="anio-selector" onchange="cargarDeudores()"></select>
-            <a id="btnPDF" href="#" target="_blank" class="btn-pdf">
-                📄 Descargar PDF
-            </a>
-            <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'">← Volver</button>
-            <button type="button" class="btn-close" onclick="window.close()">✕ Cerrar</button>
+            <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'">&#8592; Volver</button>
+            <button type="button" class="btn-close" onclick="window.close()">&#10005; Cerrar</button>
         </div>
     </div>
 
@@ -249,7 +215,7 @@
     <div class="resumen-card" id="resumenCard" style="display:none;">
         <div class="resumen-item">
             <div class="resumen-label">Total Deudores</div>
-            <div class="resumen-valor naranja" id="totalDeudores">0</div>
+            <div class="resumen-valor rosa" id="totalDeudores">0</div>
         </div>
         <div class="resumen-divider"></div>
         <div class="resumen-item">
@@ -271,9 +237,10 @@
                 <thead>
                     <tr>
                         <th style="width:42px">#</th>
-                        <th>Nombre</th>
+                        <th>Voluntario</th>
                         <th>Clave</th>
-                        <th>Meses Pendientes</th>
+                        <th>Beneficio</th>
+                        <th style="text-align:center">Tarjetas</th>
                         <th style="text-align:right">Deuda</th>
                     </tr>
                 </thead>
@@ -282,8 +249,8 @@
         </div>
 
         <div id="emptyState" class="empty-state" style="display:none;">
-            <div style="font-size:3rem;">✅</div>
-            <p>No hay deudores de cuotas para este año.</p>
+            <div style="font-size:3rem;">&#10004;&#65039;</div>
+            <p>No hay deudores de beneficios actualmente.</p>
         </div>
     </div>
 
@@ -291,37 +258,17 @@
 
 <script>
     const API_BASE = '/api/voluntarios';
-    let anioActual = new Date().getFullYear();
-
-    // Inicializar selector de año
-    (function inicializarSelector() {
-        const sel = document.getElementById('selectorAnio');
-        const params = new URLSearchParams(window.location.search);
-        anioActual = parseInt(params.get('anio')) || new Date().getFullYear();
-        for (let y = anioActual + 1; y >= 2020; y--) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = y;
-            if (y === anioActual) opt.selected = true;
-            sel.appendChild(opt);
-        }
-    })();
 
     async function cargarDeudores() {
-        anioActual = parseInt(document.getElementById('selectorAnio').value);
-
-        // Actualizar link PDF
-        document.getElementById('btnPDF').href = `${API_BASE}/pdf-deudores-cuotas/${anioActual}/`;
-        document.getElementById('subtitulo').textContent = `Ciclo ${anioActual} — Solo voluntarios activos con cuotas pendientes`;
-
-        // Mostrar cargando
         document.getElementById('loadingMsg').style.display = 'block';
         document.getElementById('tablaWrapper').style.display = 'none';
         document.getElementById('emptyState').style.display = 'none';
         document.getElementById('resumenCard').style.display = 'none';
 
         try {
-            const res = await fetch(`${API_BASE}/deudores-cuotas-listado/?anio=${anioActual}`);
+            const res = await fetch(`${API_BASE}/deudores-beneficios-listado/`, {
+                credentials: 'include'
+            });
             if (!res.ok) throw new Error('Error al cargar datos');
             const data = await res.json();
 
@@ -334,7 +281,7 @@
             }
 
             // Resumen
-            const totalDeuda = data.deudores.reduce((s, d) => s + parseFloat(d.monto || 0), 0);
+            const totalDeuda = data.deudores.reduce((s, d) => s + parseFloat(d.monto_pendiente || 0), 0);
             document.getElementById('totalDeudores').textContent = data.total;
             document.getElementById('totalDeuda').textContent = '$' + totalDeuda.toLocaleString('es-CL');
             document.getElementById('resumenCard').style.display = 'flex';
@@ -344,13 +291,14 @@
             const tbody = document.getElementById('tablaBody');
             tbody.innerHTML = '';
             data.deudores.forEach((d, i) => {
-                const monto = parseFloat(d.monto || 0);
+                const monto = parseFloat(d.monto_pendiente || 0);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${i + 1}</td>
-                    <td><strong>${d.nombre_completo || ''}</strong></td>
-                    <td class="td-clave">${d.clave_bombero || 'N/A'}</td>
-                    <td class="td-meses">${d.meses_pendientes || ''}</td>
+                    <td><strong>${d.voluntario_nombre || ''}</strong></td>
+                    <td class="td-clave">${d.voluntario_clave || 'N/A'}</td>
+                    <td class="td-beneficio">${d.beneficio_nombre || ''}</td>
+                    <td class="td-tarjetas">${d.tarjetas_asignadas || 0}</td>
                     <td class="td-deuda">$${monto.toLocaleString('es-CL')}</td>
                 `;
                 tbody.appendChild(tr);

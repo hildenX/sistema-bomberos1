@@ -671,43 +671,43 @@ function mostrarDeudoresDesdeWidget() {
     // Crear modal con notificación de deudores
     const modalHTML = `
         <div id="modalDeudores" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-            <div style="background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); padding: 35px; border-radius: 20px; max-width: 700px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.8);">
+            <div style="background: linear-gradient(to bottom, #1a1a1a, #141414); padding: 35px; border-radius: 20px; max-width: 700px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 1px solid #2a2a2a;">
 
                 <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #2a2a2a;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: linear-gradient(135deg, #ef4444, #dc2626); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                            
+                        <div style="background: linear-gradient(135deg, #c0392b, #8b0000); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                         </div>
-                        <h2 style="margin: 0; color: #1f2937; font-size: 1.7rem; font-weight: 700;">Resumen de Deudores</h2>
+                        <h2 style="margin: 0; color: #f0f0f0; font-size: 1.7rem; font-weight: 700;">Resumen de Deudores</h2>
                     </div>
-                    <button onclick="cerrarModalDeudores()" style="background: #f3f4f6; border: none; font-size: 1.8rem; cursor: pointer; color: #6b7280; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">&times;</button>
+                    <button onclick="cerrarModalDeudores()" style="background: #252525; border: 1px solid #333; font-size: 1.8rem; cursor: pointer; color: #888; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#252525'">&times;</button>
                 </div>
 
                 <!-- Estadísticas -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
                     <!-- Deudores Cuotas -->
-                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);">
-                        <div style="font-size: 0.85rem; color: #78350f; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <div style="background: linear-gradient(135deg, #1a1500 0%, #1f1a00 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.1);">
+                        <div style="font-size: 0.78rem; color: #f59e0b; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
                              Cuotas Vencidas
                         </div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #f59e0b;">
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #fbbf24; text-shadow: 0 0 20px rgba(251,191,36,0.3);">
                             ${cuotas.cantidad}
                         </div>
-                        <div style="font-size: 0.9rem; color: #92400e; margin-top: 4px;">
+                        <div style="font-size: 0.85rem; color: #92400e; margin-top: 4px;">
                             ${cuotas.cantidad === 1 ? 'Deudor' : 'Deudores'}
                         </div>
                     </div>
 
                     <!-- Deudores Beneficios -->
-                    <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #ec4899; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.2);">
-                        <div style="font-size: 0.85rem; color: #831843; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <div style="background: linear-gradient(135deg, #1a0d18 0%, #1f0a1a 100%); padding: 24px; border-radius: 12px; border-left: 4px solid #ec4899; box-shadow: 0 4px 16px rgba(236, 72, 153, 0.1);">
+                        <div style="font-size: 0.78rem; color: #ec4899; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
                              Beneficios Pendientes
                         </div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #ec4899;">
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #f472b6; text-shadow: 0 0 20px rgba(244,114,182,0.3);">
                             ${beneficios.cantidad}
                         </div>
-                        <div style="font-size: 0.9rem; color: #9f1239; margin-top: 4px;">
+                        <div style="font-size: 0.85rem; color: #9f1239; margin-top: 4px;">
                             ${beneficios.cantidad === 1 ? 'Deudor' : 'Deudores'}
                         </div>
                     </div>
@@ -715,16 +715,16 @@ function mostrarDeudoresDesdeWidget() {
 
                 <!-- Botones de acción -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <button onclick="verListadoCuotas()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(245, 158, 11, 0.3)'">
+                    <button onclick="verListadoCuotas()" style="background: linear-gradient(135deg, #b45309, #92400e); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.95em; box-shadow: 0 4px 16px rgba(180, 83, 9, 0.3); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(180, 83, 9, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(180, 83, 9, 0.3)'">
                          Ver Deudores de Cuotas
                     </button>
-                    <button onclick="verListadoBeneficios()" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(236, 72, 153, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(236, 72, 153, 0.3)'">
+                    <button onclick="verListadoBeneficios()" style="background: linear-gradient(135deg, #be185d, #9d174d); color: white; border: none; padding: 14px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.95em; box-shadow: 0 4px 16px rgba(190, 24, 93, 0.3); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(190, 24, 93, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(190, 24, 93, 0.3)'">
                          Ver Deudores de Beneficios
                     </button>
                 </div>
                 <div style="margin-top: 15px; text-align: center;">
-                    <button onclick="cerrarModalDeudores()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 40px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)'">
-                         Cerrar
+                    <button onclick="cerrarModalDeudores()" style="background: #252525; color: #888; border: 1px solid #333; padding: 12px 40px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.3s;" onmouseover="this.style.background='#333'; this.style.color='#ccc'" onmouseout="this.style.background='#252525'; this.style.color='#888'">
+                        Cerrar
                     </button>
                 </div>
             </div>
@@ -756,112 +756,9 @@ function cerrarListadoCuotas() {
 }
 
 async function verListadoBeneficios() {
-    console.log('[SIDEBAR] Mostrando listado de deudores de beneficios...');
-    
-    // Cerrar modal anterior
+    console.log('[SIDEBAR] Abriendo página de deudores de beneficios...');
     cerrarModalDeudores();
-    
-    try {
-        // Obtener deudores desde el endpoint simplificado
-        const response = await fetch('/api/voluntarios/deudores-beneficios-listado/', {
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            throw new Error('Error al obtener deudores');
-        }
-        
-        const data = await response.json();
-        console.log('[LISTADO BENEFICIOS] Datos:', data);
-        
-        if (!data.success || data.total === 0) {
-            alert(' No hay deudores de beneficios');
-            return;
-        }
-        
-        // Crear tabla de deudores
-        let tablaHTML = '';
-        data.deudores.forEach((deudor, index) => {
-            const montoPendiente = parseFloat(deudor.monto_pendiente || 0);
-            
-            tablaHTML += `
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 12px 16px; font-weight: 600; color: #374151;">${index + 1}</td>
-                    <td style="padding: 12px 16px; color: #1f2937;">${deudor.voluntario_nombre}</td>
-                    <td style="padding: 12px 16px; text-align: center; color: #6b7280;">${deudor.voluntario_clave}</td>
-                    <td style="padding: 12px 16px; color: #831843;">${deudor.beneficio_nombre}</td>
-                    <td style="padding: 12px 16px; text-align: center; color: #6b7280;">${deudor.tarjetas_asignadas || 0}</td>
-                    <td style="padding: 12px 16px; text-align: right; color: #ec4899; font-weight: 700;">$${montoPendiente.toLocaleString('es-CL')}</td>
-                </tr>
-            `;
-        });
-        
-        const totalDeuda = data.deudores.reduce((sum, d) => sum + parseFloat(d.monto_pendiente || 0), 0);
-    
-    const modalHTML = `
-        <div id="modalListadoBeneficios" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); overflow-y: auto; padding: 20px;">
-            <div style="background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); padding: 35px; border-radius: 20px; max-width: 1000px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.8);">
-                
-                <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #e5e7eb;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: linear-gradient(135deg, #ec4899, #db2777); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                            
-                        </div>
-                        <h2 style="margin: 0; color: #1f2937; font-size: 1.7rem; font-weight: 700;">Deudores de Beneficios</h2>
-                    </div>
-                    <button onclick="cerrarListadoBeneficios()" style="background: #f3f4f6; border: none; font-size: 1.8rem; cursor: pointer; color: #6b7280; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">&times;</button>
-                </div>
-                
-                <!-- Resumen -->
-                <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid #ec4899;">
-                    <div style="display: flex; justify-content: space-around; text-align: center;">
-                        <div>
-                            <div style="color: #831843; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">TOTAL DEUDORES</div>
-                            <div style="color: #ec4899; font-size: 2rem; font-weight: 700;">${data.total}</div>
-                        </div>
-                        <div style="width: 2px; background: rgba(131, 24, 67, 0.2);"></div>
-                        <div>
-                            <div style="color: #831843; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">DEUDA TOTAL</div>
-                            <div style="color: #059669; font-size: 2rem; font-weight: 700;">$${totalDeuda.toLocaleString('es-CL')}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tabla -->
-                <div style="overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid #e5e7eb;">
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
-                        <thead style="background: linear-gradient(135deg, #ec4899, #db2777); color: white; position: sticky; top: 0; z-index: 1;">
-                            <tr>
-                                <th style="padding: 14px 16px; text-align: left; font-weight: 700; font-size: 0.85rem;">#</th>
-                                <th style="padding: 14px 16px; text-align: left; font-weight: 700; font-size: 0.85rem;">VOLUNTARIO</th>
-                                <th style="padding: 14px 16px; text-align: center; font-weight: 700; font-size: 0.85rem;">CLAVE</th>
-                                <th style="padding: 14px 16px; text-align: left; font-weight: 700; font-size: 0.85rem;">BENEFICIO</th>
-                                <th style="padding: 14px 16px; text-align: center; font-weight: 700; font-size: 0.85rem;">TARJETAS</th>
-                                <th style="padding: 14px 16px; text-align: right; font-weight: 700; font-size: 0.85rem;">DEUDA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tablaHTML}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Botón cerrar -->
-                <div style="margin-top: 25px; text-align: center;">
-                    <button onclick="cerrarListadoBeneficios()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 40px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)'">
-                         Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-        
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-    } catch (error) {
-        console.error('[LISTADO BENEFICIOS] Error:', error);
-        alert('Error al cargar deudores: ' + error.message);
-    }
+    window.open('/deudores-beneficios.html', '_blank');
 }
 
 function cerrarListadoBeneficios() {
