@@ -10,7 +10,7 @@ const el  = id => document.getElementById(id);
 
 function mostrarNotif(msg, tipo = 'ok') {
     const n = el('rifNotif');
-    n.innerHTML = `<span>${tipo === 'ok' ? '✅' : '❌'}</span> ${msg}`;
+    n.innerHTML = `${msg}`;
     n.className = `rif-notif ${tipo}`;
     n.style.display = 'flex';
     setTimeout(() => { n.style.display = 'none'; }, 5000);
@@ -53,7 +53,7 @@ function renderRifas() {
         el('rifasGrid').innerHTML = `
             <div style="padding:16px">
                 <div class="empty-state">
-                    <div class="icon">🎟</div>
+                    <div class="icon"></div>
                     <h3>No hay rifas registradas</h3>
                     <p>Haz clic en «＋ Nueva Rifa» para comenzar</p>
                 </div>
@@ -248,7 +248,7 @@ async function crearRifa() {
     } catch (_) {
         nrError('Error de conexión');
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '🎟 Crear Rifa'; btn.style.opacity = ''; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Crear Rifa'; btn.style.opacity = ''; }
     }
 }
 

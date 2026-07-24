@@ -150,7 +150,7 @@ const cuotasSistemaDjango = {
         if (categorias_exentas.includes(categoria) || estado === 'martir') {
             document.body.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; font-family: Arial; background: #f5f5f5;">
-                    <h1 style="color: #f44336; font-size: 72px; margin: 0;">❌</h1>
+                    <h1 style="color: #f44336; font-size: 72px; margin: 0;">X</h1>
                     <h2 style="color: #333;">Acceso Denegado</h2>
                     <p style="font-size: 20px; color: #666;">Este voluntario es <strong style="color: #f44336;">${categoria}</strong></p>
                     <p style="font-size: 18px; color: #666;">NO debe pagar cuotas sociales.</p>
@@ -165,7 +165,7 @@ const cuotasSistemaDjango = {
         if (this.estadoCuotas && this.estadoCuotas.cuotas_desactivadas) {
             document.body.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; font-family: Arial; background: #f5f5f5;">
-                    <h1 style="color: #ff9800; font-size: 72px; margin: 0;">🔕</h1>
+                    <h1 style="color: #ff9800; font-size: 72px; margin: 0;"></h1>
                     <h2 style="color: #333;">Cuotas Desactivadas</h2>
                     <p style="font-size: 18px; color: #666;">Motivo: ${this.estadoCuotas.motivo_desactivacion || 'Sin especificar'}</p>
                     <p style="color: #999; margin-top: 40px;">Redirigiendo en 3 segundos...</p>
@@ -282,15 +282,15 @@ const cuotasSistemaDjango = {
             
             if (esFuturo) {
                 clase = 'mes-futuro';
-                icono = '🕐';
+                icono = '-';
                 tooltip = 'Mes futuro';
             } else if (estaPagado) {
                 clase = 'mes-pagado';
-                icono = '✅';
+                icono = 'OK';
                 tooltip = 'Pagado';
             } else {
                 clase = 'mes-pendiente';
-                icono = '❌';
+                icono = 'X';
                 tooltip = 'Pendiente';
             }
             
@@ -369,7 +369,7 @@ const cuotasSistemaDjango = {
                 body: JSON.stringify(data)
             });
             
-            this.mostrarMensaje('✅ Pago registrado exitosamente', 'success');
+            this.mostrarMensaje('Pago registrado exitosamente', 'success');
             
             // Recargar grid
             await this.cargarGridCuotas();

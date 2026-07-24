@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/pagar-beneficio.css' %}?v=2.0">
     <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=1">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=6">
 </head>
 <body>
 <div class="pb-wrap">
@@ -25,7 +25,7 @@
         </div>
         <div class="pb-summary">
             <div class="pb-sum-card">
-                <div class="pb-sum-icon">⚠️</div>
+                <div class="pb-sum-icon">!</div>
                 <div>
                     <div class="pb-sum-label">Beneficios Pendientes</div>
                     <div class="pb-sum-value" id="statPendientes">0</div>
@@ -33,7 +33,7 @@
             </div>
             <div class="pb-sum-divider"></div>
             <div class="pb-sum-card">
-                <div class="pb-sum-icon">💰</div>
+                <div class="pb-sum-icon">$</div>
                 <div>
                     <div class="pb-sum-label">Deuda Total</div>
                     <div class="pb-sum-value" id="statDeuda">$0</div>
@@ -71,11 +71,11 @@
         <!-- Tabs + PDF -->
         <div class="pb-tabs-header">
             <div class="pb-tabs">
-                <button id="tabPagos" class="pb-tab activa" onclick="verTab('pagos')">💰 Pagos</button>
-                <button id="tabLiberaciones" class="pb-tab" onclick="verTab('liberaciones')" style="display:none">🔓 Liberaciones</button>
-                <button id="tabRifa" class="pb-tab" onclick="verTab('rifa')" style="display:none">🎟 Rifa</button>
+                <button id="tabPagos" class="pb-tab activa" onclick="verTab('pagos')">Pagos</button>
+                <button id="tabLiberaciones" class="pb-tab" onclick="verTab('liberaciones')" style="display:none">Liberaciones</button>
+                <button id="tabRifa" class="pb-tab" onclick="verTab('rifa')" style="display:none">Rifa</button>
             </div>
-            <button class="btn-pb pdf" onclick="generarPDF()">📄 Descargar PDF</button>
+            <button class="btn-pb pdf" onclick="generarPDF()">Descargar PDF</button>
         </div>
 
         <!-- Panel Pagos -->
@@ -187,7 +187,7 @@
                     <label>Adjuntar comprobante (imagen o PDF)</label>
                     <input type="file" id="pagarArchivoComp" accept="image/*,application/pdf" onchange="previsualizarCompBenef(this)">
                     <img id="prevCompBenef" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
-                    <div id="prevCompBenefPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <div id="prevCompBenefPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">PDF adjunto</div>
                     <input type="hidden" id="pagarArchivoB64">
                 </div>
                 <div class="pb-form-group full-width">
@@ -252,7 +252,7 @@
                     <label>Adjuntar comprobante (imagen o PDF)</label>
                     <input type="file" id="extraArchivoComp" accept="image/*,application/pdf" onchange="previsualizarCompExtra(this)">
                     <img id="prevCompExtra" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
-                    <div id="prevCompExtraPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <div id="prevCompExtraPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">PDF adjunto</div>
                     <input type="hidden" id="extraArchivoB64">
                 </div>
                 <div class="pb-form-group full-width">
@@ -280,7 +280,7 @@
         </div>
         <div class="pb-modal-body">
             <div class="pb-warning-box">
-                <strong>⚠️ ADVERTENCIA:</strong> Esta acción reducirá o eliminará las tarjetas asignadas al voluntario.
+                <strong>ADVERTENCIA:</strong> Esta acción reducirá o eliminará las tarjetas asignadas al voluntario.
             </div>
             <div id="pbLiberarInfo" class="pb-modal-info"></div>
             <form id="formLiberar">
@@ -366,7 +366,7 @@
                     <label>Adjuntar comprobante (imagen o PDF)</label>
                     <input type="file" id="rifaPagarArchivo" accept="image/*,application/pdf" onchange="previsualizarCompRifa(this)">
                     <img id="prevCompRifa" alt="Vista previa" style="display:none;max-width:100%;max-height:160px;margin-top:6px;border-radius:6px;border:1px solid #ddd">
-                    <div id="prevCompRifaPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">📄 PDF adjunto</div>
+                    <div id="prevCompRifaPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-top:4px">PDF adjunto</div>
                     <input type="hidden" id="rifaPagarArchivoB64">
                 </div>
                 <div class="pb-form-group full-width">
@@ -417,7 +417,7 @@
 
 <script src="{% static 'js/auth_django.js' %}"></script>
 <script src="{% static 'js/utils.js' %}"></script>
-<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=13.0"></script>
 <script src="{% static 'js/pagar-beneficio-django.js' %}?v=3.0"></script>
 </body>
 </html>

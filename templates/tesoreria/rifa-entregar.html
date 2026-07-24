@@ -292,7 +292,7 @@
         .empty-state p { margin: 0; font-size: 0.85rem; }
         .loading { text-align: center; padding: 50px; color: #9ca3af; font-size: 0.9rem; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
 <div class="re-wrap">
@@ -338,21 +338,21 @@
     <!-- RECAUDADO -->
     <div class="re-recaudado" id="reRecaudado" style="display:none">
         <div class="re-rec-card transf">
-            <div class="re-rec-icon">💳</div>
+            <div class="re-rec-icon">B</div>
             <div>
                 <div class="re-rec-lbl">Transferencia</div>
                 <div class="re-rec-val" id="recTransf">$0</div>
             </div>
         </div>
         <div class="re-rec-card efec">
-            <div class="re-rec-icon">💵</div>
+            <div class="re-rec-icon">$</div>
             <div>
                 <div class="re-rec-lbl">Efectivo</div>
                 <div class="re-rec-val" id="recEfec">$0</div>
             </div>
         </div>
         <div class="re-rec-card total">
-            <div class="re-rec-icon">🏦</div>
+            <div class="re-rec-icon">T</div>
             <div>
                 <div class="re-rec-lbl">Total Recaudado</div>
                 <div class="re-rec-val" id="recTotal">$0</div>
@@ -363,7 +363,7 @@
     <!-- FILTROS -->
     <div class="re-filtros">
         <div class="re-search-wrap">
-            <span class="re-search-icon">🔍</span>
+            <span class="re-search-icon">&#9906;</span>
             <input type="text" id="buscarVol" class="re-search-input"
                 placeholder="Buscar por nombre o clave..." oninput="renderTabla()">
         </div>
@@ -388,7 +388,7 @@
     <div class="modal-box">
         <div class="modal-header">
             <div>
-                <h3>📦 Entregar Talonarios</h3>
+                <h3>Entregar Talonarios</h3>
                 <p>Asigna los números de rifa al voluntario</p>
             </div>
             <button class="btn-close-modal" onclick="cerrarModalEntregar()">✕</button>
@@ -397,8 +397,8 @@
             <div class="info-card" id="infoVolModal"></div>
             <div class="section-sep">Modo de ingreso de números</div>
             <div class="modo-tabs">
-                <button id="tabModoRango" class="modo-tab activa" onclick="setModo('rango')">📏 Por rango</button>
-                <button id="tabModoIndividual" class="modo-tab" onclick="setModo('individual')">🔢 Números individuales</button>
+                <button id="tabModoRango" class="modo-tab activa" onclick="setModo('rango')">Por rango</button>
+                <button id="tabModoIndividual" class="modo-tab" onclick="setModo('individual')">Numeros individuales</button>
             </div>
             <div id="panelRango" class="modo-panel activo">
                 <div class="rangos-lista" id="rangosLista"></div>
@@ -414,7 +414,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn-re secondary" onclick="cerrarModalEntregar()">Cancelar</button>
-            <button class="btn-re primary" onclick="guardarEntrega()">✅ Confirmar Entrega</button>
+            <button class="btn-re primary" onclick="guardarEntrega()">Confirmar Entrega</button>
         </div>
     </div>
 </div>
@@ -424,7 +424,7 @@
     <div class="modal-box" style="max-width:480px">
         <div class="modal-header">
             <div>
-                <h3>📋 Números Asignados</h3>
+                <h3>Numeros Asignados</h3>
                 <p id="verNumsSubtitulo"></p>
             </div>
             <button class="btn-close-modal" onclick="el('modalVerNums').style.display='none'">✕</button>
@@ -443,7 +443,7 @@
     <div class="modal-box" style="max-width:480px">
         <div class="modal-header">
             <div>
-                <h3>🔓 Liberar Talonarios</h3>
+                <h3>Liberar Talonarios</h3>
                 <p>Registrar talonarios que no pudieron ser vendidos</p>
             </div>
             <button class="btn-close-modal" onclick="cerrarModalLiberar()">✕</button>
@@ -466,7 +466,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn-re secondary" onclick="cerrarModalLiberar()">Cancelar</button>
-            <button class="btn-re danger" onclick="guardarLiberacion()">🔓 Confirmar Liberación</button>
+            <button class="btn-re danger" onclick="guardarLiberacion()">Confirmar Liberacion</button>
         </div>
     </div>
 </div>
@@ -476,7 +476,7 @@
     <div class="modal-box">
         <div class="modal-header">
             <div>
-                <h3>💰 Registrar Pago</h3>
+                <h3>Registrar Pago</h3>
                 <p>Pago de talonarios de rifa</p>
             </div>
             <button class="btn-close-modal" onclick="cerrarModalPagar()">✕</button>
@@ -502,8 +502,8 @@
                 <div class="form-group">
                     <label>Método <span class="req">*</span></label>
                     <select id="pagarMetodo" onchange="togglePagarCuenta()">
-                        <option value="efectivo">💵 Efectivo</option>
-                        <option value="transferencia">💳 Transferencia</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
                     </select>
                 </div>
                 <div class="form-group" id="pagarCuentaGrupo" style="display:none">
@@ -525,7 +525,7 @@
                     </div>
                 </div>
                 <img id="prevComp" alt="" style="display:none;max-width:100%;max-height:130px;margin-bottom:6px;border-radius:8px;border:1px solid #e5e7eb">
-                <div id="prevCompPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-bottom:6px">📄 PDF adjunto</div>
+                <div id="prevCompPdf" style="display:none;font-size:.8rem;color:#c41e3a;font-weight:600;margin-bottom:6px">PDF adjunto</div>
                 <input type="hidden" id="pagarArchivoB64">
             </div>
             <div class="form-group">
@@ -536,7 +536,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn-re secondary" onclick="cerrarModalPagar()">Cancelar</button>
-            <button class="btn-re primary" onclick="guardarPago()">💰 Registrar Pago</button>
+            <button class="btn-re primary" onclick="guardarPago()">Registrar Pago</button>
         </div>
     </div>
 </div>

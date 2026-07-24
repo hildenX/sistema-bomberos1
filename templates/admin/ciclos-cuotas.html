@@ -354,26 +354,26 @@
             background: #616161;
         }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
     <div class="ciclos-container">
         <a href="/sistema.html" class="back-btn">← Volver al Sistema</a>
 
         <div class="header">
-            <h1>📅 Administración de Ciclos de Cuotas</h1>
+            <h1>Administracion de Ciclos de Cuotas</h1>
             <p>Gestiona los periodos anuales de cobro de cuotas sociales</p>
         </div>
 
         <div id="alertContainer"></div>
 
         <button class="btn btn-nuevo" onclick="abrirModalNuevoCiclo()">
-            ➕ Crear Nuevo Ciclo
+            + Crear Nuevo Ciclo
         </button>
 
         <!-- Dashboard del Ciclo Activo -->
         <div id="dashboardActivo" class="dashboard-activo" style="display: none;">
-            <h2>🔥 Ciclo Activo: <span id="cicloActivoAnio"></span></h2>
+            <h2>Ciclo Activo: <span id="cicloActivoAnio"></span></h2>
             
             <div class="estadisticas-grid">
                 <div class="stat-card">

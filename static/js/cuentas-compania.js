@@ -103,7 +103,7 @@ function renderCuentas() {
                     ? `<button class="btn-cc desact" onclick="desactivarCuenta(${c.id}, '${escHtml(c.nombre)}')">Desactivar</button>`
                     : `<button class="btn-cc react" onclick="reactivarCuenta(${c.id}, '${escHtml(c.nombre)}')">Reactivar</button>`
                 }
-                ${c.saldo === 0 ? `<button class="btn-cc elim" onclick="eliminarCuenta(${c.id}, '${escHtml(c.nombre)}')">🗑 Eliminar</button>` : ''}
+                ${c.saldo === 0 ? `<button class="btn-cc elim" onclick="eliminarCuenta(${c.id}, '${escHtml(c.nombre)}')">Eliminar</button>` : ''}
             </div>
         </div>
     `).join('');
@@ -122,10 +122,10 @@ async function desactivarCuenta(id, nombre) {
         const res = await fetch(`${API}/cuentas-bancarias-simple/${id}/desactivar/`, { method: 'POST' });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error');
-        notif('✅ ' + d.mensaje, 'success');
+        notif(d.mensaje, 'success');
         await cargarCuentas();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -135,10 +135,10 @@ async function reactivarCuenta(id, nombre) {
         const res = await fetch(`${API}/cuentas-bancarias-simple/${id}/reactivar/`, { method: 'POST' });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error');
-        notif('✅ ' + d.mensaje, 'success');
+        notif(d.mensaje, 'success');
         await cargarCuentas();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -148,10 +148,10 @@ async function eliminarCuenta(id, nombre) {
         const res = await fetch(`${API}/cuentas-bancarias-simple/${id}/eliminar/`, { method: 'POST' });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error');
-        notif('✅ ' + d.mensaje, 'success');
+        notif(d.mensaje, 'success');
         await cargarCuentas();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -214,11 +214,11 @@ async function guardarCuenta(e) {
         });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error al crear cuenta');
-        notif(`✅ Cuenta "${d.nombre}" creada exitosamente`, 'success');
+        notif(`Cuenta "${d.nombre}" creada exitosamente`, 'success');
         cerrarModal('modalCuenta');
         await cargarCuentas();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -276,11 +276,11 @@ async function guardarDeposito(e) {
     };
 
     if (!data.cuenta_destino_id) {
-        notif('❌ Selecciona una cuenta destino', 'error');
+        notif('Selecciona una cuenta destino', 'error');
         return;
     }
     if (!data.monto || data.monto <= 0) {
-        notif('❌ Ingresa un monto válido', 'error');
+        notif('Ingresa un monto válido', 'error');
         return;
     }
 
@@ -292,11 +292,11 @@ async function guardarDeposito(e) {
         });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error al registrar depósito');
-        notif('✅ ' + d.mensaje, 'success');
+        notif(d.mensaje, 'success');
         cerrarModal('modalDeposito');
         await cargar();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -311,7 +311,7 @@ function verComprobante(b64) {
         cont.innerHTML = `
             <p>Comprobante PDF</p>
             <a href="${b64}" download="comprobante.pdf" class="btn-cc guardar" style="display:inline-block;margin-top:8px;text-decoration:none">
-                ⬇ Descargar PDF
+                Descargar PDF
             </a>`;
     } else {
         // Intentar mostrar como imagen de todas formas

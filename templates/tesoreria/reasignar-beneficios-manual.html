@@ -73,19 +73,20 @@
             margin: 20px 0;
         }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
     <div class="card">
-        <h1>🔄 Reasignar Beneficios Manualmente</h1>
+        <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'" style="margin-bottom:16px;padding:10px 20px;border-radius:8px;border:none;cursor:pointer">&#8592; Volver</button>
+        <h1>Reasignar Beneficios Manualmente</h1>
         
         <div class="info">
             <strong>Esta herramienta te permite reasignar beneficios que están mal asignados.</strong><br>
             Úsala después de arreglar los IDs duplicados si los beneficios no quedaron bien asignados.
         </div>
 
-        <button onclick="cargarAsignaciones()">🔍 1. Cargar Asignaciones</button>
-        <button onclick="guardarCambios()" class="danger">💾 2. Guardar Cambios</button>
+        <button onclick="cargarAsignaciones()">1. Cargar Asignaciones</button>
+        <button onclick="guardarCambios()" class="danger">2. Guardar Cambios</button>
 
         <div id="resultado"></div>
     </div>
@@ -103,7 +104,7 @@
             asignacionesModificadas = JSON.parse(JSON.stringify(asignaciones)); // Copia profunda
             
             const resultado = document.getElementById('resultado');
-            let html = '<h2>📋 Asignaciones de Beneficios</h2>';
+            let html = '<h2>Asignaciones de Beneficios</h2>';
             
             if (asignaciones.length === 0) {
                 html += '<p style="color: #f44336;">No hay asignaciones de beneficios en el sistema.</p>';
@@ -123,7 +124,7 @@
                     <p><strong>Estado Pago:</strong> ${asig.estadoPago}</p>
                     <p><strong>Monto:</strong> $${asig.montoEsperado.toLocaleString('es-CL')} (Pagado: $${asig.montoPagado.toLocaleString('es-CL')})</p>
                     
-                    ${problema ? '<p style="color: #f44336;"><strong>⚠️ PROBLEMA: Bombero no encontrado con ID ' + asig.bomberoId + '</strong></p>' : ''}
+                    ${problema ? '<p style="color: #f44336;"><strong>PROBLEMA: Bombero no encontrado con ID ' + asig.bomberoId + '</strong></p>' : ''}
                     
                     <p><strong>Asignado a:</strong></p>
                     <select id="select-${index}" onchange="actualizarAsignacion(${index})">
@@ -157,13 +158,13 @@
                 
                 document.getElementById('resultado').innerHTML += `
                     <div class="success">
-                        <h3>✅ Cambios Guardados Exitosamente</h3>
+                        <h3>Cambios Guardados Exitosamente</h3>
                         <p>Las asignaciones han sido actualizadas.</p>
                         <p><strong>Siguiente paso:</strong> Verifica en el sistema que los beneficios aparezcan correctamente.</p>
                     </div>
                 `;
                 
-                console.log('✅ Asignaciones guardadas:', asignacionesModificadas);
+                console.log('Asignaciones guardadas:', asignacionesModificadas);
             } catch (error) {
                 alert('Error al guardar: ' + error.message);
                 console.error(error);

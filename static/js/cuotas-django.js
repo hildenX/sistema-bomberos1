@@ -95,7 +95,7 @@ class SistemaCuotasDjango {
             if (file.type.startsWith('image/')) {
                 prev.innerHTML = `<img src="${b64}" style="max-width:100%;max-height:160px;border-radius:6px;border:1px solid #ddd;margin-top:6px">`;
             } else {
-                prev.innerHTML = `<span style="font-size:.8rem;color:#c41e3a;font-weight:600">📄 PDF adjunto</span>`;
+                prev.innerHTML = `<span style="font-size:.8rem;color:#c41e3a;font-weight:600">PDF adjunto</span>`;
             }
         };
         reader.readAsDataURL(file);
@@ -107,7 +107,7 @@ class SistemaCuotasDjango {
         const bomberoId = urlParams.get('id');
         
         if (!bomberoId) {
-            Utils.mostrarNotificacion('⚠️ Debes seleccionar un voluntario desde el sistema principal', 'error');
+            Utils.mostrarNotificacion('Debes seleccionar un voluntario desde el sistema principal', 'error');
             console.warn('[CUOTAS] No hay ID en la URL. Accede desde sistema.html haciendo clic en el botón Cuotas de un voluntario.');
             setTimeout(() => this.volverAlSistema(), 3000);
             return false;
@@ -124,14 +124,14 @@ class SistemaCuotasDjango {
             }
             
             this.bomberoActual = await response.json();
-            console.log('[CUOTAS DJANGO] ✅ Bombero cargado:', this.bomberoActual);
+            console.log('[CUOTAS DJANGO] Bombero cargado:', this.bomberoActual);
             
             // Mostrar info del bombero
             this.mostrarInfoBombero();
             return true;
             
         } catch (error) {
-            console.error('[CUOTAS DJANGO] ❌ Error al cargar bombero:', error);
+            console.error('[CUOTAS DJANGO] Error al cargar bombero:', error);
             Utils.mostrarNotificacion('Bombero no encontrado', 'error');
             setTimeout(() => this.volverAlSistema(), 2000);
             return false;
@@ -165,7 +165,7 @@ class SistemaCuotasDjango {
             if (ciclos && ciclos.length > 0) {
                 this.cicloActivo = ciclos[0];
                 this.anioActual = this.cicloActivo.anio;
-                console.log(`[CUOTAS DJANGO] ✅ Ciclo activo: ${this.anioActual}`);
+                console.log(`[CUOTAS DJANGO] Ciclo activo: ${this.anioActual}`);
             }
         } catch (error) {
             console.warn('Error al cargar ciclo activo:', error);
@@ -185,7 +185,7 @@ class SistemaCuotasDjango {
                 const config = await configResponse.json();
                 this.preciosCuotas.precioRegular = parseFloat(config.precio_regular);
                 this.preciosCuotas.precioEstudiante = parseFloat(config.precio_estudiante);
-                console.log('[CUOTAS DJANGO] ✅ Precios cargados:', this.preciosCuotas);
+                console.log('[CUOTAS DJANGO] Precios cargados:', this.preciosCuotas);
                 
                 // Actualizar el select con los precios reales
                 this.actualizarPreciosEnSelect();
@@ -199,7 +199,7 @@ class SistemaCuotasDjango {
             });
             
             if (!response.ok) {
-                console.warn('[CUOTAS DJANGO] ⚠️ No se pudieron cargar pagos');
+                console.warn('[CUOTAS DJANGO] No se pudieron cargar pagos');
                 this.pagosCuotas = [];
                 return;
             }
@@ -207,10 +207,10 @@ class SistemaCuotasDjango {
             const data = await response.json();
             // Asegurar que sea un array
             this.pagosCuotas = Array.isArray(data) ? data : (data.results || []);
-            console.log('[CUOTAS DJANGO] ✅ Pagos cargados:', this.pagosCuotas.length);
+            console.log('[CUOTAS DJANGO] Pagos cargados:', this.pagosCuotas.length);
             
         } catch (error) {
-            console.error('[CUOTAS DJANGO] ❌ Error al cargar pagos:', error);
+            console.error('[CUOTAS DJANGO] Error al cargar pagos:', error);
         }
     }
 
@@ -355,7 +355,7 @@ class SistemaCuotasDjango {
                 await this.guardarPagoCuota({...datos, mes: mes});
             }
             
-            Utils.mostrarNotificacion(`✅ Pago de ${mesesSeleccionados.length} cuota(s) registrado exitosamente`, 'success');
+            Utils.mostrarNotificacion(`Pago de ${mesesSeleccionados.length} cuota(s) registrado exitosamente`, 'success');
             
             // Recargar datos y actualizar interfaz
             await this.cargarDatos();
@@ -366,7 +366,7 @@ class SistemaCuotasDjango {
             this.limpiarFormularioCuota();
             
         } catch (error) {
-            Utils.mostrarNotificacion('❌ ' + error.message, 'error');
+            Utils.mostrarNotificacion(error.message, 'error');
         }
     }
 
@@ -423,7 +423,7 @@ class SistemaCuotasDjango {
             observaciones: datos.observacionesCuota || ''
         };
         
-        console.log('[CUOTAS DJANGO] 💾 Guardando pago:', payload);
+        console.log('[CUOTAS DJANGO] Guardando pago:', payload);
         
         const response = await fetch(`${API_BASE}/pagos-cuotas-simple/`, {
             method: 'POST',
@@ -441,7 +441,7 @@ class SistemaCuotasDjango {
         }
         
         const nuevoPago = await response.json();
-        console.log('[CUOTAS DJANGO] ✅ Pago guardado:', nuevoPago);
+        console.log('[CUOTAS DJANGO] Pago guardado:', nuevoPago);
         
         return nuevoPago;
     }
@@ -595,11 +595,11 @@ class SistemaCuotasDjango {
             
             if (response.ok) {
                 this.estadoCuotas = await response.json();
-                console.log('[CUOTAS DJANGO] ✅ Estado de cuotas:', this.estadoCuotas);
+                console.log('[CUOTAS DJANGO] Estado de cuotas:', this.estadoCuotas);
                 this.mostrarEstadoCuotas();
             }
         } catch (error) {
-            console.warn('[CUOTAS DJANGO] ⚠️ Error al cargar estado de cuotas:', error);
+            console.warn('[CUOTAS DJANGO] Error al cargar estado de cuotas:', error);
         }
     }
 
@@ -617,7 +617,7 @@ class SistemaCuotasDjango {
                 const tag = document.createElement('div');
                 tag.id = 'tagEstudiante';
                 tag.style.cssText = 'display: inline-block; background: #28a745; color: white; padding: 5px 10px; border-radius: 5px; margin-left: 10px; font-weight: bold;';
-                tag.innerHTML = '🎓 ESTUDIANTE';
+                tag.innerHTML = 'ESTUDIANTE';
                 bomberoDatos.appendChild(tag);
             }
         } else {
@@ -735,13 +735,13 @@ class SistemaCuotasDjango {
             
             const result = await response.json();
             
-            Utils.mostrarNotificacion(`✅ ${result.mensaje}`, 'success');
-            
+            Utils.mostrarNotificacion(result.mensaje, 'success');
+
             // Recargar estado
             await this.cargarEstadoCuotas();
-            
+
         } catch (error) {
-            Utils.mostrarNotificacion(`❌ ${error.message}`, 'error');
+            Utils.mostrarNotificacion(error.message, 'error');
         }
     }
 
@@ -805,16 +805,16 @@ class SistemaCuotasDjango {
             
             const result = await response.json();
             
-            Utils.mostrarNotificacion(`✅ ${result.mensaje}`, 'success');
-            
+            Utils.mostrarNotificacion(result.mensaje, 'success');
+
             // Cerrar modal
             this.cerrarModalEstudiante();
-            
+
             // Recargar estado
             await this.cargarEstadoCuotas();
-            
+
         } catch (error) {
-            Utils.mostrarNotificacion(`❌ ${error.message}`, 'error');
+            Utils.mostrarNotificacion(error.message, 'error');
         }
     }
 
@@ -839,13 +839,13 @@ class SistemaCuotasDjango {
             
             const result = await response.json();
             
-            Utils.mostrarNotificacion(`✅ ${result.mensaje}`, 'success');
-            
+            Utils.mostrarNotificacion(result.mensaje, 'success');
+
             // Recargar estado
             await this.cargarEstadoCuotas();
-            
+
         } catch (error) {
-            Utils.mostrarNotificacion(`❌ ${error.message}`, 'error');
+            Utils.mostrarNotificacion(error.message, 'error');
         }
     }
 }
@@ -864,7 +864,7 @@ function generarPDFCuotas() {
     const pdfUrl = `/api/voluntarios/${voluntarioId}/pdf-cuotas/${anio}/`;
     window.open(pdfUrl, '_blank');
     
-    Utils.mostrarNotificacion('📄 Generando PDF de cuotas...', 'success');
+    Utils.mostrarNotificacion('Generando PDF de cuotas...', 'success');
 }
 
 // Inicializar sistema cuando el DOM esté listo

@@ -119,12 +119,12 @@ class ConfiguracionCuotas {
                 const result = await response.json();
                 console.log('[CONFIG] Configuración guardada:', result);
 
-                Utils.mostrarNotificacion('✅ Configuración de cuotas guardada exitosamente', 'success');
+                Utils.mostrarNotificacion('Configuración de cuotas guardada exitosamente', 'success');
                 setTimeout(() => window.location.href = 'sistema.html', 2000);
                 
             } catch (error) {
                 console.error('[CONFIG] Error:', error);
-                Utils.mostrarNotificacion('❌ Error al guardar la configuración', 'error');
+                Utils.mostrarNotificacion('Error al guardar la configuración', 'error');
             }
         }
     }

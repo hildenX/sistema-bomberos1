@@ -46,7 +46,7 @@ function renderCiclos() {
 
         const badges = `
             ${esActivo  ? '<span class="cb-badge activo">● Activo</span>' : ''}
-            ${esCerrado ? '<span class="cb-badge cerrado">🔒 Cerrado</span>' : ''}
+            ${esCerrado ? '<span class="cb-badge cerrado">Cerrado</span>' : ''}
             ${sinCiclo  ? '<span class="cb-badge sin-ciclo">Sin ciclo formal</span>' : ''}
         `;
 
@@ -86,14 +86,14 @@ function renderCiclos() {
         const botonesAccion = sinCiclo ? `
             <button class="btn-cb nuevo sm" onclick="crearCicloPara(${c.anio})">＋ Formalizar ciclo ${c.anio}</button>
         ` : `
-            ${!esActivo && !esCerrado ? `<button class="btn-cb activar sm" onclick="activarCiclo(${c.id})">✓ Activar</button>` : ''}
-            ${!esCerrado ? `<button class="btn-cb cerrar sm" onclick="cerrarCiclo(${c.id})">🔒 Cerrar Ciclo</button>` : ''}
-            ${esCerrado  ? `<button class="btn-cb reabrir sm" onclick="reabrirCiclo(${c.id})">🔓 Reabrir</button>` : ''}
-            <button class="btn-cb stats sm" onclick="verEstadisticas(${c.id})">📊 Estadísticas</button>
+            ${!esActivo && !esCerrado ? `<button class="btn-cb activar sm" onclick="activarCiclo(${c.id})">Activar</button>` : ''}
+            ${!esCerrado ? `<button class="btn-cb cerrar sm" onclick="cerrarCiclo(${c.id})">Cerrar Ciclo</button>` : ''}
+            ${esCerrado  ? `<button class="btn-cb reabrir sm" onclick="reabrirCiclo(${c.id})">Reabrir</button>` : ''}
+            <button class="btn-cb stats sm" onclick="verEstadisticas(${c.id})">Estadísticas</button>
         `;
 
         const fechaCierre = c.fecha_cierre
-            ? `<span style="margin-left:12px">🔒 Cerrado: ${fmtFecha(c.fecha_cierre)}</span>`
+            ? `<span style="margin-left:12px">Cerrado: ${fmtFecha(c.fecha_cierre)}</span>`
             : '';
 
         return `
@@ -103,8 +103,8 @@ function renderCiclos() {
                     <div class="cb-badges">${badges}</div>
                 </div>
                 <div class="cb-dates">
-                    📅 ${fmtFecha(c.fecha_inicio)} → ${fmtFecha(c.fecha_fin)}${fechaCierre}
-                    ${c.observaciones ? `&nbsp;·&nbsp; 💬 ${c.observaciones}` : ''}
+                    ${fmtFecha(c.fecha_inicio)} → ${fmtFecha(c.fecha_fin)}${fechaCierre}
+                    ${c.observaciones ? `&nbsp;·&nbsp; ${c.observaciones}` : ''}
                 </div>
                 ${statsHtml}
                 <div class="cb-card-actions">${botonesAccion}</div>
@@ -129,10 +129,10 @@ async function activarCiclo(id) {
         const res = await fetch(`${API_BASE}/${id}/activar/`, { method: 'POST' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error');
-        notif('✅ ' + data.mensaje, 'success');
+        notif(data.mensaje, 'success');
         await cargarCiclos();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -149,17 +149,17 @@ async function cerrarCiclo(id) {
                     .map(b => `• ${b.nombre} (${b.fecha})`)
                     .join('\n');
                 alert(`No se puede cerrar el ciclo.\n\n${data.error}\n\nBeneficios activos:\n${lista}`);
-                notif(`❌ ${data.error}`, 'error');
+                notif(`${data.error}`, 'error');
             } else {
-                notif('❌ ' + (data.error || 'Error al cerrar'), 'error');
+                notif((data.error || 'Error al cerrar'), 'error');
             }
             return;
         }
 
-        notif(`✅ ${data.mensaje}`, 'success');
+        notif(`${data.mensaje}`, 'success');
         await cargarCiclos();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -169,10 +169,10 @@ async function reabrirCiclo(id) {
         const res = await fetch(`${API_BASE}/${id}/reabrir/`, { method: 'POST' });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error');
-        notif('✅ ' + data.mensaje, 'success');
+        notif(data.mensaje, 'success');
         await cargarCiclos();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -182,12 +182,12 @@ async function verEstadisticas(id) {
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error');
 
-        const estado = d.eficiencia >= 80 ? '✅ Excelente'
-                     : d.eficiencia >= 50 ? '⚠️ Regular'
-                     : '❌ Bajo';
+        const estado = d.eficiencia >= 80 ? 'Excelente'
+                     : d.eficiencia >= 50 ? 'Regular'
+                     : 'Bajo';
 
         notif(`
-            <strong>📊 Estadísticas Ciclo ${d.ciclo.anio}</strong><br><br>
+            <strong>Estadísticas Ciclo ${d.ciclo.anio}</strong><br><br>
             Beneficios totales: <strong>${d.total_beneficios}</strong>
             &nbsp;·&nbsp; Activos: <strong>${d.beneficios_activos}</strong>
             &nbsp;·&nbsp; Cerrados: <strong>${d.beneficios_cerrados}</strong><br>
@@ -199,7 +199,7 @@ async function verEstadisticas(id) {
             <br><br><a href="#" onclick="document.getElementById('cbNotif').style.display='none';return false" style="color:inherit;font-size:0.8rem">Cerrar</a>
         `, 'info');
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 
@@ -257,11 +257,11 @@ async function guardarCiclo(e) {
         });
         const d = await res.json();
         if (!res.ok) throw new Error(d.error || 'Error al crear ciclo');
-        notif(`✅ Ciclo ${d.anio} creado exitosamente`, 'success');
+        notif(`Ciclo ${d.anio} creado exitosamente`, 'success');
         cerrarModal();
         await cargarCiclos();
     } catch (e) {
-        notif('❌ ' + e.message, 'error');
+        notif(e.message, 'error');
     }
 }
 

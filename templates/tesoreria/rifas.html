@@ -180,7 +180,7 @@
         .empty-state p  { margin: 4px 0; font-size: 0.875rem; }
         .loading { text-align: center; padding: 50px; color: #9ca3af; font-size: 0.9rem; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
 <div class="rif-wrap">
@@ -282,7 +282,7 @@
         <div id="nrError" style="display:none;margin:0 24px 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;font-size:0.84rem;font-weight:600"></div>
         <div class="modal-footer">
             <button class="btn-rif secondary" onclick="cerrarModalNuevaRifa()">Cancelar</button>
-            <button class="btn-rif primary" onclick="crearRifa()">🎟 Crear Rifa</button>
+            <button class="btn-rif primary" onclick="crearRifa()">Crear Rifa</button>
         </div>
     </div>
 </div>
@@ -291,19 +291,19 @@
 <div id="modalCerrar" class="modal-overlay" style="display:none">
     <div class="modal-box" style="max-width:460px">
         <div class="modal-header">
-            <h3>🔒 Cerrar Rifa</h3>
+            <h3>Cerrar Rifa</h3>
             <button class="btn-close-modal" onclick="document.getElementById('modalCerrar').style.display='none'">✕</button>
         </div>
         <div class="modal-body">
             <p id="modalCerrarTexto" style="color:#374151;margin:0 0 10px;font-weight:600"></p>
             <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:0.84rem;color:#991b1b">
-                ⚠️ Se generarán egresos automáticos en las cuentas bancarias para retirar los fondos de la rifa.
+                Se generaran egresos automaticos en las cuentas bancarias para retirar los fondos de la rifa.
                 Esta acción no se puede deshacer.
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn-rif secondary" onclick="document.getElementById('modalCerrar').style.display='none'">Cancelar</button>
-            <button class="btn-rif danger" onclick="confirmarCerrarRifa()">🔒 Sí, Cerrar Rifa</button>
+            <button class="btn-rif danger" onclick="confirmarCerrarRifa()">Si, Cerrar Rifa</button>
         </div>
     </div>
 </div>

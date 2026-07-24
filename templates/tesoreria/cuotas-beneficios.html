@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/cuotas.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=6">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=16">
     <style>
         /* ESTILOS MODAL ESTUDIANTE */
         .modal {
@@ -148,7 +148,7 @@
     <div class="page-container cuotas-page">
         <div class="container">
             <div class="page-header cuotas-header">
-                <h2>💳 SISTEMA DE CUOTAS SOCIALES</h2>
+                <h2>SISTEMA DE CUOTAS SOCIALES</h2>
                 <p>Control de Pagos Mensuales</p>
             </div>
 
@@ -168,16 +168,16 @@
                     <!-- Botones de Acción -->
                     <div class="acciones-voluntario">
                         <button type="button" id="btnActivarEstudiante" class="btn btn-success" onclick="cuotasSistemaDjango.abrirModalEstudiante()" title="Activar Estudiante" style="display: none;">
-                            ➕ ACTIVAR ESTUDIANTE
+                            ACTIVAR ESTUDIANTE
                         </button>
                         <button type="button" id="btnToggleCuotas" class="btn" onclick="cuotasSistemaDjango.toggleCuotas()" title="Activar/Desactivar Cuotas" style="display: none;">
                             <!-- Texto dinámico -->
                         </button>
                         <button type="button" class="btn btn-danger" onclick="generarPDFCuotas()" title="Generar PDF de Cuotas">
-                            📄 Generar PDF Cuotas
+                            Generar PDF Cuotas
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.volverAlSistema()">
-                            ⬅️ Volver
+                            Volver
                         </button>
                     </div>
                 </div>
@@ -211,8 +211,8 @@
     <label for="formaPagoCuota" class="required">Forma de Pago</label>
     <select id="formaPagoCuota" name="formaPagoCuota" required onchange="cuotasSistemaDjango.toggleCuentaCuota()">
         <option value="">Seleccione forma de pago</option>
-        <option value="Efectivo">💵 Efectivo</option>
-        <option value="Transferencia">🏦 Transferencia Bancaria</option>
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia Bancaria</option>
     </select>
 </div>
 <div class="form-group" id="cuentaCuotaGrupo" style="display:none">
@@ -314,7 +314,7 @@
     </div>
 
     <div class="buttons">
-        <button type="submit" class="btn btn-cuota">✅ Registrar Pago de Cuota(s)</button>
+        <button type="submit" class="btn btn-cuota">Registrar Pago de Cuota(s)</button>
         <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.limpiarFormularioCuota()">Limpiar</button>
     </div>
 </form>
@@ -328,14 +328,14 @@
 
                 <!-- Grid de Meses -->
                 <div class="cuotas-grid">
-                    <h3>📊 Estado de Cuotas del Año <span id="anioActualCuotas">2025</span></h3>
+                    <h3>Estado de Cuotas del Ano <span id="anioActualCuotas">2025</span></h3>
                     <div id="gridMesesCuotas" class="meses-grid"></div>
                 </div>
 
                 <!-- Historial de Cuotas -->
                 <div class="list-container">
                     <div class="list-header">
-                        <h3>📚 Historial de Pagos de Cuotas</h3>
+                        <h3>Historial de Pagos de Cuotas</h3>
                     </div>
                     
                     <div class="contador">
@@ -358,7 +358,7 @@
     <div id="modalEstudiante" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
-                <h3>➕ Activar Estudiante</h3>
+                <h3>Activar Estudiante</h3>
                 <button type="button" class="close-modal" onclick="cuotasSistemaDjango.cerrarModalEstudiante()">&times;</button>
             </div>
             
@@ -404,7 +404,7 @@
                 </div>
 
                 <div class="buttons">
-                    <button type="submit" class="btn btn-success">✅ Activar Estudiante</button>
+                    <button type="submit" class="btn btn-success">Activar Estudiante</button>
                     <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.cerrarModalEstudiante()">Cancelar</button>
                 </div>
             </form>

@@ -37,7 +37,7 @@ async function cargarCuentasBancarias() {
 // ---------------------------------------------------------------------------
 function mostrarNotif(msg, tipo = 'ok') {
     const n = el('reNotif');
-    n.innerHTML = `<span>${tipo === 'ok' ? '✅' : '❌'}</span> ${msg}`;
+    n.innerHTML = `${msg}`;
     n.className = `re-notif ${tipo}`;
     n.style.display = 'flex';
     setTimeout(() => { n.style.display = 'none'; }, 5000);
@@ -120,7 +120,7 @@ function renderTabla() {
         el('tablaWrap').innerHTML = `
             <div class="re-table-wrap">
                 <div class="empty-state">
-                    <div class="icon">🔍</div>
+                    <div class="icon"></div>
                     <h3>Sin resultados</h3>
                     <p>No hay asignaciones que coincidan con los filtros</p>
                 </div>
@@ -144,18 +144,18 @@ function renderTabla() {
         const sinPagos = !a.pagos || a.pagos.length === 0;
         let acciones = '';
         if (a.estado === 'no_retirada') {
-            acciones = `<button class="btn-re primary sm" onclick="abrirModalEntregar(${a.id})">📦 Entregar</button>`;
+            acciones = `<button class="btn-re primary sm" onclick="abrirModalEntregar(${a.id})">Entregar</button>`;
         } else if (a.estado === 'retirada') {
-            acciones  = `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>`;
+            acciones  = `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">Ver</button>`;
             if (sinPagos) {
-                acciones += ` <button class="btn-re success sm" onclick="abrirModalPagar(${a.id}, false)">💰 Pagar</button>`;
+                acciones += ` <button class="btn-re success sm" onclick="abrirModalPagar(${a.id}, false)">Pagar</button>`;
             }
-            acciones += ` <button class="btn-re warning sm" onclick="abrirModalLiberar(${a.id})">🔓 Liberar</button>`;
+            acciones += ` <button class="btn-re warning sm" onclick="abrirModalLiberar(${a.id})">Liberar</button>`;
         } else if (a.estado === 'pagada') {
-            acciones  = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>` : '';
-            acciones += ` <button class="btn-re warning sm" onclick="abrirModalPagar(${a.id}, true)">💰+ Extra</button>`;
+            acciones  = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">Ver</button>` : '';
+            acciones += ` <button class="btn-re warning sm" onclick="abrirModalPagar(${a.id}, true)">Extra</button>`;
         } else if (a.estado === 'liberada') {
-            acciones = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">👁 Ver</button>` : '';
+            acciones = numeros.length ? `<button class="btn-re secondary sm" onclick="verNumeros(${a.id})">Ver</button>` : '';
         }
 
         return `
@@ -373,7 +373,7 @@ async function guardarEntrega() {
     el('errorRangos').style.display = 'none';
 
     const btn = document.querySelector('#modalEntregar .modal-footer .btn-re.primary');
-    setLoading(btn, true, '✅ Confirmar Entrega');
+    setLoading(btn, true, 'Confirmar Entrega');
 
     try {
         const resp = await fetch(`${API}/asignar-numeros-rifa/`, {
@@ -395,7 +395,7 @@ async function guardarEntrega() {
         el('errorRangos').textContent = 'Error de conexión';
         el('errorRangos').style.display = 'block';
     } finally {
-        setLoading(btn, false, '✅ Confirmar Entrega');
+        setLoading(btn, false, 'Confirmar Entrega');
     }
 }
 
@@ -422,7 +422,7 @@ function abrirModalPagar(asigId, extra = false) {
     const pct     = asignacionPagar.monto_total > 0
         ? Math.round(asignacionPagar.monto_pagado / asignacionPagar.monto_total * 100) : 0;
 
-    el('modalPagar').querySelector('h3').textContent = extra ? '💰+ Pago Extra de Rifa' : '💰 Registrar Pago';
+    el('modalPagar').querySelector('h3').textContent = extra ? 'Pago Extra de Rifa' : 'Registrar Pago';
     el('modalPagar').querySelector('.modal-header p').textContent = extra
         ? 'Pago adicional por números vendidos extra'
         : 'Pago de talonarios asignados';
@@ -554,7 +554,7 @@ async function guardarPago() {
     el('errorPagar').style.display = 'none';
 
     const btn = document.querySelector('#modalPagar .modal-footer .btn-re.primary');
-    setLoading(btn, true, '💰 Registrar Pago');
+    setLoading(btn, true, 'Registrar Pago');
 
     const body = {
         asignacion_id:     asignacionPagar.id,
@@ -597,7 +597,7 @@ async function guardarPago() {
     } catch (_) {
         showErr('Error de conexión');
     } finally {
-        setLoading(btn, false, '💰 Registrar Pago');
+        setLoading(btn, false, 'Registrar Pago');
     }
 }
 
@@ -641,7 +641,7 @@ async function guardarLiberacion() {
     el('errorLiberar').style.display = 'none';
 
     const btn = document.querySelector('#modalLiberar .modal-footer .btn-re.danger');
-    setLoading(btn, true, '🔓 Confirmar Liberación');
+    setLoading(btn, true, 'Confirmar Liberacion');
 
     try {
         const resp = await fetch(`${API}/liberar-rifa-simple/`, {
@@ -669,7 +669,7 @@ async function guardarLiberacion() {
     } catch (_) {
         showErr('Error de conexión');
     } finally {
-        setLoading(btn, false, '🔓 Confirmar Liberación');
+        setLoading(btn, false, 'Confirmar Liberacion');
     }
 }
 

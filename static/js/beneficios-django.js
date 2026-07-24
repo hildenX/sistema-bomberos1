@@ -105,7 +105,7 @@ function renderLista() {
     if (filtrados.length === 0) {
         lista.innerHTML = `
             <div class="ben-empty">
-                <p>📋 No hay beneficios para mostrar</p>
+                <p>No hay beneficios para mostrar</p>
                 <p style="font-size:0.82rem">Crea el primer beneficio usando el botón "+ Nuevo Beneficio"</p>
             </div>
         `;
@@ -130,7 +130,7 @@ function renderCard(b) {
 
     const btnCerrar = b.estado === 'activo' ? `
         <button class="btn-act cerrar-btn" onclick="cerrarBeneficio(${b.id})">
-            🔒 Cerrar
+            Cerrar
         </button>
     ` : '';
 
@@ -140,9 +140,9 @@ function renderCard(b) {
                 <div class="bcard-title">
                     <h3>${b.nombre}</h3>
                     <div class="bcard-meta">
-                        <span>📅 Evento: ${fmtFecha(b.fecha_evento)}</span>
-                        <span>⏱️ Límite: ${fmtFecha(b.fecha_limite_rendicion)}</span>
-                        <span>💰 $${fmt(b.precio_por_tarjeta)}/tarjeta</span>
+                        <span>Evento: ${fmtFecha(b.fecha_evento)}</span>
+                        <span>Límite: ${fmtFecha(b.fecha_limite_rendicion)}</span>
+                        <span>$${fmt(b.precio_por_tarjeta)}/tarjeta</span>
                     </div>
                 </div>
                 <div class="bcard-badges">
@@ -170,7 +170,7 @@ function renderCard(b) {
             </div>
             <div class="bcard-actions">
                 <button class="btn-act deudores-btn" onclick="verDeudores(${b.id})">
-                    ⚠️ DEUDORES (${deudores})
+                    DEUDORES (${deudores})
                 </button>
                 ${btnCerrar}
             </div>
@@ -233,7 +233,7 @@ async function crearBeneficio(e) {
 
         const result = await res.json();
         mostrarNotif(
-            `✅ ${result.mensaje} — Asignaciones creadas: ${result.asignaciones_creadas}`,
+            `${result.mensaje} — Asignaciones creadas: ${result.asignaciones_creadas}`,
             'success'
         );
 
@@ -242,7 +242,7 @@ async function crearBeneficio(e) {
 
         await cargarDatos();
     } catch (err) {
-        mostrarNotif('❌ Error: ' + err.message, 'error');
+        mostrarNotif('Error: ' + err.message, 'error');
     }
 }
 
@@ -282,7 +282,7 @@ function verDeudores(beneficioId) {
     if (deudores.length === 0) {
         el('modalDeudoresList').innerHTML = `
             <div class="ben-empty" style="padding: 40px;">
-                <p>✅ No hay deudores en este beneficio</p>
+                <p>No hay deudores en este beneficio</p>
             </div>
         `;
     } else {
@@ -328,19 +328,19 @@ async function cerrarBeneficio(id) {
                 const lista = data.pendientes
                     .map(p => `• ${p.voluntario}: ${p.tarjetas_disponibles} tarjeta(s) disponible(s)`)
                     .join('\n');
-                mostrarNotif(`❌ ${data.error}\n\nVoluntarios con tarjetas pendientes:\n${lista}`, 'error');
+                mostrarNotif(`${data.error}\n\nVoluntarios con tarjetas pendientes:\n${lista}`, 'error');
                 // Mostrar también en alert para mayor visibilidad
                 alert(`No se puede cerrar el beneficio.\n\n${data.error}\n\n${lista}`);
             } else {
-                mostrarNotif('❌ ' + (data.error || 'Error al cerrar'), 'error');
+                mostrarNotif((data.error || 'Error al cerrar'), 'error');
             }
             return;
         }
 
-        mostrarNotif('✅ ' + data.mensaje, 'success');
+        mostrarNotif(data.mensaje, 'success');
         await cargarDatos();
     } catch (e) {
-        mostrarNotif('❌ ' + e.message, 'error');
+        mostrarNotif(e.message, 'error');
     }
 }
 
@@ -459,7 +459,7 @@ function exportarPDFDeudores() {
     }
 
     doc.save(`deudores-${nombre.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
-    mostrarNotif('✅ PDF generado exitosamente', 'success');
+    mostrarNotif('PDF generado exitosamente', 'success');
 }
 
 // ===== UTILS =====

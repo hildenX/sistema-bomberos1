@@ -146,12 +146,12 @@ function renderBeneficios() {
     const c = el('listaBeneficios');
     const filtradas = getAsignacionesFiltradas();
     if (!asignaciones.length) {
-        c.innerHTML = `<div class="pb-empty">🎫 No hay beneficios asignados a este voluntario</div>`;
+        c.innerHTML = `<div class="pb-empty">No hay beneficios asignados a este voluntario</div>`;
         return;
     }
     if (!filtradas.length) {
         const anio = el('filtroAnioBenef')?.value || '';
-        c.innerHTML = `<div class="pb-empty">📋 No hay beneficios para el año ${anio}</div>`;
+        c.innerHTML = `<div class="pb-empty">No hay beneficios para el año ${anio}</div>`;
         return;
     }
     c.innerHTML = filtradas.map(renderBcard).join('');
@@ -162,15 +162,15 @@ function renderBcard(a) {
     const estadoTexto = { pendiente: 'Pendiente', parcial: 'Parcial', completo: 'Completo', liberado: 'Liberado' }[a.estado_pago] || a.estado_pago;
 
     const btnPagar = (a.tarjetas_disponibles > 0 && a.estado_pago !== 'completo' && a.estado_pago !== 'liberado') ? `
-        <button class="btn-action pagar" onclick="abrirModalPagar(${a.id})">💰 PAGAR</button>
+        <button class="btn-action pagar" onclick="abrirModalPagar(${a.id})">PAGAR</button>
     ` : '';
 
     const btnExtra = a.estado_pago !== 'liberado' ? `
-        <button class="btn-action extra" onclick="abrirModalExtra(${a.id})">➕ VENTA EXTRA</button>
+        <button class="btn-action extra" onclick="abrirModalExtra(${a.id})">VENTA EXTRA</button>
     ` : '';
 
     const btnLiberar = (a.tarjetas_disponibles > 0 && a.estado_pago !== 'completo' && a.estado_pago !== 'liberado') ? `
-        <button class="btn-action liberar" onclick="abrirModalLiberar(${a.id})">🔓 LIBERAR</button>
+        <button class="btn-action liberar" onclick="abrirModalLiberar(${a.id})">LIBERAR</button>
     ` : '';
 
     const filaExtra = a.tarjetas_extras_vendidas > 0 ? `
@@ -186,8 +186,8 @@ function renderBcard(a) {
                 <div>
                     <h4 class="pb-bcard-name">${a.beneficio_nombre}</h4>
                     <div class="pb-bcard-meta">
-                        <span>📅 Evento: ${fmtFecha(a.fecha_evento)}</span>
-                        <span>💰 $${fmt(a.precio_tarjeta)}/tarjeta</span>
+                        <span>Evento: ${fmtFecha(a.fecha_evento)}</span>
+                        <span>$${fmt(a.precio_tarjeta)}/tarjeta</span>
                     </div>
                 </div>
                 <span class="pb-estado-badge ${estadoClass}">${estadoTexto}</span>
@@ -293,7 +293,7 @@ function renderHistorial() {
     el('histContador').innerHTML = `Total de pagos realizados: <strong>${total}</strong>`;
 
     if (!filtrados.length) {
-        el('listaHistorial').innerHTML = `<div class="pb-empty">📝 No hay pagos para los filtros seleccionados</div>`;
+        el('listaHistorial').innerHTML = `<div class="pb-empty">No hay pagos para los filtros seleccionados</div>`;
         el('paginacionPagos').innerHTML = '';
         return;
     }
@@ -303,16 +303,16 @@ function renderHistorial() {
 
     el('listaHistorial').innerHTML = pagina.map(p => {
         const esExtra = p.tipo_pago === 'extra';
-        const obs = p.observaciones ? `<div class="pb-pago-obs">💬 ${p.observaciones}</div>` : '';
+        const obs = p.observaciones ? `<div class="pb-pago-obs">${p.observaciones}</div>` : '';
         return `
             <div class="pb-pago-item ${esExtra ? 'extra' : ''}">
                 <div style="flex:1; min-width:0">
                     <div class="pb-pago-nombre">${p.beneficio_nombre || 'Beneficio'}</div>
                     <div class="pb-pago-meta">
-                        <span>📅 ${fmtFecha(p.fecha_pago)}</span>
-                        <span>🎫 ${p.cantidad_tarjetas} tarjeta${p.cantidad_tarjetas !== 1 ? 's' : ''}</span>
-                        <span>${esExtra ? '➕ Venta Extra' : '💰 Normal'}</span>
-                        <span>🏦 ${p.metodo_pago || 'Efectivo'}</span>
+                        <span>${fmtFecha(p.fecha_pago)}</span>
+                        <span>${p.cantidad_tarjetas} tarjeta${p.cantidad_tarjetas !== 1 ? 's' : ''}</span>
+                        <span>${esExtra ? 'Venta Extra' : 'Normal'}</span>
+                        <span>${p.metodo_pago || 'Efectivo'}</span>
                     </div>
                     ${obs}
                 </div>
@@ -425,7 +425,7 @@ async function manejarPago(e) {
     const metodo = el('pagarMetodo').value;
     const cuentaId = el('pagarCuenta')?.value || null;
     if (metodo === 'Transferencia' && !cuentaId) {
-        notif('❌ Selecciona la cuenta bancaria destino', 'error'); return;
+        notif('Selecciona la cuenta bancaria destino', 'error'); return;
     }
 
     const obs = el('pagarObs').value.trim();
@@ -451,11 +451,11 @@ async function manejarPago(e) {
         });
         if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Error al registrar'); }
         const r = await res.json();
-        notif('✅ ' + r.mensaje, 'success');
+        notif(r.mensaje, 'success');
         cerrarModal('modalPagar');
         await recargar();
     } catch (err) {
-        notif('❌ ' + err.message, 'error');
+        notif(err.message, 'error');
     }
 }
 
@@ -499,7 +499,7 @@ async function manejarVentaExtra(e) {
     const extraMetodo = el('extraMetodo').value;
     const extraCuentaId = el('extraCuenta')?.value || null;
     if (extraMetodo === 'Transferencia' && !extraCuentaId) {
-        notif('❌ Selecciona la cuenta bancaria destino', 'error'); return;
+        notif('Selecciona la cuenta bancaria destino', 'error'); return;
     }
 
     const data = {
@@ -521,11 +521,11 @@ async function manejarVentaExtra(e) {
         });
         if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Error'); }
         const r = await res.json();
-        notif('✅ ' + r.mensaje, 'success');
+        notif(r.mensaje, 'success');
         cerrarModal('modalExtra');
         await recargar();
     } catch (err) {
-        notif('❌ ' + err.message, 'error');
+        notif(err.message, 'error');
     }
 }
 
@@ -597,11 +597,11 @@ async function manejarLiberar(e) {
         });
         if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Error'); }
         const r = await res.json();
-        notif('✅ ' + r.mensaje, 'success');
+        notif(r.mensaje, 'success');
         cerrarModal('modalLiberar');
         await recargar();
     } catch (err) {
-        notif('❌ ' + err.message, 'error');
+        notif(err.message, 'error');
     }
 }
 
@@ -656,7 +656,7 @@ function renderHistorialLiberaciones() {
         `<span class="pb-lib-badge">${filtradas.length} registro${filtradas.length !== 1 ? 's' : ''} · ${totalTarjetas} tarjeta${totalTarjetas !== 1 ? 's' : ''} liberada${totalTarjetas !== 1 ? 's' : ''}</span>`;
 
     if (!filtradas.length) {
-        el('listaLiberaciones').innerHTML = `<div class="pb-empty">🔓 No hay liberaciones para los filtros seleccionados</div>`;
+        el('listaLiberaciones').innerHTML = `<div class="pb-empty">No hay liberaciones para los filtros seleccionados</div>`;
         el('paginacionLiberaciones').innerHTML = '';
         return;
     }
@@ -673,11 +673,11 @@ function renderHistorialLiberaciones() {
                 </span>
             </div>
             <div class="pb-lib-meta">
-                <span>📅 ${fmtFechaHora(h.fecha)}</span>
-                <span>🎫 ${h.cantidad} tarjeta${h.cantidad !== 1 ? 's' : ''}</span>
-                <span>👤 ${h.autorizado_por || 'No registrado'}</span>
+                <span>${fmtFechaHora(h.fecha)}</span>
+                <span>${h.cantidad} tarjeta${h.cantidad !== 1 ? 's' : ''}</span>
+                <span>${h.autorizado_por || 'No registrado'}</span>
             </div>
-            <div class="pb-lib-motivo">💬 ${h.motivo}</div>
+            <div class="pb-lib-motivo">${h.motivo}</div>
         </div>
     `).join('');
 
@@ -819,7 +819,7 @@ function generarPDF() {
     }
 
     doc.save(`beneficios-${(voluntario.nombreCompleto || 'voluntario').replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
-    notif('✅ PDF generado exitosamente', 'success');
+    notif('PDF generado exitosamente', 'success');
 }
 
 // ===== UTILS =====
@@ -943,8 +943,8 @@ function renderRifaPanel() {
 
         ${puedeOperar ? `
         <div style="display:flex;gap:10px;margin-bottom:16px">
-            <button class="btn-pb submit" onclick="abrirModalPagarRifa()" style="flex:1">💰 Pagar Rifa</button>
-            <button class="btn-pb cancel" onclick="abrirModalLiberarRifa()" style="background:#fee2e2;color:#991b1b;border:none">🔓 Liberar</button>
+            <button class="btn-pb submit" onclick="abrirModalPagarRifa()" style="flex:1">Pagar Rifa</button>
+            <button class="btn-pb cancel" onclick="abrirModalLiberarRifa()" style="background:#fee2e2;color:#991b1b;border:none">Liberar</button>
         </div>` : ''}
 
         <div style="font-size:0.85rem;font-weight:600;color:#374151;margin-bottom:10px">Historial de Pagos</div>
@@ -1058,7 +1058,7 @@ async function submitPagarRifa(e) {
     } catch (_) {
         notif('Error de conexión', 'error');
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '💰 Registrar Pago'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Registrar Pago'; }
     }
 }
 
@@ -1105,7 +1105,7 @@ async function submitLiberarRifa(e) {
     } catch (_) {
         notif('Error de conexión', 'error');
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '🔓 Confirmar Liberación'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Confirmar Liberacion'; }
     }
 }
 

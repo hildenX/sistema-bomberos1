@@ -7,7 +7,7 @@
     <title>Finanzas - Sistema Bomberos</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/finanzas.css' %}?v=5.1">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
 <div class="fin-wrap">
@@ -21,7 +21,7 @@
             </div>
             <div class="fin-header-btns">
                 <button class="btn-reg volver" onclick="window.location.href='/sistema.html'">← Volver</button>
-                <button class="btn-reg" style="background:#1a6ea8;color:#fff" onclick="window.location.href='/cuentas-compania.html'">🏦 Cuentas</button>
+                <button class="btn-reg" style="background:#1a6ea8;color:#fff" onclick="window.location.href='/cuentas-compania.html'">Cuentas</button>
                 <button class="btn-reg ingreso" onclick="abrirModal('ingreso')">+ Registrar Ingreso</button>
                 <button class="btn-reg egreso" onclick="abrirModal('egreso')">+ Registrar Egreso</button>
             </div>
@@ -275,7 +275,7 @@
 
 <script src="{% static 'js/auth.js' %}"></script>
 <script src="{% static 'js/utils.js' %}"></script>
-<script src="{% static 'js/sidebar-django.js' %}?v=12.0"></script>
+<script src="{% static 'js/sidebar-django.js' %}?v=13.0"></script>
 <script src="{% static 'js/finanzas-simple.js' %}?v=5.1"></script>
 </body>
 </html>

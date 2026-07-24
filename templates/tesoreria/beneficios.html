@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/beneficios.css' %}?v=2.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
 <div class="ben-wrap">
@@ -28,7 +28,7 @@
         </div>
         <div class="ben-summary">
             <div class="sum-card">
-                <div class="sum-icon">🎫</div>
+                <div class="sum-icon">#</div>
                 <div>
                     <div class="sum-label">Beneficios Activos</div>
                     <div class="sum-value" id="statActivos">0</div>
@@ -36,7 +36,7 @@
             </div>
             <div class="sum-divider"></div>
             <div class="sum-card">
-                <div class="sum-icon">💰</div>
+                <div class="sum-icon">$</div>
                 <div>
                     <div class="sum-label">Monto Esperado</div>
                     <div class="sum-value" id="statEsperado">$0</div>
@@ -44,7 +44,7 @@
             </div>
             <div class="sum-divider"></div>
             <div class="sum-card">
-                <div class="sum-icon">⚠️</div>
+                <div class="sum-icon">!</div>
                 <div>
                     <div class="sum-label">Total Deudores</div>
                     <div class="sum-value" id="statDeudores">0</div>
@@ -52,7 +52,7 @@
             </div>
             <div class="sum-divider"></div>
             <div class="sum-card">
-                <div class="sum-icon">📊</div>
+                <div class="sum-icon">%</div>
                 <div>
                     <div class="sum-label">Eficiencia Global</div>
                     <div class="sum-value" id="statEficiencia">0%</div>
@@ -76,11 +76,11 @@
                     <label>Tipo de Beneficio <span class="req">*</span></label>
                     <select id="tipoBeneficio" required onchange="toggleOtroTipo()">
                         <option value="">Seleccione tipo</option>
-                        <option value="Curanto">🍲 Curanto</option>
-                        <option value="Bingo">🎰 Bingo</option>
-                        <option value="Rifa">🎫 Rifa</option>
-                        <option value="Asado">🥩 Asado</option>
-                        <option value="Otro">📌 Otro</option>
+                        <option value="Curanto">Curanto</option>
+                        <option value="Bingo">Bingo</option>
+                        <option value="Rifa">Rifa</option>
+                        <option value="Asado">Asado</option>
+                        <option value="Otro">Otro</option>
                     </select>
                 </div>
                 <div class="form-group" id="otroTipoGrupo" style="display:none">
@@ -107,19 +107,19 @@
                     <label>Tarjetas por Categoría <span class="req">*</span></label>
                     <div class="cat-grid">
                         <div class="cat-item">
-                            <label>👤 Voluntarios Regulares</label>
+                            <label>Voluntarios Regulares</label>
                             <input type="number" id="tarjetasVoluntarios" required min="0" value="8">
                         </div>
                         <div class="cat-item">
-                            <label>🏅 Honorarios Compañía</label>
+                            <label>Honorarios Compania</label>
                             <input type="number" id="tarjetasHonorariosCia" required min="0" value="5">
                         </div>
                         <div class="cat-item">
-                            <label>🎖️ Honorarios Cuerpo</label>
+                            <label>Honorarios Cuerpo</label>
                             <input type="number" id="tarjetasHonorariosCuerpo" required min="0" value="3">
                         </div>
                         <div class="cat-item">
-                            <label>🏆 Insignes de Chile</label>
+                            <label>Insignes de Chile</label>
                             <input type="number" id="tarjetasInsignes" required min="0" value="2">
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                 </div>
             </div>
             <div class="form-note">
-                💡 Al crear el beneficio, se asignará automáticamente a todos los bomberos activos según su categoría.
+                Al crear el beneficio, se asignará automáticamente a todos los bomberos activos según su categoría.
             </div>
             <div class="form-footer">
                 <button type="submit" class="btn-ben submit">Crear Beneficio y Asignar</button>
@@ -178,7 +178,7 @@
         <div class="ben-modal-stats" id="modalDeudoresStats"></div>
         <div class="ben-modal-body" id="modalDeudoresList"></div>
         <div class="ben-modal-footer">
-            <button class="btn-ben pdf" onclick="exportarPDFDeudores()">📄 Exportar PDF</button>
+            <button class="btn-ben pdf" onclick="exportarPDFDeudores()">Exportar PDF</button>
             <button class="btn-ben cancel" onclick="document.getElementById('modalDeudores').style.display='none'">Cerrar</button>
         </div>
     </div>

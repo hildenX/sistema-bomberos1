@@ -59,11 +59,11 @@ function renderizarCiclos() {
             
             <div class="ciclo-info">
                 <div class="info-item">
-                    <div class="info-label">📅 Fecha Inicio</div>
+                    <div class="info-label">Fecha Inicio</div>
                     <div class="info-value">${formatearFecha(ciclo.fecha_inicio)}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">📅 Fecha Fin</div>
+                    <div class="info-label">Fecha Fin</div>
                     <div class="info-value">${formatearFecha(ciclo.fecha_fin)}</div>
                 </div>
             </div>
@@ -73,19 +73,19 @@ function renderizarCiclos() {
             <div class="ciclo-actions">
                 ${!ciclo.activo && !ciclo.cerrado ? 
                     `<button class="btn btn-success" onclick="activarCiclo(${ciclo.id})">
-                        ✓ Activar Ciclo
+                        Activar Ciclo
                     </button>` : ''}
                 
                 ${!ciclo.cerrado ? 
                     `<button class="btn btn-danger" onclick="cerrarCiclo(${ciclo.id})">
-                        🔒 Cerrar Ciclo
+                        Cerrar Ciclo
                     </button>` : 
                     `<button class="btn btn-secondary" onclick="reabrirCiclo(${ciclo.id})">
-                        🔓 Reabrir Ciclo
+                        Reabrir Ciclo
                     </button>`}
                 
                 <button class="btn btn-primary" onclick="verEstadisticas(${ciclo.id})">
-                    📊 Ver Estadísticas
+                    Ver Estadísticas
                 </button>
             </div>
         </div>
@@ -206,8 +206,8 @@ async function verEstadisticas(cicloId) {
                     stats.porcentaje_cumplimiento >= 50 ? '#fff3cd' : '#f8d7da'
                 }; border-radius: 8px;">
                     <strong>Estado:</strong> ${
-                        stats.porcentaje_cumplimiento >= 80 ? '✅ Excelente' : 
-                        stats.porcentaje_cumplimiento >= 50 ? '⚠️ Regular' : '❌ Bajo'
+                        stats.porcentaje_cumplimiento >= 80 ? 'Excelente' : 
+                        stats.porcentaje_cumplimiento >= 50 ? 'Regular' : 'Bajo'
                     }
                 </div>
             </div>

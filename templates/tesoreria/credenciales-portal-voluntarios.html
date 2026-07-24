@@ -19,10 +19,11 @@
         .empty-state { padding:18px; border-radius:16px; background:#f8f0e6; color:#6a5c53; }
         @media (max-width: 800px) { .tabla-portal { font-size:.9rem; } }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
     <main id="tesoreriaCredencialesPortal" class="shell">
+        <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'" style="margin-bottom:16px;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;display:inline-block">&#8592; Volver</button>
         <section class="hero">
             <h1>Credenciales del Portal de Voluntarios</h1>
             <p>Los usuarios se generan automáticamente al registrar un bombero nuevo.</p>

@@ -215,15 +215,15 @@
         #modalVerComp .cc-modal-box { max-width: 700px; }
         #imgComprobante { max-width: 100%; border-radius: 8px; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="cc-header">
-    <h1>🏦 Cuentas de la Compañía</h1>
+    <h1>Cuentas de la Compania</h1>
     <button class="btn-cc volver" onclick="window.location.href='/finanzas.html'">← Volver</button>
-    <button class="btn-cc deposito" onclick="abrirModalDeposito()">💵 Registrar Depósito</button>
+    <button class="btn-cc deposito" onclick="abrirModalDeposito()">Registrar Deposito</button>
     <button class="btn-cc nuevo" onclick="abrirModalCuenta()">＋ Nueva Cuenta</button>
 </div>
 
@@ -243,7 +243,7 @@
 
     <!-- SALDO CARDS -->
     <div class="cc-section">
-        <h2>💰 Saldos Actuales</h2>
+        <h2>Saldos Actuales</h2>
         <div class="cc-saldos" id="ccsaldos">
             <div class="cc-card caja">
                 <div class="cc-card-titulo">Caja / Efectivo</div>
@@ -257,7 +257,7 @@
 
     <!-- HISTORIAL DEPÓSITOS -->
     <div class="cc-section">
-        <h2>📋 Historial de Depósitos (Caja → Banco)</h2>
+        <h2>Historial de Depositos (Caja - Banco)</h2>
         <div class="cc-table-wrap">
             <table class="cc-table">
                 <thead>
@@ -280,7 +280,7 @@
 
     <!-- FONDOS RIFA -->
     <div class="cc-section" id="seccionFondosRifa" style="display:none">
-        <h2>🎟 Fondos de Rifas Activas</h2>
+        <h2>Fondos de Rifas Activas</h2>
         <div id="fondosRifaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:12px"></div>
     </div>
 
@@ -326,7 +326,7 @@
 <!-- MODAL REGISTRAR DEPÓSITO -->
 <div class="cc-modal" id="modalDeposito" onclick="cerrarModalFondo(event,'modalDeposito')">
     <div class="cc-modal-box">
-        <h3>💵 Registrar Depósito a Banco</h3>
+        <h3>Registrar Deposito a Banco</h3>
         <form id="formDeposito" onsubmit="guardarDeposito(event)">
             <div class="cc-field">
                 <label>Cuenta destino *</label>
@@ -354,7 +354,7 @@
                 <label>Adjuntar comprobante (imagen o PDF)</label>
                 <input type="file" id="fileComprobante" accept="image/*,application/pdf" onchange="previsualizarComp(this)">
                 <img id="prevComprobante" alt="Vista previa">
-                <div id="prevComprobantePdf">📄 PDF adjunto</div>
+                <div id="prevComprobantePdf">PDF adjunto</div>
                 <input type="hidden" name="comprobante_base64" id="inputComprobanteB64">
             </div>
             <div class="cc-field">
@@ -372,7 +372,7 @@
 <!-- MODAL VER COMPROBANTE -->
 <div class="cc-modal" id="modalVerComp" onclick="cerrarModalFondo(event,'modalVerComp')">
     <div class="cc-modal-box">
-        <h3>🖼️ Comprobante</h3>
+        <h3>Comprobante</h3>
         <div id="contenidoComprobante" style="text-align:center"></div>
         <div class="cc-modal-actions">
             <button class="btn-cc cancelar" onclick="cerrarModal('modalVerComp')">Cerrar</button>
