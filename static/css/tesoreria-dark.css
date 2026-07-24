@@ -1,0 +1,733 @@
+/* =======================================================
+   TESORERIA-DARK.CSS
+   Dark theme override for all tesorería sub-pages.
+   Load LAST so it wins over page-specific CSS.
+   ======================================================= */
+
+:root {
+  --td-bg:       #0f0f0f;
+  --td-surface:  #171717;
+  --td-card:     #1c1c1c;
+  --td-card-h:   #222222;
+  --td-border:   #2a2a2a;
+  --td-text:     #f0f0f0;
+  --td-muted:    #888888;
+  --td-red:      #c0392b;
+  --td-red-h:    #e74c3c;
+  --td-gold:     #c8942a;
+  --td-green:    #27ae60;
+  --td-blue:     #2471a3;
+  --td-font:     'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Body & Root ── */
+html, body {
+  background-color: var(--td-bg) !important;
+  color: var(--td-text) !important;
+  font-family: var(--td-font) !important;
+}
+
+/* ── Generic wrappers / containers ── */
+.fin-wrap,
+.page-container, .page-wrapper,
+.main-container, .main-content,
+.content-wrapper, .app-content,
+.container:not(.sidebar):not(.sidebar-header),
+main, section, article {
+  background-color: var(--td-bg) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── Page header banners (already red, just ensure text is white) ── */
+.fin-header,
+.page-header, .header-banner, .header-section,
+[class*="page-header"], [class*="header-banner"] {
+  color: #fff !important;
+}
+.fin-header h1, .fin-header p,
+.page-header h1, .page-header p,
+.header-banner h1, .header-banner p {
+  color: #fff !important;
+}
+
+/* ── Summary / stat cards inside headers ── */
+.fin-summary, .sum-card {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+.sum-label { color: rgba(255,255,255,0.7) !important; }
+.sum-value { color: #fff !important; }
+.sum-value.saldo, .sum-value.verde { color: #4ade80 !important; }
+.sum-value.rojo { color: #f87171 !important; }
+.sum-divider { background: rgba(255,255,255,0.15) !important; }
+
+/* ── Tabs ── */
+.fin-tabs, [class*="-tabs"], .tabs-container {
+  background-color: var(--td-surface) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+.fin-tab, [class*="-tab"]:not(.active) {
+  background: transparent !important;
+  color: var(--td-muted) !important;
+  border: none !important;
+}
+.fin-tab.active, [class*="-tab"].active {
+  background: transparent !important;
+  color: var(--td-text) !important;
+  border-bottom: 2px solid var(--td-red) !important;
+}
+
+/* ── Cards / panels / sections ── */
+.fin-card, .fin-panel,
+.card, .card-body, .card-content,
+.ciclo-card, .account-card, .rifa-card,
+.cuota-card, .beneficio-card, .deudor-card,
+.payment-card, .stat-card, .info-card,
+.section-card, .module-card,
+.ciclo-item, .cycle-card,
+.vol-card, .bombero-card-inner,
+[class*="-card"]:not([class*="card-header"]):not(.sidebar-card) {
+  background-color: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+[class*="-card"]:hover {
+  background-color: var(--td-card-h) !important;
+}
+
+/* ── Card headers (within cards, not page headers) ── */
+.card-header, [class*="card-header"] {
+  background-color: #1a1a1a !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── Inline "active cycle" banner (blue on cuotas pages) ── */
+.ciclo-activo-banner, .active-cycle-banner,
+[class*="activo-banner"], [class*="active-banner"] {
+  background: linear-gradient(135deg, #1a2a1a, #0d1f0d) !important;
+  border: 1px solid #27ae60 !important;
+  color: #4ade80 !important;
+}
+
+/* ── Back buttons ── */
+.btn-volver, .btn-back, .back-btn,
+button[onclick*="sistema.html"], button[onclick*="volver"],
+a[href*="sistema.html"], a[href*="volver"] {
+  background-color: #2a2a2a !important;
+  color: var(--td-text) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.btn-volver:hover, .btn-back:hover, .back-btn:hover {
+  background-color: #333 !important;
+}
+
+/* ── Generic back/return standalone button (top-left) ── */
+body > button:first-child,
+body > a:first-child {
+  background-color: #2a2a2a !important;
+  color: var(--td-text) !important;
+  border: 1px solid var(--td-border) !important;
+}
+
+/* ── Tables ── */
+table {
+  background-color: var(--td-card) !important;
+  color: var(--td-text) !important;
+  border-collapse: collapse !important;
+}
+thead, thead tr, th {
+  background-color: #141414 !important;
+  color: var(--td-muted) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+tbody tr {
+  background-color: var(--td-card) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+tbody tr:nth-child(even) {
+  background-color: #1f1f1f !important;
+}
+tbody tr:hover {
+  background-color: var(--td-card-h) !important;
+}
+td {
+  color: var(--td-text) !important;
+  border: none !important;
+}
+td a { color: #60a5fa !important; }
+
+/* ── Forms ── */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+select,
+textarea {
+  background-color: #141414 !important;
+  color: var(--td-text) !important;
+  border: 1px solid var(--td-border) !important;
+  border-radius: 8px !important;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--td-muted) !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--td-red) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(192,57,43,0.3) !important;
+}
+label {
+  color: var(--td-muted) !important;
+  font-size: 0.82rem !important;
+}
+.form-group, .form-field, .field-group, .input-group {
+  background: transparent !important;
+}
+
+/* ── Fieldsets / form sections ── */
+fieldset {
+  border: 1px solid var(--td-border) !important;
+  background-color: var(--td-card) !important;
+}
+legend {
+  color: var(--td-gold) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Info/alert boxes ── */
+.info-box, .alert-info, .alert-blue, .notice, .tip,
+[class*="info-box"], [class*="alert-info"],
+.alert {
+  background-color: #0d1f2d !important;
+  border: 1px solid #1a4a6a !important;
+  color: #93c5fd !important;
+}
+.alert-success, [class*="alert-success"], .success-box {
+  background-color: #0d1f14 !important;
+  border: 1px solid #166534 !important;
+  color: #86efac !important;
+}
+.alert-warning, [class*="alert-warning"], .warning-box {
+  background-color: #1f1a0d !important;
+  border: 1px solid #854d0e !important;
+  color: #fcd34d !important;
+}
+.alert-danger, .alert-error, [class*="alert-danger"], .error-box {
+  background-color: #1f0d0d !important;
+  border: 1px solid #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+/* ── Status badges ── */
+.badge, [class*="badge-"], [class*="-badge"] {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 99px !important;
+  padding: 3px 10px !important;
+}
+.badge-activo, .badge-active, [class*="activo"]:not(button):not(a) {
+  background-color: rgba(39,174,96,0.2) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(39,174,96,0.4) !important;
+}
+.badge-inactivo, .badge-inactive, [class*="inactivo"]:not(button):not(a) {
+  background-color: rgba(255,152,0,0.15) !important;
+  color: #fb923c !important;
+  border: 1px solid rgba(255,152,0,0.3) !important;
+}
+.badge-cerrado, .badge-closed, [class*="cerrado"]:not(button):not(a) {
+  background-color: rgba(100,100,100,0.15) !important;
+  color: var(--td-muted) !important;
+  border: 1px solid rgba(100,100,100,0.3) !important;
+}
+
+/* ── Buttons — normalize all ── */
+button, .btn, [class*="btn-"] {
+  font-family: var(--td-font) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+/* Primary / default action */
+.btn-primary, .btn-main, .btn-reg,
+button[onclick*="registrar"], button[onclick*="guardar"], button[onclick*="crear"] {
+  background-color: var(--td-red) !important;
+  color: #fff !important;
+  border: none !important;
+}
+.btn-primary:hover, .btn-main:hover, .btn-reg:hover {
+  background-color: var(--td-red-h) !important;
+}
+
+/* Success / confirm */
+.btn-success, .btn-activar, .btn-guardar,
+button[onclick*="activar"], button[onclick*="confirmar"] {
+  background-color: #1a5e34 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.btn-success:hover, .btn-activar:hover { background-color: #27ae60 !important; }
+
+/* Danger / destructive */
+.btn-danger, .btn-cerrar, .btn-eliminar,
+button[onclick*="cerrar"], button[onclick*="eliminar"] {
+  background-color: #7f1d1d !important;
+  color: #fff !important;
+  border: none !important;
+}
+.btn-danger:hover, .btn-cerrar:hover { background-color: #9b2226 !important; }
+
+/* Warning */
+.btn-warning, .btn-amarillo {
+  background-color: #7a4a00 !important;
+  color: #fcd34d !important;
+  border: none !important;
+}
+
+/* Info / secondary */
+.btn-info, .btn-secondary, .btn-estadisticas,
+button[onclick*="estadisticas"], button[onclick*="ver"] {
+  background-color: #1a3a5c !important;
+  color: #93c5fd !important;
+  border: none !important;
+}
+
+/* Neutral / gray */
+.btn-neutral, .btn-gray, .btn-cancelar,
+button[onclick*="cancelar"], button[onclick*="cerrarModal"],
+button[class*="cancel"], button[class*="close"]:not(.modal-close-x) {
+  background-color: #2a2a2a !important;
+  color: var(--td-muted) !important;
+  border: 1px solid var(--td-border) !important;
+}
+
+/* "Crear nuevo" / positive call-to-action */
+.btn-crear, .btn-nuevo, .btn-add,
+button[onclick*="crear"], button[onclick*="nuevo"], button[onclick*="agregar"] {
+  background-color: var(--td-red) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* ── Filter / search bars ── */
+.filter-row, .filter-bar, .filters-container,
+.fin-filters, [class*="filter-row"] {
+  background-color: var(--td-surface) !important;
+  border: 1px solid var(--td-border) !important;
+  border-radius: 10px !important;
+  padding: 12px !important;
+}
+.filter-item label {
+  color: var(--td-muted) !important;
+}
+
+/* ── Modals ── */
+.modal-content, .modal-body, .modal-container,
+[class*="modal-content"] {
+  background-color: var(--td-card) !important;
+  color: var(--td-text) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.modal-header, [class*="modal-header"] {
+  background: linear-gradient(135deg, #7f1d1d, #450a0a) !important;
+  color: #fff !important;
+}
+.modal-footer, [class*="modal-footer"] {
+  background-color: #141414 !important;
+  border-top: 1px solid var(--td-border) !important;
+}
+
+/* ── Pagination ── */
+.pagination, .paginacion {
+  background: transparent !important;
+}
+.page-btn, .pag-btn, .pagination button {
+  background-color: var(--td-card) !important;
+  color: var(--td-text) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.page-btn.active, .pag-btn.active, .pagination button.active {
+  background-color: var(--td-red) !important;
+  color: #fff !important;
+  border-color: var(--td-red) !important;
+}
+
+/* ── Section titles / headings ── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--td-text) !important;
+}
+.section-title, .panel-title, .card-title {
+  color: var(--td-text) !important;
+  border-left: 3px solid var(--td-red);
+  padding-left: 10px;
+}
+
+/* ── Helper text / descriptions ── */
+p, span:not([class*="badge"]):not(.sum-value) {
+  color: inherit !important;
+}
+.text-muted, .helper-text, .hint-text, small {
+  color: var(--td-muted) !important;
+}
+
+/* ── Dividers ── */
+hr {
+  border-color: var(--td-border) !important;
+}
+
+/* ── Links ── */
+a:not(.btn):not([class*="btn"]) {
+  color: #60a5fa !important;
+}
+a:hover:not(.btn):not([class*="btn"]) {
+  color: #93c5fd !important;
+}
+
+/* ── Finanzas-specific ── */
+.fin-header { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important; }
+.fin-card { background-color: var(--td-card) !important; }
+.fin-panel { background-color: var(--td-bg) !important; }
+.fin-tab { padding: 10px 20px; font-weight: 600; border-bottom: 2px solid transparent; }
+.fin-tab.active { border-bottom-color: var(--td-red) !important; }
+
+/* ── Cuentas compañía ── */
+.cuenta-card, .account-card {
+  background-color: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.cuenta-saldo, .account-balance {
+  color: var(--td-gold) !important;
+  font-weight: 700 !important;
+}
+
+/* ── Ciclos (cuotas / beneficios) ── */
+.ciclo-activo { border-left: 3px solid var(--td-green) !important; }
+.ciclo-inactivo { border-left: 3px solid var(--td-border) !important; }
+.ciclo-cerrado { border-left: 3px solid #555 !important; }
+
+/* ── Credenciales (plain table page) ── */
+.clave-badge, .credencial-badge {
+  background-color: #1a1a2e !important;
+  color: #93c5fd !important;
+  border: 1px solid #1d4ed8 !important;
+}
+
+/* ── Solicitudes / pagos portal ── */
+.solicitud-card, .pago-card {
+  background-color: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.solicitud-pendiente { border-left: 3px solid var(--td-gold) !important; }
+.solicitud-aprobada  { border-left: 3px solid var(--td-green) !important; }
+.solicitud-rechazada { border-left: 3px solid var(--td-red) !important; }
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--td-bg); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ================================================================
+   PAGE-SPECIFIC OVERRIDES (high-specificity to beat !important in
+   individual CSS files — these load last so they win cascade order)
+   ================================================================ */
+
+/* ── cuotas-beneficios & pagar-beneficio (cuotas.css / pagos-pro.css) ── */
+body.pp-light { background: var(--td-bg) !important; }
+
+/* Card containers that pagos-pro.css sets to #fff with !important */
+.cuotas-page .bombero-info,
+.cuotas-page .form-container,
+.cuotas-page .cuotas-grid,
+.cuotas-page .list-container,
+.cuotas-page .selector-años-container {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+}
+/* Card title headers */
+.cuotas-page .bombero-info > h3,
+.cuotas-page .form-container > h3,
+.cuotas-page .cuotas-grid > h3,
+.cuotas-page .list-container .list-header h3,
+.cuotas-page .list-container .list-header {
+  background: #141414 !important;
+  color: var(--td-text) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+/* Month cards */
+.mes-card {
+  background: #1a1a1a !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.mes-card.pagado {
+  background: rgba(39,174,96,0.12) !important;
+  border-color: rgba(39,174,96,0.3) !important;
+}
+.mes-card.pagado .mes-nombre,
+.mes-card.pagado .mes-estado { color: #4ade80 !important; }
+.mes-card.pendiente {
+  background: rgba(192,57,43,0.1) !important;
+  border-color: rgba(192,57,43,0.25) !important;
+}
+.mes-card.pendiente .mes-nombre,
+.mes-card.pendiente .mes-estado { color: #f87171 !important; }
+
+/* Month checkboxes */
+.checkbox-mes {
+  background: #1a1a1a !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.checkbox-mes:hover { background: #222 !important; }
+.checkbox-mes input[type="checkbox"] { accent-color: var(--td-red); }
+
+/* Payment cards */
+.pago-card {
+  background: var(--td-card) !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.pago-card .pago-nombre,
+.pago-card .pago-monto,
+.pago-card p { color: var(--td-text) !important; }
+
+/* Beneficios page (pagar-beneficio.css) */
+.pb-wrap { background: var(--td-bg) !important; }
+.pb-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.pb-card-header {
+  background: #141414 !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.pb-card-body { background: var(--td-card) !important; }
+.pb-sum-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.pb-tab { color: var(--td-muted) !important; background: transparent !important; }
+.pb-tab.activa { color: var(--td-text) !important; border-bottom-color: var(--td-red) !important; }
+
+/* ── deudores-cuotas (page-wrap, deudores-table) ── */
+.page-wrap { background: var(--td-bg) !important; color: var(--td-text) !important; }
+.deudores-header { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important; color: #fff !important; }
+.deudores-card, .deudor-row {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.deudores-stats, .stats-row {
+  background: var(--td-surface) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.deudor-nombre, .deudor-info { color: var(--td-text) !important; }
+.deudor-monto { color: var(--td-gold) !important; font-weight: 700 !important; }
+/* deudores table card & toolbar */
+.tabla-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+}
+.tabla-toolbar {
+  background: #141414 !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.anio-selector {
+  background: #1c1c1c !important;
+  color: var(--td-text) !important;
+  border-color: var(--td-border) !important;
+}
+
+/* ── rifas (rif-wrap, rif-card) ── */
+.rif-wrap { background: var(--td-bg) !important; }
+.rif-header { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important; color: #fff !important; }
+.rif-card, .rifa-card-item {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.rif-stat, .rif-stat-value { color: var(--td-gold) !important; }
+/* rifa-card specific */
+.rifa-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+.rifa-nombre { color: var(--td-text) !important; }
+.rifa-ciclo  { color: var(--td-muted) !important; }
+.rifa-info   { color: var(--td-muted) !important; }
+.rifa-info strong { color: var(--td-text) !important; }
+/* Mini stat boxes */
+.stat-mini {
+  background: #141414 !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.stat-mini-val { color: var(--td-text) !important; }
+.stat-mini-lbl { color: var(--td-muted) !important; }
+.stat-mini.sin-ret  .stat-mini-val { color: #fb923c !important; }
+.stat-mini.retirada .stat-mini-val { color: #60a5fa !important; }
+.stat-mini.pagada   .stat-mini-val { color: #4ade80 !important; }
+/* Recaudado box */
+.rifa-recaudado {
+  background: #141414 !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.rec-val { color: var(--td-text) !important; }
+.rec-lbl { color: var(--td-muted) !important; }
+.rec-item.transf .rec-val { color: #60a5fa !important; }
+.rec-item.efec   .rec-val { color: #4ade80 !important; }
+/* Progress bar track */
+.rifa-progress-track { background: #2a2a2a !important; }
+.rifa-progress-header { color: var(--td-muted) !important; }
+.rifa-progress-pct { color: var(--td-text) !important; }
+/* Badges */
+.badge-estado.activa  { background: rgba(39,174,96,0.15) !important; color: #4ade80 !important; }
+.badge-estado.cerrada { background: rgba(100,100,100,0.15) !important; color: var(--td-muted) !important; }
+/* "Nueva Rifa" button (white bg) */
+.btn-rif.nuevo { background: #1c1c1c !important; color: var(--td-gold) !important; border: 1px solid var(--td-gold) !important; }
+
+/* ── cuentas-compania ── */
+.cc-wrap { background: var(--td-bg) !important; }
+.cc-header { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important; color: #fff !important; }
+.cc-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.cc-saldo, .cc-balance { color: var(--td-gold) !important; font-weight: 700 !important; }
+.cc-label, .cc-type { color: var(--td-muted) !important; }
+.cc-modal-box {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── configurar-cuotas ── */
+.config-wrap, .configurar-wrap { background: var(--td-bg) !important; }
+.config-card, .configurar-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── ciclos (admin-ciclos-cuotas / admin-ciclos-beneficios) ── */
+.ciclos-container, .cb-wrap { background: var(--td-bg) !important; }
+.ciclo-header, .ciclos-header, .cb-header {
+  background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%) !important;
+  color: #fff !important;
+}
+.ciclo-card, .cb-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+/* info items inside ciclo cards (date boxes) */
+.info-item {
+  background: #141414 !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.info-item .info-label { color: var(--td-muted) !important; }
+.info-item .info-value { color: var(--td-text) !important; }
+/* Active cycle banner (blue → dark green) */
+.ciclo-activo-info, .ciclo-activo-box, .activo-banner,
+.dashboard-activo {
+  background: linear-gradient(135deg, #0d1f14, #0a1a10) !important;
+  border: 2px solid rgba(39,174,96,0.4) !important;
+  color: #4ade80 !important;
+}
+.dashboard-activo h2 { color: #4ade80 !important; }
+/* Stats row inside ciclo cards */
+.ciclo-stats, .cb-stats { background: #141414 !important; border-top: 1px solid var(--td-border) !important; }
+.stat-valor { color: var(--td-gold) !important; }
+.stat-label { color: var(--td-muted) !important; }
+
+/* ── credenciales-portal ── */
+.shell { background: var(--td-bg) !important; }
+.hero, .panel {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.hero h1, .hero p { color: var(--td-text) !important; }
+.tabla-portal { color: var(--td-text) !important; }
+.tabla-portal th { color: var(--td-muted) !important; border-bottom-color: var(--td-border) !important; }
+.tabla-portal td { border-bottom-color: var(--td-border) !important; }
+.clave {
+  background: #1a1a2e !important;
+  color: #93c5fd !important;
+}
+
+/* ── solicitudes-pagos-portal ── */
+.solicitudes-main, .sp-main, .main-content-sp {
+  background: var(--td-bg) !important;
+  color: var(--td-text) !important;
+}
+.solicitud-item, .sp-card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── reasignar-beneficios ── */
+.card {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.card h1, .card h2, .card h3 { color: var(--td-text) !important; }
+
+/* ── finanzas — result count strip ── */
+.fin-count, .fin-info, .result-info,
+[class*="fin-count"], [class*="result-count"] {
+  background: var(--td-card) !important;
+  color: var(--td-muted) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+
+/* ── Generic white/light containers not yet caught ── */
+.page-content, .section-content, .form-section,
+.info-section, .data-section, .content-section {
+  background: var(--td-bg) !important;
+  color: var(--td-text) !important;
+}
+.box, .panel-box, .info-panel {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+
+/* ── Warning / info popups / notification boxes ── */
+.popup, .popup-content, .popup-box {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.popup-footer {
+  background: #141414 !important;
+  border-top: 1px solid var(--td-border) !important;
+}
+.warning-box {
+  background: #1f1a0d !important;
+  border: 1px solid #854d0e !important;
+  color: #fcd34d !important;
+}
