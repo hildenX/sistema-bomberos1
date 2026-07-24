@@ -465,16 +465,43 @@ body.pp-light { background: var(--td-bg) !important; }
   color: var(--td-text) !important;
   border-bottom: 1px solid var(--td-border) !important;
 }
+/* "Estado de Cuotas" grid (mes-card display) */
+.cuotas-page .cuotas-grid,
+.cuotas-page .cuotas-grid .meses-grid {
+  background: var(--td-card) !important;
+}
+.cuotas-page .cuotas-grid > h3 {
+  background: #141414 !important;
+  color: var(--td-muted) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+/* List container (historial) */
+.cuotas-page .list-container {
+  background: var(--td-card) !important;
+}
+/* "Total de pagos: 0" contador inside list */
+.cuotas-page .list-container .contador {
+  background: #141414 !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-muted) !important;
+}
+/* Selector de años */
+.cuotas-page .selector-años-container {
+  background: var(--td-card) !important;
+  border: 1px solid var(--td-border) !important;
+}
 /* Volunteer data area and action strip inside cuotas card */
 .cuotas-page .bombero-datos {
   background: var(--td-card) !important;
   border-bottom: 1px solid var(--td-border) !important;
   color: var(--td-text) !important;
+  padding: 14px 22px !important;
 }
 .cuotas-page .bombero-datos * { color: var(--td-text) !important; }
 .acciones-voluntario {
   background: #141414 !important;
   border-top: 1px solid var(--td-border) !important;
+  padding: 12px 22px !important;
 }
 .cuotas-page .form-container {
   background: var(--td-card) !important;
@@ -483,6 +510,30 @@ body.pp-light { background: var(--td-bg) !important; }
   background: var(--td-card) !important;
   border-color: var(--td-border) !important;
   color: var(--td-text) !important;
+}
+/* ── Compact form spacing (reduce excessive padding) ── */
+.cuotas-page .form-container > form {
+  padding: 16px 22px 8px !important;
+}
+.cuotas-page .form-group,
+.form-group {
+  margin-bottom: 12px !important;
+}
+.cuotas-page .form-grid {
+  gap: 12px !important;
+}
+.cuotas-page .meses-checkbox-grid {
+  padding: 14px !important;
+  gap: 8px !important;
+}
+.cuotas-page .acciones-voluntario {
+  padding: 12px 22px !important;
+}
+.cuotas-page .bombero-info {
+  margin-bottom: 12px !important;
+}
+.cuotas-page .form-container {
+  margin-bottom: 12px !important;
 }
 /* Month cards */
 .mes-card {
@@ -503,13 +554,39 @@ body.pp-light { background: var(--td-bg) !important; }
 .mes-card.pendiente .mes-nombre,
 .mes-card.pendiente .mes-estado { color: #f87171 !important; }
 
-/* Month checkboxes */
-.checkbox-mes {
-  background: #1a1a1a !important;
+/* Month checkbox grid container */
+.meses-checkbox-grid,
+.cuotas-page .meses-checkbox-grid {
+  background: #141414 !important;
+  border-color: var(--td-border) !important;
+}
+/* Individual checkbox cells */
+.checkbox-mes,
+.cuotas-page .checkbox-mes {
+  background: #1c1c1c !important;
   border-color: var(--td-border) !important;
   color: var(--td-text) !important;
 }
-.checkbox-mes:hover { background: #222 !important; }
+.checkbox-mes:hover,
+.cuotas-page .checkbox-mes:hover {
+  background: #242424 !important;
+  border-color: var(--td-red) !important;
+  box-shadow: 0 2px 8px rgba(192,57,43,0.2) !important;
+}
+.checkbox-custom {
+  border-color: #444 !important;
+  background: #111 !important;
+}
+.mes-label { color: var(--td-text) !important; }
+.cuotas-page .checkbox-mes input[type="checkbox"]:checked ~ .checkbox-custom {
+  background: var(--td-red) !important;
+  border-color: var(--td-red) !important;
+  color: #fff !important;
+}
+.cuotas-page .checkbox-mes input[type="checkbox"]:checked ~ .mes-label {
+  color: var(--td-red) !important;
+  font-weight: 700 !important;
+}
 .checkbox-mes input[type="checkbox"] { accent-color: var(--td-red); }
 
 /* Payment cards */
