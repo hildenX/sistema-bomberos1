@@ -50,7 +50,7 @@ class SistemaReintegracion {
         if (this.voluntariosElegibles.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #999;">
-                    <p>📋 No hay voluntarios elegibles para reintegro en este momento</p>
+                    <p> No hay voluntarios elegibles para reintegro en este momento</p>
                 </div>
             `;
             return;
@@ -59,8 +59,8 @@ class SistemaReintegracion {
         container.innerHTML = this.voluntariosElegibles.map(vol => {
             const estadoBadge = this.obtenerBadgeEstado(vol.estado);
             const elegibilidadBadge = vol.puede_reintegrarse 
-                ? '<span style="color: #4caf50; font-weight: 600;">✅ Elegible</span>'
-                : '<span style="color: #f44336; font-weight: 600;">❌ No Elegible</span>';
+                ? '<span style="color: #4caf50; font-weight: 600;"> Elegible</span>'
+                : '<span style="color: #f44336; font-weight: 600;"> No Elegible</span>';
             
             return `
                 <div class="voluntario-card ${vol.puede_reintegrarse ? 'elegible' : 'no-elegible'}" 
@@ -89,7 +89,7 @@ class SistemaReintegracion {
                         <button class="btn btn-primary" 
                                 style="width: 100%;"
                                 onclick="sistemaReintegracion.seleccionarVoluntario(${vol.id})">
-                            🔄 Iniciar Reintegración
+                             Iniciar Reintegración
                         </button>
                     ` : `
                         <button class="btn btn-secondary" 
@@ -145,7 +145,7 @@ class SistemaReintegracion {
         infoBombero.innerHTML = `
             <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                 <h3 style="margin: 0 0 15px 0; color: #1976d2;">
-                    👤 Voluntario Seleccionado
+                     Voluntario Seleccionado
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                     <div>
@@ -249,7 +249,7 @@ class SistemaReintegracion {
             const reintegroGuardado = await response.json();
             console.log('[REINTEGRO] Guardado exitosamente:', reintegroGuardado);
 
-            this.mostrarNotificacion('✅ Reintegro registrado exitosamente. El voluntario ha sido reactivado.', 'success');
+            this.mostrarNotificacion(' Reintegro registrado exitosamente. El voluntario ha sido reactivado.', 'success');
 
             // Limpiar formulario y recargar
             setTimeout(() => {
@@ -258,7 +258,7 @@ class SistemaReintegracion {
 
         } catch (error) {
             console.error('Error al guardar reintegro:', error);
-            this.mostrarNotificacion(`❌ ${error.message}`, 'error');
+            this.mostrarNotificacion(` ${error.message}`, 'error');
         }
     }
 

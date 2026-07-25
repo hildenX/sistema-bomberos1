@@ -118,13 +118,13 @@ class Utils {
         const anosCompletos = antiguedad.años;
         
         if (anosCompletos < 20) {
-            return { categoria: 'Voluntario', color: '#1976d2', icono: '🔰' };
+            return { categoria: 'Voluntario', color: '#1976d2', icono: '' };
         } else if (anosCompletos >= 20 && anosCompletos <= 24) {
             return { categoria: 'Voluntario Honorario de Compañía', color: '#388e3c', icono: '🏅' };
         } else if (anosCompletos >= 25 && anosCompletos <= 49) {
-            return { categoria: 'Voluntario Honorario del Cuerpo', color: '#f57c00', icono: '🎖️' };
+            return { categoria: 'Voluntario Honorario del Cuerpo', color: '#f57c00', icono: '' };
         } else {
-            return { categoria: 'Voluntario Insigne de Chile', color: '#d32f2f', icono: '🏆' };
+            return { categoria: 'Voluntario Insigne de Chile', color: '#d32f2f', icono: '' };
         }
     }
 
@@ -244,14 +244,14 @@ class Utils {
         notificacion.id = 'notificacion-global';
         notificacion.className = `notificacion ${tipo}`;
         
-        let icono = '✅';
+        let icono = '';
         let color = '#4caf50';
         
         if (tipo === 'error') {
-            icono = '❌';
+            icono = '';
             color = '#f44336';
         } else if (tipo === 'warning') {
-            icono = '⚠️';
+            icono = '';
             color = '#ff9800';
         } else if (tipo === 'info') {
             icono = 'ℹ️';
@@ -301,11 +301,11 @@ class Utils {
             modal.className = 'modal-confirmacion';
             modal.innerHTML = `
                 <div class="modal-contenido">
-                    <h3>⚠️ Confirmar acción</h3>
+                    <h3> Confirmar acción</h3>
                     <p>${mensaje}</p>
                     <div class="modal-botones">
-                        <button class="btn btn-secondary" id="cancelarBtn">❌ Cancelar</button>
-                        <button class="btn btn-primary" id="confirmarBtn">✅ Confirmar</button>
+                        <button class="btn btn-secondary" id="cancelarBtn"> Cancelar</button>
+                        <button class="btn btn-primary" id="confirmarBtn"> Confirmar</button>
                     </div>
                 </div>
             `;
@@ -427,16 +427,16 @@ class Utils {
         }
         
         const mensajes = {
-            'renunciado': '❌ Voluntario renunciado. No puede pagar cuotas.',
-            'separado': '❌ Voluntario separado. No puede pagar cuotas.',
-            'expulsado': '❌ Voluntario expulsado. No puede pagar cuotas.',
+            'renunciado': ' Voluntario renunciado. No puede pagar cuotas.',
+            'separado': ' Voluntario separado. No puede pagar cuotas.',
+            'expulsado': ' Voluntario expulsado. No puede pagar cuotas.',
             'martir': '🕊️ Voluntario mártir. Exento de pago de cuotas.',
             'fallecido': '☠️ Voluntario fallecido. No puede pagar cuotas.'
         };
         
         return {
             puede: false,
-            mensaje: mensajes[estado] || '❌ Estado del voluntario no permite pagos'
+            mensaje: mensajes[estado] || ' Estado del voluntario no permite pagos'
         };
     }
 
@@ -454,16 +454,16 @@ class Utils {
         }
         
         const mensajes = {
-            'renunciado': '❌ Voluntario renunciado. No puede recibir uniformes.',
-            'separado': '❌ Voluntario separado. No puede recibir uniformes.',
-            'expulsado': '❌ Voluntario expulsado. No puede recibir uniformes.',
+            'renunciado': ' Voluntario renunciado. No puede recibir uniformes.',
+            'separado': ' Voluntario separado. No puede recibir uniformes.',
+            'expulsado': ' Voluntario expulsado. No puede recibir uniformes.',
             'martir': '🕊️ Voluntario mártir. No puede recibir uniformes.',
             'fallecido': '☠️ Voluntario fallecido. No puede recibir uniformes.'
         };
         
         return {
             puede: false,
-            mensaje: mensajes[estado] || '❌ Estado del voluntario no permite asignación de uniformes'
+            mensaje: mensajes[estado] || ' Estado del voluntario no permite asignación de uniformes'
         };
     }
 
@@ -481,14 +481,14 @@ class Utils {
         }
         
         const mensajes = {
-            'expulsado': '❌ Voluntario ya expulsado. No se pueden registrar más sanciones.',
+            'expulsado': ' Voluntario ya expulsado. No se pueden registrar más sanciones.',
             'martir': '🕊️ Voluntario mártir. No se pueden registrar sanciones.',
             'fallecido': '☠️ Voluntario fallecido. No se pueden registrar sanciones.'
         };
         
         return {
             puede: false,
-            mensaje: mensajes[estado] || '❌ Estado del voluntario no permite sanciones'
+            mensaje: mensajes[estado] || ' Estado del voluntario no permite sanciones'
         };
     }
 
@@ -506,15 +506,15 @@ class Utils {
         }
         
         const mensajes = {
-            'renunciado': '❌ Voluntario renunciado. No puede registrar asistencia.',
-            'separado': '❌ Voluntario separado. No puede registrar asistencia.',
-            'expulsado': '❌ Voluntario expulsado. No puede registrar asistencia.',
+            'renunciado': ' Voluntario renunciado. No puede registrar asistencia.',
+            'separado': ' Voluntario separado. No puede registrar asistencia.',
+            'expulsado': ' Voluntario expulsado. No puede registrar asistencia.',
             'fallecido': '☠️ Voluntario fallecido. No puede registrar asistencia.'
         };
         
         return {
             puede: false,
-            mensaje: mensajes[estado] || '❌ Estado del voluntario no permite registro de asistencia'
+            mensaje: mensajes[estado] || ' Estado del voluntario no permite registro de asistencia'
         };
     }
 
@@ -532,16 +532,16 @@ class Utils {
         }
         
         const mensajes = {
-            'renunciado': '❌ Voluntario renunciado. No puede recibir cargos/felicitaciones.',
-            'separado': '❌ Voluntario separado. No puede recibir cargos/felicitaciones.',
-            'expulsado': '❌ Voluntario expulsado. No puede recibir cargos/felicitaciones.',
+            'renunciado': ' Voluntario renunciado. No puede recibir cargos/felicitaciones.',
+            'separado': ' Voluntario separado. No puede recibir cargos/felicitaciones.',
+            'expulsado': ' Voluntario expulsado. No puede recibir cargos/felicitaciones.',
             'martir': '🕊️ Voluntario mártir. No puede recibir cargos/felicitaciones nuevos.',
             'fallecido': '☠️ Voluntario fallecido. No puede recibir cargos/felicitaciones.'
         };
         
         return {
             puede: false,
-            mensaje: mensajes[estado] || '❌ Estado del voluntario no permite esta acción'
+            mensaje: mensajes[estado] || ' Estado del voluntario no permite esta acción'
         };
     }
 
@@ -690,10 +690,10 @@ class Utils {
      */
     static obtenerBadgeEstado(estado) {
         const badges = {
-            'activo': '✅ Activo',
-            'renunciado': '🔄 Renunciado',
+            'activo': ' Activo',
+            'renunciado': ' Renunciado',
             'separado': '⏸️ Separado',
-            'expulsado': '❌ Expulsado',
+            'expulsado': ' Expulsado',
             'martir': '🕊️ Mártir',
             'fallecido': '☠️ Fallecido'
         };

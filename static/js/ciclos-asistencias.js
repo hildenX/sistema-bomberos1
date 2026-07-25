@@ -110,7 +110,7 @@ class CiclosAsistencias {
         this.ciclos.push(nuevoCiclo);
         this.guardarCiclos(this.ciclos);
 
-        console.log('✅ Nuevo ciclo creado:', nuevoCiclo);
+        console.log(' Nuevo ciclo creado:', nuevoCiclo);
         return nuevoCiclo;
     }
 
@@ -132,7 +132,7 @@ class CiclosAsistencias {
 
         this.guardarCiclos(this.ciclos);
 
-        console.log('✅ Ciclo cerrado:', ciclo);
+        console.log(' Ciclo cerrado:', ciclo);
         return ciclo;
     }
 
@@ -156,7 +156,7 @@ class CiclosAsistencias {
 
         this.guardarCiclos(this.ciclos);
 
-        console.log('✅ Ciclo reabierto:', ciclo);
+        console.log(' Ciclo reabierto:', ciclo);
         return ciclo;
     }
 
@@ -279,7 +279,7 @@ class CiclosAsistencias {
         this.ciclos = this.ciclos.filter(c => c.id !== cicloId);
         this.guardarCiclos(this.ciclos);
 
-        console.log('✅ Ciclo eliminado:', cicloId);
+        console.log(' Ciclo eliminado:', cicloId);
         return true;
     }
 

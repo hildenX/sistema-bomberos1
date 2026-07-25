@@ -114,7 +114,7 @@ class SistemaSanciones {
         if (!validacion.puede) {
             contenedor.innerHTML = `
                 <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px;">
-                    <h3 style="color: #dc2626; margin-top: 0;">⚠️ No se pueden registrar sanciones</h3>
+                    <h3 style="color: #dc2626; margin-top: 0;"> No se pueden registrar sanciones</h3>
                     <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">${validacion.mensaje}</p>
                     <p style="color: #666; margin: 0;">Solo se puede consultar el historial de sanciones de este voluntario.</p>
                 </div>
@@ -294,8 +294,8 @@ class SistemaSanciones {
         else if (tipoSancion === 'separacion') {
             if (companiaAutoridad) companiaAutoridad.style.display = 'block';
             if (autoridadSancionatoria) autoridadSancionatoria.style.display = 'block';
-            if (diasSancion) diasSancion.style.display = 'none'; // ❌ OCULTAR
-            if (fechaHasta) fechaHasta.style.display = 'none'; // ❌ OCULTAR
+            if (diasSancion) diasSancion.style.display = 'none'; //  OCULTAR
+            if (fechaHasta) fechaHasta.style.display = 'none'; //  OCULTAR
             if (fechaOficio) fechaOficio.style.display = 'block';
             
             if (labelFechaDesde) labelFechaDesde.textContent = 'Fecha de Separación';
@@ -308,8 +308,8 @@ class SistemaSanciones {
         else if (tipoSancion === 'expulsion') {
             if (companiaAutoridad) companiaAutoridad.style.display = 'block';
             if (autoridadSancionatoria) autoridadSancionatoria.style.display = 'block';
-            if (diasSancion) diasSancion.style.display = 'none'; // ❌ OCULTAR
-            if (fechaHasta) fechaHasta.style.display = 'none'; // ❌ OCULTAR
+            if (diasSancion) diasSancion.style.display = 'none'; //  OCULTAR
+            if (fechaHasta) fechaHasta.style.display = 'none'; //  OCULTAR
             if (fechaOficio) fechaOficio.style.display = 'block';
             
             if (labelFechaDesde) labelFechaDesde.textContent = 'Fecha de Expulsión';
@@ -322,8 +322,8 @@ class SistemaSanciones {
         else if (tipoSancion === 'suspension') {
             if (companiaAutoridad) companiaAutoridad.style.display = 'block';
             if (autoridadSancionatoria) autoridadSancionatoria.style.display = 'block';
-            if (diasSancion) diasSancion.style.display = 'block'; // ✅ MOSTRAR
-            if (fechaHasta) fechaHasta.style.display = 'block'; // ✅ MOSTRAR
+            if (diasSancion) diasSancion.style.display = 'block'; //  MOSTRAR
+            if (fechaHasta) fechaHasta.style.display = 'block'; //  MOSTRAR
             if (fechaOficio) fechaOficio.style.display = 'block';
             
             if (labelFechaDesde) labelFechaDesde.textContent = 'Fecha de Inicio de Suspensión';
@@ -568,7 +568,7 @@ class SistemaSanciones {
                     <!-- Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="color: #3b82f6; font-size: 18px;">📋</span>
+                            <span style="color: #3b82f6; font-size: 18px;"></span>
                             <strong style="font-size: 16px; color: #1f2937;">${tipoInfo.nombre}</strong>
                         </div>
                         <span style="font-size: 13px; color: #6b7280;">Registrado: ${fechaRegistro}</span>
@@ -632,11 +632,11 @@ class SistemaSanciones {
     obtenerInfoTipoSancion(tipo) {
         const tipos = {
             'suspension': { nombre: 'Suspensión', icono: '⏸️', clase: 'tipo-suspension' },
-            'renuncia': { nombre: 'Renuncia', icono: '🔄', clase: 'tipo-renuncia' },
+            'renuncia': { nombre: 'Renuncia', icono: '', clase: 'tipo-renuncia' },
             'separacion': { nombre: 'Separación', icono: '⏸️', clase: 'tipo-separacion' },
-            'expulsion': { nombre: 'Expulsión', icono: '❌', clase: 'tipo-expulsion' }
+            'expulsion': { nombre: 'Expulsión', icono: '', clase: 'tipo-expulsion' }
         };
-        return tipos[tipo] || { nombre: tipo, icono: '📋', clase: '' };
+        return tipos[tipo] || { nombre: tipo, icono: '', clase: '' };
     }
 
     limpiarFormulario() {

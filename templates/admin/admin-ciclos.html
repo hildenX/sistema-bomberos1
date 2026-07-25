@@ -522,7 +522,7 @@
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">🚒</div>
+            <div class="sidebar-logo">P6</div>
             <div class="sidebar-title">
                 <h1>Proyecto SEIS</h1>
                 <span>Sistema Bomberos</span>
@@ -540,7 +540,7 @@
 
         <div class="sidebar-footer">
             <button class="sidebar-logout" onclick="logout()">
-                <span>🚪</span>
+                <span>&#8594;</span>
                 <span>Cerrar Sesión</span>
             </button>
         </div>
@@ -556,7 +556,7 @@
         
         <!-- HEADER -->
         <div class="header">
-            <h1>📅 Administración de Ciclos de Asistencias</h1>
+            <h1>Administración de Ciclos de Asistencias</h1>
             <p>Gestiona los períodos de conteo para premios anuales</p>
         </div>
 
@@ -566,7 +566,7 @@
 
         <!-- FORMULARIO NUEVO CICLO -->
         <div class="form-nuevo-ciclo">
-            <h2>➕ Crear Nuevo Ciclo</h2>
+            <h2>+ Crear Nuevo Ciclo</h2>
             <div class="form-grid">
                 <div class="form-group">
                     <label>Nombre del Ciclo</label>
@@ -590,7 +590,7 @@
                 <textarea id="descripcionCiclo" rows="2" placeholder="Descripción del ciclo..."></textarea>
             </div>
             <button class="btn btn-primary" onclick="crearNuevoCiclo()">
-                🆕 Crear Ciclo y Cerrar el Actual
+                Crear Ciclo y Cerrar el Actual
             </button>
         </div>
 
@@ -599,7 +599,7 @@
 
         <!-- EMERGENCIAS DEL CICLO ACTIVO -->
         <div class="emergencias-ciclo">
-            <h2>🚨 Emergencias del Ciclo Activo</h2>
+            <h2>Emergencias del Ciclo Activo</h2>
             <p style="color: #666; margin-bottom: 20px;">Solo se muestran las emergencias registradas dentro del período activo</p>
             <div id="emergenciasGrid" class="emergencias-grid">
                 <!-- Se llena dinámicamente -->
@@ -608,7 +608,7 @@
 
         <!-- CICLOS CERRADOS -->
         <div style="margin-top: 30px;">
-            <h2>📋 Ciclos Anteriores (Cerrados)</h2>
+            <h2>Ciclos Anteriores (Cerrados)</h2>
             <div id="ciclosCerradosContainer"></div>
         </div>
 
@@ -618,7 +618,7 @@
                 ← Volver al Sistema
             </button>
             <button class="btn btn-primary" onclick="window.location.href='historial-asistencias.html'">
-                📊 Ver Historial
+                Ver Historial
             </button>
         </div>
 
@@ -628,7 +628,7 @@
     <div id="modalDetalles" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>🚨 Detalles de la Emergencia</h3>
+                <h3>Detalles de la Emergencia</h3>
                 <button class="close-modal" onclick="cerrarModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
@@ -704,7 +704,7 @@
             } else {
                 document.getElementById('cicloActivoContainer').innerHTML = `
                     <div class="ciclo-activo">
-                        <h2>⚠️ No hay ciclo activo</h2>
+                        <h2>No hay ciclo activo</h2>
                         <p>Crea un nuevo ciclo para empezar a contar asistencias.</p>
                     </div>
                 `;
@@ -729,19 +729,19 @@
                 <div class="ciclo-activo">
                     <div class="ciclo-header">
                         <div>
-                            <h2>🔥 ${ciclo.nombre}</h2>
+                            <h2>${ciclo.nombre}</h2>
                             <p>${ciclo.descripcion || 'Sin descripción'}</p>
                         </div>
-                        <div class="ciclo-estado estado-activo">✅ ACTIVO</div>
+                        <div class="ciclo-estado estado-activo">ACTIVO</div>
                     </div>
 
                     <div class="ciclo-fechas">
                         <div class="fecha-box">
-                            <div class="fecha-label">📅 Fecha de Inicio</div>
+                            <div class="fecha-label">Fecha de Inicio</div>
                             <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaInicio)}</div>
                         </div>
                         <div class="fecha-box">
-                            <div class="fecha-label">📅 Fecha de Fin</div>
+                            <div class="fecha-label">Fecha de Fin</div>
                             <div class="fecha-valor">${ciclosAsistencias.formatearFecha(ciclo.fechaFin)}</div>
                         </div>
                     </div>
@@ -775,13 +775,13 @@
 
                     <div class="ciclo-acciones">
                         <button class="btn btn-warning" onclick="cerrarCiclo('${ciclo.id}')">
-                            🔒 Cerrar Ciclo (para premios)
+                            Cerrar Ciclo (para premios)
                         </button>
                         <button class="btn btn-primary" onclick="window.location.href='historial-asistencias.html'">
-                            📊 Ver Ranking
+                            Ver Ranking
                         </button>
                         <button class="btn btn-success" onclick="exportarRankingCiclo('${ciclo.id}')">
-                            📥 Exportar Excel
+                            Exportar Excel
                         </button>
                     </div>
                 </div>
@@ -832,7 +832,7 @@
                 <div class="ciclo-card cerrado">
                     <div class="ciclo-header">
                         <div class="ciclo-nombre">${ciclo.nombre}</div>
-                        <div class="ciclo-estado estado-cerrado">🔒 CERRADO</div>
+                        <div class="ciclo-estado estado-cerrado">CERRADO</div>
                     </div>
 
                     <div class="ciclo-fechas">
@@ -867,13 +867,13 @@
 
                     <div class="ciclo-acciones">
                         <button class="btn btn-success" onclick="exportarRankingCiclo('${ciclo.id}')">
-                            📥 Exportar Excel
+                            Exportar Excel
                         </button>
                         <button class="btn btn-warning" onclick="reabrirCiclo('${ciclo.id}')">
-                            🔓 Reabrir
+                            Reabrir
                         </button>
                         <button class="btn btn-danger" onclick="eliminarCiclo('${ciclo.id}')">
-                            🗑️ Eliminar
+                            Eliminar
                         </button>
                     </div>
                 </div>
@@ -1089,7 +1089,7 @@
         function renderizarEmergenciaCard(emergencia) {
             return `
                 <div class="emergencia-card">
-                    <div class="emergencia-fecha">📅 ${formatearFechaCorta(emergencia.fecha)}</div>
+                    <div class="emergencia-fecha">${formatearFechaCorta(emergencia.fecha)}</div>
                     <div class="emergencia-tipo-badge">Emergencia</div>
                     
                     <div class="emergencia-stats">
@@ -1118,7 +1118,7 @@
                     </div>
                     
                     <button class="btn-ver-detalle" onclick='verDetalleEmergencia(${JSON.stringify(emergencia).replace(/'/g, "&#39;")})'>
-                        🔍 Ver Detalle Completo
+                        Ver Detalle Completo
                     </button>
                 </div>
             `;
@@ -1139,79 +1139,79 @@
             // Construir HTML del modal
             let html = `
                 <div class="detalle-row">
-                    <div class="detalle-label">📅 Fecha</div>
+                    <div class="detalle-label">Fecha</div>
                     <div class="detalle-valor">${ciclosAsistencias.formatearFecha(emergencia.fecha)}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">🕐 Hora</div>
+                    <div class="detalle-label">Hora</div>
                     <div class="detalle-valor">${emergencia.hora || 'No especificada'}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">🔑 Clave Emergencia</div>
+                    <div class="detalle-label">Clave Emergencia</div>
                     <div class="detalle-valor">${emergencia.claveEmergencia || 'N/A'}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">📍 Dirección</div>
+                    <div class="detalle-label">Direcci&#243;n</div>
                     <div class="detalle-valor">${emergencia.direccion || 'No especificada'}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">📝 Descripción</div>
+                    <div class="detalle-label">Descripci&#243;n</div>
                     <div class="detalle-valor">${emergencia.descripcion || emergencia.direccion || 'Sin descripción'}</div>
                 </div>
                 
                 ${emergencia.observaciones ? `
                 <div class="detalle-row">
-                    <div class="detalle-label">💭 Observaciones</div>
+                    <div class="detalle-label">Observaciones</div>
                     <div class="detalle-valor">${emergencia.observaciones}</div>
                 </div>
                 ` : ''}
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">👥 Total Asistentes</div>
+                    <div class="detalle-label">Total Asistentes</div>
                     <div class="detalle-valor"><strong>${emergencia.totalAsistentes || 0}</strong></div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">⭐ Oficiales Comandancia</div>
+                    <div class="detalle-label">Oficiales Comandancia</div>
                     <div class="detalle-valor">${emergencia.oficialesComandancia || 0}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">👔 Oficiales Compañía</div>
+                    <div class="detalle-label">Oficiales Compa&#241;&#237;a</div>
                     <div class="detalle-valor">${emergencia.oficialesCompania || 0}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">🔧 Cargos de Confianza</div>
+                    <div class="detalle-label">Cargos de Confianza</div>
                     <div class="detalle-valor">${emergencia.cargosConfianza || 0}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">🔰 Voluntarios</div>
+                    <div class="detalle-label">Voluntarios</div>
                     <div class="detalle-valor">${emergencia.voluntarios || 0}</div>
                 </div>
                 
                 ${emergencia.participantes > 0 || emergencia.canjes > 0 ? `
                 <div class="detalle-row">
-                    <div class="detalle-label">👥 Voluntarios Externos</div>
+                    <div class="detalle-label">Voluntarios Externos</div>
                     <div class="detalle-valor">
-                        🤝 Participantes: ${emergencia.participantes || 0}<br>
-                        🔄 Canjes: ${emergencia.canjes || 0}
+                        Participantes: ${emergencia.participantes || 0}<br>
+                        Canjes: ${emergencia.canjes || 0}
                     </div>
                 </div>
                 ` : ''}
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">👤 Registrado Por</div>
+                    <div class="detalle-label">Registrado Por</div>
                     <div class="detalle-valor">${emergencia.registradoPor || 'Sistema'}</div>
                 </div>
                 
                 <div class="detalle-row">
-                    <div class="detalle-label">📆 Fecha de Registro</div>
+                    <div class="detalle-label">Fecha de Registro</div>
                     <div class="detalle-valor">${emergencia.fechaRegistro ? new Date(emergencia.fechaRegistro).toLocaleString('es-ES') : 'No disponible'}</div>
                 </div>
             `;
@@ -1220,7 +1220,7 @@
             if (emergencia.asistentes && emergencia.asistentes.length > 0) {
                 html += `
                     <div class="detalle-row">
-                        <div class="detalle-label">👥 Lista de Asistentes</div>
+                        <div class="detalle-label">Lista de Asistentes</div>
                         <div class="detalle-valor">
                             <div class="asistentes-lista">
                                 ${emergencia.asistentes.map((a, index) => `
@@ -1251,7 +1251,7 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=9.0"></script>
-    <script>console.log('✅ Admin Ciclos v5.0 + Sidebar v7.0');</script>
+    <script>console.log('Admin Ciclos v5.0 + Sidebar v7.0');</script>
     </div> <!-- Cierre main-content-with-sidebar -->
 </body>
 </html>

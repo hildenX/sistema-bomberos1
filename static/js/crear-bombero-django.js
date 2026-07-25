@@ -103,7 +103,7 @@ class CrearBomberoSistema {
                     <div style="text-align: center; margin-top: 10px;">
                         <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 2px solid #4caf50; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Foto cargada (optimizada) - Se guardará al crear</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;"> Foto cargada (optimizada) - Se guardará al crear</p>
                     </div>
                 `;
             }
@@ -217,13 +217,13 @@ class CrearBomberoSistema {
 
             const result = await response.json();
             
-            this.mostrarNotificacion('✅ Bombero registrado exitosamente', 'success');
+            this.mostrarNotificacion(' Bombero registrado exitosamente', 'success');
             
             // Volver al sistema después de 1.5 segundos
             setTimeout(() => this.volver(), 1500);
             
         } catch (error) {
-            console.error('❌ Error:', error);
+            console.error(' Error:', error);
             this.mostrarNotificacion('Error al crear: ' + error.message, 'error');
         }
     }

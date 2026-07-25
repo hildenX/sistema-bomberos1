@@ -347,7 +347,7 @@
                 // Cargar solo asistencias de tipo EMERGENCIA
                 const todasAsistencias = storage.getAsistencias();
                 this.asistencias = todasAsistencias.filter(a => a.tipo === 'emergencia');
-                console.log('📋 Emergencias cargadas:', this.asistencias.length);
+                console.log('Emergencias cargadas:', this.asistencias.length);
             }
             
             renderizarTabla(filtradas = null) {
@@ -487,7 +487,7 @@
                     selector.appendChild(option);
                 }
                 
-                console.log('📻 Filtro de claves radiales inicializado');
+                console.log('Filtro de claves radiales inicializado');
             }
             
             verDetalle(asistenciaId) {

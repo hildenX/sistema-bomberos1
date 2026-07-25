@@ -39,10 +39,9 @@
             const logos = data.results || data;
             renderLista(logos);
         } catch (e) {
-            cont.innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;">
-                <div style="font-size:2.5em; margin-bottom:10px;">⚠️</div>
+            cont.innerHTML = `<div style="text-align:center; padding:40px; color:#e74c3c;">
                 <p style="font-weight:600;">No se pudieron cargar los logos</p>
-                <p style="font-size:.85em; color:#9ca3af;">${e.message}</p>
+                <p style="font-size:.85em; color:#666;">${e.message}</p>
             </div>`;
         }
     }
@@ -52,8 +51,7 @@
         if (!cont) return;
 
         if (!logos || logos.length === 0) {
-            cont.innerHTML = `<div style="text-align:center; padding:40px; color:#9ca3af;">
-                <div style="font-size:3em; margin-bottom:10px;">🖼️</div>
+            cont.innerHTML = `<div style="text-align:center; padding:40px; color:#666;">
                 <p style="font-weight:500;">Todavía no hay logos cargados</p>
                 <p style="font-size:.85em;">Subí uno con el botón de arriba.</p>
             </div>`;
@@ -66,25 +64,25 @@
     }
 
     function chip(id, campo, activo, label) {
-        return `<label style="display:flex; align-items:center; gap:6px; font-size:.82em; color:#374151; cursor:pointer;">
-            <input type="checkbox" ${activo ? 'checked' : ''} onchange="window.__toggleLogoContexto(${id}, '${campo}', this.checked)">
+        return `<label style="display:flex; align-items:center; gap:6px; font-size:.82em; color:#ccc; cursor:pointer;">
+            <input type="checkbox" ${activo ? 'checked' : ''} onchange="window.__toggleLogoContexto(${id}, '${campo}', this.checked)" style="accent-color:#c0392b;">
             ${label}
         </label>`;
     }
 
     function logoCard(l) {
         const img = l.imagen && l.imagen.startsWith('data:') ? l.imagen : (l.imagen ? 'data:image/png;base64,' + l.imagen : '');
-        return `<div style="border:1px solid #e5e7eb; border-radius:14px; padding:14px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <div style="height:110px; display:flex; align-items:center; justify-content:center; background:#f9fafb; border-radius:10px; margin-bottom:10px; overflow:hidden;">
-                ${img ? `<img src="${img}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#9ca3af;">sin imagen</span>'}
+        return `<div style="border:1px solid #2a2a2a; border-radius:12px; padding:14px; background:#222; box-shadow:0 2px 8px rgba(0,0,0,.3);">
+            <div style="height:110px; display:flex; align-items:center; justify-content:center; background:#1a1a1a; border-radius:8px; margin-bottom:10px; overflow:hidden; border:1px solid #2a2a2a;">
+                ${img ? `<img src="${img}" style="max-width:100%; max-height:100%; object-fit:contain;">` : '<span style="color:#666;">sin imagen</span>'}
             </div>
-            <div style="font-weight:700; color:#1f2937; margin-bottom:8px; font-size:.95em; word-break:break-word;">${l.nombre || 'Logo'}</div>
+            <div style="font-weight:700; color:#f0f0f0; margin-bottom:8px; font-size:.95em; word-break:break-word;">${l.nombre || 'Logo'}</div>
             <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:12px;">
-                ${chip(l.id, 'usar_en_pdfs', l.usar_en_pdfs, '📄 PDFs')}
-                ${chip(l.id, 'usar_en_asistencias', l.usar_en_asistencias, '📋 Asistencias')}
-                ${chip(l.id, 'usar_en_sidebar', l.usar_en_sidebar, '📱 Sidebar')}
+                ${chip(l.id, 'usar_en_pdfs', l.usar_en_pdfs, 'PDFs')}
+                ${chip(l.id, 'usar_en_asistencias', l.usar_en_asistencias, 'Asistencias')}
+                ${chip(l.id, 'usar_en_sidebar', l.usar_en_sidebar, 'Sidebar')}
             </div>
-            <button onclick="window.__eliminarLogo(${l.id})" style="width:100%; background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:8px; border-radius:8px; cursor:pointer; font-weight:600; font-size:.85em;">🗑️ Eliminar</button>
+            <button onclick="window.__eliminarLogo(${l.id})" style="width:100%; background:rgba(192,57,43,0.12); color:#e74c3c; border:1px solid rgba(192,57,43,0.3); padding:8px; border-radius:8px; cursor:pointer; font-weight:600; font-size:.85em;">Eliminar</button>
         </div>`;
     }
 
@@ -97,7 +95,7 @@
                 body: JSON.stringify({ [campo]: valor })
             });
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            if (typeof mostrarNotificacionModal === 'function') mostrarNotificacionModal('Actualizado ✅', 'success');
+            if (typeof mostrarNotificacionModal === 'function') mostrarNotificacionModal('Actualizado', 'success');
             cargarLista();
             if (window.refrescarLogosSistema) window.refrescarLogosSistema();
         } catch (e) {

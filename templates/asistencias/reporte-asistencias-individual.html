@@ -151,7 +151,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📊 Reporte de Asistencias Individual</h1>
+        <h1> Reporte de Asistencias Individual</h1>
         <p style="color: #666;">Genera un PDF con el resumen de asistencias de un bombero en un período específico</p>
         
         <div class="info-bombero" id="infoBombero">
@@ -160,18 +160,18 @@
         
         <div class="form-row">
             <div class="form-group">
-                <label for="fechaDesde">📅 Fecha Desde:</label>
+                <label for="fechaDesde"> Fecha Desde:</label>
                 <input type="date" id="fechaDesde" required>
             </div>
             <div class="form-group">
-                <label for="fechaHasta">📅 Fecha Hasta:</label>
+                <label for="fechaHasta"> Fecha Hasta:</label>
                 <input type="date" id="fechaHasta" required>
             </div>
         </div>
         
         <div class="form-row">
             <div class="form-group">
-                <label for="tipoReporte">📊 Tipo de Reporte:</label>
+                <label for="tipoReporte"> Tipo de Reporte:</label>
                 <select id="tipoReporte" onchange="toggleSelectorMes()">
                     <option value="rango">Rango de Fechas (Libre)</option>
                     <option value="mensual">Por Mes Específico</option>
@@ -183,7 +183,7 @@
         <!-- Selector de Mes + Año (cuando se elige "mensual") -->
         <div class="form-row" id="selectorMesContainer" style="display: none;">
             <div class="form-group">
-                <label for="mesEspecifico">📅 Mes:</label>
+                <label for="mesEspecifico"> Mes:</label>
                 <select id="mesEspecifico">
                     <option value="0">Enero</option>
                     <option value="1">Febrero</option>
@@ -200,7 +200,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="anioMensual">📅 Año:</label>
+                <label for="anioMensual"> Año:</label>
                 <select id="anioMensual">
                     <!-- Se llena dinámicamente -->
                 </select>
@@ -210,7 +210,7 @@
         <!-- Selector de Ciclo (cuando se elige "ciclo") -->
         <div class="form-row" id="selectorCicloContainer" style="display: none;">
             <div class="form-group">
-                <label for="cicloSeleccionado">🔄 Ciclo:</label>
+                <label for="cicloSeleccionado"> Ciclo:</label>
                 <select id="cicloSeleccionado">
                     <!-- Se llena dinámicamente -->
                 </select>
@@ -218,13 +218,13 @@
         </div>
         
         <div class="preview" id="preview" style="display: none;">
-            <h3>📋 Vista Previa del Reporte</h3>
+            <h3> Vista Previa del Reporte</h3>
             <div id="previewContent"></div>
         </div>
         
         <div class="botones">
             <button class="btn btn-primary" onclick="generarReporte()">
-                📄 Generar PDF
+                 Generar PDF
             </button>
             <button class="btn btn-primary" onclick="verVistaPrevia()">
                 👁️ Vista Previa
@@ -240,7 +240,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
     <script src="{% static 'js/reporte-asistencias-django.js' %}?v=7.0"></script>
-    <script>console.log('✅ Reporte Asistencias v7.0 - ESTADÍSTICAS DEL CICLO/PERÍODO CORRECTO');</script>
+    <script>console.log(' Reporte Asistencias v7.0 - ESTADÍSTICAS DEL CICLO/PERÍODO CORRECTO');</script>
     
     <!-- SCRIPT ANTIGUO COMENTADO PARA REFERENCIA -->
     <!--<script>
@@ -269,14 +269,14 @@
                 this.bombero = bomberos.find(b => b.id == this.bomberoId);
                 
                 if (!this.bombero) {
-                    console.error('❌ Bombero no encontrado. ID buscado:', this.bomberoId);
-                    console.log('📋 Bomberos disponibles:', bomberos.map(b => ({ id: b.id, nombre: b.primerNombre + ' ' + b.primerApellido })));
+                    console.error(' Bombero no encontrado. ID buscado:', this.bomberoId);
+                    console.log(' Bomberos disponibles:', bomberos.map(b => ({ id: b.id, nombre: b.primerNombre + ' ' + b.primerApellido })));
                     alert('Bombero no encontrado');
                     window.history.back();
                     return;
                 }
                 
-                console.log('✅ Bombero cargado:', this.bombero);
+                console.log(' Bombero cargado:', this.bombero);
                 
                 // Cargar asistencias
                 this.asistencias = storage.getAsistencias();
@@ -431,7 +431,7 @@
                     
                     html += `
                         <div class="mes-grupo">
-                            <h4>📅 ${mes.toUpperCase()}</h4>
+                            <h4> ${mes.toUpperCase()}</h4>
                             <div class="stat-line">
                                 <span>🚨 Emergencias:</span>
                                 <span>${datos.emergencias.length}</span>
@@ -445,15 +445,15 @@
                                 <span>${datos.ejercicios.length}</span>
                             </div>
                             <div class="stat-line">
-                                <span>📞 Citaciones:</span>
+                                <span> Citaciones:</span>
                                 <span>${datos.citaciones.length}</span>
                             </div>
                             <div class="stat-line">
-                                <span>👔 Directorio:</span>
+                                <span> Directorio:</span>
                                 <span>${datos.directorio.length}</span>
                             </div>
                             <div class="stat-line">
-                                <span>📋 Otras:</span>
+                                <span> Otras:</span>
                                 <span>${datos.otras.length}</span>
                             </div>
                             <div class="stat-line total-line">
@@ -471,7 +471,7 @@
                 
                 content.innerHTML = `
                     <div class="mes-grupo">
-                        <h4>📊 RESUMEN GENERAL</h4>
+                        <h4> RESUMEN GENERAL</h4>
                         <div class="stat-line">
                             <span>🚨 Total Emergencias:</span>
                             <span>${resumen.emergencias}</span>
@@ -485,15 +485,15 @@
                             <span>${resumen.ejercicios}</span>
                         </div>
                         <div class="stat-line">
-                            <span>📞 Total Citaciones:</span>
+                            <span> Total Citaciones:</span>
                             <span>${resumen.citaciones}</span>
                         </div>
                         <div class="stat-line">
-                            <span>👔 Total Directorio:</span>
+                            <span> Total Directorio:</span>
                             <span>${resumen.directorio}</span>
                         </div>
                         <div class="stat-line">
-                            <span>📋 Total Otras:</span>
+                            <span> Total Otras:</span>
                             <span>${resumen.otras}</span>
                         </div>
                         <div class="stat-line total-line">
@@ -735,7 +735,7 @@
             const nombre = Utils.obtenerNombreCompleto(reporte.bombero).replace(/ /g, '_');
             doc.save(`Asistencias_${nombre}_${new Date().toISOString().split('T')[0]}.pdf`);
             
-            alert('✅ PDF generado exitosamente');
+            alert(' PDF generado exitosamente');
         }
     </script>-->
 </body>

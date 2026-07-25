@@ -1,5 +1,5 @@
 // ==================== DETALLE DE ASISTENCIA - DJANGO ====================
-console.log('📋 [DETALLE] Cargando detalle-asistencia-django.js v10.0 - HORAS SIEMPRE VISIBLES');
+console.log(' [DETALLE] Cargando detalle-asistencia-django.js v10.0 - HORAS SIEMPRE VISIBLES');
 
 class DetalleAsistenciaDjango {
     constructor() {
@@ -27,7 +27,7 @@ class DetalleAsistenciaDjango {
         // Mostrar mensaje de carga
         document.getElementById('contenidoAsistentes').innerHTML = `
             <div style="text-align: center; padding: 40px;">
-                <div style="font-size: 3em;">⏳</div>
+                <div style="font-size: 3em;"></div>
                 <p style="color: #667eea; font-size: 1.2em; margin-top: 10px;">Cargando asistentes...</p>
             </div>
         `;
@@ -36,7 +36,7 @@ class DetalleAsistenciaDjango {
         await this.cargarDetalles(eventoId);
         this.renderizar();
         
-        console.log('[DETALLE] ✅ Sistema inicializado');
+        console.log('[DETALLE]  Sistema inicializado');
     }
     
     async cargarEvento(eventoId) {
@@ -60,7 +60,7 @@ class DetalleAsistenciaDjango {
     
     async cargarDetalles(eventoId) {
         try {
-            console.log('[DETALLE] 🔍 Buscando asistentes para evento:', eventoId);
+            console.log('[DETALLE]  Buscando asistentes para evento:', eventoId);
             const response = await fetch(`/api/detalles-asistencia/?evento=${eventoId}`, {
                 credentials: 'include'
             });
@@ -72,14 +72,14 @@ class DetalleAsistenciaDjango {
             const data = await response.json();
             this.detalles = Array.isArray(data) ? data : (data.results || []);
             
-            console.log('[DETALLE] ✅ Detalles cargados:', this.detalles.length);
-            console.log('[DETALLE] 📋 Datos completos:', this.detalles);
+            console.log('[DETALLE]  Detalles cargados:', this.detalles.length);
+            console.log('[DETALLE]  Datos completos:', this.detalles);
             
             if (this.detalles.length === 0) {
-                console.warn('[DETALLE] ⚠️ No se encontraron asistentes para este evento');
+                console.warn('[DETALLE]  No se encontraron asistentes para este evento');
             }
         } catch (error) {
-            console.error('[DETALLE] ❌ Error cargando detalles:', error);
+            console.error('[DETALLE]  Error cargando detalles:', error);
             this.detalles = [];
         }
     }
@@ -98,35 +98,35 @@ class DetalleAsistenciaDjango {
         });
         
         // Título
-        let titulo = '📋 ';
+        let titulo = ' ';
         const tipoMap = {
             'emergencia': '🚨 Emergencia',
             'asamblea': '🏛️ Asamblea',
             'ejercicios': '💪 Ejercicio',
-            'citaciones': '📞 Citación',
-            'directorio': '👔 Directorio de Cía',
-            'otras': '📋 Otra Actividad'
+            'citaciones': ' Citación',
+            'directorio': ' Directorio de Cía',
+            'otras': ' Otra Actividad'
         };
-        titulo = tipoMap[this.evento.tipo] || '📋 Asistencia';
+        titulo = tipoMap[this.evento.tipo] || ' Asistencia';
         
         document.getElementById('tituloAsistencia').innerHTML = titulo;
         
-        // 🔍 CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
+        //  CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
         console.log('═══════════════════════════════════════════');
-        console.log('🔍 CÓDIGO DE PRUEBA - CAMPOS DEL EVENTO:');
+        console.log(' CÓDIGO DE PRUEBA - CAMPOS DEL EVENTO:');
         console.log('═══════════════════════════════════════════');
-        console.log('📦 Evento completo:', this.evento);
+        console.log(' Evento completo:', this.evento);
         console.log('⏰ hora_inicio:', this.evento.hora_inicio);
         console.log('🏁 hora_termino:', this.evento.hora_termino);
         console.log('⏰ hora_emergencia:', this.evento.hora_emergencia);
-        console.log('📅 fecha:', this.evento.fecha);
-        console.log('🔑 Todas las claves del objeto:', Object.keys(this.evento));
+        console.log(' fecha:', this.evento.fecha);
+        console.log(' Todas las claves del objeto:', Object.keys(this.evento));
         console.log('═══════════════════════════════════════════');
         
         // Info principal - SOLO MOSTRAR FECHA (las horas no están guardadas en BD)
         let html = `
             <div class="info-row">
-                <div class="info-label">📅 Fecha:</div>
+                <div class="info-label"> Fecha:</div>
                 <div class="info-value">${fechaFormateada}</div>
             </div>
         `;
@@ -168,14 +168,14 @@ class DetalleAsistenciaDjango {
                             <strong>${this.evento.clave_emergencia}</strong>
                             <div class="info-value-small">${descripcionClave}</div>
                         </div>
-                        <div class="info-label">👥 Total Asistentes:</div>
+                        <div class="info-label"> Total Asistentes:</div>
                         <div class="info-value"><strong>${this.detalles.length} personas</strong></div>
                     </div>
                 `;
             } else {
                 html += `
                     <div class="info-row">
-                        <div class="info-label">👥 Total Asistentes:</div>
+                        <div class="info-label"> Total Asistentes:</div>
                         <div class="info-value">${this.detalles.length} personas</div>
                     </div>
                 `;
@@ -185,7 +185,7 @@ class DetalleAsistenciaDjango {
             if (this.evento.direccion) {
                 html += `
                     <div class="info-row full-width">
-                        <div class="info-label">📍 Dirección:</div>
+                        <div class="info-label"> Dirección:</div>
                         <div class="info-value">${this.evento.direccion}</div>
                     </div>
                 `;
@@ -195,7 +195,7 @@ class DetalleAsistenciaDjango {
             if (this.evento.observaciones) {
                 html += `
                     <div class="info-row full-width">
-                        <div class="info-label">📝 Observaciones:</div>
+                        <div class="info-label"> Observaciones:</div>
                         <div class="info-value">${this.evento.observaciones}</div>
                     </div>
                 `;
@@ -204,7 +204,7 @@ class DetalleAsistenciaDjango {
             // Para otros tipos de asistencia
             html += `
                 <div class="info-row">
-                    <div class="info-label">👥 Total Asistentes:</div>
+                    <div class="info-label"> Total Asistentes:</div>
                     <div class="info-value">${this.detalles.length} personas</div>
                 </div>
             `;
@@ -212,7 +212,7 @@ class DetalleAsistenciaDjango {
             if (this.evento.descripcion || this.evento.observaciones) {
                 html += `
                     <div class="info-row full-width">
-                        <div class="info-label">📝 Descripción:</div>
+                        <div class="info-label"> Descripción:</div>
                         <div class="info-value">${this.evento.descripcion || this.evento.observaciones || ''}</div>
                     </div>
                 `;
@@ -270,7 +270,7 @@ class DetalleAsistenciaDjango {
             
             if (mapeo[cat]) {
                 cat = mapeo[cat];
-                console.log('[DETALLE] 🔄 Categoría mapeada a:', cat);
+                console.log('[DETALLE]  Categoría mapeada a:', cat);
             }
             
             if (categorias[cat]) {
@@ -279,16 +279,16 @@ class DetalleAsistenciaDjango {
                     detalle.voluntarioInfo = voluntariosMap[detalle.voluntario];
                 }
                 categorias[cat].lista.push(detalle);
-                console.log('[DETALLE] ✅ Agregado a grupo:', categorias[cat].titulo);
+                console.log('[DETALLE]  Agregado a grupo:', categorias[cat].titulo);
             } else {
-                console.warn('[DETALLE] ⚠️ Categoría no reconocida:', cat, 'para detalle:', detalle);
+                console.warn('[DETALLE]  Categoría no reconocida:', cat, 'para detalle:', detalle);
             }
         });
         
         // Log de categorías con asistentes
         Object.entries(categorias).forEach(([key, grupo]) => {
             if (grupo.lista.length > 0) {
-                console.log(`[DETALLE] 📂 ${grupo.titulo}: ${grupo.lista.length} asistentes`);
+                console.log(`[DETALLE]  ${grupo.titulo}: ${grupo.lista.length} asistentes`);
             }
         });
         
@@ -310,42 +310,42 @@ class DetalleAsistenciaDjango {
                 let cargo = '';
                 
                 // Log para debugging
-                console.log('[DETALLE] 🔍 Procesando detalle:', detalle);
+                console.log('[DETALLE]  Procesando detalle:', detalle);
                 
                 // Prioridad 1: nombre_completo (viene directo de la BD)
                 if (detalle.nombre_completo && detalle.nombre_completo !== 'undefined undefined') {
                     nombre = detalle.nombre_completo;
                     clave = detalle.clave_bombero || '';
-                    console.log('[DETALLE] ✅ Usando nombre_completo:', nombre);
+                    console.log('[DETALLE]  Usando nombre_completo:', nombre);
                 }
                 // Prioridad 2: voluntarioInfo (del JOIN)
                 else if (detalle.voluntarioInfo && detalle.voluntarioInfo.nombre) {
                     nombre = `${detalle.voluntarioInfo.nombre} ${detalle.voluntarioInfo.apellido_paterno} ${detalle.voluntarioInfo.apellido_materno || ''}`.trim();
                     clave = detalle.voluntarioInfo.clave_bombero;
-                    console.log('[DETALLE] ✅ Usando voluntarioInfo:', nombre);
+                    console.log('[DETALLE]  Usando voluntarioInfo:', nombre);
                 } 
                 // Prioridad 3: voluntario_externo (nombre directo)
                 else if (detalle.voluntario_externo) {
                     nombre = detalle.voluntario_externo;
                     clave = detalle.clave_bombero || '';
-                    console.log('[DETALLE] ✅ Usando voluntario_externo:', nombre);
+                    console.log('[DETALLE]  Usando voluntario_externo:', nombre);
                 }
                 // Prioridad 4: voluntario_externo_nombre
                 else if (detalle.voluntario_externo_nombre) {
                     nombre = detalle.voluntario_externo_nombre;
                     clave = detalle.clave_externa || '';
-                    console.log('[DETALLE] ✅ Usando voluntario_externo_nombre:', nombre);
+                    console.log('[DETALLE]  Usando voluntario_externo_nombre:', nombre);
                 } 
                 // Último recurso
                 else {
                     nombre = `ID: ${detalle.id}`;
-                    console.error('[DETALLE] ❌ No se pudo obtener nombre. Detalle:', detalle);
+                    console.error('[DETALLE]  No se pudo obtener nombre. Detalle:', detalle);
                 }
                 
                 // Validar que nombre no sea "undefined undefined"
                 if (!nombre || nombre.includes('undefined')) {
                     nombre = `ID: ${detalle.id}`;
-                    console.error('[DETALLE] ⚠️ Nombre contiene undefined, usando ID');
+                    console.error('[DETALLE]  Nombre contiene undefined, usando ID');
                 }
                 
                 html += `
@@ -364,17 +364,17 @@ class DetalleAsistenciaDjango {
         });
         
         if (html.trim() === '') {
-            console.error('[DETALLE] ❌ HTML vacío! No se generó ningún asistente.');
+            console.error('[DETALLE]  HTML vacío! No se generó ningún asistente.');
             document.getElementById('contenidoAsistentes').innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #e74c3c; background: #fff5f5; border-radius: 10px;">
-                    <p style="font-size: 1.2em; margin: 0;">⚠️ Error: No se pudieron renderizar los asistentes</p>
+                    <p style="font-size: 1.2em; margin: 0;"> Error: No se pudieron renderizar los asistentes</p>
                     <p style="margin: 10px 0 0 0;">Revisa la consola (F12) para más detalles</p>
                 </div>
             `;
         } else {
-            console.log('[DETALLE] ✅ HTML generado, longitud:', html.length, 'caracteres');
+            console.log('[DETALLE]  HTML generado, longitud:', html.length, 'caracteres');
             document.getElementById('contenidoAsistentes').innerHTML = html;
-            console.log('[DETALLE] ✅ HTML insertado en el DOM');
+            console.log('[DETALLE]  HTML insertado en el DOM');
         }
     }
     

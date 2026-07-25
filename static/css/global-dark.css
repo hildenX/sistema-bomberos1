@@ -737,6 +737,310 @@ tr:hover {
     border-color: var(--gd-border) !important;
 }
 
+/* ===== CARGA MASIVA / STEP CONTAINERS ===== */
+.step-container {
+    background: var(--gd-card) !important;
+    border-left-color: var(--gd-rojo) !important;
+    box-shadow: var(--gd-shadow) !important;
+    color: var(--gd-text) !important;
+}
+
+.step-number {
+    background: linear-gradient(135deg, var(--gd-rojo), var(--gd-rojo-dk)) !important;
+}
+
+.step-title {
+    color: var(--gd-text) !important;
+}
+
+.upload-area {
+    background: var(--gd-surface) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+.upload-area:hover {
+    border-color: var(--gd-rojo) !important;
+    background: var(--gd-card) !important;
+}
+
+.upload-area.dragover {
+    border-color: var(--gd-verde) !important;
+    background: rgba(39,174,96,0.08) !important;
+}
+
+.upload-text {
+    color: var(--gd-text-sub) !important;
+}
+
+.upload-hint {
+    color: var(--gd-text-dim) !important;
+}
+
+.info-box {
+    background: rgba(192,57,43,0.08) !important;
+    border-left-color: var(--gd-rojo) !important;
+    color: var(--gd-text) !important;
+}
+
+.info-box h4 {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.info-box ul {
+    color: var(--gd-text-sub) !important;
+}
+
+.progress-bar {
+    background: var(--gd-surface) !important;
+}
+
+.result-success {
+    background: rgba(39,174,96,0.1) !important;
+    border-left-color: var(--gd-verde) !important;
+    color: #86efac !important;
+}
+
+.result-success h3 {
+    color: #4ade80 !important;
+}
+
+.result-error {
+    background: rgba(192,57,43,0.1) !important;
+    border-left-color: var(--gd-rojo) !important;
+    color: #fca5a5 !important;
+}
+
+.result-error h3 {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.error-list {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+}
+
+.error-item {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.stats-grid .stat-card {
+    background: var(--gd-card) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.stats-grid .stat-label {
+    color: var(--gd-text-sub) !important;
+}
+
+.stats-grid .stat-value {
+    color: var(--gd-rojo-lt) !important;
+}
+
+/* ===== DETALLE ASISTENCIA ===== */
+.header-detalle {
+    background: var(--gd-card) !important;
+    box-shadow: var(--gd-shadow) !important;
+    color: var(--gd-text) !important;
+}
+
+.header-detalle::before {
+    background: linear-gradient(90deg, var(--gd-rojo) 0%, var(--gd-rojo-dk) 100%) !important;
+}
+
+.header-detalle h1 {
+    color: var(--gd-text) !important;
+}
+
+.info-principal {
+    background: var(--gd-surface) !important;
+    box-shadow: none !important;
+    color: var(--gd-text) !important;
+}
+
+.info-row {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.info-label {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.info-value {
+    color: var(--gd-text) !important;
+}
+
+.info-value strong {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.info-value-small {
+    color: var(--gd-text-dim) !important;
+}
+
+.seccion-asistentes {
+    background: var(--gd-card) !important;
+    box-shadow: var(--gd-shadow) !important;
+    color: var(--gd-text) !important;
+}
+
+.seccion-asistentes h2 {
+    color: var(--gd-text) !important;
+    border-bottom-color: var(--gd-rojo) !important;
+}
+
+.categoria-titulo {
+    background: linear-gradient(135deg, var(--gd-rojo), var(--gd-rojo-dk)) !important;
+    color: #fff !important;
+}
+
+.asistente-item {
+    background: var(--gd-surface) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    border-left-color: var(--gd-rojo) !important;
+    color: var(--gd-text) !important;
+}
+
+.asistente-item:hover {
+    box-shadow: 0 4px 16px rgba(192,57,43,0.2) !important;
+}
+
+.asistente-nombre {
+    color: var(--gd-text) !important;
+}
+
+.asistente-cargo {
+    color: var(--gd-rojo-lt) !important;
+    border-left-color: var(--gd-rojo) !important;
+}
+
+/* ===== REINTEGRACION PAGE ===== */
+.bombero-datos {
+    background: var(--gd-surface) !important;
+    box-shadow: none !important;
+    color: var(--gd-text) !important;
+}
+
+.mensaje-global.success {
+    background: rgba(39,174,96,0.12) !important;
+    color: #4ade80 !important;
+    border-color: #27ae60 !important;
+}
+
+.mensaje-global.error {
+    background: rgba(192,57,43,0.12) !important;
+    color: #fca5a5 !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+/* ===== CICLOS CUOTAS — dashboard-activo dark ===== */
+.dashboard-activo {
+    background: linear-gradient(135deg, #0d1f14, #0a1a10) !important;
+    border-color: rgba(39,174,96,0.4) !important;
+    color: #4ade80 !important;
+}
+
+.dashboard-activo h2 {
+    color: #4ade80 !important;
+}
+
+.dashboard-activo .stat-card {
+    background: var(--gd-card) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* ===== MODAL OVERRIDES (generic) ===== */
+.modal-content {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+}
+
+.modal-header h2 {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.close-modal {
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== CICLOS BENEFICIOS — body and card overrides ===== */
+.cb-wrap {
+    background: var(--gd-bg) !important;
+}
+
+.cb-card-stats {
+    background: var(--gd-surface) !important;
+}
+
+.cb-stat-cell {
+    background: var(--gd-card) !important;
+}
+
+.cb-card-actions {
+    background: var(--gd-surface) !important;
+    border-top-color: var(--gd-border) !important;
+}
+
+.cb-dates {
+    color: var(--gd-text-dim) !important;
+}
+
+.cb-modal {
+    background: var(--gd-card) !important;
+}
+
+.cb-modal-body {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+}
+
+.cb-form-group label {
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== DETALLE EMERGENCIA MODAL (admin-ciclos) ===== */
+.detalle-row {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.detalle-label {
+    color: var(--gd-text-sub) !important;
+}
+
+.detalle-valor {
+    color: var(--gd-text) !important;
+}
+
+.emergencia-stats {
+    background: var(--gd-surface) !important;
+}
+
+.emergencia-stat {
+    background: var(--gd-card) !important;
+}
+
+.emergencia-stat-label {
+    color: var(--gd-text-sub) !important;
+}
+
+.emergencia-stat-valor {
+    color: var(--gd-text) !important;
+}
+
+.emergencia-fecha {
+    color: var(--gd-text-sub) !important;
+}
+
+.emergencia-descripcion {
+    color: var(--gd-text-sub) !important;
+}
+
+.btn-ver-detalle {
+    background: var(--gd-rojo) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
 /* ===== RESPONSIVE: keep dark on mobile ===== */
 @media (max-width: 768px) {
     .form-container {

@@ -26,7 +26,7 @@ class SistemaAsistencias {
         this.configurarEventos();
         this.inicializarFechaHora();
         
-        console.log('[ASISTENCIAS] ✅ Sistema inicializado');
+        console.log('[ASISTENCIAS]  Sistema inicializado');
     }
 
     async cargarDatos() {
@@ -168,8 +168,7 @@ class SistemaAsistencias {
             div.innerHTML = `
                 <span>${externo.nombre}</span>
                 <button onclick="sistemaAsistencias.eliminarExterno(${index})" class="btn-eliminar-mini">
-                    ❌
-                </button>
+                                    </button>
             `;
             container.appendChild(div);
         });
@@ -187,8 +186,7 @@ class SistemaAsistencias {
             div.innerHTML = `
                 <span>${canje.nombre} <small>(${canje.compania})</small></span>
                 <button onclick="sistemaAsistencias.eliminarCanje(${index})" class="btn-eliminar-mini">
-                    ❌
-                </button>
+                                    </button>
             `;
             container.appendChild(div);
         });
@@ -255,14 +253,14 @@ class SistemaAsistencias {
 
         // Si es Directorio, solo mostrar oficiales compañía y confianza
         if (tipo === 'directorio') {
-            this.renderizarSeccion(container, '👔 Oficiales de Compañía', clasificados.oficialesCompania);
-            this.renderizarSeccion(container, '🔧 Cargos de Confianza', clasificados.cargosConfianza);
+            this.renderizarSeccion(container, ' Oficiales de Compañía', clasificados.oficialesCompania);
+            this.renderizarSeccion(container, ' Cargos de Confianza', clasificados.cargosConfianza);
         } else {
             // Otras asistencias: mostrar todos
-            this.renderizarSeccion(container, '⭐ Comandancia', clasificados.comandancia);
-            this.renderizarSeccion(container, '👔 Oficiales de Compañía', clasificados.oficialesCompania);
-            this.renderizarSeccion(container, '🔧 Cargos de Confianza', clasificados.cargosConfianza);
-            this.renderizarSeccion(container, '👥 Voluntarios', clasificados.voluntarios);
+            this.renderizarSeccion(container, ' Comandancia', clasificados.comandancia);
+            this.renderizarSeccion(container, ' Oficiales de Compañía', clasificados.oficialesCompania);
+            this.renderizarSeccion(container, ' Cargos de Confianza', clasificados.cargosConfianza);
+            this.renderizarSeccion(container, ' Voluntarios', clasificados.voluntarios);
         }
 
         // Si no hay ningún voluntario
@@ -545,7 +543,7 @@ class SistemaAsistencias {
                 });
             }
 
-            Utils.mostrarNotificacion('✅ Asistencia registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(' Asistencia registrada exitosamente', 'success');
             this.limpiarFormulario();
 
         } catch (error) {

@@ -22,7 +22,7 @@
             const img = logo.imagen && logo.imagen.startsWith('data:')
                 ? logo.imagen
                 : (logo.imagen ? 'data:image/png;base64,' + logo.imagen : '');
-            if (img) { setSrc(img); console.log('[LOGO ASISTENCIAS] ✅', logo.nombre); }
+            if (img) { setSrc(img); console.log('[LOGO ASISTENCIAS] ', logo.nombre); }
             else hide();
         } else {
             console.log('[LOGO ASISTENCIAS] Sin logo asignado');

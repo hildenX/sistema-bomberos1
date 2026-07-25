@@ -232,7 +232,7 @@ class EditarBomberoSistema {
                         <p style="font-weight: 600; color: #ff9800; margin-bottom: 10px;">📸 Nueva Foto (Vista Previa):</p>
                         <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 3px solid #ff9800; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">✅ Nueva foto cargada (optimizada) - Se guardará al actualizar</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;"> Nueva foto cargada (optimizada) - Se guardará al actualizar</p>
                     </div>
                 `;
             }
@@ -342,11 +342,11 @@ class EditarBomberoSistema {
 
             const result = await response.json();
             
-            this.mostrarNotificacion('✅ Bombero actualizado exitosamente', 'success');
+            this.mostrarNotificacion(' Bombero actualizado exitosamente', 'success');
             setTimeout(() => this.volver(), 1500);
             
         } catch (error) {
-            console.error('❌ Error:', error);
+            console.error(' Error:', error);
             this.mostrarNotificacion('Error al actualizar: ' + error.message, 'error');
         }
     }

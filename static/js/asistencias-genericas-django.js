@@ -39,7 +39,7 @@ class SistemaAsistenciasGenericas {
             await this.cargarParaEditar();
         }
 
-        console.log(`[${this.tipo.toUpperCase()}] ✅ Sistema inicializado`);
+        console.log(`[${this.tipo.toUpperCase()}]  Sistema inicializado`);
     }
 
     // Carga una asistencia existente y prellena el formulario (modo edición)
@@ -549,7 +549,7 @@ class SistemaAsistenciasGenericas {
 
         container.innerHTML = participantes.map(p => `
             <div class="externo-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px;">
-                <span style="font-weight: 500;">🤝 ${p.nombre}</span>
+                <span style="font-weight: 500;"> ${p.nombre}</span>
                 <button type="button" class="btn-eliminar" onclick="${this.tipo}Sistema.eliminarParticipante(${p.id})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✕</button>
             </div>
         `).join('');
@@ -571,7 +571,7 @@ class SistemaAsistenciasGenericas {
 
         container.innerHTML = canjes.map(c => `
             <div class="externo-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px;">
-                <span style="font-weight: 500;">🔄 ${c.nombre}</span>
+                <span style="font-weight: 500;"> ${c.nombre}</span>
                 <button type="button" class="btn-eliminar" onclick="${this.tipo}Sistema.eliminarCanje(${c.id})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✕</button>
             </div>
         `).join('');
@@ -674,7 +674,7 @@ class SistemaAsistenciasGenericas {
                 if (!responseEvento.ok) throw new Error('Error al guardar evento');
                 eventoGuardado = await responseEvento.json();
             }
-            console.log(`[${this.tipo.toUpperCase()}] ✅ Evento guardado:`, eventoGuardado);
+            console.log(`[${this.tipo.toUpperCase()}]  Evento guardado:`, eventoGuardado);
 
             // Guardar detalles
             for (const cb of checkboxes) {
@@ -736,7 +736,7 @@ class SistemaAsistenciasGenericas {
                 });
             }
 
-            Utils.mostrarNotificacion(this.editarId ? '✅ Asistencia actualizada' : '✅ Asistencia registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(this.editarId ? ' Asistencia actualizada' : ' Asistencia registrada exitosamente', 'success');
             
             setTimeout(() => {
                 window.location.href = '/historial-asistencias.html';

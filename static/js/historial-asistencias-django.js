@@ -29,7 +29,7 @@ class HistorialAsistencias {
         this.mostrarOcultarFiltroClave();
         this.renderizar();
         
-        console.log('[HISTORIAL] ✅ Sistema inicializado');
+        console.log('[HISTORIAL]  Sistema inicializado');
     }
 
     async cargarDatos() {
@@ -186,12 +186,12 @@ class HistorialAsistencias {
                 infoCiclo.innerHTML = `
                     <div style="padding: 15px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
                         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap;">
-                            <span style="font-size: 1.5rem;">🔥</span>
+                            <span style="font-size: 1.5rem;"></span>
                             <h3 style="margin: 0; font-size: 1.3rem;">${this.cicloActivo.nombre}</h3>
                             <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ACTIVO</span>
                         </div>
                         <div style="font-size: 0.9rem; opacity: 0.95;">
-                            📅 ${this.ciclosAsistencias.formatearFecha(this.cicloActivo.fechaInicio)} → ${this.ciclosAsistencias.formatearFecha(this.cicloActivo.fechaFin)}
+                             ${this.ciclosAsistencias.formatearFecha(this.cicloActivo.fechaInicio)} → ${this.ciclosAsistencias.formatearFecha(this.cicloActivo.fechaFin)}
                         </div>
                     </div>
                 `;
@@ -199,7 +199,7 @@ class HistorialAsistencias {
                 infoCiclo.innerHTML = `
                     <div style="padding: 15px; background: #fee2e2; color: #dc2626; border-radius: 12px; margin-bottom: 20px; border: 2px dashed #fca5a5;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <span style="font-size: 1.5rem;">⚠️</span>
+                            <span style="font-size: 1.5rem;"></span>
                             <div>
                                 <h3 style="margin: 0 0 5px 0; font-size: 1.2rem;">No hay ciclo activo</h3>
                                 <p style="margin: 0; font-size: 0.9rem;">Ve a <a href="/admin-ciclos.html" style="color: #dc2626; font-weight: 600; text-decoration: underline;">Ciclos de Asistencia</a> para crear uno.</p>
@@ -254,21 +254,21 @@ class HistorialAsistencias {
                 
                 // Si el filtro está activo, la emergencia DEBE tener clave
                 if (!a.clave_emergencia || a.clave_emergencia === '') {
-                    console.log('[FILTRO] ❌ Emergencia sin clave, excluida');
+                    console.log('[FILTRO]  Emergencia sin clave, excluida');
                     return false;
                 }
                 // Verificar si la clave empieza con el filtro seleccionado
                 if (!a.clave_emergencia.startsWith(this.filtroClave)) {
-                    console.log(`[FILTRO] ❌ ${a.clave_emergencia} no empieza con ${this.filtroClave}, excluida`);
+                    console.log(`[FILTRO]  ${a.clave_emergencia} no empieza con ${this.filtroClave}, excluida`);
                     return false;
                 }
-                console.log(`[FILTRO] ✅ ${a.clave_emergencia} coincide con ${this.filtroClave}, incluida`);
+                console.log(`[FILTRO]  ${a.clave_emergencia} coincide con ${this.filtroClave}, incluida`);
             }
             
             // Filtrar por tipo de asamblea
             if (this.filtroAsamblea && this.filtroAsamblea !== '' && a.tipo === 'asamblea') {
                 if (a.tipo_asamblea !== this.filtroAsamblea) {
-                    console.log(`[FILTRO] ❌ Asamblea ${a.tipo_asamblea} no coincide con filtro ${this.filtroAsamblea}`);
+                    console.log(`[FILTRO]  Asamblea ${a.tipo_asamblea} no coincide con filtro ${this.filtroAsamblea}`);
                     return false;
                 }
             }
@@ -276,7 +276,7 @@ class HistorialAsistencias {
             // Filtrar por tipo de ejercicio
             if (this.filtroEjercicio && this.filtroEjercicio !== '' && a.tipo === 'ejercicios') {
                 if (a.tipo_ejercicio !== this.filtroEjercicio) {
-                    console.log(`[FILTRO] ❌ Ejercicio ${a.tipo_ejercicio} no coincide con filtro ${this.filtroEjercicio}`);
+                    console.log(`[FILTRO]  Ejercicio ${a.tipo_ejercicio} no coincide con filtro ${this.filtroEjercicio}`);
                     return false;
                 }
             }
@@ -295,7 +295,7 @@ class HistorialAsistencias {
         if (asistenciasFiltradas.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 60px; color: #999;">
-                    <div style="font-size: 4rem;">📋</div>
+                    <div style="font-size: 4rem;"></div>
                     <h3>No hay asistencias registradas</h3>
                     <button onclick="window.location.href='/tipos-asistencia.html'" 
                             style="margin-top: 20px; padding: 12px 24px; background: #c41e3a; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
@@ -314,11 +314,11 @@ class HistorialAsistencias {
             'emergencia': '🚨',
             'asamblea': '🏛️',
             'ejercicios': '💪',
-            'citaciones': '📞',
-            'otras': '📋',
-            'directorio': '📋'
+            'citaciones': '',
+            'otras': '',
+            'directorio': ''
         };
-        const icono = iconos[asistencia.tipo] || '📋';
+        const icono = iconos[asistencia.tipo] || '';
         const fecha = this.formatearFecha(asistencia.fecha);
         
         // Mostrar info específica del tipo
@@ -341,10 +341,10 @@ class HistorialAsistencias {
                     </div>
                 `;
             } else {
-                console.log('[TARJETA] ⚠️ Emergencia sin clave guardada');
+                console.log('[TARJETA]  Emergencia sin clave guardada');
             }
         } else if (asistencia.tipo === 'asamblea' && asistencia.tipo_asamblea) {
-            const tipoAsamblea = asistencia.tipo_asamblea === 'ordinaria' ? '📋 Ordinaria' : '⚡ Extraordinaria';
+            const tipoAsamblea = asistencia.tipo_asamblea === 'ordinaria' ? ' Ordinaria' : '⚡ Extraordinaria';
             infoEspecificaHTML = `
                 <div class="info-item-full" style="background: #e3f2fd; padding: 8px; border-radius: 6px; border-left: 4px solid #2196f3; margin-bottom: 10px;">
                     <div class="info-item-label" style="font-weight: 600; margin-bottom: 4px;">🏛️ Tipo de Asamblea:</div>
@@ -383,13 +383,13 @@ class HistorialAsistencias {
                     </div>
                     ${asistencia.descripcion ? `
                         <div class="info-item-full">
-                            <div class="info-item-label">📝 Descripción:</div>
+                            <div class="info-item-label"> Descripción:</div>
                             <div class="info-item-value">${asistencia.descripcion}</div>
                         </div>
                     ` : ''}
                 </div>
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
-                    🔍 Ver Detalle Completo
+                     Ver Detalle Completo
                 </button>
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
@@ -427,15 +427,15 @@ class HistorialAsistencias {
         
         if (!container) return;
 
-        // ✅ PRIMERO: Verificar si hay ciclo activo
+        //  PRIMERO: Verificar si hay ciclo activo
         if (!this.cicloActivo) {
-            console.log('[RANKING] ⚠️ No hay ciclo activo - Ranking vacío');
+            console.log('[RANKING]  No hay ciclo activo - Ranking vacío');
             if (titulo) {
-                titulo.textContent = '🏆 TOP 3';
+                titulo.textContent = ' TOP 3';
             }
             container.innerHTML = `
                 <div style="text-align: center; padding: 40px; color: #999;">
-                    <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+                    <div style="font-size: 3rem; margin-bottom: 15px;"></div>
                     <h3 style="color: #dc2626; margin: 0 0 10px 0;">Sin Ranking Disponible</h3>
                     <p style="margin: 0; font-size: 0.9rem;">No hay ciclo activo. El ranking se genera cuando hay un ciclo en curso.</p>
                 </div>
@@ -505,7 +505,7 @@ class HistorialAsistencias {
                         nombre: detalle.nombre_completo,
                         clave: detalle.tipo_externo === 'participante' ? 'Participante' : 'Canje',
                         tipo: detalle.tipo_externo,
-                        icono: detalle.tipo_externo === 'participante' ? '🤝' : '🔄',
+                        icono: detalle.tipo_externo === 'participante' ? '' : '',
                         total: 0
                     };
                 } else if (detalle.voluntario) {
@@ -521,7 +521,7 @@ class HistorialAsistencias {
                         nombre: detalle.nombre_completo,
                         clave: detalle.clave_bombero || 'N/A',
                         tipo: 'voluntario',
-                        icono: '👨‍🚒',
+                        icono: '👨‍',
                         total: 0
                     };
                 }
@@ -541,7 +541,7 @@ class HistorialAsistencias {
             
             // Actualizar título
             if (titulo) {
-                titulo.textContent = `🏆 TOP ${Math.min(this.filtroTop, ranking.length)}`;
+                titulo.textContent = ` TOP ${Math.min(this.filtroTop, ranking.length)}`;
             }
             
             if (ranking.length === 0) {
@@ -597,11 +597,11 @@ async function verDetalleAsistencia(asistencia) {
         emergencia: '🚨 Detalles de Emergencia',
         asamblea: '🏛️ Detalles de Asamblea',
         ejercicios: '💪 Detalles de Ejercicios',
-        citaciones: '📋 Detalles de la Citación',
+        citaciones: ' Detalles de la Citación',
         otras: '📌 Detalles de la Actividad',
         directorio: '🏛️ Detalles del Directorio'
     };
-    modalTitulo.textContent = titulosDetalle[asistencia.tipo] || '📋 Detalles de Asistencia';
+    modalTitulo.textContent = titulosDetalle[asistencia.tipo] || ' Detalles de Asistencia';
     modalBody.innerHTML = '<div style="text-align:center; padding:40px;"><p>Cargando...</p></div>';
     modal.style.display = 'block';
     
@@ -620,7 +620,7 @@ async function verDetalleAsistencia(asistencia) {
         const asistentes = Array.isArray(dataDetalles) ? dataDetalles : (dataDetalles.results || []);
         
         let html = '<div class="detalle-section">';
-        html += '<h4>📅 Información General</h4>';
+        html += '<h4> Información General</h4>';
         
         html += `
             <div class="detalle-row">
@@ -669,18 +669,18 @@ async function verDetalleAsistencia(asistencia) {
         
         // Estadísticas
         html += '<div class="detalle-section">';
-        html += '<h4>📊 Estadísticas de Asistencia</h4>';
+        html += '<h4> Estadísticas de Asistencia</h4>';
         html += `
             <div class="detalle-row">
                 <div class="detalle-label">Total Asistentes:</div>
                 <div class="detalle-valor"><strong style="color: #c41e3a; font-size: 1.2rem;">${evento.total_asistentes || 0}</strong></div>
             </div>
             <div class="detalle-row">
-                <div class="detalle-label">⭐ Oficiales Comandancia:</div>
+                <div class="detalle-label"> Oficiales Comandancia:</div>
                 <div class="detalle-valor">${evento.oficiales_comandancia || 0}</div>
             </div>
             <div class="detalle-row">
-                <div class="detalle-label">👔 Oficiales Compañía:</div>
+                <div class="detalle-label"> Oficiales Compañía:</div>
                 <div class="detalle-valor">${evento.oficiales_compania || 0}</div>
             </div>
             <div class="detalle-row">
@@ -688,11 +688,11 @@ async function verDetalleAsistencia(asistencia) {
                 <div class="detalle-valor"><strong>${evento.total_oficiales || 0}</strong></div>
             </div>
             <div class="detalle-row">
-                <div class="detalle-label">🔧 Cargos de Confianza:</div>
+                <div class="detalle-label"> Cargos de Confianza:</div>
                 <div class="detalle-valor">${evento.cargos_confianza || 0}</div>
             </div>
             <div class="detalle-row">
-                <div class="detalle-label">🔰 Voluntarios:</div>
+                <div class="detalle-label"> Voluntarios:</div>
                 <div class="detalle-valor">${evento.voluntarios || 0}</div>
             </div>
         `;
@@ -700,10 +700,10 @@ async function verDetalleAsistencia(asistencia) {
         if (evento.participantes > 0 || evento.canjes > 0) {
             html += `
                 <div class="detalle-row">
-                    <div class="detalle-label">👥 Voluntarios Externos:</div>
+                    <div class="detalle-label"> Voluntarios Externos:</div>
                     <div class="detalle-valor">
-                        🤝 Participantes: ${evento.participantes || 0}<br>
-                        🔄 Canjes: ${evento.canjes || 0}
+                         Participantes: ${evento.participantes || 0}<br>
+                         Canjes: ${evento.canjes || 0}
                     </div>
                 </div>
             `;
@@ -714,7 +714,7 @@ async function verDetalleAsistencia(asistencia) {
         // Lista de asistentes
         if (asistentes.length > 0) {
             html += '<div class="detalle-section">';
-            html += `<h4>👥 Lista de Asistentes (${asistentes.length})</h4>`;
+            html += `<h4> Lista de Asistentes (${asistentes.length})</h4>`;
             html += '<div class="asistentes-lista">';
             
             asistentes.forEach((a, index) => {
@@ -724,7 +724,7 @@ async function verDetalleAsistencia(asistencia) {
                         <div class="asistente-info">
                             ${a.clave_bombero ? `🆔 ${a.clave_bombero}` : ''}
                             ${a.categoria ? `<br>📌 ${a.categoria}` : ''}
-                            ${a.cargo ? `<br>⭐ ${a.cargo}` : ''}
+                            ${a.cargo ? `<br> ${a.cargo}` : ''}
                         </div>
                     </div>
                 `;
@@ -789,7 +789,7 @@ async function verDetalleAsistencia(asistencia) {
                     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccionMapa)}" 
                        target="_blank" 
                        style="color: #4285f4; text-decoration: none; font-weight: 600;">
-                        📍 Abrir en Google Maps
+                         Abrir en Google Maps
                     </a>
                 </div>
             `;
@@ -847,7 +847,7 @@ async function eliminarAsistencia(id) {
             credentials: 'include'
         });
         if (!resp.ok && resp.status !== 204) throw new Error('HTTP ' + resp.status);
-        if (window.Utils) Utils.mostrarNotificacion('Asistencia eliminada ✅', 'success');
+        if (window.Utils) Utils.mostrarNotificacion('Asistencia eliminada ', 'success');
         setTimeout(() => location.reload(), 600);
     } catch (e) {
         alert('No se pudo eliminar: ' + e.message);

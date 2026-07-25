@@ -34,7 +34,7 @@ class ReporteAsistenciasIndividual {
             }
             
             this.bombero = await bomberoResponse.json();
-            console.log('✅ Bombero cargado:', this.bombero);
+            console.log(' Bombero cargado:', this.bombero);
             
             // Cargar cargo actual
             await this.cargarCargoActual();
@@ -43,7 +43,7 @@ class ReporteAsistenciasIndividual {
             this.renderizarInfoBombero();
             
         } catch (error) {
-            console.error('❌ Error al cargar datos:', error);
+            console.error(' Error al cargar datos:', error);
             alert('Error al cargar datos del bombero');
             window.history.back();
         }
@@ -80,7 +80,7 @@ class ReporteAsistenciasIndividual {
                 console.warn('Error al cargar cargos:', response.status, errorText);
             }
         } catch (error) {
-            console.error('❌ Error al cargar cargo:', error);
+            console.error(' Error al cargar cargo:', error);
         }
     }
     
@@ -133,7 +133,7 @@ class ReporteAsistenciasIndividual {
         
         const infoElement = document.getElementById('infoBombero');
         if (!infoElement) {
-            console.error('❌ Elemento infoBombero no encontrado');
+            console.error(' Elemento infoBombero no encontrado');
             return;
         }
         
@@ -348,10 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Inicializar sistema de ciclos
     ciclosAsistencias = new CiclosAsistencias();
-    console.log('[REPORTE] ✅ Sistema de ciclos inicializado');
+    console.log('[REPORTE]  Sistema de ciclos inicializado');
     
     reporte = new ReporteAsistenciasIndividual();
-    console.log('[REPORTE] ✅ Clase de reporte inicializada');
+    console.log('[REPORTE]  Clase de reporte inicializada');
     
     // Llenar selectores de año (últimos 10 años)
     llenarSelectoresAnio();
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mesSelect = document.getElementById('mesEspecifico');
     if (mesSelect) {
         mesSelect.value = mesActual;
-        console.log('[REPORTE] ✅ Mes actual pre-seleccionado:', mesActual);
+        console.log('[REPORTE]  Mes actual pre-seleccionado:', mesActual);
     }
     
     console.log('[REPORTE] 🎉 Sistema de reportes completamente inicializado');
@@ -391,9 +391,9 @@ function llenarSelectoresAnio() {
             if (anio === anioActual) option.selected = true;
             anioMensualSelect.appendChild(option);
         });
-        console.log('[REPORTE] ✅ Selector de año mensual poblado');
+        console.log('[REPORTE]  Selector de año mensual poblado');
     } else {
-        console.warn('[REPORTE] ⚠️ No se encontró selector anioMensual');
+        console.warn('[REPORTE]  No se encontró selector anioMensual');
     }
 }
 
@@ -435,7 +435,7 @@ function llenarSelectorCiclos() {
     if (cicloActivo) {
         const option = document.createElement('option');
         option.value = cicloActivo.id;
-        option.textContent = `🔥 ${cicloActivo.nombre} (ACTIVO)`;
+        option.textContent = ` ${cicloActivo.nombre} (ACTIVO)`;
         option.selected = true;
         select.appendChild(option);
         console.log('[REPORTE] Agregado ciclo activo:', cicloActivo.nombre);
@@ -453,7 +453,7 @@ function llenarSelectorCiclos() {
         console.log('[REPORTE] Agregado ciclo cerrado:', ciclo.nombre);
     });
     
-    console.log(`[REPORTE] ✅ Selector poblado con ${select.options.length} opciones`);
+    console.log(`[REPORTE]  Selector poblado con ${select.options.length} opciones`);
 }
 
 // ==================== TOGGLE SELECTOR DE MES/AÑO/CICLO ====================
@@ -543,8 +543,8 @@ async function verVistaPrevia() {
     // Mostrar estadísticas primero
     html += `
         <div class="mes-grupo" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 20px; padding: 20px; border-radius: 10px;">
-            <h4 style="color: white; margin-top: 0;">📊 ESTADÍSTICAS DEL PERÍODO</h4>
-            <h5 style="color: rgba(255,255,255,0.9); font-size: 1em; margin: 10px 0; font-weight: normal;">📅 ${nombrePeriodo}</h5>
+            <h4 style="color: white; margin-top: 0;"> ESTADÍSTICAS DEL PERÍODO</h4>
+            <h5 style="color: rgba(255,255,255,0.9); font-size: 1em; margin: 10px 0; font-weight: normal;"> ${nombrePeriodo}</h5>
             <div class="stat-line" style="color: white; padding: 8px 0;">
                 <span>${textoTotalEventos}</span>
                 <span style="font-weight: bold; font-size: 1.2em;">${estadisticas.totalEventos}</span>
@@ -571,7 +571,7 @@ async function verVistaPrevia() {
             
             html += `
                 <div class="mes-grupo">
-                    <h4>📅 ${mes.toUpperCase()}</h4>
+                    <h4> ${mes.toUpperCase()}</h4>
                     <div class="stat-line">
                         <span>🚨 Emergencias:</span>
                         <span>${datos.emergencia.length}</span>
@@ -585,15 +585,15 @@ async function verVistaPrevia() {
                         <span>${datos.ejercicios.length}</span>
                     </div>
                     <div class="stat-line">
-                        <span>📞 Citaciones:</span>
+                        <span> Citaciones:</span>
                         <span>${datos.citaciones.length}</span>
                     </div>
                     <div class="stat-line">
-                        <span>👔 Directorio:</span>
+                        <span> Directorio:</span>
                         <span>${datos.directorio.length}</span>
                     </div>
                     <div class="stat-line">
-                        <span>📋 Otras:</span>
+                        <span> Otras:</span>
                         <span>${datos.otras.length}</span>
                     </div>
                     <div class="stat-line total-line">
@@ -609,7 +609,7 @@ async function verVistaPrevia() {
         
         html += `
             <div class="mes-grupo">
-                <h4>📊 RESUMEN GENERAL</h4>
+                <h4> RESUMEN GENERAL</h4>
                 <div class="stat-line">
                     <span>🚨 Total Emergencias:</span>
                     <span>${resumen.emergencia}</span>
@@ -623,15 +623,15 @@ async function verVistaPrevia() {
                     <span>${resumen.ejercicios}</span>
                 </div>
                 <div class="stat-line">
-                    <span>📞 Total Citaciones:</span>
+                    <span> Total Citaciones:</span>
                     <span>${resumen.citaciones}</span>
                 </div>
                 <div class="stat-line">
-                    <span>👔 Total Directorio:</span>
+                    <span> Total Directorio:</span>
                     <span>${resumen.directorio}</span>
                 </div>
                 <div class="stat-line">
-                    <span>📋 Total Otras:</span>
+                    <span> Total Otras:</span>
                     <span>${resumen.otras}</span>
                 </div>
                 <div class="stat-line total-line">
@@ -679,7 +679,7 @@ async function generarReporte() {
     try {
         const { jsPDF } = window.jspdf;
         if (!jsPDF) {
-            alert('❌ Error: Librería jsPDF no cargada');
+            alert(' Error: Librería jsPDF no cargada');
             return;
         }
         
@@ -916,10 +916,10 @@ async function generarReporte() {
         const nombreArchivo = `Asistencias_${nombreCompleto.replace(/ /g, '_')}_${fechaGeneracion}.pdf`;
         doc.save(nombreArchivo);
         
-        alert('✅ PDF generado exitosamente');
+        alert(' PDF generado exitosamente');
         
     } catch (error) {
-        console.error('❌ Error al generar PDF:', error);
-        alert('❌ Error: ' + error.message);
+        console.error(' Error al generar PDF:', error);
+        alert(' Error: ' + error.message);
     }
 }

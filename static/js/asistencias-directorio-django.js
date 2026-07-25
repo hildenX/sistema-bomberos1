@@ -22,7 +22,7 @@ class SistemaDirectorio {
         this.inicializarFechaHora();
         this.renderizarOficiales();
         
-        console.log('[DIRECTORIO] ✅ Sistema inicializado');
+        console.log('[DIRECTORIO]  Sistema inicializado');
     }
 
     async cargarDatos() {
@@ -285,7 +285,7 @@ class SistemaDirectorio {
             }
 
             const eventoGuardado = await responseEvento.json();
-            console.log('[DIRECTORIO] ✅ Evento guardado:', eventoGuardado);
+            console.log('[DIRECTORIO]  Evento guardado:', eventoGuardado);
 
             // Guardar detalles
             for (const cb of checkboxes) {
@@ -310,7 +310,7 @@ class SistemaDirectorio {
                 });
             }
 
-            Utils.mostrarNotificacion('✅ Asistencia de directorio registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(' Asistencia de directorio registrada exitosamente', 'success');
             
             setTimeout(() => {
                 window.location.href = '/historial-asistencias.html';

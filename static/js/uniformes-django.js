@@ -1,5 +1,5 @@
 // ==================== SISTEMA DE UNIFORMES - DJANGO ====================
-console.log('👔 [UNIFORMES] uniformes-django.js v7.7 - Tabla HTML + API Django');
+console.log(' [UNIFORMES] uniformes-django.js v7.7 - Tabla HTML + API Django');
 
 class SistemaUniformesDjango {
     constructor() {
@@ -29,7 +29,7 @@ class SistemaUniformesDjango {
         if (voluntarioId) {
             await this.cargarVoluntario(voluntarioId);
         } else {
-            console.error('[UNIFORMES] ❌ No hay ID en la URL!');
+            console.error('[UNIFORMES]  No hay ID en la URL!');
             Utils.mostrarNotificacion('No se especificó un voluntario', 'error');
             setTimeout(() => window.location.href = '/sistema.html', 2000);
             return;
@@ -44,7 +44,7 @@ class SistemaUniformesDjango {
         
         this.renderizarEntregas();
         
-        console.log('[UNIFORMES] ✅ Sistema inicializado');
+        console.log('[UNIFORMES]  Sistema inicializado');
     }
 
     async cargarVoluntario(id) {
@@ -58,7 +58,7 @@ class SistemaUniformesDjango {
             this.bomberoActual = await response.json();
             this.renderizarInfoVoluntario();
             
-            console.log('[UNIFORMES] ✅ Voluntario cargado:', this.bomberoActual.claveBombero, '-', this.bomberoActual.nombreCompleto);
+            console.log('[UNIFORMES]  Voluntario cargado:', this.bomberoActual.claveBombero, '-', this.bomberoActual.nombreCompleto);
         } catch (error) {
             console.error('[UNIFORMES] Error:', error);
             Utils.mostrarNotificacion('Error al cargar voluntario', 'error');
@@ -68,7 +68,7 @@ class SistemaUniformesDjango {
     renderizarInfoVoluntario() {
         if (!this.bomberoActual) return;
         
-        // ⭐ LA API USA CAMELCASE (JavaScript), NO SNAKE_CASE (Python)
+        //  LA API USA CAMELCASE (JavaScript), NO SNAKE_CASE (Python)
         
         // Usar nombreCompleto del serializer si está disponible, sino construirlo
         const nombreCompleto = this.bomberoActual.nombreCompleto || 
@@ -97,7 +97,7 @@ class SistemaUniformesDjango {
             container.innerHTML = `
                 <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                     <h3 style="color: #2196f3; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.3rem;">👤</span> Información del Bombero
+                        <span style="font-size: 1.3rem;"></span> Información del Bombero
                     </h3>
                     
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 10px;">
@@ -154,7 +154,7 @@ class SistemaUniformesDjango {
             if (listaUniformes) {
                 listaUniformes.innerHTML = `
                     <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                        <h3 style="color: #dc2626; margin-top: 0;">⚠️ No se pueden asignar uniformes</h3>
+                        <h3 style="color: #dc2626; margin-top: 0;"> No se pueden asignar uniformes</h3>
                         <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">
                             Este voluntario tiene estado <strong>${this.bomberoActual.estado.toUpperCase()}</strong> y no puede recibir nuevos uniformes.
                         </p>
@@ -272,16 +272,16 @@ class SistemaUniformesDjango {
             'forestal': { nombre: 'Forestal', icono: '🌲', color: '#4caf50', articulos: ['Jardinera', 'Chaqueta', 'Casco'] },
             'rescate': { nombre: 'Rescate', icono: '🚑', color: '#f44336', articulos: ['Jardinera', 'Chaqueta', 'Casco'] },
             'hazmat': { nombre: 'Hazmat', icono: '☣️', color: '#ff5722', articulos: ['Casaca', 'Pantalón', 'Botas', 'Casco'] },
-            'tenidaCuartel': { nombre: 'Tenida de Cuartel', icono: '🏠', color: '#2196f3', articulos: ['Polera', 'Polerón', 'Casaca', 'Pantalón'] },
+            'tenidaCuartel': { nombre: 'Tenida de Cuartel', icono: '', color: '#2196f3', articulos: ['Polera', 'Polerón', 'Casaca', 'Pantalón'] },
             'accesorios': { nombre: 'Accesorios', icono: '🎒', color: '#9c27b0', articulos: ['Radio', 'Cargador', 'Batería', 'Linterna'] },
-            'parada': { nombre: 'Parada', icono: '🎖️', color: '#673ab7', articulos: ['Casaca', 'Pantalón', 'Cinturón'] },
+            'parada': { nombre: 'Parada', icono: '', color: '#673ab7', articulos: ['Casaca', 'Pantalón', 'Cinturón'] },
             'usar': { nombre: 'USAR', icono: '🚨', color: '#ff5722', articulos: ['EPP Multi Rol', 'Botas', 'Casco'] },
             'agreste': { nombre: 'AGRESTE', icono: '🌾', color: '#8bc34a', articulos: ['Mat. Peligrosos', 'Botas', 'Casco'] },
             'um6': { nombre: 'UM-6', icono: '⚓', color: '#0096c7', articulos: ['Traje Marítimo', 'Chaleco Flotante'] },
             'gersa': { nombre: 'GERSA', icono: '🤿', color: '#00bcd4', articulos: ['Traje de Buceo', 'Aletas', 'Compensador'] }
         };
         
-        const info = tipoInfo[tipo] || { nombre: tipo, icono: '👔', color: '#666', articulos: ['Artículo'] };
+        const info = tipoInfo[tipo] || { nombre: tipo, icono: '', color: '#666', articulos: ['Artículo'] };
         
         this.articulosActuales = [];
         this.contadorArticulos = 0;
@@ -315,7 +315,7 @@ class SistemaUniformesDjango {
             
             <div class="form-buttons" style="margin-top: 30px;">
                 <button type="button" class="btn btn-uniforme" onclick="sistemaUniformes.registrarEntregaMultiple()">
-                    ✅ REGISTRAR ENTREGA COMPLETA
+                     REGISTRAR ENTREGA COMPLETA
                 </button>
             </div>
         `;
@@ -344,10 +344,10 @@ class SistemaUniformesDjango {
                 <button type="button" class="btn-eliminar-articulo" onclick="sistemaUniformes.eliminarArticulo('${articuloId}')" 
                         style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer;"
                         ${cantidadArticulos === 1 ? 'disabled' : ''}>
-                    ❌ ELIMINAR
+                     ELIMINAR
                 </button>
                 
-                <h4 style="color: #ff9800; margin-bottom: 20px;">🔧 Artículo #${this.contadorArticulos}</h4>
+                <h4 style="color: #ff9800; margin-bottom: 20px;"> Artículo #${this.contadorArticulos}</h4>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                     <div class="form-group">
@@ -385,8 +385,8 @@ class SistemaUniformesDjango {
                         <select class="form-input articulo-condicion" required>
                             <option value="">Seleccione...</option>
                             <option value="nuevo">🆕 Nuevo</option>
-                            <option value="semi-nuevo">🔄 Semi-Nuevo</option>
-                            <option value="usado">📦 Usado</option>
+                            <option value="semi-nuevo"> Semi-Nuevo</option>
+                            <option value="usado"> Usado</option>
                         </select>
                     </div>
                     
@@ -394,9 +394,9 @@ class SistemaUniformesDjango {
                         <label>Estado Físico *</label>
                         <select class="form-input articulo-estado" required>
                             <option value="">Seleccione...</option>
-                            <option value="bueno">✅ Bueno</option>
-                            <option value="regular">⚠️ Regular</option>
-                            <option value="malo">❌ Malo</option>
+                            <option value="bueno"> Bueno</option>
+                            <option value="regular"> Regular</option>
+                            <option value="malo"> Malo</option>
                         </select>
                     </div>
                 </div>
@@ -633,13 +633,13 @@ class SistemaUniformesDjango {
                 if (contentType && contentType.includes('application/json')) {
                     // Es JSON
                     const error = await response.json();
-                    console.error('[UNIFORMES] ❌ Error del servidor (JSON):', error);
+                    console.error('[UNIFORMES]  Error del servidor (JSON):', error);
                     errorMessage = error.detail || error.message || JSON.stringify(error);
                 } else {
                     // Es HTML (página de error de Django)
                     const htmlError = await response.text();
-                    console.error('[UNIFORMES] ❌ Error del servidor (HTML):', htmlError.substring(0, 1000));
-                    console.error('[UNIFORMES] ❌ REVISA EL TERMINAL DE DJANGO para ver el traceback completo');
+                    console.error('[UNIFORMES]  Error del servidor (HTML):', htmlError.substring(0, 1000));
+                    console.error('[UNIFORMES]  REVISA EL TERMINAL DE DJANGO para ver el traceback completo');
                     errorMessage = `Error ${response.status}: Revisa la consola del navegador y el terminal de Django`;
                 }
                 throw new Error(errorMessage);
@@ -677,18 +677,18 @@ class SistemaUniformesDjango {
             <div style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 12px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
                 <button onclick="sistemaUniformes.imprimirTabla()" 
                         style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
-                    📄 Imprimir Tabla
+                     Imprimir Tabla
                 </button>
                 
                 <div style="display: flex; gap: 15px;">
                     <button onclick="sistemaUniformes.toggleSeccion('entregas')" 
                             style="background: ${this.mostrarEntregas ? 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' : '#e0e0e0'}; color: ${this.mostrarEntregas ? 'white' : '#666'}; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
-                        👔 Uniformes Asignados (${uniformesActivos.length})
+                         Uniformes Asignados (${uniformesActivos.length})
                     </button>
                     
                     <button onclick="sistemaUniformes.toggleSeccion('devoluciones')" 
                             style="background: ${this.mostrarDevoluciones ? 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)' : '#e0e0e0'}; color: ${this.mostrarDevoluciones ? 'white' : '#666'}; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
-                        📋 Historial Devoluciones
+                         Historial Devoluciones
                     </button>
                 </div>
             </div>
@@ -701,7 +701,7 @@ class SistemaUniformesDjango {
                     <div style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border: 1px solid #e0e0e0;">
                         <div style="border-left: 5px solid #2196F3; padding-left: 20px; margin-bottom: 25px;">
                             <h3 style="color: #1976D2; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
-                                👔 Uniformes Asignados al Voluntario
+                                 Uniformes Asignados al Voluntario
                             </h3>
                             <p style="color: #666; margin: 0; font-size: 1em;">
                                 Total de entregas registradas: <strong style="color: #2196F3; font-size: 1.2em;">${uniformesActivos.length}</strong>
@@ -720,7 +720,7 @@ class SistemaUniformesDjango {
                     <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(255, 152, 0, 0.15); border: 1px solid #ffe0b2;">
                         <div style="border-left: 5px solid #ff9800; padding-left: 20px; margin-bottom: 25px;">
                             <h3 style="color: #e65100; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
-                                📋 Historial de Devoluciones
+                                 Historial de Devoluciones
                             </h3>
                             <p style="color: #666; margin: 0; font-size: 0.95em;">
                                 Registro completo de artículos devueltos por el voluntario
@@ -800,9 +800,9 @@ class SistemaUniformesDjango {
                         <td style="padding: 8px; text-align: center;">
                             <select onchange="sistemaUniformes.actualizarEstado('${uniforme.id}', ${pieza.id}, this.value)" 
                                     style="padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85em;">
-                                <option value="bueno" ${pieza.estado_fisico === 'bueno' ? 'selected' : ''}>✅ Bueno</option>
-                                <option value="regular" ${pieza.estado_fisico === 'regular' ? 'selected' : ''}>⚠️ Regular</option>
-                                <option value="malo" ${pieza.estado_fisico === 'malo' ? 'selected' : ''}>❌ Malo</option>
+                                <option value="bueno" ${pieza.estado_fisico === 'bueno' ? 'selected' : ''}> Bueno</option>
+                                <option value="regular" ${pieza.estado_fisico === 'regular' ? 'selected' : ''}> Regular</option>
+                                <option value="malo" ${pieza.estado_fisico === 'malo' ? 'selected' : ''}> Malo</option>
                             </select>
                         </td>
                         <td style="padding: 8px; text-align: center;">${fechaEntrega}</td>
@@ -823,7 +823,7 @@ class SistemaUniformesDjango {
                         <h4 style="margin: 0;">${tipoNombre} - ID: ${uniforme.id}</h4>
                         <button class="btn btn-pdf btn-sm" onclick="sistemaUniformes.generarPDF('${uniforme.id}')"
                                 style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
-                            📄 PDF
+                             PDF
                         </button>
                     </div>
                     ${tablaPiezas}
@@ -888,7 +888,7 @@ class SistemaUniformesDjango {
         // Si no hay devoluciones
         if (todasPiezasDevueltas.length === 0) {
             contenedor.innerHTML = `
-                <h3 style="color: #e65100; margin-top: 0; margin-bottom: 15px;">📋 Historial de Devoluciones</h3>
+                <h3 style="color: #e65100; margin-top: 0; margin-bottom: 15px;"> Historial de Devoluciones</h3>
                 <p style="color: #999; text-align: center; padding: 40px;">No hay artículos devueltos registrados</p>
             `;
             return;
@@ -957,7 +957,7 @@ class SistemaUniformesDjango {
                     <td style="padding: 8px; text-align: center;">
                         <button class="btn btn-pdf btn-sm" onclick="sistemaUniformes.generarPDFDevolucion('${pieza.uniformeId}', ${pieza.id})" 
                                 style="background: #ff9800; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
-                            📄 PDF
+                             PDF
                         </button>
                     </td>
                 </tr>`;
@@ -990,9 +990,9 @@ class SistemaUniformesDjango {
     
     formatearEstadoDevolucion(estado) {
         const map = {
-            'bueno': '<span style="color: #4caf50; font-weight: bold;">✅ Bueno</span>',
-            'regular': '<span style="color: #ff9800; font-weight: bold;">⚠️ Regular</span>',
-            'malo': '<span style="color: #f44336; font-weight: bold;">❌ Malo</span>',
+            'bueno': '<span style="color: #4caf50; font-weight: bold;"> Bueno</span>',
+            'regular': '<span style="color: #ff9800; font-weight: bold;"> Regular</span>',
+            'malo': '<span style="color: #f44336; font-weight: bold;"> Malo</span>',
             'deteriorado': '<span style="color: #9e9e9e; font-weight: bold;">💔 Deteriorado</span>'
         };
         return map[estado] || estado;
@@ -1001,8 +1001,8 @@ class SistemaUniformesDjango {
     formatearCondicionDevolucion(condicion) {
         const map = {
             'nuevo': '🆕 Como Nuevo',
-            'semi-nuevo': '🔄 Semi-Nuevo',
-            'usado': '📦 Usado',
+            'semi-nuevo': ' Semi-Nuevo',
+            'usado': ' Usado',
             'muy_usado': '📉 Muy Usado'
         };
         return map[condicion] || condicion;
@@ -1014,9 +1014,9 @@ class SistemaUniformesDjango {
             'forestal': '🌲 Forestal',
             'rescate': '🚑 Rescate',
             'hazmat': '☣️ Hazmat',
-            'tenidaCuartel': '🏠 Tenida de Cuartel',
+            'tenidaCuartel': ' Tenida de Cuartel',
             'accesorios': '🎒 Accesorios',
-            'parada': '🎖️ Uniforme de Parada',
+            'parada': ' Uniforme de Parada',
             'usar': '🚨 Uniforme USAR',
             'agreste': '🌾 Uniforme AGRESTE',
             'um6': '⚓ Uniforme UM-6',
@@ -1035,7 +1035,7 @@ class SistemaUniformesDjango {
     }
     
     formatearCondicion(condicion) {
-        const map = { 'nuevo': '🆕 Nuevo', 'semi-nuevo': '🔄 Semi-Nuevo', 'usado': '📦 Usado' };
+        const map = { 'nuevo': '🆕 Nuevo', 'semi-nuevo': ' Semi-Nuevo', 'usado': ' Usado' };
         return map[condicion] || condicion;
     }
     
@@ -1062,7 +1062,7 @@ class SistemaUniformesDjango {
                 throw new Error(error.error || 'Error al actualizar estado');
             }
             
-            Utils.mostrarNotificacion('✅ Estado actualizado', 'success');
+            Utils.mostrarNotificacion(' Estado actualizado', 'success');
             await this.cargarUniformesVoluntario();
             this.renderizarEntregas();
             
@@ -1123,9 +1123,9 @@ class SistemaUniformesDjango {
                             font-size: 14px;
                         ">
                             <option value="">Seleccione...</option>
-                            <option value="bueno">✅ Bueno</option>
-                            <option value="regular">⚠️ Regular</option>
-                            <option value="malo">❌ Malo</option>
+                            <option value="bueno"> Bueno</option>
+                            <option value="regular"> Regular</option>
+                            <option value="malo"> Malo</option>
                             <option value="deteriorado">🔻 Deteriorado</option>
                         </select>
                     </div>
@@ -1143,8 +1143,8 @@ class SistemaUniformesDjango {
                         ">
                             <option value="">Seleccione...</option>
                             <option value="nuevo">🆕 Como Nuevo</option>
-                            <option value="semi-nuevo">🔄 Semi-Nuevo</option>
-                            <option value="usado">📦 Usado</option>
+                            <option value="semi-nuevo"> Semi-Nuevo</option>
+                            <option value="usado"> Usado</option>
                             <option value="muy_usado">📉 Muy Usado</option>
                         </select>
                     </div>
@@ -1183,7 +1183,7 @@ class SistemaUniformesDjango {
                         "
                         onmouseover="this.style.background='#5a6268'"
                         onmouseout="this.style.background='#6c757d'">
-                            ❌ CANCELAR
+                             CANCELAR
                         </button>
                         <button onclick="sistemaUniformes.confirmarDevolucion('${uniformeId}', ${piezaId})" 
                                 class="btn btn-danger"
@@ -1200,7 +1200,7 @@ class SistemaUniformesDjango {
                         "
                         onmouseover="this.style.background='#c82333'"
                         onmouseout="this.style.background='#dc3545'">
-                            ✅ CONFIRMAR DEVOLUCIÓN
+                             CONFIRMAR DEVOLUCIÓN
                         </button>
                     </div>
                 </div>
@@ -1241,7 +1241,7 @@ class SistemaUniformesDjango {
                 throw new Error(error.error || 'Error al devolver pieza');
             }
             
-            Utils.mostrarNotificacion('✅ Pieza devuelta exitosamente', 'success');
+            Utils.mostrarNotificacion(' Pieza devuelta exitosamente', 'success');
             
             // Cerrar modal
             document.getElementById('modalDevolucion').remove();

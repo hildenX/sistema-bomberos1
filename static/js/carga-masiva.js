@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('fileInput').files = files;
                     handleFileSelect({ target: { files: files } });
                 } else {
-                    alert('⚠️ Por favor selecciona un archivo Excel (.xlsx o .xls)');
+                    alert(' Por favor selecciona un archivo Excel (.xlsx o .xls)');
                 }
             }
         });
@@ -60,12 +60,12 @@ async function descargarPlantilla() {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         
-        console.log('[CARGA MASIVA] ✅ Plantilla descargada');
-        Utils.mostrarNotificacion('✅ Plantilla descargada correctamente', 'success');
+        console.log('[CARGA MASIVA]  Plantilla descargada');
+        Utils.mostrarNotificacion(' Plantilla descargada correctamente', 'success');
         
     } catch (error) {
         console.error('[CARGA MASIVA] Error:', error);
-        Utils.mostrarNotificacion('❌ Error al descargar plantilla', 'error');
+        Utils.mostrarNotificacion(' Error al descargar plantilla', 'error');
     }
 }
 
@@ -77,13 +77,13 @@ function handleFileSelect(event) {
     
     // Validar extensión
     if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-        alert('⚠️ Por favor selecciona un archivo Excel (.xlsx o .xls)');
+        alert(' Por favor selecciona un archivo Excel (.xlsx o .xls)');
         return;
     }
     
     // Validar tamaño (máximo 10MB)
     if (file.size > 10 * 1024 * 1024) {
-        alert('⚠️ El archivo es demasiado grande. Máximo 10MB');
+        alert(' El archivo es demasiado grande. Máximo 10MB');
         return;
     }
     
@@ -99,7 +99,7 @@ function handleFileSelect(event) {
 // Procesar archivo
 async function procesarArchivo() {
     if (!archivoSeleccionado) {
-        Utils.mostrarNotificacion('⚠️ Por favor selecciona un archivo', 'error');
+        Utils.mostrarNotificacion(' Por favor selecciona un archivo', 'error');
         return;
     }
     
@@ -141,7 +141,7 @@ async function procesarArchivo() {
         console.error('[CARGA MASIVA] Error:', error);
         updateProgress(0, '');
         document.getElementById('progressContainer').style.display = 'none';
-        Utils.mostrarNotificacion('❌ Error al procesar archivo', 'error');
+        Utils.mostrarNotificacion(' Error al procesar archivo', 'error');
     }
 }
 
@@ -193,7 +193,7 @@ function mostrarResultados(data, success) {
                 
                 ${data.errores && data.errores.length > 0 ? `
                     <div style="margin-top: 20px;">
-                        <h4 style="color: #991b1b;">⚠️ Registros con Errores:</h4>
+                        <h4 style="color: #fca5a5;"> Registros con Errores:</h4>
                         <div class="error-list">
                             ${data.errores.map((err, i) => `
                                 <div class="error-item">
@@ -206,29 +206,29 @@ function mostrarResultados(data, success) {
                 
                 <div style="margin-top: 20px; text-align: center;">
                     <button onclick="window.location.href='sistema.html'" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">
-                        📋 Ver Voluntarios Importados
+                         Ver Voluntarios Importados
                     </button>
-                    <button onclick="location.reload()" style="background: #f3f4f6; color: #1f2937; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-left: 10px;">
-                        🔄 Nueva Carga
+                    <button onclick="location.reload()" style="background: #2a2a2a; color: #ccc; padding: 12px 30px; border: 1px solid #333; border-radius: 8px; font-weight: 600; cursor: pointer; margin-left: 10px;">
+                         Nueva Carga
                     </button>
                 </div>
             </div>
         `;
         
-        Utils.mostrarNotificacion(`✅ ${data.exitosos} voluntarios importados correctamente`, 'success');
+        Utils.mostrarNotificacion(` ${data.exitosos} voluntarios importados correctamente`, 'success');
         
     } else {
         // ERROR
         html = `
             <div class="result-error">
-                <h3>❌ Error en la Importación</h3>
-                <p style="color: #991b1b; margin-bottom: 15px; font-size: 1.1rem;">
+                <h3> Error en la Importación</h3>
+                <p style="color: #fca5a5; margin-bottom: 15px; font-size: 1.1rem;">
                     ${data.error || data.mensaje || 'No se pudo completar la importación'}
                 </p>
                 
                 ${data.errores && data.errores.length > 0 ? `
                     <div style="margin-top: 20px;">
-                        <h4 style="color: #991b1b;">Errores Encontrados:</h4>
+                        <h4 style="color: #fca5a5;">Errores Encontrados:</h4>
                         <div class="error-list">
                             ${data.errores.map((err, i) => `
                                 <div class="error-item">
@@ -241,13 +241,13 @@ function mostrarResultados(data, success) {
                 
                 <div style="margin-top: 20px; text-align: center;">
                     <button onclick="location.reload()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
-                        🔄 Intentar de Nuevo
+                         Intentar de Nuevo
                     </button>
                 </div>
             </div>
         `;
         
-        Utils.mostrarNotificacion('❌ Error al importar voluntarios', 'error');
+        Utils.mostrarNotificacion(' Error al importar voluntarios', 'error');
     }
     
     container.innerHTML = html;

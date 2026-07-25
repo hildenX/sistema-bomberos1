@@ -32,7 +32,7 @@ class SistemaAsistenciasEmergencias {
         this.renderizarVoluntarios();
         this.cargarListasExternos();
         
-        console.log('[ASISTENCIAS] ✅ Sistema inicializado');
+        console.log('[ASISTENCIAS]  Sistema inicializado');
     }
 
     async cargarDatos() {
@@ -625,8 +625,8 @@ class SistemaAsistenciasEmergencias {
 
             // Preparar datos del evento
             const claveEmergencia = document.getElementById('claveEmergencia')?.value || '';
-            console.log('[ASISTENCIAS] 🔑 Clave seleccionada:', claveEmergencia);
-            console.log('[ASISTENCIAS] 🔑 Selector existe:', document.getElementById('claveEmergencia') !== null);
+            console.log('[ASISTENCIAS]  Clave seleccionada:', claveEmergencia);
+            console.log('[ASISTENCIAS]  Selector existe:', document.getElementById('claveEmergencia') !== null);
             
             const observaciones = document.getElementById('observaciones')?.value || '';
             
@@ -669,7 +669,7 @@ class SistemaAsistenciasEmergencias {
             eventoData.total_asistentes = checkboxes.length + eventoData.participantes + eventoData.canjes;
 
             console.log('[ASISTENCIAS] 📤 Datos a enviar:', eventoData);
-            console.log('[ASISTENCIAS] 🔑 Clave en eventoData:', eventoData.clave_emergencia);
+            console.log('[ASISTENCIAS]  Clave en eventoData:', eventoData.clave_emergencia);
 
             // Guardar evento
             const responseEvento = await fetch('/api/eventos-asistencia/', {
@@ -684,13 +684,13 @@ class SistemaAsistenciasEmergencias {
 
             if (!responseEvento.ok) {
                 const errorText = await responseEvento.text();
-                console.error('[ASISTENCIAS] ❌ Error del servidor:', errorText);
+                console.error('[ASISTENCIAS]  Error del servidor:', errorText);
                 throw new Error('Error al guardar evento');
             }
 
             const eventoGuardado = await responseEvento.json();
-            console.log('[ASISTENCIAS] ✅ Evento guardado:', eventoGuardado);
-            console.log('[ASISTENCIAS] 🔑 Clave guardada en BD:', eventoGuardado.clave_emergencia);
+            console.log('[ASISTENCIAS]  Evento guardado:', eventoGuardado);
+            console.log('[ASISTENCIAS]  Clave guardada en BD:', eventoGuardado.clave_emergencia);
 
             // Guardar detalles
             for (const cb of checkboxes) {
@@ -753,7 +753,7 @@ class SistemaAsistenciasEmergencias {
                 });
             }
 
-            Utils.mostrarNotificacion('✅ Asistencia registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(' Asistencia registrada exitosamente', 'success');
             
             // Redirigir después de 2 segundos
             setTimeout(() => {

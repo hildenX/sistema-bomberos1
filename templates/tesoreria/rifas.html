@@ -65,8 +65,8 @@
             animation: slideDown .2s ease-out;
         }
         @keyframes slideDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
-        .rif-notif.ok  { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-        .rif-notif.err { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+        .rif-notif.ok  { background: rgba(39,174,96,0.12); color: #4ade80; border: 1px solid rgba(39,174,96,0.3); }
+        .rif-notif.err { background: rgba(192,57,43,0.12); color: #fca5a5; border: 1px solid rgba(192,57,43,0.3); }
 
         /* ─── CARDS GRID ─────────────────────────────────────── */
         .rifas-grid {
@@ -180,7 +180,8 @@
         .empty-state p  { margin: 4px 0; font-size: 0.875rem; }
         .loading { text-align: center; padding: 50px; color: #9ca3af; font-size: 0.9rem; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=6">
 </head>
 <body>
 <div class="rif-wrap">
@@ -279,7 +280,7 @@
                 </div>
             </div>
         </div>
-        <div id="nrError" style="display:none;margin:0 24px 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;font-size:0.84rem;font-weight:600"></div>
+        <div id="nrError" style="display:none;margin:0 24px 16px;padding:10px 14px;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);border-radius:8px;color:#fca5a5;font-size:0.84rem;font-weight:600"></div>
         <div class="modal-footer">
             <button class="btn-rif secondary" onclick="cerrarModalNuevaRifa()">Cancelar</button>
             <button class="btn-rif primary" onclick="crearRifa()">Crear Rifa</button>
@@ -296,7 +297,7 @@
         </div>
         <div class="modal-body">
             <p id="modalCerrarTexto" style="color:#374151;margin:0 0 10px;font-weight:600"></p>
-            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:0.84rem;color:#991b1b">
+            <div style="background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.3);border-radius:10px;padding:12px 14px;font-size:0.84rem;color:#fca5a5">
                 Se generaran egresos automaticos en las cuentas bancarias para retirar los fondos de la rifa.
                 Esta acción no se puede deshacer.
             </div>

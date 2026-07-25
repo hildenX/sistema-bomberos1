@@ -7,20 +7,28 @@
     <title>Test Ranking Externos</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
-            background: #f5f5f5;
+            background: #0e0e0e;
+            color: #f0f0f0;
         }
         .container {
-            background: white;
+            background: #1c1c1c;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
         }
         h1 {
-            color: #c41e3a;
+            color: #e74c3c;
+        }
+        h3 {
+            color: #f0f0f0;
+        }
+        p {
+            color: #999;
         }
         button {
             background: #c41e3a;
@@ -36,34 +44,36 @@
             background: #8b0000;
         }
         .success {
-            background: #4caf50;
-            color: white;
+            background: rgba(39,174,96,0.15);
+            color: #4ade80;
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
             display: none;
         }
         pre {
-            background: #f8f9fa;
+            background: #161616;
             padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
+            color: #ccc;
+            border: 1px solid #2a2a2a;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧪 TEST: Ranking con Externos</h1>
+        <h1>TEST: Ranking con Externos</h1>
         <p>Este script agrega participantes y canjes al ranking para probar el sistema.</p>
 
-        <button onclick="agregarExternosAlRanking()">➕ Agregar Externos al Ranking</button>
-        <button onclick="verRanking()">👁️ Ver Ranking Actual</button>
-        <button onclick="limpiarRanking()">🗑️ Limpiar Todo</button>
-        <button onclick="window.location.href='historial-asistencias.html'">📊 Ver Historial</button>
+        <button onclick="agregarExternosAlRanking()">Agregar Externos al Ranking</button>
+        <button onclick="verRanking()">Ver Ranking Actual</button>
+        <button onclick="limpiarRanking()">Limpiar Todo</button>
+        <button onclick="window.location.href='historial-asistencias.html'">Ver Historial</button>
 
         <div class="success" id="mensaje"></div>
 
-        <h3>📋 Resultado:</h3>
+        <h3>Resultado:</h3>
         <pre id="resultado">Haz click en un botón para empezar...</pre>
     </div>
 
@@ -132,9 +142,9 @@
             const mensaje = document.getElementById('mensaje');
             mensaje.style.display = 'block';
             mensaje.innerHTML = `
-                ✅ ¡Externos agregados exitosamente!<br>
-                • 3 Participantes 🤝<br>
-                • 2 Canjes 🔄<br>
+                ¡Externos agregados exitosamente!<br>
+                • 3 Participantes<br>
+                • 2 Canjes<br>
                 <br>
                 Ahora abre el Historial para verlos en el ranking.
             `;
@@ -157,7 +167,7 @@
             // Voluntarios regulares
             const voluntarios = Object.entries(ranking[añoActual])
                 .filter(([key]) => !key.startsWith('externos_'));
-            resultado += `👨‍🚒 VOLUNTARIOS REGULARES: ${voluntarios.length}\n`;
+            resultado += `VOLUNTARIOS REGULARES: ${voluntarios.length}\n`;
             voluntarios.slice(0, 5).forEach(([id, datos]) => {
                 resultado += `  ${datos.nombre}\n`;
                 resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
@@ -166,7 +176,7 @@
             // Participantes
             if (ranking[añoActual].externos_participantes) {
                 const participantes = Object.values(ranking[añoActual].externos_participantes);
-                resultado += `\n🤝 PARTICIPANTES: ${participantes.length}\n`;
+                resultado += `\nPARTICIPANTES: ${participantes.length}\n`;
                 participantes.forEach(datos => {
                     resultado += `  ${datos.nombre}\n`;
                     resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
@@ -176,7 +186,7 @@
             // Canjes
             if (ranking[añoActual].externos_canjes) {
                 const canjes = Object.values(ranking[añoActual].externos_canjes);
-                resultado += `\n🔄 CANJES: ${canjes.length}\n`;
+                resultado += `\nCANJES: ${canjes.length}\n`;
                 canjes.forEach(datos => {
                     resultado += `  ${datos.nombre}\n`;
                     resultado += `    Total: ${datos.total} | Emerg: ${datos.emergencias} | Asamb: ${datos.asambleas}\n`;
@@ -189,11 +199,11 @@
         function limpiarRanking() {
             if (confirm('¿Seguro que quieres eliminar TODO el ranking?')) {
                 localStorage.removeItem('rankingAsistencias');
-                document.getElementById('resultado').textContent = '🗑️ Ranking eliminado';
+                document.getElementById('resultado').textContent = 'Ranking eliminado';
                 const mensaje = document.getElementById('mensaje');
                 mensaje.style.display = 'block';
                 mensaje.style.background = '#ff9800';
-                mensaje.textContent = '⚠️ Ranking eliminado. Genera nuevos datos con generar-datos-prueba.html';
+                mensaje.textContent = 'Ranking eliminado. Genera nuevos datos con generar-datos-prueba.html';
             }
         }
     </script>

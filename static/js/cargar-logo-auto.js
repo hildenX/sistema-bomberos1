@@ -15,7 +15,7 @@
             
             if (response.ok) {
                 const logo = await response.json();
-                console.log('[LOGO PDFs] ✅ Logo para PDFs encontrado:', logo.nombre);
+                console.log('[LOGO PDFs]  Logo para PDFs encontrado:', logo.nombre);
                 localStorage.setItem('logoCompania', logo.imagen);
                 console.log('[LOGO PDFs] Logo guardado en localStorage');
             } else {
@@ -46,12 +46,12 @@
             reader.onloadend = function() {
                 const base64data = reader.result;
                 localStorage.setItem('logoCompania', base64data);
-                console.log('[LOGO PDFs] ✅ Logo por defecto guardado en localStorage');
+                console.log('[LOGO PDFs]  Logo por defecto guardado en localStorage');
             };
             reader.readAsDataURL(blob);
             
         } catch (error) {
-            console.error('[LOGO PDFs] ❌ Error al cargar logo por defecto:', error);
+            console.error('[LOGO PDFs]  Error al cargar logo por defecto:', error);
         }
     }
     

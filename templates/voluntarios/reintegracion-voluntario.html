@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c0392b 0%, #8b1429 100%);
             color: white;
             padding: 30px;
             border-radius: 16px 16px 0 0;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             margin-bottom: 0;
         }
         
@@ -31,27 +31,28 @@
         }
         
         .bombero-info {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #1c1c1c;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
         }
-        
+
         .bombero-info h3 {
             margin: 0 0 15px 0;
-            color: #2d3748;
+            color: #f0f0f0;
             font-size: 1.3rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
+
         .bombero-datos {
-            background: white;
+            background: #161616;
             border-radius: 10px;
             padding: 15px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #2a2a2a;
         }
         
         .info-row {
@@ -67,66 +68,70 @@
         }
         
         .info-item strong {
-            color: #4a5568;
+            color: #888;
             display: block;
             margin-bottom: 4px;
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+
         .info-item span {
-            color: #2d3748;
+            color: #f0f0f0;
             font-size: 1.05rem;
             font-weight: 500;
         }
         
         .form-container {
-            background: white;
+            background: #1c1c1c;
             border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
         }
-        
+
         .form-container h3 {
             margin: 0 0 20px 0;
-            color: #2d3748;
+            color: #f0f0f0;
             font-size: 1.4rem;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #c0392b;
             padding-bottom: 10px;
         }
         
         .form-group label {
             font-weight: 600;
-            color: #4a5568;
+            color: #999;
             margin-bottom: 8px;
             display: block;
         }
-        
+
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group textarea {
-            border: 2px solid #e2e8f0;
+            border: 1px solid #2a2a2a;
             border-radius: 8px;
             padding: 12px 15px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            background: #1a1a1a;
+            color: #f0f0f0;
         }
-        
+
         .form-group input[type="text"]:focus,
         .form-group input[type="date"]:focus,
         .form-group textarea:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #c0392b;
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
             outline: none;
         }
         
         #nuevaAntiguedadCalculada {
             padding: 20px;
             border-radius: 12px;
-            border-left: 5px solid #0284c7;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid #c0392b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
+            background: #161616;
         }
         
         .buttons {
@@ -134,11 +139,11 @@
             gap: 15px;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
+            border-top: 1px solid #2a2a2a;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c0392b, #8b1429);
             color: white;
             border: none;
             padding: 14px 32px;
@@ -147,18 +152,18 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 8px rgba(192,57,43,0.3);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 4px 16px rgba(192,57,43,0.4);
         }
-        
+
         .btn-secondary {
-            background: white;
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
+            background: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #333;
             padding: 14px 32px;
             border-radius: 10px;
             font-size: 1.05rem;
@@ -166,10 +171,11 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .btn-secondary:hover {
-            border-color: #cbd5e0;
-            background: #f7fafc;
+            border-color: #444;
+            background: #333;
+            color: #fff;
         }
         
         .required::after {
@@ -186,15 +192,15 @@
         }
         
         .mensaje-global.success {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
+            background: rgba(39,174,96,0.12);
+            color: #4ade80;
+            border: 1px solid rgba(39,174,96,0.3);
         }
-        
+
         .mensaje-global.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
+            background: rgba(192,57,43,0.12);
+            color: #fca5a5;
+            border: 1px solid rgba(192,57,43,0.3);
         }
         
         .voluntario-card {
@@ -211,7 +217,7 @@
     <div class="page-container">
         <div class="container">
             <div class="page-header">
-                <h2>🔄 REINTEGRACIÓN DE VOLUNTARIO</h2>
+                <h2>REINTEGRACI&#211;N DE VOLUNTARIO</h2>
                 <p>Solicitud Formal de Reingreso al Servicio Activo</p>
             </div>
 
@@ -220,7 +226,7 @@
 
                 <!-- Lista de Voluntarios Elegibles -->
                 <div class="bombero-info">
-                    <h3>📋 Voluntarios Elegibles para Reintegración</h3>
+                    <h3>Voluntarios Elegibles para Reintegraci&#243;n</h3>
                     <div id="listaVoluntariosElegibles">
                         <!-- Cargado por JS -->
                     </div>
@@ -231,7 +237,7 @@
                     <div id="infoBomberoSeleccionado"></div>
                     
                     <div class="form-container">
-                    <h3>📋 Solicitud de Reintegración</h3>
+                    <h3>Solicitud de Reintegraci&#243;n</h3>
                     
                     <form id="formReintegro">
                         <input type="hidden" id="bomberoId" name="bomberoId">
@@ -275,9 +281,9 @@
                             <!-- Nueva antigüedad calculada -->
                             <div class="form-group full-width">
                                 <label class="opcional">Información Importante</label>
-                                <div style="padding: 15px; background: #e0f2fe; border-left: 4px solid #0284c7; border-radius: 8px; color: #0c4a6e;">
-                                    <p style="margin: 0; font-weight: 600;">Al reintegrarse:</p>
-                                    <ul style="margin: 10px 0 0 20px; padding: 0;">
+                                <div style="padding: 15px; background: rgba(192,57,43,0.08); border-left: 4px solid #c0392b; border-radius: 8px; color: #ccc;">
+                                    <p style="margin: 0; font-weight: 600; color: #f0f0f0;">Al reintegrarse:</p>
+                                    <ul style="margin: 10px 0 0 20px; padding: 0; color: #999;">
                                         <li>El voluntario volverá al estado "Activo"</li>
                                         <li>La antigüedad se descongelará y continuará sumando</li>
                                         <li>Se registrará en el historial de reintegraciones</li>
@@ -287,9 +293,9 @@
                         </div>
 
                         <div class="buttons">
-                            <button type="submit" class="btn btn-primary">✅ Registrar Reintegración</button>
+                            <button type="submit" class="btn btn-primary">Registrar Reintegraci&#243;n</button>
                             <button type="button" class="btn btn-secondary" onclick="sistemaReintegracion.volverAlSistema()">
-                                ❌ Cancelar
+                                Cancelar
                             </button>
                         </div>
                     </form>

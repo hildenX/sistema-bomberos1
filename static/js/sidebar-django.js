@@ -20,7 +20,7 @@ window.refrescarLogosSistema = async function () {
                 localStorage.setItem('logoSidebar', src);
             }
         } else if (r.status === 404) {
-            if (sidebarLogo) sidebarLogo.innerHTML = '🚒';
+            if (sidebarLogo) sidebarLogo.innerHTML = '';
             localStorage.removeItem('logoSidebar');
         }
     } catch (e) { /* offline: se queda el cache */ }
@@ -327,64 +327,50 @@ function abrirModalLogoCompania() {
     // Crear modal con gestor de logos
     const modalHTML = `
         <div id="modalLogoCompania" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; overflow-y: auto; backdrop-filter: blur(5px);">
-            <div style="background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); padding: 35px; border-radius: 20px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.4); margin: 20px; border: 1px solid rgba(255,255,255,0.8);">
+            <div style="background: #1c1c1c; padding: 35px; border-radius: 16px; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.7); margin: 20px; border: 1px solid #2a2a2a;">
                 <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #2a2a2a;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                            
-                        </div>
-                        <h2 style="margin: 0; color: #1f2937; font-size: 1.7rem; font-weight: 700;">Gestión de Logos</h2>
+                        <div style="background: linear-gradient(135deg, #c0392b, #8b1429); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff;">&#9635;</div>
+                        <h2 style="margin: 0; color: #f0f0f0; font-size: 1.5rem; font-weight: 700;">Gestión de Logos</h2>
                     </div>
-                    <button onclick="cerrarModalLogoCompania()" style="background: #f3f4f6; border: none; font-size: 1.8rem; cursor: pointer; color: #6b7280; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s; hover: background: #e5e7eb;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">&times;</button>
+                    <button onclick="cerrarModalLogoCompania()" style="background: #2a2a2a; border: 1px solid #333; font-size: 1.5rem; cursor: pointer; color: #888; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='#333';this.style.color='#f0f0f0'" onmouseout="this.style.background='#2a2a2a';this.style.color='#888'">&times;</button>
                 </div>
-                
+
                 <!-- Info -->
-                <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 12px; margin-bottom: 25px;">
-                    <div style="display: flex; align-items: start; gap: 12px;">
-                        <span style="font-size: 1.3rem;">️</span>
-                        <div>
-                            <strong style="color: #1e40af; display: block; margin-bottom: 4px;">Contextos de uso:</strong>
-                            <p style="color: #1e3a8a; margin: 0; font-size: 0.9em; line-height: 1.5;">
-                                 <strong>PDFs:</strong> Documentos oficiales y certificados<br>
-                                 <strong>Asistencias:</strong> Headers de formularios de registro<br>
-                                 <strong>Sidebar:</strong> Menú lateral del sistema
-                            </p>
-                        </div>
-                    </div>
+                <div style="background: rgba(192,57,43,0.08); border-left: 3px solid #c0392b; padding: 14px 18px; border-radius: 8px; margin-bottom: 22px;">
+                    <strong style="color: #c8942a; display: block; margin-bottom: 6px;">Contextos de uso:</strong>
+                    <p style="color: #999; margin: 0; font-size: 0.88em; line-height: 1.6;">
+                        <strong style="color:#f0f0f0">PDFs:</strong> Documentos oficiales y certificados<br>
+                        <strong style="color:#f0f0f0">Asistencias:</strong> Headers de formularios de registro<br>
+                        <strong style="color:#f0f0f0">Sidebar:</strong> Menú lateral del sistema
+                    </p>
                 </div>
-                
+
                 <!-- Botón para subir -->
-                <div style="margin-bottom: 30px; text-align: center;">
-                    <button id="btnSubirLogoNuevo" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.05em; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4); transition: all 0.3s; transform: translateY(0);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(59, 130, 246, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(59, 130, 246, 0.4)'">
-                         Subir Nuevo Logo
+                <div style="margin-bottom: 25px; text-align: center;">
+                    <button id="btnSubirLogoNuevo" style="background: linear-gradient(135deg, #c0392b, #8b1429); color: white; border: none; padding: 14px 28px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.95em; box-shadow: 0 4px 16px rgba(192,57,43,0.3); transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.04em;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        Subir Nuevo Logo
                     </button>
                     <input type="file" id="inputLogoNuevo" accept="image/*" style="display: none;">
-                    <p style="margin-top: 10px; font-size: 0.85em; color: #6b7280;">Formatos: PNG, JPG, SVG  Tamaño máximo: 2MB</p>
+                    <p style="margin-top: 10px; font-size: 0.82em; color: #666;">Formatos: PNG, JPG, SVG &#8212; Tamaño máximo: 2MB</p>
                 </div>
-                
+
                 <!-- Lista de logos -->
-                <div id="listaLogos" style="margin-top: 25px;">
-                    <div style="text-align: center; padding: 50px; color: #9ca3af;">
-                        <div style="font-size: 3.5em; margin-bottom: 15px; animation: pulse 1.5s infinite;">⏳</div>
-                        <p style="font-size: 1.1em; font-weight: 500;">Cargando logos...</p>
+                <div id="listaLogos" style="margin-top: 20px;">
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p style="font-size: 1em; font-weight: 500;">Cargando logos...</p>
                     </div>
                 </div>
-                
+
                 <!-- Footer -->
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-                    <button onclick="cerrarModalLogoCompania()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 28px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)'">
-                         Cerrar
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px; padding-top: 18px; border-top: 1px solid #2a2a2a;">
+                    <button onclick="cerrarModalLogoCompania()" style="background: #2a2a2a; color: #ccc; border: 1px solid #333; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s;" onmouseover="this.style.background='#333';this.style.color='#fff'" onmouseout="this.style.background='#2a2a2a';this.style.color='#ccc'">
+                        Cerrar
                     </button>
                 </div>
             </div>
         </div>
-        <style>
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-        </style>
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -778,7 +764,7 @@ async function generarPDFDeudores() {
 
     // Mostrar mensaje de carga
     const btnPDF = event.target;
-    btnPDF.textContent = '⏳ Generando PDF...';
+    btnPDF.textContent = ' Generando PDF...';
     btnPDF.disabled = true;
 
     try {
@@ -965,23 +951,23 @@ async function abrirPanelGestionUsuarios() {
     // Crear modal con loader
     const modalHTML = `
         <div id="modalGestionUsuarios" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); overflow-y: auto; padding: 20px;">
-            <div style="background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%); padding: 35px; border-radius: 20px; max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.8);">
+            <div style="background: #1c1c1c; padding: 35px; border-radius: 20px; max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.6); border: 1px solid #2a2a2a;">
 
                 <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #2a2a2a;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                            
+                        <div style="background: linear-gradient(135deg, #c0392b, #8b1429); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff;">
+
                         </div>
-                        <h2 style="margin: 0; color: #1f2937; font-size: 1.7rem; font-weight: 700;">Gestión de Usuarios</h2>
+                        <h2 style="margin: 0; color: #f0f0f0; font-size: 1.7rem; font-weight: 700;">Gesti&#243;n de Usuarios</h2>
                     </div>
-                    <button onclick="cerrarPanelGestionUsuarios()" style="background: #f3f4f6; border: none; font-size: 1.8rem; cursor: pointer; color: #6b7280; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">&times;</button>
+                    <button onclick="cerrarPanelGestionUsuarios()" style="background: #2a2a2a; border: 1px solid #333; font-size: 1.8rem; cursor: pointer; color: #ccc; padding: 8px 12px; line-height: 1; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">&times;</button>
                 </div>
 
                 <!-- Loader -->
                 <div id="loaderUsuarios" style="text-align: center; padding: 50px;">
-                    <div style="font-size: 3.5em; margin-bottom: 15px; animation: pulse 1.5s infinite;">⏳</div>
-                    <p style="font-size: 1.1em; font-weight: 500; color: #6b7280;">Cargando usuarios...</p>
+                    <div style="width:40px;height:40px;border:3px solid #333;border-top-color:#c0392b;border-radius:50%;margin:0 auto 15px;animation:spin 1s linear infinite;"></div>
+                    <p style="font-size: 1.1em; font-weight: 500; color: #888;">Cargando usuarios...</p>
                 </div>
 
                 <!-- Lista de usuarios (se llenará con JS) -->
@@ -1025,7 +1011,7 @@ async function abrirPanelGestionUsuarios() {
             }[user.role] || '#6b7280';
 
             htmlUsuarios += `
-                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 15px; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.2)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'">
+                <div style="background: #222; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 15px; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onmouseover="this.style.borderColor='#c0392b'; this.style.boxShadow='0 4px 12px rgba(192,57,43,0.2)'" onmouseout="this.style.borderColor='#2a2a2a'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.3)'">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
@@ -1033,14 +1019,14 @@ async function abrirPanelGestionUsuarios() {
                                     ${user.username.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <div style="font-weight: 700; font-size: 1.1rem; color: #1f2937;">@${user.username}</div>
+                                    <div style="font-weight: 700; font-size: 1.1rem; color: #f0f0f0;">@${user.username}</div>
                                     <div style="display: inline-block; background: ${roleColor}; color: white; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-top: 4px;">${user.role}</div>
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <button onclick="cambiarPasswordUsuario('${user.username}', '${user.role}')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(245, 158, 11, 0.3)'">
-                                 Cambiar Contraseña
+                            <button onclick="cambiarPasswordUsuario('${user.username}', '${user.role}')" style="background: linear-gradient(135deg, #c0392b, #8b1429); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; box-shadow: 0 2px 8px rgba(192,57,43,0.3); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.03em;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(192,57,43,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(192,57,43,0.3)'">
+                                Cambiar Contrase&#241;a
                             </button>
                         </div>
                     </div>
@@ -1075,35 +1061,35 @@ function cambiarPasswordUsuario(username, role) {
     // Crear modal para cambiar contraseña
     const modalHTML = `
         <div id="modalCambiarPassword" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-            <div style="background: white; padding: 35px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <div style="background: #1c1c1c; padding: 35px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.6); border: 1px solid #2a2a2a;">
 
                 <!-- Header -->
-                <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #e5e7eb;">
-                    <div style="display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 12px;">
-                        
+                <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #2a2a2a;">
+                    <div style="display: inline-flex; background: linear-gradient(135deg, #c0392b, #8b1429); width: 56px; height: 56px; border-radius: 14px; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 12px; color: #fff;">
+
                     </div>
-                    <h2 style="margin: 0; color: #1f2937; font-size: 1.6rem; font-weight: 700;">Cambiar Contraseña</h2>
-                    <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 0.95rem;">Usuario: <strong>@${username}</strong> (${role})</p>
+                    <h2 style="margin: 0; color: #f0f0f0; font-size: 1.6rem; font-weight: 700;">Cambiar Contrase&#241;a</h2>
+                    <p style="margin: 8px 0 0 0; color: #888; font-size: 0.95rem;">Usuario: <strong style="color:#f0f0f0;">@${username}</strong> (${role})</p>
                 </div>
 
                 <!-- Formulario -->
                 <div style="margin-bottom: 25px;">
-                    <label style="display: block; color: #374151; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem;">Nueva Contraseña:</label>
-                    <input type="password" id="inputNuevaPassword" placeholder="Escribe la nueva contraseña" style="width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s; box-sizing: border-box;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                    <label style="display: block; color: #999; font-weight: 600; margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Nueva Contrase&#241;a:</label>
+                    <input type="password" id="inputNuevaPassword" placeholder="Escribe la nueva contraseña" style="width: 100%; padding: 12px 15px; border: 1px solid #2a2a2a; border-radius: 8px; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; background: #1a1a1a; color: #f0f0f0;" onfocus="this.style.borderColor='#c0392b'; this.style.boxShadow='0 0 0 3px rgba(192,57,43,0.15)'" onblur="this.style.borderColor='#2a2a2a'; this.style.boxShadow='none'">
 
-                    <label style="display: block; color: #374151; font-weight: 600; margin: 15px 0 8px 0; font-size: 0.95rem;">Confirmar Contraseña:</label>
-                    <input type="password" id="inputConfirmarPassword" placeholder="Confirma la nueva contraseña" style="width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s; box-sizing: border-box;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                    <label style="display: block; color: #999; font-weight: 600; margin: 15px 0 8px 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Confirmar Contrase&#241;a:</label>
+                    <input type="password" id="inputConfirmarPassword" placeholder="Confirma la nueva contraseña" style="width: 100%; padding: 12px 15px; border: 1px solid #2a2a2a; border-radius: 8px; font-size: 1rem; transition: all 0.3s; box-sizing: border-box; background: #1a1a1a; color: #f0f0f0;" onfocus="this.style.borderColor='#c0392b'; this.style.boxShadow='0 0 0 3px rgba(192,57,43,0.15)'" onblur="this.style.borderColor='#2a2a2a'; this.style.boxShadow='none'">
 
-                    <div id="errorPassword" style="display: none; background: #fee2e2; border-left: 4px solid #ef4444; padding: 12px; border-radius: 8px; margin-top: 15px; color: #991b1b; font-size: 0.9rem; font-weight: 500;"></div>
+                    <div id="errorPassword" style="display: none; background: rgba(192,57,43,0.12); border-left: 4px solid #c0392b; padding: 12px; border-radius: 8px; margin-top: 15px; color: #fca5a5; font-size: 0.9rem; font-weight: 500;"></div>
                 </div>
 
                 <!-- Botones -->
                 <div style="display: flex; gap: 12px;">
-                    <button onclick="cerrarModalCambiarPassword()" style="flex: 1; background: #f3f4f6; color: #6b7280; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; transition: all 0.3s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                    <button onclick="cerrarModalCambiarPassword()" style="flex: 1; background: #2a2a2a; color: #ccc; border: 1px solid #333; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; transition: all 0.3s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
                         Cancelar
                     </button>
-                    <button onclick="confirmarCambioPassword('${username}')" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)'">
-                         Cambiar
+                    <button onclick="confirmarCambioPassword('${username}')" style="flex: 1; background: linear-gradient(135deg, #c0392b, #8b1429); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1em; box-shadow: 0 2px 8px rgba(192,57,43,0.3); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.03em;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(192,57,43,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(192,57,43,0.3)'">
+                        Cambiar
                     </button>
                 </div>
             </div>
@@ -1153,7 +1139,7 @@ async function confirmarCambioPassword(username) {
     // Deshabilitar botón mientras se procesa
     const btnCambiar = event.target;
     const textoOriginal = btnCambiar.textContent;
-    btnCambiar.textContent = '⏳ Cambiando...';
+    btnCambiar.textContent = 'Cambiando...';
     btnCambiar.disabled = true;
 
     try {

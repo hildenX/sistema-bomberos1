@@ -24,14 +24,14 @@
                 <div class="header-logo" style="margin-bottom: 15px;">
                     <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                 </div>
-                <h2> REGISTRO DE ASISTENCIA A EJERCICIOS</h2>
+                <h2>REGISTRO DE ASISTENCIA A EJERCICIOS</h2>
                 <p>Sistema de Control de Asistencia de Voluntarios</p>
             </div>
 
             <div class="page-content">
                 <!-- DATOS DEL EJERCICIO -->
                 <div class="datos-emergencia">
-                    <h3>📋 Datos del Ejercicio</h3>
+                    <h3>Datos del Ejercicio</h3>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -53,8 +53,8 @@
                             <label for="tipoEjercicio">Tipo de Ejercicio <span class="required">*</span></label>
                             <select id="tipoEjercicio" required>
                                 <option value="">Seleccione tipo</option>
-                                <option value="compañia">💪 Ejercicio de Compañía</option>
-                                <option value="cuerpo">🏛️ Ejercicio del Cuerpo de Bomberos</option>
+                                <option value="compañia">Ejercicio de Compañía</option>
+                                <option value="cuerpo">Ejercicio del Cuerpo de Bomberos</option>
                             </select>
                         </div>
 
@@ -64,12 +64,12 @@
                                 <input type="text" id="direccionEjercicio" placeholder="Buscar dirección en Puerto Montt..." autocomplete="off">
                                 <div id="sugerenciasDireccionEjercicio" class="sugerencias-dropdown"></div>
                             </div>
-                            <small style="color: #999; display: block; margin-top: 5px;">💡 Empieza a escribir para ver sugerencias de direcciones</small>
+                            <small style="color: #999; display: block; margin-top: 5px;"> Empieza a escribir para ver sugerencias de direcciones</small>
                             
                             <!-- Mapa embebido -->
                             <div id="mapaPreviewDireccionEjercicio" class="mapa-preview">
                                 <div class="mapa-header">
-                                    <span class="mapa-titulo">📍 Ubicación del ejercicio</span>
+                                    <span class="mapa-titulo">Ubicación del ejercicio</span>
                                     <button type="button" onclick="cerrarMapaEjercicio()" class="btn-cerrar-mapa">×</button>
                                 </div>
                                 <div id="mapaContenidoDireccionEjercicio" class="mapa-contenido">
@@ -108,7 +108,7 @@
                 <div class="voluntarios-container">
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🕊️</span> VOLUNTARIOS MÁRTIRES</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9670;</span> VOLUNTARIOS MÁRTIRES</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('martir')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('martir')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -119,7 +119,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">⭐</span> OFICIALES DE COMANDANCIA</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9733;</span> OFICIALES DE COMANDANCIA</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('comandancia')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('comandancia')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -130,7 +130,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">👔</span> OFICIALES DE COMPAÑÍA</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9670;</span> OFICIALES DE COMPAÑÍA</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('compania')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('compania')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -141,7 +141,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🔧</span> CARGOS DE CONFIANZA</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9881;</span> CARGOS DE CONFIANZA</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('confianza')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('confianza')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -152,7 +152,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🏆</span> VOLUNTARIOS INSIGNES</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9733;</span> VOLUNTARIOS INSIGNES</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('insigne')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('insigne')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -163,7 +163,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🎖️</span> V.H. DEL CUERPO</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9733;</span> V.H. DEL CUERPO</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('honorarioCuerpo')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('honorarioCuerpo')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -174,7 +174,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🏅</span> V.H. DE COMPAÑÍA</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9733;</span> V.H. DE COMPAÑÍA</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('honorarioCia')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('honorarioCia')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -185,7 +185,7 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
-                            <div class="categoria-titulo"><span class="categoria-icono">🔰</span> VOLUNTARIOS</div>
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9670;</span> VOLUNTARIOS</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('voluntario')" class="btn-mini btn-success">✓ Todos</button>
                                 <button onclick="ejerciciosSistema.deseleccionarTodos('voluntario')" class="btn-mini btn-secondary">✗ Ninguno</button>
@@ -197,12 +197,12 @@
 
                 <!-- VOLUNTARIOS PARTICIPANTES Y CANJES -->
                 <div class="voluntarios-externos-container">
-                    <h3>👥 VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
+                    <h3>VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
                     <p class="info-text">Agrega voluntarios de otras compañías o cuerpos de bomberos</p>
                     
                     <div class="externos-grid">
                         <div class="externos-section">
-                            <h4>🤝 Voluntarios Participantes</h4>
+                            <h4>Voluntarios Participantes</h4>
                             <div class="externos-input-group">
                                 <input type="text" id="inputParticipante" placeholder="Nombre del voluntario participante" list="listaParticipantes" class="externos-input">
                                 <button type="button" class="btn btn-success btn-sm" onclick="ejerciciosSistema.agregarParticipante()">➕ Agregar</button>
@@ -212,7 +212,7 @@
                         </div>
 
                         <div class="externos-section">
-                            <h4>🔄 Voluntarios Canjes</h4>
+                            <h4>Voluntarios Canjes</h4>
                             <div class="externos-input-group">
                                 <input type="text" id="inputCanje" placeholder="Nombre y compañía de origen" list="listaCanjes" class="externos-input">
                                 <button type="button" class="btn btn-success btn-sm" onclick="ejerciciosSistema.agregarCanje()">➕ Agregar</button>
@@ -225,7 +225,7 @@
 
                 <!-- RESUMEN DETALLADO DE ASISTENCIA -->
                 <div class="resumen-detallado">
-                    <h3>📊 RESUMEN DETALLADO DE ASISTENCIA</h3>
+                    <h3>RESUMEN DETALLADO DE ASISTENCIA</h3>
                     <div class="resumen-grid">
                         <div class="resumen-item">
                             <span class="resumen-label">Total Asistentes:</span>
@@ -256,7 +256,7 @@
 
                 <div class="botones-accion">
                     <button type="button" class="btn btn-success btn-lg" onclick="guardarEjercicios()">
-                        💾 Guardar Asistencia
+                        Guardar Asistencia
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="window.location.href='tipos-asistencia.html'">
                         ← Cancelar
@@ -270,7 +270,7 @@
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/asistencias-genericas-django.js' %}?v=5.0"></script>
     <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
-    <script>console.log('✅ Ejercicios v1.0 - Sistema Django Genérico');</script>
+    <script>console.log('Ejercicios v1.0 - Sistema Django Genérico');</script>
     <script>
         let ejerciciosSistema;
         window.addEventListener('load', function() {

@@ -82,7 +82,7 @@ class SistemaCargos {
         if (!validacion.puede) {
             contenedor.innerHTML = `
                 <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px;">
-                    <h3 style="color: #dc2626; margin-top: 0;">⚠️ No se pueden asignar cargos</h3>
+                    <h3 style="color: #dc2626; margin-top: 0;"> No se pueden asignar cargos</h3>
                     <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">${validacion.mensaje}</p>
                     <p style="color: #666; margin: 0;">Solo se puede consultar el historial de cargos de este voluntario.</p>
                 </div>
@@ -262,7 +262,7 @@ class SistemaCargos {
             }
 
             const cargoGuardado = await response.json();
-            console.log('[CARGOS] ✅ Cargo guardado:', cargoGuardado);
+            console.log('[CARGOS]  Cargo guardado:', cargoGuardado);
 
             Utils.mostrarNotificacion(
                 this.cargoEditando ? 'Cargo actualizado exitosamente' : 'Cargo registrado exitosamente',
@@ -275,7 +275,7 @@ class SistemaCargos {
             this.renderizarCargos();
 
         } catch (error) {
-            console.error('[CARGOS] ❌ Error:', error);
+            console.error('[CARGOS]  Error:', error);
             Utils.mostrarNotificacion(error.message || 'Error al guardar cargo', 'error');
         }
     }
@@ -293,7 +293,7 @@ class SistemaCargos {
         if (this.cargos.length === 0) {
             lista.innerHTML = `
                 <div class="mensaje-vacio">
-                    <p>📋 No hay cargos registrados para este voluntario</p>
+                    <p> No hay cargos registrados para este voluntario</p>
                 </div>
             `;
             return;
@@ -304,10 +304,10 @@ class SistemaCargos {
 
     generarHTMLCargo(cargo) {
         const iconos = {
-            'comandancia': '⭐',
-            'compania': '👔',
+            'comandancia': '',
+            'compania': '',
             'consejo': '⚖️',
-            'tecnico': '🔧'
+            'tecnico': ''
         };
 
         const colores = {
@@ -317,7 +317,7 @@ class SistemaCargos {
             'tecnico': '#ff9800'
         };
 
-        const icono = iconos[cargo.tipo_cargo] || '📋';
+        const icono = iconos[cargo.tipo_cargo] || '';
         const color = colores[cargo.tipo_cargo] || '#ff9800';
 
         const fechaInicio = cargo.fecha_inicio ? Utils.formatearFecha(cargo.fecha_inicio) : 'No especificado';
@@ -407,7 +407,7 @@ class SistemaCargos {
         // Cambiar texto del botón
         const btnSubmit = document.querySelector('#formCargo button[type="submit"]');
         if (btnSubmit) {
-            btnSubmit.innerHTML = '✅ ACTUALIZAR CARGO';
+            btnSubmit.innerHTML = ' ACTUALIZAR CARGO';
         }
 
         // Scroll al formulario
@@ -453,7 +453,7 @@ class SistemaCargos {
 
         const btnSubmit = document.querySelector('#formCargo button[type="submit"]');
         if (btnSubmit) {
-            btnSubmit.innerHTML = '✅ REGISTRAR CARGO';
+            btnSubmit.innerHTML = ' REGISTRAR CARGO';
         }
     }
 

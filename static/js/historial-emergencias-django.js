@@ -20,7 +20,7 @@ class HistorialEmergenciasDjango {
         this.calcularEstadisticas();
         this.setupFiltros();
         
-        console.log('[EMERGENCIAS] ✅ Sistema inicializado');
+        console.log('[EMERGENCIAS]  Sistema inicializado');
     }
     
     async cargarEmergencias() {
@@ -176,14 +176,14 @@ class HistorialEmergenciasDjango {
     inicializarSelectorClaves() {
         const selector = document.getElementById('filtroClave');
         if (!selector) {
-            console.error('[EMERGENCIAS] ❌ No se encontró selector filtroClave');
+            console.error('[EMERGENCIAS]  No se encontró selector filtroClave');
             return;
         }
         
         selector.innerHTML = '<option value="">Todas las claves</option>';
         
         if (typeof obtenerClavesSeleccionables !== 'function') {
-            console.warn('[EMERGENCIAS] ⚠️ obtenerClavesSeleccionables no está disponible');
+            console.warn('[EMERGENCIAS]  obtenerClavesSeleccionables no está disponible');
             
             // Fallback: usar CLAVES_RADIALES directamente
             if (typeof CLAVES_RADIALES !== 'undefined') {

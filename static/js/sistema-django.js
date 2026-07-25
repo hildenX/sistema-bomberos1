@@ -70,15 +70,15 @@ class SistemaBomberos {
 
             if (contenedorBoton) {
                 contenedorBoton.style.display = 'none';
-                console.log('[PERMISOS UI] ✅ Contenedor del botón de crear OCULTADO');
+                console.log('[PERMISOS UI]  Contenedor del botón de crear OCULTADO');
             } else {
                 // Fallback: buscar por selector
                 const btnCrear = document.querySelector('button[onclick*="irACrear"]');
                 if (btnCrear && btnCrear.parentElement) {
                     btnCrear.parentElement.style.display = 'none';
-                    console.log('[PERMISOS UI] ✅ Botón de crear OCULTADO (fallback)');
+                    console.log('[PERMISOS UI]  Botón de crear OCULTADO (fallback)');
                 } else {
-                    console.warn('[PERMISOS UI] ⚠️ No se encontró el botón de crear voluntario');
+                    console.warn('[PERMISOS UI]  No se encontró el botón de crear voluntario');
                 }
             }
         } else {
@@ -86,7 +86,7 @@ class SistemaBomberos {
             console.log('[PERMISOS UI] Mostrando botón de crear voluntario para:', userRole);
             if (contenedorBoton) {
                 contenedorBoton.style.display = '';
-                console.log('[PERMISOS UI] ✅ Contenedor del botón de crear VISIBLE');
+                console.log('[PERMISOS UI]  Contenedor del botón de crear VISIBLE');
             }
         }
 
@@ -169,7 +169,7 @@ class SistemaBomberos {
         const suspendido = this.sancionesActivas.some(s => s.voluntario === bomberoId);
         
         if (suspendido) {
-            console.log(`[SUSPENSIÓN] ⚠️ Bombero ${bomberoId} está SUSPENDIDO`);
+            console.log(`[SUSPENSIÓN]  Bombero ${bomberoId} está SUSPENDIDO`);
         }
         
         return suspendido;
@@ -237,7 +237,7 @@ class SistemaBomberos {
             } else if (data && data.results && Array.isArray(data.results)) {
                 this.bomberos = data.results;
             } else {
-                console.error('❌ Formato inesperado:', data);
+                console.error(' Formato inesperado:', data);
                 this.bomberos = [];
             }
             
@@ -296,7 +296,7 @@ class SistemaBomberos {
         } catch (error) {
             console.error('[ERROR] Cargando sanciones:', error);
         }
-        console.log('[LOAD] ✅ Sanciones activas:', this.sancionesActivas.length);
+        console.log('[LOAD]  Sanciones activas:', this.sancionesActivas.length);
     }
 
     async cargarCargosVigentes() {
@@ -342,7 +342,7 @@ class SistemaBomberos {
             console.error('[ERROR] Cargando cargos:', error);
         }
 
-        console.log('[LOAD] ✅ Cargos vigentes cargados:', Object.keys(this.cargosVigentes).length);
+        console.log('[LOAD]  Cargos vigentes cargados:', Object.keys(this.cargosVigentes).length);
     }
 
     guardarDatos() {
@@ -617,71 +617,71 @@ renderizarBomberos() {
         };
     } else if (userRole === 'Tesorero') {
         // FALLBACK: Permisos hardcodeados para Tesorero
-        console.log('[PERMISOS] ⚠️ Usando permisos hardcodeados para Tesorero');
+        console.log('[PERMISOS]  Usando permisos hardcodeados para Tesorero');
         permisos = {
             canEdit: false,             // NO puede editar voluntarios
             canDelete: false,           // NO puede eliminar
             canCreate: false,           // NO puede crear voluntarios
             canViewCargos: false,       // NO ve cargos
             canViewSanciones: false,    // NO ve sanciones
-            canViewFinanzas: true,      // ✅ VE CUOTAS y BENEFICIOS
-            canEditFinanzas: true,      // ✅ Gestiona cuotas/beneficios
+            canViewFinanzas: true,      //  VE CUOTAS y BENEFICIOS
+            canEditFinanzas: true,      //  Gestiona cuotas/beneficios
             canGeneratePDFFicha: false, // NO ve ficha PDF
             canViewFelicitaciones: false, // NO ve felicitaciones
-            canViewUniformes: true,     // ✅ VE UNIFORMES
+            canViewUniformes: true,     //  VE UNIFORMES
             canViewTablaUniformes: false, // NO ve tabla uniformes
             canViewAsistencias: false,  // NO ve asistencias
             canOnlySuspensions: false
         };
     } else if (userRole === 'Capitán' || userRole === 'Ayudante') {
         // FALLBACK: Permisos hardcodeados para Capitán y Ayudante
-        console.log('[PERMISOS] ⚠️ Usando permisos hardcodeados para', userRole);
+        console.log('[PERMISOS]  Usando permisos hardcodeados para', userRole);
         permisos = {
             canEdit: false,             // NO puede editar voluntarios
             canDelete: false,           // NO puede inactivar
             canCreate: false,           // NO puede crear voluntarios
             canViewCargos: false,       // NO ve cargos
-            canViewSanciones: true,     // ✅ VE SANCIONES (solo suspensiones)
+            canViewSanciones: true,     //  VE SANCIONES (solo suspensiones)
             canViewFinanzas: false,     // NO ve cuotas ni beneficios
             canEditFinanzas: false,     // NO puede desactivar cuotas ni activar estudiante
-            canGeneratePDFFicha: true,  // ✅ VE FICHA PDF
-            canViewFelicitaciones: true, // ✅ VE FELICITACIONES
-            canViewUniformes: true,     // ✅ VE UNIFORMES
-            canViewTablaUniformes: true, // ✅ VE TABLA UNIFORMES
-            canViewAsistencias: true,   // ✅ VE ASISTENCIAS
+            canGeneratePDFFicha: true,  //  VE FICHA PDF
+            canViewFelicitaciones: true, //  VE FELICITACIONES
+            canViewUniformes: true,     //  VE UNIFORMES
+            canViewTablaUniformes: true, //  VE TABLA UNIFORMES
+            canViewAsistencias: true,   //  VE ASISTENCIAS
             canOnlySuspensions: true    // Solo suspensiones, no otras sanciones
         };
     } else if (userRole === 'Director') {
         // FALLBACK: Permisos hardcodeados para Director
-        console.log('[PERMISOS] ⚠️ Usando permisos hardcodeados para Director');
+        console.log('[PERMISOS]  Usando permisos hardcodeados para Director');
         permisos = {
-            canEdit: true,              // ✅ Puede editar voluntarios
-            canDelete: true,            // ✅ Puede inactivar
-            canCreate: true,            // ✅ Puede crear voluntarios
-            canViewCargos: true,        // ✅ VE CARGOS
-            canViewSanciones: true,     // ✅ VE SANCIONES
+            canEdit: true,              //  Puede editar voluntarios
+            canDelete: true,            //  Puede inactivar
+            canCreate: true,            //  Puede crear voluntarios
+            canViewCargos: true,        //  VE CARGOS
+            canViewSanciones: true,     //  VE SANCIONES
             canViewFinanzas: false,     // NO ve cuotas ni beneficios
             canEditFinanzas: false,     // NO puede desactivar cuotas ni activar estudiante
-            canGeneratePDFFicha: true,  // ✅ VE FICHA PDF
-            canViewFelicitaciones: true, // ✅ VE FELICITACIONES
-            canViewUniformes: true,     // ✅ VE UNIFORMES
-            canViewTablaUniformes: true, // ✅ VE TABLA UNIFORMES
-            canViewAsistencias: true,   // ✅ VE ASISTENCIAS
+            canGeneratePDFFicha: true,  //  VE FICHA PDF
+            canViewFelicitaciones: true, //  VE FELICITACIONES
+            canViewUniformes: true,     //  VE UNIFORMES
+            canViewTablaUniformes: true, //  VE TABLA UNIFORMES
+            canViewAsistencias: true,   //  VE ASISTENCIAS
             canOnlySuspensions: false
         };
     } else if (userRole === 'Secretario') {
         // FALLBACK: Permisos hardcodeados para Secretario (mínimos)
-        console.log('[PERMISOS] ⚠️ Usando permisos hardcodeados para Secretario');
+        console.log('[PERMISOS]  Usando permisos hardcodeados para Secretario');
         permisos = {
-            canEdit: true,              // ✅ Puede editar voluntarios
-            canDelete: true,            // ✅ Puede inactivar
-            canCreate: true,            // ✅ Puede crear voluntarios
-            canViewCargos: true,        // ✅ VE CARGOS
-            canViewSanciones: true,     // ✅ VE SANCIONES
+            canEdit: true,              //  Puede editar voluntarios
+            canDelete: true,            //  Puede inactivar
+            canCreate: true,            //  Puede crear voluntarios
+            canViewCargos: true,        //  VE CARGOS
+            canViewSanciones: true,     //  VE SANCIONES
             canViewFinanzas: false,     // NO ve cuotas ni beneficios
             canEditFinanzas: false,     // NO puede desactivar cuotas ni activar estudiante
-            canGeneratePDFFicha: true,  // ✅ VE FICHA PDF
-            canViewFelicitaciones: true, // ✅ VE FELICITACIONES
+            canGeneratePDFFicha: true,  //  VE FICHA PDF
+            canViewFelicitaciones: true, //  VE FELICITACIONES
             canViewUniformes: false,    // NO ve uniformes
             canViewTablaUniformes: false, // NO ve tabla uniformes
             canViewAsistencias: false,  // NO ve asistencias
@@ -735,11 +735,11 @@ renderizarBomberos() {
         // Estado del bombero
         const estadoBombero = bombero.estadoBombero || 'activo';
         const estadoInfo = {
-            'activo': { icono: '✅', texto: 'ACTIVO', color: '#4caf50', bgColor: '#e8f5e9', borderColor: '#4caf50', cardBg: '#ffffff' },
-            'inactivo': { icono: '⚠️', texto: 'INACTIVO', color: '#ff9800', bgColor: '#fff3e0', borderColor: '#ff9800', cardBg: '#fffbf0' },
-            'renunciado': { icono: '🔄', texto: 'RENUNCIADO', color: '#f59e0b', bgColor: '#fef3c7', borderColor: '#f59e0b', cardBg: '#fffbeb' },
+            'activo': { icono: '', texto: 'ACTIVO', color: '#4caf50', bgColor: '#e8f5e9', borderColor: '#4caf50', cardBg: '#ffffff' },
+            'inactivo': { icono: '', texto: 'INACTIVO', color: '#ff9800', bgColor: '#fff3e0', borderColor: '#ff9800', cardBg: '#fffbf0' },
+            'renunciado': { icono: '', texto: 'RENUNCIADO', color: '#f59e0b', bgColor: '#fef3c7', borderColor: '#f59e0b', cardBg: '#fffbeb' },
             'separado': { icono: '⏸️', texto: 'SEPARADO', color: '#ef4444', bgColor: '#fee2e2', borderColor: '#ef4444', cardBg: '#fef2f2' },
-            'expulsado': { icono: '❌', texto: 'EXPULSADO', color: '#dc2626', bgColor: '#fecaca', borderColor: '#dc2626', cardBg: '#fee2e2' },
+            'expulsado': { icono: '', texto: 'EXPULSADO', color: '#dc2626', bgColor: '#fecaca', borderColor: '#dc2626', cardBg: '#fee2e2' },
             'martir': { icono: '🕊️', texto: 'MÁRTIR', color: '#9c27b0', bgColor: '#f3e5f5', borderColor: '#9c27b0', cardBg: '#faf5ff' },
             'fallecido': { icono: '☠️', texto: 'FALLECIDO', color: '#6b7280', bgColor: '#f3f4f6', borderColor: '#6b7280', cardBg: '#f9fafb' }
         };
@@ -785,10 +785,10 @@ renderizarBomberos() {
         
         if (cargoVigente) {
             const iconosCargo = {
-                'comandancia': '⭐',
-                'compania': '👔',
+                'comandancia': '',
+                'compania': '',
                 'consejo': '⚖️',
-                'tecnico': '🔧'
+                'tecnico': ''
             };
             
             const coloresCargo = {
@@ -800,7 +800,7 @@ renderizarBomberos() {
             
             const tipoCargo = cargoVigente.tipo_cargo || 'tecnico';
             const color = coloresCargo[tipoCargo] || coloresCargo.tecnico;
-            const icono = iconosCargo[tipoCargo] || '📋';
+            const icono = iconosCargo[tipoCargo] || '';
             
             badgeCargo = `
                 <span style="display: inline-block; background: ${color.bg}; color: ${color.color}; padding: 3px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1.5px solid ${color.border}; line-height: 1.2;">
@@ -840,19 +840,19 @@ renderizarBomberos() {
                         </div>
                         
                         <div class="bombero-botones">
-                            ${permisos && permisos.canGeneratePDFFicha ? `<button class="btn btn-pdf-ficha" onclick="sistemaBomberos.generarFichaPersonalPDF(${bombero.id})">📄 Ficha PDF</button>` : ''}
-                            ${permisos && permisos.canViewFinanzas && mostrarBotonCuotas ? `<button class="btn btn-cuotas" onclick="sistemaBomberos.verCuotas(${bombero.id})">💳 Cuotas</button>` : ''}
-                            ${permisos && permisos.canViewFinanzas && !esMartir ? `<button class="btn btn-beneficios" onclick="sistemaBomberos.verPagarBeneficios(${bombero.id})">🎫 Beneficios</button>` : ''}
-                            ${permisos && permisos.canViewFinanzas && permisos.canEditFinanzas && !esMartir ? `<button class="btn btn-pdf" onclick="sistemaBomberos.generarPDFDeudasBombero(${bombero.id})">📄 PDF Deudas</button>` : ''}
-                            ${permisos && permisos.canViewAsistencias ? `<button class="btn btn-asistencias" onclick="verReporteAsistencias(${bombero.id})" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">📊 Asistencias</button>` : ''}
+                            ${permisos && permisos.canGeneratePDFFicha ? `<button class="btn btn-pdf-ficha" onclick="sistemaBomberos.generarFichaPersonalPDF(${bombero.id})"> Ficha PDF</button>` : ''}
+                            ${permisos && permisos.canViewFinanzas && mostrarBotonCuotas ? `<button class="btn btn-cuotas" onclick="sistemaBomberos.verCuotas(${bombero.id})"> Cuotas</button>` : ''}
+                            ${permisos && permisos.canViewFinanzas && !esMartir ? `<button class="btn btn-beneficios" onclick="sistemaBomberos.verPagarBeneficios(${bombero.id})"> Beneficios</button>` : ''}
+                            ${permisos && permisos.canViewFinanzas && permisos.canEditFinanzas && !esMartir ? `<button class="btn btn-pdf" onclick="sistemaBomberos.generarPDFDeudasBombero(${bombero.id})"> PDF Deudas</button>` : ''}
+                            ${permisos && permisos.canViewAsistencias ? `<button class="btn btn-asistencias" onclick="verReporteAsistencias(${bombero.id})" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;"> Asistencias</button>` : ''}
                             ${puedeEditar ? `<button class="btn btn-editar" onclick="sistemaBomberos.editarBombero(${bombero.id})">Editar</button>` : ''}
-                            ${puedeReintegrarse && puedeEditar ? `<button class="btn btn-success" onclick="sistemaBomberos.iniciarReintegracion(${bombero.id})" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">🔄 Reintegrar</button>` : ''}
-                            ${puedeEliminar ? `<button class="btn ${estadoBombero === 'activo' ? 'btn-warning' : 'btn-success'}" onclick="sistemaBomberos.cambiarEstadoBombero(${bombero.id})">${estadoBombero === 'activo' ? '⚠️ Inactivar' : '✅ Activar'}</button>` : ''}
+                            ${puedeReintegrarse && puedeEditar ? `<button class="btn btn-success" onclick="sistemaBomberos.iniciarReintegracion(${bombero.id})" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"> Reintegrar</button>` : ''}
+                            ${puedeEliminar ? `<button class="btn ${estadoBombero === 'activo' ? 'btn-warning' : 'btn-success'}" onclick="sistemaBomberos.cambiarEstadoBombero(${bombero.id})">${estadoBombero === 'activo' ? ' Inactivar' : ' Activar'}</button>` : ''}
                             ${puedeVerCargos ? `<button class="btn btn-cargos" onclick="sistemaBomberos.verCargos(${bombero.id})">Cargos</button>` : ''}
                             ${puedeVerSanciones ? `<button class="btn btn-sanciones" onclick="sistemaBomberos.verSanciones(${bombero.id})">${permisos.canOnlySuspensions ? 'Suspensiones' : 'Sanciones'}</button>` : ''}
-                            ${permisos && permisos.canViewFelicitaciones ? `<button class="btn btn-felicitaciones" onclick="sistemaBomberos.verFelicitaciones(${bombero.id})">🏆 Felicitaciones</button>` : ''}
-                            ${permisos && permisos.canViewUniformes ? `<button class="btn btn-uniformes" onclick="sistemaBomberos.verUniformes(${bombero.id})">👔 Uniformes</button>` : ''}
-                            ${permisos && permisos.canViewTablaUniformes ? `<button class="btn btn-tabla-uniformes" onclick="window.location.href='tabla-uniformes-voluntario.html?id=${bombero.id}'" title="Ver tabla de todos los uniformes del voluntario">📋 Tabla Uniformes</button>` : ''}
+                            ${permisos && permisos.canViewFelicitaciones ? `<button class="btn btn-felicitaciones" onclick="sistemaBomberos.verFelicitaciones(${bombero.id})"> Felicitaciones</button>` : ''}
+                            ${permisos && permisos.canViewUniformes ? `<button class="btn btn-uniformes" onclick="sistemaBomberos.verUniformes(${bombero.id})"> Uniformes</button>` : ''}
+                            ${permisos && permisos.canViewTablaUniformes ? `<button class="btn btn-tabla-uniformes" onclick="window.location.href='tabla-uniformes-voluntario.html?id=${bombero.id}'" title="Ver tabla de todos los uniformes del voluntario"> Tabla Uniformes</button>` : ''}
                         </div>
                     </div>
                     
@@ -965,7 +965,7 @@ async cambiarEstadoBombero(id) {
         const confirmacionMsg = `¿Desea ${accion} las cuotas sociales para <strong>${Utils.obtenerNombreCompleto(bombero)}</strong>?<br><br>` +
             `Categoría: <strong>${categoriaTexto}</strong><br><br>` +
             (nuevoEstado ? 
-                '✅ Si activa las cuotas, este voluntario <strong>deberá pagar cuotas mensuales</strong> y aparecerá como deudor si no las paga.' :
+                ' Si activa las cuotas, este voluntario <strong>deberá pagar cuotas mensuales</strong> y aparecerá como deudor si no las paga.' :
                 '🚫 Si desactiva las cuotas, este voluntario <strong>NO deberá pagar cuotas mensuales</strong> y no aparecerá como deudor.');
 
         const confirmado = await Utils.confirmarAccion(confirmacionMsg);
@@ -1049,7 +1049,7 @@ async cambiarEstadoBombero(id) {
                                     Cancelar
                                 </button>
                                 <button type="submit" class="btn btn-success">
-                                    ✅ Activar Estudiante
+                                     Activar Estudiante
                                 </button>
                             </div>
                         </form>
@@ -1085,7 +1085,7 @@ async cambiarEstadoBombero(id) {
             
             preview.innerHTML = `
                 <div style="padding: 10px; background: #e8f5e9; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 24px;">${fileType.includes('pdf') ? '📄' : '🖼️'}</span>
+                    <span style="font-size: 24px;">${fileType.includes('pdf') ? '' : '🖼️'}</span>
                     <div style="flex: 1;">
                         <strong>${fileName}</strong><br>
                         <small>${fileSize} MB</small>
@@ -1125,7 +1125,7 @@ async cambiarEstadoBombero(id) {
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             
             Utils.mostrarNotificacion(
-                `✅ Estado estudiante activado desde ${meses[mesInicio - 1]} ${anioInicio}`, 
+                ` Estado estudiante activado desde ${meses[mesInicio - 1]} ${anioInicio}`, 
                 'success'
             );
         } catch (error) {
@@ -1155,7 +1155,7 @@ async cambiarEstadoBombero(id) {
                         <p><strong>Fecha de activación:</strong> ${Utils.formatearFecha(bombero.fechaActivacionEstudiante)}</p>
                         <hr style="margin: 15px 0;">
                         
-                        <h4>📄 Certificado:</h4>
+                        <h4> Certificado:</h4>
                         <div style="margin: 15px 0;">
                             ${bombero.certificadoEstudiante.startsWith('data:application/pdf') ? `
                                 <iframe src="${bombero.certificadoEstudiante}" 
@@ -1180,7 +1180,7 @@ async cambiarEstadoBombero(id) {
                             </button>
                             <button type="button" class="btn btn-warning" 
                                     onclick="sistemaBomberos.desactivarEstudiante(${bombero.id})">
-                                ❌ Desactivar Estudiante
+                                 Desactivar Estudiante
                             </button>
                         </div>
                     </div>
@@ -1255,7 +1255,7 @@ async cambiarEstadoBombero(id) {
     }
 
     verUniformes(id) {
-        console.log('[SISTEMA] 👔 Botón Uniformes clickeado, ID:', id);
+        console.log('[SISTEMA]  Botón Uniformes clickeado, ID:', id);
         console.log('[SISTEMA] 🔗 Redirigiendo a:', `/uniformes.html?id=${id}`);
         Utils.mostrarNotificacion('Redirigiendo a uniformes...', 'info');
         localStorage.setItem('bomberoUniformeActual', id);
@@ -1910,11 +1910,11 @@ async cambiarEstadoBombero(id) {
 
             const nombreArchivo = `Deudas_${bombero.claveBombero || bombero.id}_${new Date().toISOString().split('T')[0]}.pdf`;
             doc.save(nombreArchivo);
-            Utils.mostrarNotificacion('✅ PDF de deudas generado exitosamente', 'success');
+            Utils.mostrarNotificacion(' PDF de deudas generado exitosamente', 'success');
 
         } catch (error) {
             console.error('Error al generar PDF:', error);
-            Utils.mostrarNotificacion('❌ Error al generar PDF: ' + error.message, 'error');
+            Utils.mostrarNotificacion(' Error al generar PDF: ' + error.message, 'error');
         }
     }
 
@@ -2081,7 +2081,7 @@ async cambiarEstadoBombero(id) {
                     <!-- Header -->
                     <div style="background: rgba(255,255,255,0.1); padding: 30px; border-bottom: 2px solid rgba(255,255,255,0.2);">
                         <div style="display: flex; align-items: center; gap: 20px;">
-                            <div style="font-size: 60px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">⚠️</div>
+                            <div style="font-size: 60px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></div>
                             <div>
                                 <h3 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">Deudores Detectados</h3>
                                 <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.8); font-size: 14px;">Se requiere revisión de pagos pendientes</p>
@@ -2110,7 +2110,7 @@ async cambiarEstadoBombero(id) {
                     <div style="padding: 30px;">
                         <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #ff9800;">
                             <div style="display: flex; align-items: center; gap: 15px;">
-                                <div style="font-size: 40px;">💳</div>
+                                <div style="font-size: 40px;"></div>
                                 <div style="flex: 1;">
                                     <div style="color: white; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Cuotas Sociales</div>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2123,7 +2123,7 @@ async cambiarEstadoBombero(id) {
                         
                         <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; border-left: 4px solid #2196f3;">
                             <div style="display: flex; align-items: center; gap: 15px;">
-                                <div style="font-size: 40px;">🎫</div>
+                                <div style="font-size: 40px;"></div>
                                 <div style="flex: 1;">
                                     <div style="color: white; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Beneficios</div>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2138,7 +2138,7 @@ async cambiarEstadoBombero(id) {
                     <!-- Footer -->
                     <div style="padding: 30px; border-top: 2px solid rgba(255,255,255,0.1);">
                         <button onclick="sistemaBomberos.generarPDFDeudores()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <span style="font-size: 24px;">📄</span>
+                            <span style="font-size: 24px;"></span>
                             <span>Generar Reporte PDF Completo</span>
                         </button>
                     </div>
@@ -2753,7 +2753,7 @@ async generarPDFConsultaVoluntarios() {
         Utils.mostrarNotificacion('PDF generado exitosamente', 'success');
         
     } catch (error) {
-        console.error('❌ ERROR al generar PDF:', error);
+        console.error(' ERROR al generar PDF:', error);
         Utils.mostrarNotificacion('Error al generar PDF: ' + error.message, 'error');
     }
 }

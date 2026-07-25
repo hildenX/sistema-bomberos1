@@ -113,7 +113,7 @@ class SistemaFelicitaciones {
         if (!validacion.puede) {
             contenedor.innerHTML = `
                 <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px;">
-                    <h3 style="color: #dc2626; margin-top: 0;">⚠️ No se pueden registrar felicitaciones</h3>
+                    <h3 style="color: #dc2626; margin-top: 0;"> No se pueden registrar felicitaciones</h3>
                     <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">${validacion.mensaje}</p>
                     <p style="color: #666; margin: 0;">Solo se puede consultar el historial de felicitaciones de este voluntario.</p>
                 </div>
@@ -214,7 +214,7 @@ class SistemaFelicitaciones {
                 previewFileName.textContent = file.name;
             } else {
                 previewImage.style.display = 'none';
-                previewFileName.textContent = `📄 ${file.name}`;
+                previewFileName.textContent = ` ${file.name}`;
             }
         } else {
             preview.style.display = 'none';
@@ -227,7 +227,7 @@ class SistemaFelicitaciones {
         const formData = new FormData(event.target);
         const datos = Object.fromEntries(formData);
         
-        console.log('📝 Datos de felicitación capturados:', datos);
+        console.log(' Datos de felicitación capturados:', datos);
         
         // Validar campos obligatorios
         if (!datos.bomberoFelicitacionId) {
@@ -266,9 +266,9 @@ class SistemaFelicitaciones {
             await this.guardarFelicitacion(datos);
             this.limpiarFormulario();
             this.renderizarFelicitaciones();
-            Utils.mostrarNotificacion('✅ Felicitación registrada exitosamente', 'success');
+            Utils.mostrarNotificacion(' Felicitación registrada exitosamente', 'success');
         } catch (error) {
-            console.error('❌ Error al registrar felicitación:', error);
+            console.error(' Error al registrar felicitación:', error);
             Utils.mostrarNotificacion('Error al registrar felicitación: ' + error.message, 'error');
         }
     }
@@ -331,7 +331,7 @@ class SistemaFelicitaciones {
             }
 
             const felicitacionGuardada = await response.json();
-            console.log('[FELICITACIONES] ✅ Felicitación guardada exitosamente:', felicitacionGuardada);
+            console.log('[FELICITACIONES]  Felicitación guardada exitosamente:', felicitacionGuardada);
 
             // Recargar felicitaciones
             await this.cargarFelicitaciones();
@@ -340,7 +340,7 @@ class SistemaFelicitaciones {
             this.renderizarFelicitaciones();
 
         } catch (error) {
-            console.error('[FELICITACIONES] ❌ ERROR:', error);
+            console.error('[FELICITACIONES]  ERROR:', error);
             throw error;
         }
     }
@@ -388,11 +388,11 @@ class SistemaFelicitaciones {
 
     generarHTMLFelicitacion(felicitacion) {
         const iconos = {
-            'destacado': '⭐',
+            'destacado': '',
             'merito': '🏅',
             'valor': '💪',
-            'servicio': '🎖️',
-            'antiguedad': '📅',
+            'servicio': '',
+            'antiguedad': '',
             'otra': '📌'
         };
 
@@ -407,7 +407,7 @@ class SistemaFelicitaciones {
 
         const tipo = felicitacion.tipo_felicitacion || felicitacion.tipoFelicitacion;
         const tipoTexto = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-        const icono = iconos[tipo] || '🏆';
+        const icono = iconos[tipo] || '';
         const color = colores[tipo] || '#28a745';
         
         const nombreFelicitacion = felicitacion.nombre_felicitacion || felicitacion.nombreFelicitacion;
@@ -454,7 +454,7 @@ class SistemaFelicitaciones {
                                download="${documentoNombre}"
                                class="documento-link"
                                style="display: inline-block; margin-top: 5px; padding: 8px 15px; background: ${color}; color: white; border-radius: 5px; text-decoration: none; transition: all 0.3s;">
-                                📄 Ver/Descargar ${documentoNombre}
+                                 Ver/Descargar ${documentoNombre}
                             </a>
                         </div>
                     ` : ''}
