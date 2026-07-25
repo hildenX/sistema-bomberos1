@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
     <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="page-container asistencias-page">
@@ -22,14 +23,14 @@
                 <div class="header-logo" style="margin-bottom: 15px;">
                     <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                 </div>
-                <h2>🏛️ REGISTRO DE ASISTENCIA A ASAMBLEA</h2>
+                <h2>REGISTRO DE ASISTENCIA A ASAMBLEA</h2>
                 <p>Sistema de Control de Asistencia de Voluntarios</p>
             </div>
 
             <div class="page-content">
                 <!-- DATOS DE LA ASAMBLEA -->
                 <div class="datos-emergencia">
-                    <h3>📋 Datos de la Asamblea</h3>
+                    <h3>Datos de la Asamblea</h3>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -51,8 +52,8 @@
                             <label for="tipoAsamblea">Tipo de Asamblea <span class="required">*</span></label>
                             <select id="tipoAsamblea" required>
                                 <option value="">Seleccione tipo</option>
-                                <option value="ordinaria">📋 Ordinaria</option>
-                                <option value="extraordinaria">⚡ Extraordinaria</option>
+                                <option value="ordinaria">Ordinaria</option>
+                                <option value="extraordinaria">Extraordinaria</option>
                             </select>
                         </div>
 
@@ -86,8 +87,8 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🕊️</span>
-                                VOLUNTARIOS MÁRTIRES
+                                <span class="categoria-icono"></span>
+                                VOLUNTARIOS MARTIRES
                             </div>
                             <div class="categoria-botones">
                                 <button onclick="asambleaSistema.seleccionarTodos('martir')" class="btn-mini btn-success">
@@ -105,7 +106,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">⭐</span>
+                                <span class="categoria-icono"></span>
                                 OFICIALES DE COMANDANCIA
                             </div>
                             <div class="categoria-botones">
@@ -124,8 +125,8 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">👔</span>
-                                OFICIALES DE COMPAÑÍA
+                                <span class="categoria-icono"></span>
+                                OFICIALES DE COMPANIA
                             </div>
                             <div class="categoria-botones">
                                 <button onclick="asambleaSistema.seleccionarTodos('compania')" class="btn-mini btn-success">
@@ -143,7 +144,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🔧</span>
+                                <span class="categoria-icono"></span>
                                 CARGOS DE CONFIANZA
                             </div>
                             <div class="categoria-botones">
@@ -162,7 +163,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🏆</span>
+                                <span class="categoria-icono"></span>
                                 VOLUNTARIOS INSIGNES
                             </div>
                             <div class="categoria-botones">
@@ -181,7 +182,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🎖️</span>
+                                <span class="categoria-icono"></span>
                                 V.H. DEL CUERPO
                             </div>
                             <div class="categoria-botones">
@@ -200,8 +201,8 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🏅</span>
-                                V.H. DE COMPAÑÍA
+                                <span class="categoria-icono"></span>
+                                V.H. DE COMPANIA
                             </div>
                             <div class="categoria-botones">
                                 <button onclick="asambleaSistema.seleccionarTodos('honorarioCia')" class="btn-mini btn-success">
@@ -219,7 +220,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🔰</span>
+                                <span class="categoria-icono"></span>
                                 VOLUNTARIOS
                             </div>
                             <div class="categoria-botones">
@@ -238,13 +239,13 @@
 
                 <!-- VOLUNTARIOS PARTICIPANTES Y CANJES -->
                 <div class="voluntarios-externos-container">
-                    <h3>👥 VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
+                    <h3>VOLUNTARIOS PARTICIPANTES Y CANJES</h3>
                     <p class="info-text">Agrega voluntarios de otras compañías o cuerpos de bomberos</p>
                     
                     <div class="externos-grid">
                         <!-- Voluntarios Participantes -->
                         <div class="externos-section">
-                            <h4>🤝 Voluntarios Participantes</h4>
+                            <h4>Voluntarios Participantes</h4>
                             <div class="externos-input-group">
                                 <input type="text" 
                                        id="inputParticipante" 
@@ -254,7 +255,7 @@
                                 <button type="button" 
                                         class="btn btn-success btn-sm" 
                                         onclick="asambleaSistema.agregarParticipante()">
-                                    ➕ Agregar
+                                    Agregar
                                 </button>
                             </div>
                             <datalist id="listaParticipantes"></datalist>
@@ -263,7 +264,7 @@
 
                         <!-- Voluntarios Canjes -->
                         <div class="externos-section">
-                            <h4>🔄 Voluntarios Canjes</h4>
+                            <h4>Voluntarios Canjes</h4>
                             <div class="externos-input-group">
                                 <input type="text" 
                                        id="inputCanje" 
@@ -273,7 +274,7 @@
                                 <button type="button" 
                                         class="btn btn-success btn-sm" 
                                         onclick="asambleaSistema.agregarCanje()">
-                                    ➕ Agregar
+                                    Agregar
                                 </button>
                             </div>
                             <datalist id="listaCanjes"></datalist>
@@ -284,7 +285,7 @@
 
                 <!-- RESUMEN DETALLADO DE ASISTENCIA -->
                 <div class="resumen-detallado">
-                    <h3>📊 RESUMEN DETALLADO DE ASISTENCIA</h3>
+                    <h3>RESUMEN DETALLADO DE ASISTENCIA</h3>
                     <div class="resumen-grid">
                         <div class="resumen-item">
                             <span class="resumen-label">Total Asistentes:</span>
@@ -316,7 +317,7 @@
                 <!-- BOTONES DE ACCIÓN -->
                 <div class="botones-accion">
                     <button type="button" class="btn btn-success btn-lg" onclick="guardarAsamblea()">
-                        💾 Guardar Asistencia
+                        Guardar Asistencia
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="window.location.href='tipos-asistencia.html'">
                         ← Cancelar
@@ -329,7 +330,7 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/asistencias-genericas-django.js' %}?v=5.0"></script>
-    <script>console.log('✅ Asamblea v3.0 - EXTERNOS ARREGLADOS');</script>
+    <script>console.log('Asamblea v3.0 - EXTERNOS ARREGLADOS');</script>
     <script>
         // Inicializar sistema de asamblea
         let asambleaSistema;

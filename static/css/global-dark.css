@@ -1,0 +1,745 @@
+/* ==================== GLOBAL DARK THEME — SISTEMA BOMBEROS ====================
+   Palette derived from login page (gold standard).
+   Load LAST in every template to override light-theme CSS.
+   ============================================================================= */
+
+:root {
+    --gd-bg:        #0f0f0f;
+    --gd-surface:   #161616;
+    --gd-card:      #1c1c1c;
+    --gd-card-alt:  #222222;
+    --gd-border:    #2a2a2a;
+    --gd-border-lt: #333333;
+    --gd-text:      #f0f0f0;
+    --gd-text-sub:  #999999;
+    --gd-text-dim:  #666666;
+    --gd-input-bg:  #1a1a1a;
+    --gd-input-foc: #222222;
+    --gd-rojo:      #c0392b;
+    --gd-rojo-dk:   #8b1429;
+    --gd-rojo-lt:   #e74c3c;
+    --gd-dorado:    #c8942a;
+    --gd-dorado-lt: #e5b84a;
+    --gd-verde:     #27ae60;
+    --gd-azul:      #2980b9;
+    --gd-naranja:   #e67e22;
+    --gd-hover:     rgba(255,255,255,0.04);
+    --gd-shadow:    0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* ===== BASE ===== */
+html, body {
+    background: var(--gd-bg) !important;
+    color: var(--gd-text) !important;
+}
+
+/* ===== MAIN SYSTEM WRAPPER ===== */
+.main-system,
+.main-system-wrapper,
+.main-content-with-sidebar,
+.dashboard-content {
+    background: var(--gd-bg) !important;
+    color: var(--gd-text) !important;
+}
+
+/* ===== CONTAINERS ===== */
+.container,
+.page-container {
+    background: var(--gd-bg) !important;
+    color: var(--gd-text) !important;
+}
+
+.form-container {
+    background: var(--gd-bg) !important;
+}
+
+/* ===== CARDS ===== */
+.card,
+.section,
+.form-section,
+.datos-emergencia,
+.registro-card,
+.registro-card-nuevo,
+.bombero-card,
+.emergencia-card,
+.asistencia-card,
+.categoria-container,
+.filtros-container,
+.ranking-container,
+.panel {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.card:hover,
+.registro-card:hover,
+.registro-card-nuevo:hover,
+.bombero-card:hover,
+.emergencia-card:hover,
+.asistencia-card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.6) !important;
+    border-color: var(--gd-border-lt) !important;
+}
+
+.card-header {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.card-footer {
+    border-top-color: var(--gd-border) !important;
+}
+
+.card-title {
+    color: var(--gd-text) !important;
+}
+
+/* ===== HEADERS (page-header, historial-header, etc) ===== */
+.page-header,
+.header,
+.historial-header,
+.asistencias-header,
+.sanciones-header,
+.uniformes-header {
+    background: linear-gradient(180deg, #1a0a0e, #2a0a12, #3d0c18) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.5) !important;
+}
+
+.page-header h1,
+.page-header h2,
+.header h1,
+.header h2 {
+    color: #fff !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.page-header p,
+.header p {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* ===== TOP NAVBAR ===== */
+.top-navbar {
+    background: var(--gd-card) !important;
+    border: 1px solid var(--gd-border) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.header-title {
+    color: var(--gd-text) !important;
+}
+
+/* ===== HEADINGS ===== */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--gd-text) !important;
+}
+
+h3 {
+    border-left-color: var(--gd-rojo) !important;
+}
+
+/* ===== TEXT ===== */
+p, span, div, label, li, td, th, dt, dd {
+    color: inherit;
+}
+
+.registro-nombre,
+.registro-nombre-grande,
+.bombero-nombre {
+    color: var(--gd-text) !important;
+}
+
+.registro-run,
+.bombero-clave,
+.bombero-edad-antiguedad {
+    color: var(--gd-text-sub) !important;
+}
+
+.registro-info span,
+.info-label,
+.stat-label {
+    color: var(--gd-text-sub) !important;
+}
+
+.registro-info strong,
+.info-value,
+.info-valor {
+    color: var(--gd-text) !important;
+}
+
+.registro-clave-run {
+    color: var(--gd-text-sub) !important;
+}
+
+.separador,
+.separador-vertical {
+    color: var(--gd-border-lt) !important;
+    background: var(--gd-border-lt) !important;
+}
+
+/* ===== FORMS ===== */
+.form-group label {
+    color: var(--gd-text-sub) !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="search"],
+input[type="url"],
+select,
+textarea {
+    background: var(--gd-input-bg) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--gd-rojo) !important;
+    background: var(--gd-input-foc) !important;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.15) !important;
+    color: var(--gd-text) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--gd-text-dim) !important;
+}
+
+#buscadorBomberos {
+    background: var(--gd-input-bg) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+#buscadorBomberos:focus {
+    border-color: var(--gd-rojo) !important;
+    background: var(--gd-input-foc) !important;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.15) !important;
+}
+
+/* ===== REGISTROS / LIST CONTAINER ===== */
+.registros {
+    background: var(--gd-surface) !important;
+    border-color: var(--gd-border) !important;
+}
+
+.registros h3,
+.registros-header h3 {
+    color: var(--gd-text) !important;
+}
+
+#listaBomberos {
+    scrollbar-color: var(--gd-rojo) var(--gd-surface);
+}
+
+/* ===== BOMBERO CARDS ===== */
+.registro-card,
+.bombero-card {
+    border-left-color: var(--gd-rojo) !important;
+}
+
+.registro-foto img,
+.bombero-foto {
+    border-color: var(--gd-rojo) !important;
+}
+
+.sin-foto,
+.sin-foto-inline,
+.bombero-sin-foto {
+    background: var(--gd-surface) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text-dim) !important;
+}
+
+.bombero-numero,
+.registro-numero-badge {
+    background: var(--gd-rojo) !important;
+}
+
+.registro-edad-antiguedad {
+    border-color: var(--gd-border) !important;
+}
+
+.categoria-box {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.info-grid,
+.registro-grid-info {
+    color: var(--gd-text) !important;
+}
+
+/* ===== CATEGORÍAS ===== */
+.resumen-categorias {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+}
+
+.categoria-item {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.info-categorias {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+}
+
+.categoria-explicacion div {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.categoria-header {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.categoria-titulo {
+    color: var(--gd-text) !important;
+}
+
+/* ===== CREAR VOLUNTARIO BTN ===== */
+.btn-crear-voluntario {
+    background: linear-gradient(135deg, var(--gd-rojo), var(--gd-rojo-dk)) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(192,57,43,0.3) !important;
+}
+
+/* ===== TABLES ===== */
+table {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+}
+
+thead {
+    background: linear-gradient(135deg, var(--gd-rojo), var(--gd-rojo-dk)) !important;
+}
+
+th {
+    color: #fff !important;
+}
+
+td {
+    color: var(--gd-text) !important;
+    border-bottom-color: var(--gd-border) !important;
+}
+
+tr:hover {
+    background: var(--gd-hover) !important;
+}
+
+/* ===== STATISTICS ===== */
+.stat-box,
+.stat-item {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+}
+
+.stat-value {
+    color: var(--gd-rojo-lt) !important;
+}
+
+/* ===== RANKING ===== */
+.ranking-item {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.ranking-item:hover {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+.ranking-nombre {
+    color: var(--gd-text) !important;
+}
+
+.ranking-asistencias {
+    color: var(--gd-rojo-lt) !important;
+}
+
+/* ===== VOLUNTARIO ITEMS ===== */
+.voluntario-item {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.voluntario-item:hover {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border-lt) !important;
+}
+
+.voluntario-item.selected {
+    background: rgba(192,57,43,0.12) !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+/* ===== ALERTS ===== */
+.alert-success,
+.success {
+    background: rgba(39,174,96,0.12) !important;
+    color: #2ecc71 !important;
+    border-color: #27ae60 !important;
+}
+
+.alert-danger,
+.alert-error,
+.error {
+    color: #e74c3c !important;
+}
+
+.alert-warning {
+    background: rgba(230,126,34,0.12) !important;
+    color: var(--gd-dorado-lt) !important;
+    border-color: var(--gd-naranja) !important;
+}
+
+.modo-edicion {
+    background: rgba(230,126,34,0.1) !important;
+    border-color: var(--gd-naranja) !important;
+    color: var(--gd-dorado-lt) !important;
+}
+
+/* ===== PAGINATION ===== */
+.pagination-container {
+    background: var(--gd-card) !important;
+}
+
+.pagination-info {
+    color: var(--gd-text-sub) !important;
+}
+
+.pagination-btn {
+    background: var(--gd-surface) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+.pagination-btn:hover {
+    background: var(--gd-card-alt) !important;
+    border-color: var(--gd-rojo) !important;
+    color: var(--gd-rojo-lt) !important;
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, var(--gd-rojo), var(--gd-rojo-dk)) !important;
+    color: #fff !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+.pagination-dots {
+    color: var(--gd-text-dim) !important;
+}
+
+/* ===== NOTIFICATION CARDS (deudores popup) ===== */
+.notificacion-deudores-card {
+    background: var(--gd-card) !important;
+    border-color: rgba(192,57,43,0.3) !important;
+}
+
+.notificacion-deudores-stats {
+    background: var(--gd-surface) !important;
+}
+
+.stat-deuda-label {
+    color: var(--gd-text-sub) !important;
+}
+
+.stat-deuda-desc {
+    color: var(--gd-text-dim) !important;
+}
+
+.stat-deuda-separador {
+    background: var(--gd-border) !important;
+}
+
+.notificacion-deudores-detalle {
+    background: var(--gd-card) !important;
+}
+
+.detalle-item {
+    background: var(--gd-surface) !important;
+    border-left-color: var(--gd-naranja) !important;
+}
+
+.detalle-item:hover {
+    background: rgba(230,126,34,0.08) !important;
+}
+
+.detalle-titulo {
+    color: var(--gd-text-sub) !important;
+}
+
+.detalle-cantidad {
+    color: var(--gd-text-sub) !important;
+}
+
+.notificacion-deudores-footer {
+    background: var(--gd-card) !important;
+}
+
+.btn-cerrar-notif-top {
+    background: rgba(255,255,255,0.05) !important;
+    color: var(--gd-text-sub) !important;
+}
+
+.btn-cerrar-notif-top:hover {
+    background: rgba(192,57,43,0.15) !important;
+    color: var(--gd-rojo-lt) !important;
+}
+
+/* ===== SECTION TITLES ===== */
+.section-title {
+    color: var(--gd-dorado) !important;
+    border-bottom-color: var(--gd-border) !important;
+}
+
+/* ===== CONTADOR ===== */
+.contador {
+    color: var(--gd-text) !important;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    color: #fff !important;
+}
+
+/* ===== EMPTY STATES ===== */
+.empty-state,
+.cb-empty {
+    background: var(--gd-card) !important;
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== FILTRO ESTADO SELECT (mobile) ===== */
+.filtro-estado-select {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+/* ===== MENU BTNS (tipo-card style) ===== */
+.tipo-card {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.tipo-card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* ===== USER INFO ===== */
+.user-info {
+    background: var(--gd-surface) !important;
+    color: var(--gd-text) !important;
+}
+
+.user-info:hover {
+    background: var(--gd-card) !important;
+}
+
+.user-name {
+    color: var(--gd-text) !important;
+}
+
+/* ===== SALDO WIDGET ===== */
+.saldo-widget {
+    border-right-color: var(--gd-border) !important;
+}
+
+/* ===== PAGE MAIN CONTAINER ===== */
+.page-main-container {
+    background: var(--gd-card) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.page-header-content {
+    border-bottom-color: var(--gd-border) !important;
+}
+
+.page-header-content h2 {
+    color: var(--gd-rojo-lt) !important;
+}
+
+.page-header-content p {
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== CARGOS/SANCIONES PAGE ===== */
+.page-content {
+    color: var(--gd-text) !important;
+}
+
+.bombero-info {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+.form-grid {
+    color: var(--gd-text) !important;
+}
+
+.tipo-sancion-select option {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gd-surface) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gd-border-lt) !important;
+    border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gd-rojo) !important;
+}
+
+/* ===== ASISTENCIAS-SPECIFIC ===== */
+.tipos-grid {
+    color: var(--gd-text) !important;
+}
+
+.tipo-card h3 {
+    color: var(--gd-text) !important;
+}
+
+.tipo-card p {
+    color: var(--gd-text-sub) !important;
+}
+
+/* Override light gradient backgrounds on tipo-cards */
+.tipo-card.emergencia {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(192,57,43,0.08) 100%) !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+.tipo-card.asamblea {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(41,128,185,0.08) 100%) !important;
+    border-color: var(--gd-azul) !important;
+}
+
+.tipo-card.ejercicios {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(39,174,96,0.08) 100%) !important;
+    border-color: var(--gd-verde) !important;
+}
+
+.tipo-card.citaciones {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(230,126,34,0.08) 100%) !important;
+    border-color: var(--gd-naranja) !important;
+}
+
+.tipo-card.directorio {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(142,68,173,0.08) 100%) !important;
+    border-color: #8e44ad !important;
+}
+
+.tipo-card.otras {
+    background: linear-gradient(135deg, var(--gd-card) 0%, rgba(149,165,166,0.08) 100%) !important;
+    border-color: #7f8c8d !important;
+}
+
+/* ===== UNIFORMES SPECIFIC ===== */
+.tipo-uniforme-selector {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+    box-shadow: var(--gd-shadow) !important;
+}
+
+.uniforme-card {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+/* ===== SIDEBAR TOGGLE (mobile) ===== */
+.sidebar-toggle {
+    background: var(--gd-rojo) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 10px rgba(192,57,43,0.4) !important;
+}
+
+/* ===== MODAL OVERRIDES (logo, user management, etc.) ===== */
+.swal2-popup {
+    background: var(--gd-card) !important;
+    color: var(--gd-text) !important;
+}
+
+.swal2-title {
+    color: var(--gd-text) !important;
+}
+
+.swal2-html-container {
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== PREVIEW IMAGES ===== */
+.preview-container img {
+    border-color: var(--gd-border) !important;
+}
+
+/* ===== MISCELLANEOUS ===== */
+.info-solo-lectura h3 {
+    color: var(--gd-dorado) !important;
+}
+
+.info-solo-lectura p {
+    color: var(--gd-text-sub) !important;
+}
+
+/* ===== FILTROS ESTADO BUTTONS ===== */
+.filtros-estado-container {
+    background: var(--gd-surface) !important;
+}
+
+.btn-filtro-estado {
+    background: var(--gd-card) !important;
+    border-color: var(--gd-border) !important;
+    color: var(--gd-text) !important;
+}
+
+.btn-filtro-estado:hover,
+.btn-filtro-estado.active {
+    background: var(--gd-rojo) !important;
+    color: #fff !important;
+    border-color: var(--gd-rojo) !important;
+}
+
+/* ===== MAPA PREVIEW ===== */
+.mapa-preview {
+    border-color: var(--gd-border) !important;
+}
+
+/* ===== RESPONSIVE: keep dark on mobile ===== */
+@media (max-width: 768px) {
+    .form-container {
+        background: var(--gd-bg) !important;
+    }
+}

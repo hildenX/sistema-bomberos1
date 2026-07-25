@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial y Ranking - Sistema P6P</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         /* ==================== ESTILOS DEDICADOS PARA HISTORIAL V2 ==================== */
         
@@ -600,20 +601,20 @@
         
         <!-- HEADER -->
         <div class="historial-header">
-            <h1>📊 Historial y Ranking de Asistencias</h1>
+            <h1>Historial y Ranking de Asistencias</h1>
             <p>Sistema completo de seguimiento y clasificación de asistencias</p>
         </div>
 
         <!-- BOTONES DE ACCIÓN -->
         <div class="botones-accion">
             <button class="btn btn-primary" onclick="window.location.href='tipos-asistencia.html'">
-                ➕ Nueva Asistencia
+                Nueva Asistencia
             </button>
             <button class="btn btn-primary" onclick="exportarExcel()">
-                📊 Exportar a Excel
+                Exportar a Excel
             </button>
             <button class="btn btn-primary" onclick="reconstruirRanking()" title="Reconstruye el ranking desde las asistencias registradas">
-                🔄 Reconstruir Ranking
+                Reconstruir Ranking
             </button>
             <button class="btn btn-secondary" onclick="window.location.href='sistema.html'">
                 ← Volver al Sistema
@@ -627,40 +628,40 @@
         <div class="filtros-container">
             <div class="filtros-grid">
                 <div class="filtro-group">
-                    <label>📊 Tipo de Asistencia</label>
+                    <label>Tipo de Asistencia</label>
                     <select id="filtroTipo">
                         <option value="todas">Todas las Asistencias</option>
-                        <option value="emergencia">🚨 Emergencias</option>
-                        <option value="asamblea">🏛️ Asambleas</option>
-                        <option value="ejercicios">💪 Ejercicios</option>
-                        <option value="citaciones">📞 Citaciones</option>
-                        <option value="otras">📋 Otras</option>
+                        <option value="emergencia">Emergencias</option>
+                        <option value="asamblea">Asambleas</option>
+                        <option value="ejercicios">Ejercicios</option>
+                        <option value="citaciones">Citaciones</option>
+                        <option value="otras">Otras</option>
                     </select>
                 </div>
                 <div class="filtro-group" id="grupoFiltroClave">
-                    <label>📻 Clave Radial (solo Emergencias)</label>
+                    <label>Clave Radial (solo Emergencias)</label>
                     <select id="filtroClave">
                         <!-- Se llena dinámicamente -->
                     </select>
                 </div>
                 <div class="filtro-group" id="grupoFiltroAsamblea" style="display: none;">
-                    <label>🏛️ Tipo de Asamblea</label>
+                    <label>Tipo de Asamblea</label>
                     <select id="filtroAsamblea">
                         <option value="">Todas</option>
-                        <option value="ordinaria">📋 Ordinaria</option>
-                        <option value="extraordinaria">⚡ Extraordinaria</option>
+                        <option value="ordinaria">Ordinaria</option>
+                        <option value="extraordinaria">Extraordinaria</option>
                     </select>
                 </div>
                 <div class="filtro-group" id="grupoFiltroEjercicio" style="display: none;">
-                    <label>💪 Tipo de Ejercicio</label>
+                    <label>Tipo de Ejercicio</label>
                     <select id="filtroEjercicio">
                         <option value="">Todos</option>
-                        <option value="compania">🏢 Compañía</option>
-                        <option value="cuerpo">🏛️ Cuerpo</option>
+                        <option value="compania">Compania</option>
+                        <option value="cuerpo">Cuerpo</option>
                     </select>
                 </div>
                 <div class="filtro-group">
-                    <label>🏆 Mostrar Top</label>
+                    <label>Mostrar Top</label>
                     <select id="filtroTop">
                         <option value="10">Top 10</option>
                         <option value="20">Top 20</option>
@@ -677,7 +678,7 @@
             <!-- RANKING -->
             <div class="ranking-container">
                 <div class="ranking-header" id="rankingTitulo">
-                    🏆 TOP 10 VOLUNTARIOS
+                    TOP 10 VOLUNTARIOS
                 </div>
                 <div id="rankingLista">
                     <!-- Se llena dinámicamente -->
@@ -688,7 +689,7 @@
             <div class="asistencias-container">
                 <div class="asistencias-header">
                     <span class="asistencias-titulo" id="asistenciasTitulo">
-                        📋 Todas las Asistencias
+                        Todas las Asistencias
                     </span>
                     <span class="asistencias-contador" id="asistenciasContador">
                         0 registros
@@ -698,10 +699,10 @@
                     <!-- Se llena dinámicamente -->
                 </div>
                 <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-icon"></div>
                     <div class="empty-state-text">No hay asistencias registradas</div>
                     <button class="btn btn-primary" onclick="window.location.href='tipos-asistencia.html'">
-                        ➕ Registrar Primera Asistencia
+                        Registrar Primera Asistencia
                     </button>
                 </div>
             </div>
@@ -714,7 +715,7 @@
     <div id="modalDetalles" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitulo">📋 Detalles de la Asistencia</h3>
+                <h3 id="modalTitulo">Detalles de la Asistencia</h3>
                 <button class="close-modal" onclick="cerrarModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalBody">
@@ -730,6 +731,6 @@
     <script src="{% static 'js/claves-radiales.js' %}"></script>
     <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
     <script src="{% static 'js/historial-asistencias-django.js' %}?v=21.0"></script>
-    <script>console.log('✅ Historial v18.0 - SIN CIERRE AUTOMÁTICO - SOLO MANUAL');</script>
+    <script>console.log('Historial v18.0 - SIN CIERRE AUTOMATICO - SOLO MANUAL');</script>
 </body>
 </html>

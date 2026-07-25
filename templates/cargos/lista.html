@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-custom.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="page-container cargos-page">
@@ -18,7 +19,7 @@
                  <button type="button" class="btn btn-secondary" onclick="cargosSistema.volverAlSistema()">
             ← Volver
         </button>
-                <h2>👔 SISTEMA DE CARGOS Y AÑOS DE SERVICIO</h2>
+                <h2>SISTEMA DE CARGOS Y AÑOS DE SERVICIO</h2>
                 <p>Registro y Control de Cargos Desempeñados por Bomberos</p>
             </div>
 
@@ -26,14 +27,14 @@
                 <div id="mensajeCargos" class="mensaje-global" style="display: none;"></div>
 
                 <div class="bombero-info">
-                    <h3>👤 Información del Bombero</h3>
+                    <h3>Información del Bombero</h3>
                     <div class="bombero-datos" id="bomberoDatosCargos">
                         <!-- Datos cargados por JavaScript -->
                     </div>
                 </div>
 
                 <div class="form-container">
-                    <h3>📋 Registro de Nuevo Cargo</h3>
+                    <h3>Registro de Nuevo Cargo</h3>
                     
                     <form id="formCargo">
                         <input type="hidden" id="bomberoCargoId" name="bomberoCargoId">
@@ -46,7 +47,7 @@
                             </div>
 
                             <div class="form-group full-width">
-    <label class="opcional">⭐ Cargos de Comandancia</label>
+    <label class="opcional">Cargos de Comandancia</label>
     <select id="cargoComandancia" name="cargoComandancia" onchange="cargosSistema.seleccionarCargo('comandancia')">
         <option value="">Seleccione cargo de comandancia</option>
         <option value="Superintendente">Superintendente</option>
@@ -61,7 +62,7 @@
 </div>
 
 <div class="form-group full-width">
-    <label class="opcional">👔 Cargos de Compañía</label>
+    <label class="opcional">Cargos de Compañía</label>
     <select id="cargoCompania" name="cargoCompania" onchange="cargosSistema.seleccionarCargo('compania')">
         <option value="">Seleccione cargo de compañía</option>
         <option value="Capitán">Capitán</option>
@@ -78,7 +79,7 @@
 </div>
 
 <div class="form-group full-width">
-    <label class="opcional">⚖️ Consejos de Compañía</label>
+    <label class="opcional">Consejos de Compañía</label>
     <select id="cargoConsejo" name="cargoConsejo" onchange="cargosSistema.seleccionarCargo('consejo')">
         <option value="">Seleccione cargo de consejo</option>
         <option value="Miembro Consejo de Disciplina de Cía">Miembro Consejo de Disciplina de Cía</option>
@@ -88,7 +89,7 @@
 </div>
 
 <div class="form-group full-width">
-    <label class="opcional">🔧 Cargos de Confianza</label>
+    <label class="opcional">Cargos de Confianza</label>
     <select id="cargoTecnico" name="cargoTecnico" onchange="cargosSistema.seleccionarCargo('tecnico')">
         <option value="">Seleccione cargo de confianza</option>
         <option value="Jefe de Máquinas">Jefe de Máquinas</option>
@@ -126,7 +127,7 @@
                             </div>
 
                             <div class="info-nota">
-                                💡 <strong>Nota:</strong> Debe completar al menos uno de los siguientes campos: <strong>Año</strong>, <strong>Cargo</strong> o <strong>Desde</strong>
+                                <strong>Nota:</strong> Debe completar al menos uno de los siguientes campos: <strong>Año</strong>, <strong>Cargo</strong> o <strong>Desde</strong>
                             </div>
                         </div>
 
@@ -138,13 +139,13 @@
                 </div>
 
                 <div class="section-header-cargos">
-                    <h2>📚 Historial de Cargos</h2>
+                    <h2>Historial de Cargos</h2>
                     <div class="header-actions-cargos">
                         <button type="button" class="btn-export-pdf" onclick="cargosSistema.exportarPDF()">
-                            📄 EXPORTAR PDF
+                            EXPORTAR PDF
                         </button>
                         <button type="button" class="btn-export-excel" onclick="cargosSistema.exportarExcel()">
-                            📊 DESCARGAR EXCEL
+                            DESCARGAR EXCEL
                         </button>
                     </div>
                 </div>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tabla de Uniformes - Proyecto SEIS</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -369,7 +370,7 @@
 <body>
     <div class="container">
         <div class="action-buttons">
-            <button class="btn btn-print" id="btnImprimirTabla">💾 Descargar PDF</button>
+            <button class="btn btn-print" id="btnImprimirTabla">Descargar PDF</button>
             <a href="/sistema.html" class="btn btn-back">← Volver al Sistema</a>
         </div>
 
@@ -388,7 +389,7 @@
         if (!bomberoId) {
             document.getElementById('contenidoTabla').innerHTML = `
                 <div class="no-uniformes">
-                    <h2>❌ Error</h2>
+                    <h2>Error</h2>
                     <p>No se especificó un ID de voluntario válido.</p>
                     <a href="/sistema.html" class="btn btn-back" style="margin-top: 20px;">Volver al Sistema</a>
                 </div>
@@ -445,7 +446,7 @@
                 console.error('Error:', error);
                 document.getElementById('contenidoTabla').innerHTML = `
                     <div class="no-uniformes">
-                        <h2>❌ Error al cargar</h2>
+                        <h2>Error al cargar</h2>
                         <p>${error.message}</p>
                         <a href="/sistema.html" class="btn btn-back" style="margin-top: 20px;">Volver al Sistema</a>
                     </div>
@@ -522,9 +523,9 @@
             // CLAVE (probar todos los posibles)
             const clave = voluntario.clave_bombero || voluntario.claveBombero || voluntario.clave || '-';
             
-            console.log('✅ Nombre construido:', nombreCompleto);
-            console.log('✅ Clave bombero:', clave);
-            console.log('✅ RUT:', voluntario.rut || 'Sin RUT');
+            console.log('Nombre construido:', nombreCompleto);
+            console.log('Clave bombero:', clave);
+            console.log('RUT:', voluntario.rut || 'Sin RUT');
             
             // Filtrar solo uniformes activos (NO devueltos)
             const uniformesActivos = uniformes.filter(u => u.estado === 'activo');
@@ -559,7 +560,7 @@
             if (uniformesActivos.length === 0) {
                 html += `
                     <div class="no-uniformes">
-                        <h3>📭 Sin uniformes activos</h3>
+                        <h3>Sin uniformes activos</h3>
                         <p>Este voluntario no tiene uniformes en su poder actualmente.</p>
                     </div>
                 `;
@@ -576,7 +577,7 @@
                             <div style="background: ${colorTipo}; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
                                 <h3 style="margin: 0; color: white; font-size: 18px; display: flex; align-items: center; gap: 10px;">
                                     <span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; font-size: 14px;">#${idx + 1}</span>
-                                    🔥 ${tipoNombre}
+                                    ${tipoNombre}
                                 </h3>
                                 <span style="background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
                                     ID: ${uniforme.id}

@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="{% static 'css/fix-tarjetas-datos.css' %}?v=1">
     <link rel="stylesheet" href="{% static 'css/responsive-mobile.css' %}?v=3">
     <link rel="stylesheet" href="{% static 'css/ux-panel-mejoras.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -130,7 +131,7 @@
 
         <div class="sidebar-footer">
             <button class="sidebar-logout" onclick="logout()">
-                <span>🚪</span>
+                <span>&#8594;</span>
                 <span>Cerrar Sesión</span>
             </button>
         </div>
@@ -147,7 +148,7 @@
             <header class="main-header" style="display: none;">
                 <div class="header-container">
                     <div class="header-brand">
-                        <div class="brand-logo">🚒</div>
+                        <div class="brand-logo">P6</div>
                         <div class="brand-text">
                             <h1>Proyecto SEIS</h1>
                             <p>Sistema de Registro de Bomberos</p>
@@ -167,27 +168,27 @@
                             </button>
 
                             <button class="header-btn btn-primary" id="btnBeneficios" style="display: none;">
-                                <span class="btn-icon">🎪</span>
+                                <span class="btn-icon">B</span>
                                 <span class="btn-label">Beneficios</span>
                             </button>
 
                             <button class="header-btn btn-success" id="btnFinanzas" style="display: none;">
-                                <span class="btn-icon">💰</span>
+                                <span class="btn-icon">$</span>
                                 <span class="btn-label">Finanzas</span>
                             </button>
                             
                             <button class="header-btn btn-danger" id="btnRegistroAsistencia" style="display: none;">
-                                <span class="btn-icon">📋</span>
+                                <span class="btn-icon">&#10003;</span>
                                 <span class="btn-label">Asistencia</span>
                             </button>
-                            
+
                             <button class="header-btn btn-info" id="btnHistorialAsistencias" style="display: none;">
-                                <span class="btn-icon">📊</span>
+                                <span class="btn-icon">&#9776;</span>
                                 <span class="btn-label">Historial</span>
                             </button>
-                            
+
                             <button class="header-btn btn-warning" id="btnListadoSanciones" style="display: none;">
-                                <span class="btn-icon">📋</span>
+                                <span class="btn-icon">&#9878;</span>
                                 <span class="btn-label">Listado Sanciones</span>
                             </button>
                         </div>
@@ -222,33 +223,33 @@
                         <h3>Bomberos Registrados</h3>
                         <div class="registros-buttons">
                             <button type="button" class="btn btn-info" onclick="sistemaBomberos.toggleInfoCategorias()">
-                                ℹ️ Info Categorías
+                                Info Categorias
                             </button>
                             <button type="button" class="btn btn-excel" onclick="sistemaBomberos.exportarExcel()">
-                                📊 Exportar Excel
+                                Exportar Excel
                             </button>
                             <button type="button" class="btn btn-pdf" onclick="sistemaBomberos.generarPDFConsultaVoluntarios()">
-                                📄 PDF Voluntarios por Antigüedad
+                                PDF Voluntarios por Antigüedad
                             </button>
                         </div>
                     </div>
 
                     <div class="buscador-container">
                         <input type="text" id="buscadorBomberos" 
-                               placeholder="🔍 Buscar por nombre, clave, RUT, compañía...">
+                               placeholder="Buscar por nombre, clave, RUT, compañía...">
                     </div>
 
                     <!-- Selector de estado (se muestra en celular; clickea el botón correspondiente) -->
                     <select id="filtroEstadoSelect" class="filtro-estado-select"
                             onchange="var b=document.querySelector('.btn-filtro-estado[data-estado='+this.value+']'); if(b){b.click();}">
-                        <option value="todos">📊 Todos</option>
-                        <option value="activo">✅ Activos</option>
-                        <option value="suspendido">⏸️ Suspendidos</option>
-                        <option value="renunciado">🔄 Renunciados</option>
-                        <option value="separado">⏸️ Separados</option>
-                        <option value="expulsado">❌ Expulsados</option>
-                        <option value="martir">🕊️ Mártires</option>
-                        <option value="fallecido">☠️ Fallecidos</option>
+                        <option value="todos">Todos</option>
+                        <option value="activo">Activos</option>
+                        <option value="suspendido">Suspendidos</option>
+                        <option value="renunciado">Renunciados</option>
+                        <option value="separado">Separados</option>
+                        <option value="expulsado">Expulsados</option>
+                        <option value="martir">Mártires</option>
+                        <option value="fallecido">Fallecidos</option>
                     </select>
 
                     <div class="filtros-estado-container">
@@ -263,22 +264,22 @@
                     </div>
 
                     <div id="infoCategorias" class="info-categorias" style="display: none;">
-                        <h4>📋 Sistema de Categorías por Antigüedad</h4>
+                        <h4>Sistema de Categorías por Antigüedad</h4>
                         <div class="categoria-explicacion">
                             <div style="border-left-color: #1976d2;">
-                                <strong style="color: #1976d2;">🔰 Voluntario</strong><br>
+                                <strong style="color: #1976d2;">Voluntario</strong><br>
                                 <small>Menos de 20 años de servicio</small>
                             </div>
                             <div style="border-left-color: #388e3c;">
-                                <strong style="color: #388e3c;">🏅 Voluntario Honorario de Compañía</strong><br>
+                                <strong style="color: #388e3c;">Voluntario Honorario de Compañía</strong><br>
                                 <small>Entre 20 y 24 años de servicio</small>
                             </div>
                             <div style="border-left-color: #f57c00;">
-                                <strong style="color: #f57c00;">🎖️ Voluntario Honorario del Cuerpo</strong><br>
+                                <strong style="color: #f57c00;">Voluntario Honorario del Cuerpo</strong><br>
                                 <small>Entre 25 y 49 años de servicio</small>
                             </div>
                             <div style="border-left-color: #d32f2f;">
-                                <strong style="color: #d32f2f;">🏆 Voluntario Insigne de Chile</strong><br>
+                                <strong style="color: #d32f2f;">Voluntario Insigne de Chile</strong><br>
                                 <small>50 años o más de servicio</small>
                             </div>
                         </div>

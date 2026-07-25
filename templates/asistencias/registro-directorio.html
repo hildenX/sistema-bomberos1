@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
     <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="page-container asistencias-page">
@@ -21,19 +22,19 @@
                 <div class="header-logo">
                     <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; margin-bottom: 10px;">
                 </div>
-                <h2>👔 REGISTRO DE DIRECTORIO DE COMPAÑÍA</h2>
+                <h2>REGISTRO DE DIRECTORIO DE COMPAÑÍA</h2>
                 <p>Sistema de Control de Asistencia - Oficiales y Cargos de Confianza</p>
             </div>
 
             <div class="page-content">
                 <!-- INFO BOX -->
                 <div class="info-box-directorio" style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <strong>ℹ️ Importante:</strong> Solo se registran oficiales de compañía y cargos de confianza. Esta asistencia NO suma para el ranking anual.
+                    <strong>Importante:</strong> Solo se registran oficiales de compañía y cargos de confianza. Esta asistencia NO suma para el ranking anual.
                 </div>
 
                 <!-- DATOS DE LA REUNIÓN -->
                 <div class="datos-emergencia">
-                    <h3>📋 Datos de la Reunión de Directorio</h3>
+                    <h3>Datos de la Reunión de Directorio</h3>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -80,7 +81,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">👔</span>
+                                <span class="categoria-icono">&#9670;</span>
                                 OFICIALES DE COMPAÑÍA
                             </div>
                             <div class="categoria-botones">
@@ -99,7 +100,7 @@
                     <div class="categoria-container">
                         <div class="categoria-header">
                             <div class="categoria-titulo">
-                                <span class="categoria-icono">🔧</span>
+                                <span class="categoria-icono">&#9881;</span>
                                 CARGOS DE CONFIANZA
                             </div>
                             <div class="categoria-botones">
@@ -117,7 +118,7 @@
 
                 <!-- RESUMEN -->
                 <div class="resumen-detallado">
-                    <h3>📊 RESUMEN DE ASISTENCIA AL DIRECTORIO</h3>
+                    <h3>RESUMEN DE ASISTENCIA AL DIRECTORIO</h3>
                     <div class="resumen-grid">
                         <div class="resumen-item">
                             <span class="resumen-label">Total Asistentes:</span>
@@ -137,7 +138,7 @@
                 <!-- BOTONES -->
                 <div class="botones-accion">
                     <button type="button" class="btn btn-success btn-lg" onclick="guardarDirectorio()">
-                        💾 Guardar Asistencia de Directorio
+                        Guardar Asistencia de Directorio
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="window.location.href='tipos-asistencia.html'">
                         ← Cancelar

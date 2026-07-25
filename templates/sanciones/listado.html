@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         .table-container {
             overflow-x: auto;
@@ -155,7 +156,7 @@
     <div class="page-container">
         <div class="container">
             <div class="page-header">
-                <h2>📊 LISTADO GENERAL DE SANCIONES DISCIPLINARIAS</h2>
+                <h2>LISTADO GENERAL DE SANCIONES DISCIPLINARIAS</h2>
                 <p>Registro Completo de Todas las Sanciones del Sistema</p>
             </div>
 
@@ -184,7 +185,7 @@
                 </div>
 
                 <div class="filters-section">
-                    <h3>🔍 Filtros de Búsqueda</h3>
+                    <h3>Filtros de Búsqueda</h3>
                     <div class="filters-grid">
                         <div class="filter-group">
                             <label>Tipo de Sanción</label>
@@ -219,7 +220,7 @@
 
                 <div class="action-buttons">
                     <button class="btn-action btn-export" onclick="listadoSanciones.exportarExcel()">
-                        📊 Exportar a Excel
+                        Exportar a Excel
                     </button>
                     <button class="btn-action btn-back" onclick="listadoSanciones.volver()">
                         ← Volver al Sistema
@@ -247,7 +248,7 @@
                 </div>
 
                 <div id="emptyState" class="empty-state" style="display: none;">
-                    <h3>📋 No hay sanciones registradas</h3>
+                    <h3>No hay sanciones registradas</h3>
                     <p>No se encontraron sanciones que coincidan con los filtros</p>
                 </div>
             </div>

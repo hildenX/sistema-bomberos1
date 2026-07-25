@@ -121,15 +121,15 @@ function generarMenuSegunRol(role) {
     if (role === 'Tesorero') {
         widgetDeudoresInicial = `
             <div class="sidebar-widget-deudores-top" onclick="mostrarDeudoresDesdeWidget()"
-                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)'"
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(245, 158, 11, 0.2)'"
-                 style="cursor: pointer; margin: 15px 12px; padding: 16px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border-left: 4px solid #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2); transition: all 0.3s; position: relative; transform: translateY(0);">
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.3)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.15)'"
+                 style="cursor: pointer; margin: 15px 12px; padding: 16px; background: rgba(239,68,68,0.1); border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15); transition: all 0.3s; position: relative; transform: translateY(0);">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 24px; animation: pulse 2s infinite;">&#128276;</span>
+                        <span style="font-size: 18px; color: #ef4444;">&#9888;</span>
                         <div>
-                            <div style="color: #78350f; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px;">Deudores</div>
-                            <div style="color: #92400e; font-size: 0.75rem;">Click para ver detalles</div>
+                            <div style="color: #fca5a5; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px;">Deudores</div>
+                            <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Click para ver detalles</div>
                         </div>
                     </div>
                     <div id="sidebarBadgeDeudores" style="background: #ef4444; color: white; font-weight: 700; font-size: 1.1rem; padding: 6px 12px; border-radius: 50%; min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);">0</div>
@@ -139,15 +139,15 @@ function generarMenuSegunRol(role) {
 
         widgetPagosPortalInicial = `
             <div class="sidebar-widget-deudores-top" onclick="mostrarSolicitudesPortalDesdeWidget()"
-                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.4)'"
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(59, 130, 246, 0.2)'"
-                 style="cursor: pointer; margin: 0 12px 15px; padding: 16px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; border-left: 4px solid #2563eb; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2); transition: all 0.3s; position: relative; transform: translateY(0);">
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(59, 130, 246, 0.15)'"
+                 style="cursor: pointer; margin: 0 12px 15px; padding: 16px; background: rgba(59,130,246,0.1); border-radius: 12px; border-left: 4px solid #2563eb; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15); transition: all 0.3s; position: relative; transform: translateY(0);">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 24px; animation: pulse 2s infinite;">&#128179;</span>
+                        <span style="font-size: 18px; color: #60a5fa;">$</span>
                         <div>
-                            <div style="color: #1e3a8a; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px;">Pagos Portal</div>
-                            <div style="color: #1d4ed8; font-size: 0.75rem;">Click para revisar</div>
+                            <div style="color: #93c5fd; font-weight: 700; font-size: 0.95rem; margin-bottom: 2px;">Pagos Portal</div>
+                            <div style="color: rgba(255,255,255,0.5); font-size: 0.75rem;">Click para revisar</div>
                         </div>
                     </div>
                     <div id="sidebarBadgeSolicitudesPortal" style="background: #dc2626; color: white; font-weight: 700; font-size: 1.1rem; padding: 6px 12px; border-radius: 50%; min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);">0</div>
@@ -160,16 +160,16 @@ function generarMenuSegunRol(role) {
         menuItems.push({
             titulo: 'GESTI\u00d3N',
             items: [
-                { icono: '\u{1F465}', texto: 'Voluntarios', url: '/sistema.html' }
+                { icono: '&#9670;', texto: 'Voluntarios', url: '/sistema.html' }
             ]
         });
     }
 
     if (['Super Administrador'].includes(role)) {
         menuItems[0].items.push(
-            { icono: '\u{1F4CB}', texto: 'Cargos', url: '/cargos.html' },
-            { icono: '\u2696\uFE0F', texto: 'Sanciones', url: '/listado-sanciones.html' },
-            { icono: '\u{1F3C6}', texto: 'Felicitaciones', url: '/felicitaciones.html' }
+            { icono: '&#9642;', texto: 'Cargos', url: '/cargos.html' },
+            { icono: '&#9878;', texto: 'Sanciones', url: '/listado-sanciones.html' },
+            { icono: '&#9733;', texto: 'Felicitaciones', url: '/felicitaciones.html' }
         );
     }
 
@@ -178,23 +178,23 @@ function generarMenuSegunRol(role) {
 
         if (['Capit\u00e1n', 'Ayudante', 'Secretario', 'Super Administrador'].includes(role)) {
             asistenciaItems.push(
-                { icono: '\u2705', texto: 'Registrar Asistencia', url: '/tipos-asistencia.html' }
+                { icono: '&#10003;', texto: 'Registrar Asistencia', url: '/tipos-asistencia.html' }
             );
         }
 
         asistenciaItems.push(
-            { icono: '\u{1F4CA}', texto: 'Historial', url: '/historial-asistencias.html' }
+            { icono: '&#9776;', texto: 'Historial', url: '/historial-asistencias.html' }
         );
 
         if (['Capit\u00e1n', 'Ayudante', 'Director', 'Super Administrador'].includes(role)) {
             asistenciaItems.push(
-                { icono: '\u{1F692}', texto: 'Detalle Emergencias', url: '/historial-emergencias.html' }
+                { icono: '&#9888;', texto: 'Detalle Emergencias', url: '/historial-emergencias.html' }
             );
         }
 
         if (['Super Administrador'].includes(role)) {
             asistenciaItems.push(
-                { icono: '\u{1F504}', texto: 'Ciclos de Asistencia', url: '/admin-ciclos.html' }
+                { icono: '&#8635;', texto: 'Ciclos de Asistencia', url: '/admin-ciclos.html' }
             );
         }
 
@@ -208,7 +208,7 @@ function generarMenuSegunRol(role) {
         menuItems.push({
             titulo: 'UNIFORMES',
             items: [
-                { icono: '\u{1F455}', texto: 'Gesti\u00f3n de Uniformes', url: '/uniformes.html' }
+                { icono: '&#9634;', texto: 'Gesti\u00f3n de Uniformes', url: '/uniformes.html' }
             ]
         });
     }
@@ -217,7 +217,7 @@ function generarMenuSegunRol(role) {
         menuItems.push({
             titulo: 'ADMINISTRACI\u00d3N',
             items: [
-                { icono: '\u{1F4E4}', texto: 'Carga Masiva de Voluntarios', url: '/carga-masiva.html' }
+                { icono: '&#8686;', texto: 'Carga Masiva de Voluntarios', url: '/carga-masiva.html' }
             ]
         });
     }
@@ -226,12 +226,12 @@ function generarMenuSegunRol(role) {
         menuItems.push({
             titulo: 'FINANZAS',
             items: [
-                { icono: '\u{1F4B0}', texto: 'Finanzas', url: '/finanzas.html' },
-                { icono: '\u{1F39F}', texto: 'Rifas', url: '/rifas.html' },
-                { icono: '\u{1F3AB}', texto: 'Beneficios', url: '/beneficios.html' },
-                { icono: '\u2699\uFE0F', texto: 'Configurar Cuotas', url: '/configurar-cuotas.html' },
-                { icono: '\u{1F4C4}', texto: 'Ciclos de Cuotas', url: '/admin-ciclos-cuotas.html' },
-                { icono: '\u{1F4CB}', texto: 'Ciclos Beneficios', url: '/admin-ciclos-beneficios.html' }
+                { icono: '$', texto: 'Finanzas', url: '/finanzas.html' },
+                { icono: '&#9830;', texto: 'Rifas', url: '/rifas.html' },
+                { icono: '&#9827;', texto: 'Beneficios', url: '/beneficios.html' },
+                { icono: '&#9881;', texto: 'Configurar Cuotas', url: '/configurar-cuotas.html' },
+                { icono: '&#9671;', texto: 'Ciclos de Cuotas', url: '/admin-ciclos-cuotas.html' },
+                { icono: '&#9671;', texto: 'Ciclos Beneficios', url: '/admin-ciclos-beneficios.html' }
             ],
             widgetSaldo: role === 'Tesorero'
         });
@@ -242,7 +242,7 @@ function generarMenuSegunRol(role) {
             titulo: 'PDF VOLUNTARIOS',
             items: [
                 {
-                    icono: '\u{1F4C4}',
+                    icono: '&#9776;',
                     texto: 'PDF Voluntarios (Antig\u00fcedad)',
                     url: '#',
                     onclick: 'generarPDFDesdeMenu()'
@@ -253,7 +253,7 @@ function generarMenuSegunRol(role) {
 
     const configItems = [
         {
-            icono: '\u{1F3E2}',
+            icono: '&#9635;',
             texto: 'Logo Compa\u00f1\u00eda (PDFs)',
             url: '#',
             onclick: 'abrirModalLogoCompania()'
@@ -262,7 +262,7 @@ function generarMenuSegunRol(role) {
 
     if (['Super Administrador'].includes(role)) {
         configItems.push({
-            icono: '\u{1F464}',
+            icono: '&#9673;',
             texto: 'Gesti\u00f3n de Usuarios',
             url: '#',
             onclick: 'abrirPanelGestionUsuarios()'

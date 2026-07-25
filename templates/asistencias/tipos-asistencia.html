@@ -7,6 +7,7 @@
     <title>Tipos de Asistencia - Sistema Bomberos</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         .tipos-grid {
             display: grid;
@@ -128,7 +129,7 @@
         <div class="tipos-grid">
             <!-- EMERGENCIA -->
             <div class="tipo-card emergencia" onclick="window.location.href='registro-asistencia.html'">
-                <span class="tipo-icono">🚨</span>
+                <span class="tipo-icono"></span>
                 <div class="tipo-titulo">EMERGENCIA</div>
                 <div class="tipo-descripcion">
                     Registro de asistencia a emergencias, incendios y rescates
@@ -137,7 +138,7 @@
 
             <!-- ASAMBLEA -->
             <div class="tipo-card asamblea" onclick="window.location.href='registro-asamblea.html'">
-                <span class="tipo-icono">🏛️</span>
+                <span class="tipo-icono"></span>
                 <div class="tipo-titulo">ASAMBLEA</div>
                 <div class="tipo-descripcion">
                     Asamblea ordinaria o extraordinaria de la compañía
@@ -146,7 +147,7 @@
 
             <!-- EJERCICIOS -->
             <div class="tipo-card ejercicios" onclick="window.location.href='registro-ejercicios.html'">
-                <span class="tipo-icono">💪</span>
+                <span class="tipo-icono"></span>
                 <div class="tipo-titulo">EJERCICIOS</div>
                 <div class="tipo-descripcion">
                     Entrenamiento, prácticas y ejercicios de la compañía
@@ -155,7 +156,7 @@
 
             <!-- CITACIONES -->
             <div class="tipo-card citaciones" onclick="window.location.href='registro-citaciones.html'">
-                <span class="tipo-icono">📞</span>
+                <span class="tipo-icono"></span>
                 <div class="tipo-titulo">CITACIONES</div>
                 <div class="tipo-descripcion">
                     Citaciones oficiales y convocatorias especiales
@@ -164,7 +165,7 @@
 
             <!-- OTRAS -->
             <div class="tipo-card otras" onclick="window.location.href='registro-otras.html'">
-                <span class="tipo-icono">📋</span>
+                <span class="tipo-icono"></span>
                 <div class="tipo-titulo">OTRAS</div>
                 <div class="tipo-descripcion">
                     Otros tipos de eventos y actividades varias
@@ -173,8 +174,8 @@
 
             <!-- DIRECTORIO DE CÍA -->
             <div class="tipo-card directorio" onclick="window.location.href='registro-directorio.html'">
-                <span class="tipo-icono">👔</span>
-                <div class="tipo-titulo">DIRECTORIO DE CÍA.</div>
+                <span class="tipo-icono"></span>
+                <div class="tipo-titulo">DIRECTORIO DE CIA.</div>
                 <div class="tipo-descripcion">
                     Reuniones del directorio de compañía (solo oficiales y cargos de confianza)
                 </div>
@@ -207,7 +208,7 @@
                 if (response.ok) {
                     const logo = await response.json();
                     document.getElementById('logoAsistencias').src = logo.imagen;
-                    console.log('[LOGO ASISTENCIAS] ✅ Logo cargado:', logo.nombre);
+                    console.log('[LOGO ASISTENCIAS] Logo cargado:', logo.nombre);
                 } else {
                     console.log('[LOGO ASISTENCIAS] No hay logo asignado, usando por defecto');
                 }

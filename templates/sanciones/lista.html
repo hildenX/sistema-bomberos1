@@ -11,12 +11,13 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="page-container sanciones-page">
         <div class="container">
             <div class="page-header sanciones-header">
-                <h2>⚖️ SISTEMA DE SANCIONES DISCIPLINARIAS</h2>
+                <h2>SISTEMA DE SANCIONES DISCIPLINARIAS</h2>
                 <p>Registro y Control de Medidas Disciplinarias Institucionales</p>
             </div>
 
@@ -24,14 +25,14 @@
                 <div id="mensajeSanciones" class="mensaje-global" style="display: none;"></div>
 
                 <div class="bombero-info">
-                    <h3>👤 Información del Bombero</h3>
+                    <h3>Información del Bombero</h3>
                     <div class="bombero-datos" id="bomberoDatosSanciones">
                         <!-- Datos cargados por JavaScript -->
                     </div>
                 </div>
 
                 <div class="form-container">
-                    <h3>📋 Registro de Nueva Sanción Disciplinaria</h3>
+                    <h3>Registro de Nueva Sanción Disciplinaria</h3>
                     
                     <form id="formSancion">
                         <input type="hidden" id="bomberoSancionId" name="bomberoSancionId">
@@ -41,10 +42,10 @@
                                 <label for="tipoSancion" class="required">Tipo de Sanción Disciplinaria</label>
                                 <select id="tipoSancion" name="tipoSancion" required class="tipo-sancion-select">
                                     <option value="">Seleccione el tipo de sanción</option>
-                                    <option value="renuncia">📝 Renuncia</option>
-                                    <option value="suspension">⏸️ Suspensión</option>
-                                    <option value="separacion">↗️ Separación</option>
-                                    <option value="expulsion">❌ Expulsión</option>
+                                    <option value="renuncia">Renuncia</option>
+                                    <option value="suspension">Suspensión</option>
+                                    <option value="separacion">Separación</option>
+                                    <option value="expulsion">Expulsión</option>
                                 </select>
                                 <div class="error" id="error-tipoSancion"></div>
                             </div>
@@ -81,7 +82,7 @@
                                        placeholder="Número de días">
                                 <div class="error" id="error-diasSancion"></div>
                                 <div class="info-ayuda">
-                                    ⚡ Si especifica los días de sanción, la fecha de término se calculará automáticamente
+                                    Si especifica los días de sanción, la fecha de término se calculará automáticamente
                                 </div>
                             </div>
 
@@ -104,7 +105,7 @@
                                        class="campo-automatico">
                                 <div class="error" id="error-fechaOficio"></div>
                                 <div class="info-ayuda">
-                                    📅 Se establece automáticamente con la fecha actual
+                                    Se establece automáticamente con la fecha actual
                                 </div>
                             </div>
 
@@ -116,13 +117,13 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label for="documentoOficio" class="opcional">📎 Adjuntar Documento del Oficio</label>
+                                <label for="documentoOficio" class="opcional">Adjuntar Documento del Oficio</label>
                                 <input type="file" 
                                        id="documentoOficio" 
                                        name="documentoOficio" 
                                        accept="image/*,.pdf,.doc,.docx">
                                 <div class="info-ayuda" style="margin-top: 8px;">
-                                    📄 Puede adjuntar el documento oficial de la sanción (PDF, imagen o Word). Máximo 10MB.
+                                    Puede adjuntar el documento oficial de la sanción (PDF, imagen o Word). Máximo 10MB.
                                 </div>
                                 <div id="previewDocumento" class="preview-documento" style="display: none; margin-top: 15px;">
                                     <img id="previewImageDocumento" src="" alt="Vista previa" style="max-width: 200px; max-height: 200px; display: none; border-radius: 8px; margin-bottom: 10px;">
@@ -133,7 +134,7 @@
                         </div>
 
                         <div class="buttons">
-                            <button type="submit" class="btn btn-sancion">✅ Registrar Sanción</button>
+                            <button type="submit" class="btn btn-sancion">Registrar Sanción</button>
                             <button type="button" class="btn btn-secondary" onclick="sancionesSistema.limpiarFormulario()">Limpiar Formulario</button>
                         </div>
                     </form>
@@ -141,13 +142,13 @@
 
                 <div class="list-container">
                     <div class="list-header">
-                        <h3>📚 Historial de Sanciones Disciplinarias</h3>
+                        <h3>Historial de Sanciones Disciplinarias</h3>
                         <div class="acciones-lista">
                             <button type="button" class="btn btn-excel" onclick="sancionesSistema.exportarExcel()">
-                                📊 Descargar Excel
+                                Descargar Excel
                             </button>
                             <button type="button" class="btn btn-pdf" onclick="sancionesSistema.generarPDF()">
-                                📄 Generar Ficha PDF
+                                Generar Ficha PDF
                             </button>
                         </div>
                     </div>

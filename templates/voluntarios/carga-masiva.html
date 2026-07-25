@@ -7,6 +7,7 @@
     <title>Proyecto SEIS - Carga Masiva de Voluntarios</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         .carga-masiva-container {
             max-width: 1200px;
@@ -280,7 +281,7 @@
         <!-- Header -->
         <div class="page-header-carga">
             <h1>
-                <span>📤</span>
+                <span>&#8686;</span>
                 CARGA MASIVA DE VOLUNTARIOS
             </h1>
             <p>Importa múltiples voluntarios desde un archivo Excel</p>
@@ -298,12 +299,12 @@
             </p>
 
             <button class="btn-download-template" onclick="descargarPlantilla()">
-                <span>📥</span>
+                <span>&#8681;</span>
                 Descargar Plantilla Bomberos.xlsx
             </button>
 
             <div class="info-box">
-                <h4>📋 Información de la Plantilla:</h4>
+                <h4>Información de la Plantilla:</h4>
                 <ul>
                     <li><strong>Una sola hoja:</strong> Todos los datos en la hoja "VOLUNTARIOS" (23 columnas)</li>
                     <li><strong>Obligatorios:</strong> Clave, Primer Nombre, Primer Apellido, Segundo Apellido, RUT, Fecha Ingreso, Padrinos</li>
@@ -323,7 +324,7 @@
             </div>
 
             <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">📂</div>
+                <div class="upload-icon">&#9634;</div>
                 <div class="upload-text">Arrastra aquí tu archivo .xlsx</div>
                 <div class="upload-hint">o haz clic para seleccionar</div>
                 <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
@@ -331,10 +332,10 @@
 
             <div id="selectedFile" style="display: none; margin-top: 15px; text-align: center;">
                 <p style="color: #059669; font-weight: 600; font-size: 1.1rem;">
-                    <span>✅</span> Archivo seleccionado: <span id="fileName"></span>
+                    <span>&#10003;</span> Archivo seleccionado: <span id="fileName"></span>
                 </p>
                 <button onclick="procesarArchivo()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">
-                    🚀 Validar e Importar
+                    Validar e Importar
                 </button>
             </div>
 

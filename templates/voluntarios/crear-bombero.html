@@ -7,6 +7,7 @@
     <title>Crear Voluntario - Sistema de Gestión Bomberil</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/form-voluntario-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="main-system">
@@ -15,7 +16,7 @@
             <header class="main-header">
                 <div class="header-container">
                     <div class="header-brand">
-                        <div class="brand-logo">🚒</div>
+                        <div class="brand-logo"></div>
                         <div class="brand-text">
                             <h1>Crear Nuevo Voluntario</h1>
                             <p>Sistema de Registro Bomberil</p>
@@ -41,7 +42,7 @@
                     
                     <!-- ========== IDENTIFICACIÓN ========== -->
                     <div class="section-header">
-                        <div class="section-icon">👤</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Identificación del Voluntario</h3>
                             <p>Información básica y clave única</p>
@@ -59,7 +60,7 @@
 
                     <!-- ========== NOMBRES Y APELLIDOS ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📝</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Nombres y Apellidos</h3>
                             <p>Información personal del voluntario</p>
@@ -115,7 +116,7 @@
 
                     <!-- ========== PADRINOS ========== -->
                     <div class="section-header">
-                        <div class="section-icon">👥</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información de Padrinos</h3>
                             <p>Padrinos que avalan al nuevo voluntario</p>
@@ -142,7 +143,7 @@
 
                     <!-- ========== DATOS PERSONALES ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📋</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Datos Personales</h3>
                             <p>Información personal y profesional</p>
@@ -190,7 +191,7 @@
 
                     <!-- ========== DATOS BOMBERILES ========== -->
                     <div class="section-header">
-                        <div class="section-icon">🚒</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Datos Bomberiles</h3>
                             <p>Información específica del cuerpo de bomberos</p>
@@ -246,12 +247,12 @@
                     <div class="form-group">
                         <label for="estadoBombero">Estado del Voluntario <span class="required">*</span></label>
                         <select id="estadoBombero" name="estadoBombero" required onchange="mostrarCamposEstado()">
-                            <option value="activo">✅ Activo - En servicio</option>
-                            <option value="renunciado">🔄 Renunciado - Puede reintegrarse</option>
-                            <option value="separado">⏸️ Separado - Por periodo determinado</option>
-                            <option value="expulsado">❌ Expulsado - Permanente</option>
-                            <option value="martir">🕊️ Mártir - Fallecido en acto de servicio</option>
-                            <option value="fallecido">☠️ Fallecido - Fallecido (no en servicio)</option>
+                            <option value="activo">Activo - En servicio</option>
+                            <option value="renunciado">Renunciado - Puede reintegrarse</option>
+                            <option value="separado">Separado - Por periodo determinado</option>
+                            <option value="expulsado">Expulsado - Permanente</option>
+                            <option value="martir">Mártir - Fallecido en acto de servicio</option>
+                            <option value="fallecido">Fallecido - Fallecido (no en servicio)</option>
                         </select>
                         <small>Los estados Renunciado, Separado y Expulsado se asignan automáticamente al aplicar sanciones</small>
                     </div>
@@ -378,7 +379,7 @@
 
                     <!-- ========== CONTACTO ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📞</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información de Contacto</h3>
                             <p>Datos para comunicación</p>
@@ -406,7 +407,7 @@
 
                     <!-- ========== FOTOGRAFÍA ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📸</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Fotografía del Voluntario</h3>
                             <p>Imagen para identificación</p>
@@ -427,7 +428,7 @@
 
                     <!-- ========== INFORMACIÓN ADICIONAL ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📄</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información Adicional</h3>
                             <p>Datos complementarios del historial bomberil</p>
@@ -474,7 +475,7 @@
                             ← Volver
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            ✓ Registrar Voluntario
+                            Registrar Voluntario
                         </button>
                     </div>
                 </form>

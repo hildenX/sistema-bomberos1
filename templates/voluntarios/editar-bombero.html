@@ -7,6 +7,7 @@
     <title>Editar Voluntario - Sistema de Gestión Bomberil</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/form-voluntario-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
 <body>
     <div class="main-system">
@@ -15,7 +16,7 @@
             <header class="main-header">
                 <div class="header-container">
                     <div class="header-brand">
-                        <div class="brand-logo">✏️</div>
+                        <div class="brand-logo"></div>
                         <div class="brand-text">
                             <h1>Editar Voluntario</h1>
                             <p>Actualizar información del registro</p>
@@ -38,7 +39,7 @@
                 <!-- INFO ACTUAL -->
                 <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <div style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">ℹ️</div>
+                        <div style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">i</div>
                         <h3 style="color: white; margin: 0; font-size: 18px; font-weight: 600;">Información Actual del Voluntario</h3>
                     </div>
                     <div id="infoBomberoActual" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
@@ -54,7 +55,7 @@
                     
                     <!-- ========== IDENTIFICACIÓN ========== -->
                     <div class="section-header">
-                        <div class="section-icon">👤</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Identificación del Voluntario</h3>
                             <p>Información básica y clave única</p>
@@ -72,7 +73,7 @@
 
                     <!-- ========== NOMBRES Y APELLIDOS ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📝</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Nombres y Apellidos</h3>
                             <p>Información personal del voluntario</p>
@@ -128,7 +129,7 @@
 
                     <!-- ========== PADRINOS ========== -->
                     <div class="section-header">
-                        <div class="section-icon">👥</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información de Padrinos</h3>
                             <p>Padrinos que avalan al nuevo voluntario</p>
@@ -155,7 +156,7 @@
 
                     <!-- ========== DATOS PERSONALES ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📋</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Datos Personales</h3>
                             <p>Información personal y profesional</p>
@@ -203,7 +204,7 @@
 
                     <!-- ========== DATOS BOMBERILES ========== -->
                     <div class="section-header">
-                        <div class="section-icon">🚒</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Datos Bomberiles</h3>
                             <p>Información específica del cuerpo de bomberos</p>
@@ -259,12 +260,12 @@
                     <div class="form-group">
                         <label for="estadoBombero">Estado del Voluntario <span class="required">*</span></label>
                         <select id="estadoBombero" name="estadoBombero" required onchange="mostrarCamposEstado()">
-                            <option value="activo">✅ Activo - En servicio</option>
-                            <option value="renunciado">🔄 Renunciado - Puede reintegrarse</option>
-                            <option value="separado">⏸️ Separado - Por periodo determinado</option>
-                            <option value="expulsado">❌ Expulsado - Permanente</option>
-                            <option value="martir">🕊️ Mártir - Fallecido en acto de servicio</option>
-                            <option value="fallecido">☠️ Fallecido - Fallecido (no en servicio)</option>
+                            <option value="activo">Activo - En servicio</option>
+                            <option value="renunciado">Renunciado - Puede reintegrarse</option>
+                            <option value="separado">Separado - Por periodo determinado</option>
+                            <option value="expulsado">Expulsado - Permanente</option>
+                            <option value="martir">Mártir - Fallecido en acto de servicio</option>
+                            <option value="fallecido">Fallecido - Fallecido (no en servicio)</option>
                         </select>
                         <small>Los estados Renunciado, Separado y Expulsado se asignan automáticamente al aplicar sanciones</small>
                     </div>
@@ -391,7 +392,7 @@
 
                     <!-- ========== CONTACTO ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📞</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información de Contacto</h3>
                             <p>Datos para comunicación</p>
@@ -419,7 +420,7 @@
 
                     <!-- ========== FOTOGRAFÍA ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📸</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Actualizar Fotografía</h3>
                             <p>Cambiar imagen de identificación</p>
@@ -440,7 +441,7 @@
 
                     <!-- ========== INFORMACIÓN ADICIONAL ========== -->
                     <div class="section-header">
-                        <div class="section-icon">📄</div>
+                        <div class="section-icon"></div>
                         <div class="section-title">
                             <h3>Información Adicional</h3>
                             <p>Datos complementarios del historial bomberil</p>
@@ -487,7 +488,7 @@
                             ← Volver
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            ✓ Guardar Cambios
+                            Guardar Cambios
                         </button>
                     </div>
                 </form>

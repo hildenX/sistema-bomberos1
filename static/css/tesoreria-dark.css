@@ -2398,6 +2398,113 @@ input[type="file"]::file-selector-button {
   color: #666 !important;
 }
 
+/* ══════════════════════════════════════════════
+   FINANZAS — Eliminar espacios blancos y fondos claros
+   ══════════════════════════════════════════════ */
+
+/* Reduce padding excesivo del wrapper */
+.fin-wrap {
+  padding: 0 20px 24px !important;
+}
+
+/* Pagination container — fondo blanco → oscuro */
+.pag-container {
+  background: var(--td-surface) !important;
+  border-top: 1px solid var(--td-border) !important;
+  border-bottom: none !important;
+}
+.pag-info {
+  color: var(--td-muted) !important;
+}
+.pag-dots {
+  color: var(--td-muted) !important;
+}
+
+/* Contador de resultados */
+.fin-contador {
+  background: var(--td-surface) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+  color: var(--td-muted) !important;
+}
+
+/* Movement cards — eliminar fondo blanco */
+.mov-card {
+  background: var(--td-card) !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.mov-card:hover {
+  background: var(--td-card-h) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.4) !important;
+}
+.mov-card.ingreso {
+  border-left-color: var(--td-green) !important;
+}
+.mov-card.egreso {
+  border-left-color: var(--td-red) !important;
+}
+.mov-cat {
+  color: var(--td-text) !important;
+}
+.mov-desc {
+  color: var(--td-muted) !important;
+}
+.mov-meta {
+  color: #666 !important;
+}
+.mov-monto.ingreso {
+  color: #4ade80 !important;
+}
+.mov-monto.egreso {
+  color: #f87171 !important;
+}
+
+/* Filters — fondo claro → oscuro */
+.fin-filters {
+  background: var(--td-surface) !important;
+  border-bottom: 1px solid var(--td-border) !important;
+}
+.filter-search input {
+  background: var(--td-card) !important;
+  border-color: var(--td-border) !important;
+  color: var(--td-text) !important;
+}
+.filter-search input:focus {
+  border-color: var(--td-red) !important;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.15) !important;
+}
+
+/* Lists — quitar padding excesivo */
+#listaIngresos,
+#listaEgresos {
+  gap: 10px !important;
+  padding: 12px !important;
+}
+
+/* Modals — fondo oscuro */
+.fin-modal {
+  background: var(--td-card) !important;
+  color: var(--td-text) !important;
+}
+.modal-body {
+  background: var(--td-card) !important;
+}
+.fin-modal .form-group label {
+  color: var(--td-muted) !important;
+}
+.btn-cancel {
+  background: #2a2a2a !important;
+  color: var(--td-muted) !important;
+}
+.btn-cancel:hover {
+  background: #333 !important;
+}
+
+/* Empty/loading states */
+.mov-empty, .mov-loading {
+  color: var(--td-muted) !important;
+}
+
 /* ── Mobile: remove even the small side padding on narrow screens ── */
 @media (max-width: 768px) {
   .cuotas-page .container,

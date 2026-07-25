@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         @keyframes fadeIn {
             from {
@@ -143,7 +144,7 @@
         <div class="container">
             <div class="page-header uniformes-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div>
-                    <h2 style="margin: 0 0 5px 0;">👔 SISTEMA DE ENTREGA DE UNIFORMES</h2>
+                    <h2 style="margin: 0 0 5px 0;">SISTEMA DE ENTREGA DE UNIFORMES</h2>
                     <p style="margin: 0;">Registro de Uniformes Entregados a Voluntarios</p>
                 </div>
                 <button type="button" onclick="window.location.href='/sistema.html'" 
@@ -161,60 +162,60 @@
                 <div id="bomberoDatosUniformes"></div>
 
                 <div class="tipo-uniforme-selector">
-                    <h3>📋 Seleccione el Tipo de Uniforme</h3>
+                    <h3>Seleccione el Tipo de Uniforme</h3>
                     <div class="tipo-uniforme-grid">
                         <div class="tipo-uniforme-card card-basico" id="cardEstructural" onclick="sistemaUniformes.seleccionarTipo('estructural')">
-                            <div class="tipo-uniforme-icon">🧯</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme Estructural</h4>
                             <p>Jardinera + Chaqueta + Casco (Opcional)</p>
                         </div>
                         <div class="tipo-uniforme-card card-basico" id="cardForestal" onclick="sistemaUniformes.seleccionarTipo('forestal')">
-                            <div class="tipo-uniforme-icon">🌲</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme Forestal</h4>
                             <p>Similar al estructural</p>
                         </div>
                         <div class="tipo-uniforme-card card-basico" id="cardRescate" onclick="sistemaUniformes.seleccionarTipo('rescate')">
-                            <div class="tipo-uniforme-icon">🚑</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme de Rescate</h4>
                             <p>Similar al forestal</p>
                         </div>
                         <div class="tipo-uniforme-card card-basico" id="cardHazmat" onclick="sistemaUniformes.seleccionarTipo('hazmat')">
-                            <div class="tipo-uniforme-icon">☣️</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme Hazmat</h4>
                             <p>Casaca, Pantalón, Botas, Casco</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-tenida" id="cardTenida" onclick="sistemaUniformes.seleccionarTipo('tenidaCuartel')">
-                            <div class="tipo-uniforme-icon">🏠</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Tenida de Cuartel</h4>
                             <p>Polera, Polerón, Casaca, Pantalón</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-accesorios" id="cardAccesorios" onclick="sistemaUniformes.seleccionarTipo('accesorios')">
-                            <div class="tipo-uniforme-icon">🎒</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Accesorios</h4>
                             <p>Radio, Cargador, Batería, Linterna</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-parada" id="cardParada" onclick="sistemaUniformes.seleccionarTipo('parada')">
-                            <div class="tipo-uniforme-icon">🎖️</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme de Parada</h4>
                             <p>Casaca, Pantalón, Cinturón</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-usar" id="cardUsar" onclick="sistemaUniformes.seleccionarTipo('usar')">
-                            <div class="tipo-uniforme-icon">🚨</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme USAR</h4>
                             <p>EPP Multi Rol, Botas, Casco</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-agreste" id="cardAgreste" onclick="sistemaUniformes.seleccionarTipo('agreste')">
-                            <div class="tipo-uniforme-icon">🌾</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme AGRESTE</h4>
                             <p>Mat. Peligrosos, Botas, Casco</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-um6" id="cardUm6" onclick="sistemaUniformes.seleccionarTipo('um6')">
-                            <div class="tipo-uniforme-icon">⚓</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme UM-6</h4>
                             <p>Marítimo, Chaleco Flotante</p>
                         </div>
                         <div class="tipo-uniforme-card tipo-gersa" id="cardGersa" onclick="sistemaUniformes.seleccionarTipo('gersa')">
-                            <div class="tipo-uniforme-icon">🤿</div>
+                            <div class="tipo-uniforme-icon"></div>
                             <h4>Uniforme GERSA</h4>
                             <p>Buceo, Traje, Aletas, Compensador</p>
                         </div>
@@ -327,6 +328,6 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/uniformes-django.js' %}?v=7.8"></script>
-    <script>console.log('✅ Uniformes Django v7.7 - Tabla HTML + API Django');</script>
+    <script>console.log('Uniformes Django v7.7 - Tabla HTML + API Django');</script>
 </body>
 </html>

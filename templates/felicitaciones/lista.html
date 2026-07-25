@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         .felicitaciones-header {
             background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
@@ -34,7 +35,7 @@
     <div class="page-container felicitaciones-page">
         <div class="container">
             <div class="page-header felicitaciones-header">
-                <h2>🏆 SISTEMA DE FELICITACIONES Y RECONOCIMIENTOS</h2>
+                <h2>SISTEMA DE FELICITACIONES Y RECONOCIMIENTOS</h2>
                 <p>Registro de Méritos y Reconocimientos Institucionales</p>
             </div>
 
@@ -42,14 +43,14 @@
                 <div id="mensajeFelicitaciones" class="mensaje-global" style="display: none;"></div>
 
                 <div class="bombero-info">
-                    <h3>👤 Información del Bombero</h3>
+                    <h3>Información del Bombero</h3>
                     <div class="bombero-datos" id="bomberoDatosFelicitaciones">
                         <!-- Datos cargados por JavaScript -->
                     </div>
                 </div>
 
                 <div class="form-container">
-                    <h3>📋 Registro de Nueva Felicitación</h3>
+                    <h3>Registro de Nueva Felicitación</h3>
                     
                     <form id="formFelicitacion">
                         <input type="hidden" id="bomberoFelicitacionId" name="bomberoFelicitacionId">
@@ -59,12 +60,12 @@
                                 <label for="tipoFelicitacion" class="required">Tipo de Felicitación</label>
                                 <select id="tipoFelicitacion" name="tipoFelicitacion" required>
                                     <option value="">Seleccione el tipo de felicitación</option>
-                                    <option value="destacado">⭐ Desempeño Destacado</option>
-                                    <option value="merito">🏅 Mérito Extraordinario</option>
-                                    <option value="valor">💪 Acto de Valor</option>
-                                    <option value="servicio">🎖️ Servicio Distinguido</option>
-                                    <option value="antiguedad">📅 Reconocimiento por Antigüedad</option>
-                                    <option value="otra">📌 Otra Felicitación</option>
+                                    <option value="destacado">Desempeño Destacado</option>
+                                    <option value="merito">Mérito Extraordinario</option>
+                                    <option value="valor">Acto de Valor</option>
+                                    <option value="servicio">Servicio Distinguido</option>
+                                    <option value="antiguedad">Reconocimiento por Antigüedad</option>
+                                    <option value="otra">Otra Felicitación</option>
                                 </select>
                                 <div class="error" id="error-tipoFelicitacion"></div>
                             </div>
@@ -114,7 +115,7 @@
                                        class="campo-automatico">
                                 <div class="error" id="error-fechaOficioFelicitacion"></div>
                                 <div class="info-ayuda">
-                                    📅 Se establece automáticamente con la fecha actual
+                                    Se establece automáticamente con la fecha actual
                                 </div>
                             </div>
 
@@ -126,13 +127,13 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label for="documentoFelicitacion" class="opcional">📎 Adjuntar Documento</label>
+                                <label for="documentoFelicitacion" class="opcional">Adjuntar Documento</label>
                                 <input type="file" 
                                        id="documentoFelicitacion" 
                                        name="documentoFelicitacion" 
                                        accept="image/*,.pdf,.doc,.docx">
                                 <div class="info-ayuda" style="margin-top: 8px;">
-                                    📄 Puede adjuntar el documento oficial de la felicitación (PDF, imagen o Word). Máximo 10MB.
+                                    Puede adjuntar el documento oficial de la felicitación (PDF, imagen o Word). Máximo 10MB.
                                 </div>
                                 <div id="previewDocumento" class="preview-documento" style="display: none; margin-top: 15px;">
                                     <img id="previewImageDocumento" src="" alt="Vista previa" style="max-width: 200px; max-height: 200px; display: none; border-radius: 8px; margin-bottom: 10px;">
@@ -143,7 +144,7 @@
                         </div>
 
                         <div class="buttons">
-                            <button type="submit" class="btn btn-felicitacion">✅ Registrar Felicitación</button>
+                            <button type="submit" class="btn btn-felicitacion">Registrar Felicitación</button>
                             <button type="button" class="btn btn-secondary" onclick="felicitacionesSistema.limpiarFormulario()">Limpiar Formulario</button>
                         </div>
                     </form>
@@ -151,13 +152,13 @@
 
                 <div class="list-container">
                     <div class="list-header">
-                        <h3>🏆 Historial de Felicitaciones</h3>
+                        <h3>Historial de Felicitaciones</h3>
                         <div class="acciones-lista">
                             <button type="button" class="btn btn-excel" onclick="felicitacionesSistema.exportarExcel()">
-                                📊 Descargar Excel
+                                Descargar Excel
                             </button>
                             <button type="button" class="btn btn-pdf" onclick="felicitacionesSistema.generarPDF()">
-                                📄 Generar Certificado PDF
+                                Generar Certificado PDF
                             </button>
                         </div>
                     </div>
