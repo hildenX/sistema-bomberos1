@@ -4,6 +4,7 @@
    ============================================================================= */
 
 :root {
+    /* ---- Primitivos (superficie / texto) ---- */
     --gd-bg:        #0f0f0f;
     --gd-surface:   #161616;
     --gd-card:      #1c1c1c;
@@ -15,6 +16,10 @@
     --gd-text-dim:  #666666;
     --gd-input-bg:  #1a1a1a;
     --gd-input-foc: #222222;
+    --gd-hover:     rgba(255,255,255,0.04);
+    --gd-shadow:    0 4px 20px rgba(0,0,0,0.5);
+
+    /* ---- Primitivos (marca / acento) ---- */
     --gd-rojo:      #c0392b;
     --gd-rojo-dk:   #8b1429;
     --gd-rojo-lt:   #e74c3c;
@@ -23,8 +28,26 @@
     --gd-verde:     #27ae60;
     --gd-azul:      #2980b9;
     --gd-naranja:   #e67e22;
-    --gd-hover:     rgba(255,255,255,0.04);
-    --gd-shadow:    0 4px 20px rgba(0,0,0,0.5);
+
+    /* ---- Semanticos: estado (fondo translucido 12% + texto legible) ----
+       Patron repetido 20+ veces esta sesion: rgba(color,0.12) de fondo +
+       una variante clara del mismo color para el texto. Usar estos en vez
+       de repetir el rgba() a mano en cada archivo nuevo. */
+    --gd-success-bg:   rgba(39,174,96,0.12);
+    --gd-success-text: #4ade80;
+    --gd-success-border: rgba(39,174,96,0.3);
+
+    --gd-danger-bg:    rgba(192,57,43,0.12);
+    --gd-danger-text:  #fca5a5;
+    --gd-danger-border: rgba(192,57,43,0.3);
+
+    --gd-warning-bg:   rgba(200,148,42,0.12);
+    --gd-warning-text: #fbbf24;
+    --gd-warning-border: rgba(200,148,42,0.3);
+
+    --gd-info-bg:      rgba(41,128,185,0.12);
+    --gd-info-text:    #93c5fd;
+    --gd-info-border:  rgba(41,128,185,0.3);
 }
 
 /* ===== BASE ===== */

@@ -30,11 +30,21 @@
     <link rel="stylesheet" href="{% static 'css/fix-tarjetas-datos.css' %}?v=1">
     <link rel="stylesheet" href="{% static 'css/responsive-mobile.css' %}?v=3">
     <link rel="stylesheet" href="{% static 'css/ux-panel-mejoras.css' %}?v=3">
-    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
     <style>
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        /* El badge SUSPENDIDO parpadea con .pulse para llamar la atención;
+           quien prefiere menos movimiento sigue viendo el estado (el borde
+           naranja de 2px y el texto ya lo comunican), solo se le quita el
+           parpadeo/escalado — no tocamos otras transiciones del sitio. */
+        @media (prefers-reduced-motion: reduce) {
+            .badge-estado-voluntario {
+                animation: none !important;
+            }
         }
 
         /* Selector de estado: oculto en desktop (ahí se usan los botones) */
@@ -95,10 +105,11 @@
             .bombero-nombre { font-size: 1.05rem !important; line-height: 1.3 !important; word-break: break-word !important; }
             .bombero-clave { word-break: break-word !important; }
 
-            .bombero-botones { display: flex !important; flex-wrap: wrap !important; width: 100% !important; gap: 6px !important; margin-top: 10px !important; justify-content: stretch !important; }
+            .bombero-botones { display: flex !important; flex-wrap: wrap !important; width: 100% !important; gap: 8px !important; margin-top: 10px !important; justify-content: stretch !important; }
             .bombero-botones .btn, .bombero-botones button {
                 flex: 1 1 100% !important; min-width: 0 !important; width: 100% !important;
-                font-size: 0.8rem !important; padding: 10px 8px !important; white-space: normal !important;
+                min-height: 44px !important; box-sizing: border-box !important;
+                font-size: 0.8rem !important; padding: 12px 8px !important; white-space: normal !important;
             }
 
             /* Datos en una sola columna y sin desbordar */
@@ -145,67 +156,6 @@
     <div class="main-content-with-sidebar">
         <div class="main-system" id="mainSystem">
         <div id="containerPrincipal" class="container">
-            <header class="main-header" style="display: none;">
-                <div class="header-container">
-                    <div class="header-brand">
-                        <div class="brand-logo">P6</div>
-                        <div class="brand-text">
-                            <h1>Proyecto SEIS</h1>
-                            <p>Sistema de Registro de Bomberos</p>
-                        </div>
-                    </div>
-
-                    <div class="header-panel">
-                        <div id="saldoCompaniaHeader" class="widget-saldo" style="display: none;">
-                            <span class="widget-label">Saldo Compañía</span>
-                            <span class="widget-value" id="saldoMontoHeader">$0</span>
-                        </div>
-
-                        <div class="header-buttons">
-                            <button class="header-btn btn-alert" id="btnDeudores" style="display: none;">
-                                <span class="btn-badge" id="cantidadDeudores">0</span>
-                                <span class="btn-label">Deudores</span>
-                            </button>
-
-                            <button class="header-btn btn-primary" id="btnBeneficios" style="display: none;">
-                                <span class="btn-icon">B</span>
-                                <span class="btn-label">Beneficios</span>
-                            </button>
-
-                            <button class="header-btn btn-success" id="btnFinanzas" style="display: none;">
-                                <span class="btn-icon">$</span>
-                                <span class="btn-label">Finanzas</span>
-                            </button>
-                            
-                            <button class="header-btn btn-danger" id="btnRegistroAsistencia" style="display: none;">
-                                <span class="btn-icon">&#10003;</span>
-                                <span class="btn-label">Asistencia</span>
-                            </button>
-
-                            <button class="header-btn btn-info" id="btnHistorialAsistencias" style="display: none;">
-                                <span class="btn-icon">&#9776;</span>
-                                <span class="btn-label">Historial</span>
-                            </button>
-
-                            <button class="header-btn btn-warning" id="btnListadoSanciones" style="display: none;">
-                                <span class="btn-icon">&#9878;</span>
-                                <span class="btn-label">Listado Sanciones</span>
-                            </button>
-                        </div>
-
-                        <div class="header-user">
-                            <div class="user-avatar">
-                                <span id="userInitials">T</span>
-                            </div>
-                            <div class="user-details">
-                                <div class="user-role" id="userRoleInfo">Tesorero</div>
-                                <button class="btn-logout-compact" id="logoutBtn">Cerrar Sesión</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
             <div class="form-container">
                 <div id="mensaje" class="success" style="display: none;"></div>
                 
@@ -235,12 +185,14 @@
                     </div>
 
                     <div class="buscador-container">
-                        <input type="text" id="buscadorBomberos" 
+                        <input type="text" id="buscadorBomberos"
+                               aria-label="Buscar bombero por nombre, clave, RUT o compañía"
                                placeholder="Buscar por nombre, clave, RUT, compañía...">
                     </div>
 
                     <!-- Selector de estado (se muestra en celular; clickea el botón correspondiente) -->
                     <select id="filtroEstadoSelect" class="filtro-estado-select"
+                            aria-label="Filtrar bomberos por estado"
                             onchange="var b=document.querySelector('.btn-filtro-estado[data-estado='+this.value+']'); if(b){b.click();}">
                         <option value="todos">Todos</option>
                         <option value="activo">Activos</option>
@@ -252,15 +204,15 @@
                         <option value="fallecido">Fallecidos</option>
                     </select>
 
-                    <div class="filtros-estado-container">
-                        <button class="btn-filtro-estado active" data-estado="todos">Todos</button>
-                        <button class="btn-filtro-estado" data-estado="activo">Activos</button>
-                        <button class="btn-filtro-estado" data-estado="suspendido">Suspendidos</button>
-                        <button class="btn-filtro-estado" data-estado="renunciado">Renunciados</button>
-                        <button class="btn-filtro-estado" data-estado="separado">Separados</button>
-                        <button class="btn-filtro-estado" data-estado="expulsado">Expulsados</button>
-                        <button class="btn-filtro-estado" data-estado="martir">Mártires</button>
-                        <button class="btn-filtro-estado" data-estado="fallecido">Fallecidos</button>
+                    <div class="filtros-estado-container" role="group" aria-label="Filtrar bomberos por estado">
+                        <button class="btn-filtro-estado active" data-estado="todos" aria-pressed="true">Todos</button>
+                        <button class="btn-filtro-estado" data-estado="activo" aria-pressed="false">Activos</button>
+                        <button class="btn-filtro-estado" data-estado="suspendido" aria-pressed="false">Suspendidos</button>
+                        <button class="btn-filtro-estado" data-estado="renunciado" aria-pressed="false">Renunciados</button>
+                        <button class="btn-filtro-estado" data-estado="separado" aria-pressed="false">Separados</button>
+                        <button class="btn-filtro-estado" data-estado="expulsado" aria-pressed="false">Expulsados</button>
+                        <button class="btn-filtro-estado" data-estado="martir" aria-pressed="false">Mártires</button>
+                        <button class="btn-filtro-estado" data-estado="fallecido" aria-pressed="false">Fallecidos</button>
                     </div>
 
                     <div id="infoCategorias" class="info-categorias" style="display: none;">
@@ -300,7 +252,7 @@
     <script src="{% static 'js/auth_django.js' %}?v=2"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=36"></script>
-    <script src="{% static 'js/sistema-django.js' %}?v=2026072602"></script>
+    <script src="{% static 'js/sistema-django.js' %}?v=2026072604"></script>
     <script>
         console.log('Sistema actualizado - Finanzas Django');
         // Validar la sesión contra el servidor; si caducó, al login

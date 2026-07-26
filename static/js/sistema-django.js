@@ -379,6 +379,7 @@ class SistemaBomberos {
                 // Remover clase active de todos
                 botonesFilter.forEach(b => {
                     b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
                     const estado = b.dataset.estado;
                     const colors = {
                         'todos': '#4caf50',
@@ -396,6 +397,7 @@ class SistemaBomberos {
                 
                 // Agregar clase active al botón clickeado
                 btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
                 const estado = btn.dataset.estado;
                 const colors = {
                     'todos': '#4caf50',
@@ -416,116 +418,46 @@ class SistemaBomberos {
             });
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            logout();
-        });
     }
 
     mostrarInfoUsuario() {
-        const userRoleInfo = document.getElementById('userRoleInfo');
+        // El rol/nombre de usuario y el logout ya los muestra el sidebar
+        // (sidebarUserRole / sidebarUserName / sidebar-logout en sidebar-django.js).
+        // El antiguo header superior quedaba permanentemente oculto
+        // (display:none sin nada que lo mostrara), asi que se elimino junto
+        // con esta logica muerta. El saldo si sigue siendo real: lo muestra
+        // el sidebar, ver mostrarSaldoEnHeader().
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        
-        if (currentUser) {
-            userRoleInfo.textContent = `${currentUser.role}: ${currentUser.username}`;
-            
-            const btnBeneficios = document.getElementById('btnBeneficios');
-            if (btnBeneficios && (currentUser.role === 'Director' || currentUser.role === 'Super Administrador' || currentUser.role === 'Tesorero')) {
-                btnBeneficios.style.display = 'inline-block';
-                btnBeneficios.onclick = () => {
-                    this.verBeneficios();
-                };
-            }
-            
-            if (currentUser.role === 'Tesorero') {
-                this.mostrarSaldoEnHeader();
-                
-                const btnFinanzas = document.getElementById('btnFinanzas');
-                if (btnFinanzas) {
-                    btnFinanzas.style.display = 'inline-block';
-                    btnFinanzas.onclick = () => {
-                        window.location.href = 'finanzas.html';
-                    };
-                }
-                
-                const btnDeudores = document.getElementById('btnDeudores');
-                if (btnDeudores) {
-                    btnDeudores.style.display = 'inline-block';
-                    btnDeudores.onclick = () => {
-                        this.toggleNotificacionDeudores();
-                    };
-                }
-            }
-            
-            // Botones de Asistencia (visibles para todos)
-            const btnRegistroAsistencia = document.getElementById('btnRegistroAsistencia');
-            if (btnRegistroAsistencia) {
-                btnRegistroAsistencia.style.display = 'inline-block';
-                btnRegistroAsistencia.onclick = () => {
-                    this.verRegistroAsistencia();
-                };
-            }
-            
-            const btnHistorialAsistencias = document.getElementById('btnHistorialAsistencias');
-            if (btnHistorialAsistencias) {
-                btnHistorialAsistencias.style.display = 'inline-block';
-                btnHistorialAsistencias.onclick = () => {
-                    this.verHistorialAsistencias();
-                };
-            }
-            
-            // Botón Listado de Sanciones
-            const btnListadoSanciones = document.getElementById('btnListadoSanciones');
-            if (btnListadoSanciones) {
-                btnListadoSanciones.style.display = 'inline-block';
-                btnListadoSanciones.onclick = () => {
-                    window.location.href = 'listado-sanciones.html';
-                };
-            }
+
+        if (currentUser && currentUser.role === 'Tesorero') {
+            this.mostrarSaldoEnHeader();
         }
     }
 
     mostrarSaldoEnHeader() {
-        const saldoDiv = document.getElementById('saldoCompaniaHeader');
-        const saldoMonto = document.getElementById('saldoMontoHeader');
         const saldoSidebar = document.getElementById('saldoSidebar');
-        
-        if (saldoDiv && saldoMonto) {
-            // Obtener movimientos desde localStorage directamente
-            const movimientos = JSON.parse(localStorage.getItem('finanzas')) || [];
-            
-            const ingresos = movimientos
-                .filter(m => m.tipo === 'ingreso')
-                .reduce((sum, m) => sum + parseFloat(m.monto || 0), 0);
-            
-            const egresos = movimientos
-                .filter(m => m.tipo === 'egreso')
-                .reduce((sum, m) => sum + parseFloat(m.monto || 0), 0);
-            
-            const saldo = ingresos - egresos;
-            
-            const saldoFormateado = new Intl.NumberFormat('es-CL', {
-                style: 'currency',
-                currency: 'CLP',
-                minimumFractionDigits: 0
-            }).format(saldo);
-            
-            saldoMonto.textContent = saldoFormateado;
-            
-            if (saldo < 0) {
-                saldoMonto.style.color = '#f44336';
-            } else if (saldo === 0) {
-                saldoMonto.style.color = '#ff9800';
-            } else {
-                saldoMonto.style.color = '#4caf50';
-            }
-            
-            saldoDiv.style.display = 'flex';
-            
-            // Actualizar también en el sidebar
-            if (saldoSidebar) {
-                saldoSidebar.textContent = saldoFormateado;
-            }
-        }
+        if (!saldoSidebar) return;
+
+        // Obtener movimientos desde localStorage directamente
+        const movimientos = JSON.parse(localStorage.getItem('finanzas')) || [];
+
+        const ingresos = movimientos
+            .filter(m => m.tipo === 'ingreso')
+            .reduce((sum, m) => sum + parseFloat(m.monto || 0), 0);
+
+        const egresos = movimientos
+            .filter(m => m.tipo === 'egreso')
+            .reduce((sum, m) => sum + parseFloat(m.monto || 0), 0);
+
+        const saldo = ingresos - egresos;
+
+        const saldoFormateado = new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP',
+            minimumFractionDigits: 0
+        }).format(saldo);
+
+        saldoSidebar.textContent = saldoFormateado;
     }
 
     // ==================== REDIRIGIR A CREAR VOLUNTARIO ====================
