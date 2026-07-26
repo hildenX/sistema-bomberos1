@@ -92,18 +92,18 @@ class EditarBomberoSistema {
         const antiguedad = this.bomberoActual.antiguedad || { años: 0, meses: 0 };
 
         contenedor.innerHTML = `
-            <div><strong>Nombre:</strong> ${this.bomberoActual.primerNombre} ${this.bomberoActual.primerApellido}</div>
-            <div><strong>Clave:</strong> ${this.bomberoActual.claveBombero}</div>
-            <div><strong>RUT:</strong> ${this.bomberoActual.rut}</div>
-            <div><strong>Edad:</strong> ${edad} años</div>
-            <div><strong>Compañía:</strong> ${this.bomberoActual.compania || 'No especificada'}</div>
-            <div><strong>Antigüedad:</strong> ${antiguedad.años || 0} años, ${antiguedad.meses || 0} meses</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">Nombre:</strong> ${this.bomberoActual.primerNombre} ${this.bomberoActual.primerApellido}</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">Clave:</strong> ${this.bomberoActual.claveBombero}</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">RUT:</strong> ${this.bomberoActual.rut}</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">Edad:</strong> ${edad} años</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">Compañía:</strong> ${this.bomberoActual.compania || 'No especificada'}</div>
+            <div style="color: #f0f0f0;"><strong style="color: #4a9eff;">Antigüedad:</strong> ${antiguedad.años || 0} años, ${antiguedad.meses || 0} meses</div>
         `;
 
         const fotoPreview = document.getElementById('fotoActualPreview');
         if (this.bomberoActual.foto) {
             fotoPreview.innerHTML = `
-                <p style="font-weight: 600; color: #666; margin-bottom: 10px;">📸 Foto Actual:</p>
+                <p style="font-weight: 600; color: #999; margin-bottom: 10px;">Foto Actual:</p>
                 <img src="${this.bomberoActual.foto}" alt="Foto actual" style="max-width: 200px; border-radius: 10px;">
             `;
         } else {
@@ -232,7 +232,7 @@ class EditarBomberoSistema {
                         <p style="font-weight: 600; color: #ff9800; margin-bottom: 10px;">📸 Nueva Foto (Vista Previa):</p>
                         <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 3px solid #ff9800; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;"> Nueva foto cargada (optimizada) - Se guardará al actualizar</p>
+                        <p style="font-size: 0.8rem; color: #999; margin-top: 5px;"> Nueva foto cargada (optimizada) - Se guardará al actualizar</p>
                     </div>
                 `;
             }

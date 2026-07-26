@@ -735,13 +735,13 @@ renderizarBomberos() {
         // Estado del bombero
         const estadoBombero = bombero.estadoBombero || 'activo';
         const estadoInfo = {
-            'activo': { icono: '', texto: 'ACTIVO', color: '#4caf50', bgColor: '#e8f5e9', borderColor: '#4caf50', cardBg: '#ffffff' },
-            'inactivo': { icono: '', texto: 'INACTIVO', color: '#ff9800', bgColor: '#fff3e0', borderColor: '#ff9800', cardBg: '#fffbf0' },
-            'renunciado': { icono: '', texto: 'RENUNCIADO', color: '#f59e0b', bgColor: '#fef3c7', borderColor: '#f59e0b', cardBg: '#fffbeb' },
-            'separado': { icono: '⏸️', texto: 'SEPARADO', color: '#ef4444', bgColor: '#fee2e2', borderColor: '#ef4444', cardBg: '#fef2f2' },
-            'expulsado': { icono: '', texto: 'EXPULSADO', color: '#dc2626', bgColor: '#fecaca', borderColor: '#dc2626', cardBg: '#fee2e2' },
-            'martir': { icono: '🕊️', texto: 'MÁRTIR', color: '#9c27b0', bgColor: '#f3e5f5', borderColor: '#9c27b0', cardBg: '#faf5ff' },
-            'fallecido': { icono: '☠️', texto: 'FALLECIDO', color: '#6b7280', bgColor: '#f3f4f6', borderColor: '#6b7280', cardBg: '#f9fafb' }
+            'activo': { icono: '', texto: 'ACTIVO', color: '#ffffff', bgColor: '#22c55e', borderColor: '#4caf50', cardBg: '#1c1c1c' },
+            'inactivo': { icono: '', texto: 'INACTIVO', color: '#ffffff', bgColor: '#f59e0b', borderColor: '#ff9800', cardBg: '#1c1c1c' },
+            'renunciado': { icono: '', texto: 'RENUNCIADO', color: '#ffffff', bgColor: '#d97706', borderColor: '#f59e0b', cardBg: '#1c1c1c' },
+            'separado': { icono: '⏸️', texto: 'SEPARADO', color: '#ffffff', bgColor: '#ef4444', borderColor: '#ef4444', cardBg: '#1c1c1c' },
+            'expulsado': { icono: '', texto: 'EXPULSADO', color: '#ffffff', bgColor: '#dc2626', borderColor: '#dc2626', cardBg: '#1c1c1c' },
+            'martir': { icono: '🕊️', texto: 'MÁRTIR', color: '#ffffff', bgColor: '#a855f7', borderColor: '#9c27b0', cardBg: '#1c1c1c' },
+            'fallecido': { icono: '☠️', texto: 'FALLECIDO', color: '#ffffff', bgColor: '#6b7280', borderColor: '#6b7280', cardBg: '#1c1c1c' }
         };
         const estado = estadoInfo[estadoBombero] || estadoInfo['activo'];
         

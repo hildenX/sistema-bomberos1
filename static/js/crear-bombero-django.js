@@ -103,7 +103,7 @@ class CrearBomberoSistema {
                     <div style="text-align: center; margin-top: 10px;">
                         <img src="${dataUrl}" alt="Vista previa"
                              style="max-width: 150px; max-height: 150px; border-radius: 10px; border: 2px solid #4caf50; object-fit: cover;">
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 5px;"> Foto cargada (optimizada) - Se guardará al crear</p>
+                        <p style="font-size: 0.8rem; color: #999; margin-top: 5px;"> Foto cargada (optimizada) - Se guardará al crear</p>
                     </div>
                 `;
             }

@@ -4,25 +4,25 @@
  */
 
 :root {
-    --primary-color: #2563eb;
-    --primary-dark: #1e40af;
-    --secondary-color: #64748b;
+    --primary-color: #c0392b;
+    --primary-dark: #8b1429;
+    --secondary-color: #999999;
     --accent-color: #f59e0b;
     --success-color: #10b981;
-    --background: #f8fafc;
-    --card-bg: #ffffff;
-    --border-color: #e2e8f0;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --background: #0e0e0e;
+    --card-bg: #1c1c1c;
+    --border-color: #2a2a2a;
+    --text-primary: #f0f0f0;
+    --text-secondary: #999999;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==================== LAYOUT PRINCIPAL ==================== */
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--background);
     min-height: 100vh;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -126,9 +126,9 @@ body {
 }
 
 .btn-logout-compact:hover {
-    background: #fee2e2;
+    background: rgba(220,38,38,0.15);
     border-color: #dc2626;
-    color: #dc2626;
+    color: #f87171;
 }
 
 /* ==================== CONTENEDOR DE FORMULARIO ==================== */
@@ -393,14 +393,14 @@ input[type="file"]::file-selector-button:hover {
 }
 
 #mensaje.success {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(16,185,129,0.12);
+    color: #4ade80;
     border-left: 4px solid var(--success-color);
 }
 
 #mensaje.error {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(220,38,38,0.12);
+    color: #fca5a5;
     border-left: 4px solid #dc2626;
 }
 
@@ -408,8 +408,8 @@ input[type="file"]::file-selector-button:hover {
 .form-group label .optional-badge {
     display: inline-block;
     padding: 2px 8px;
-    background: #e0e7ff;
-    color: #3730a3;
+    background: rgba(99,102,241,0.15);
+    color: #a5b4fc;
     border-radius: 6px;
     font-size: 11px;
     font-weight: 600;
