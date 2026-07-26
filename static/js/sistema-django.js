@@ -792,18 +792,18 @@ renderizarBomberos() {
             };
             
             const coloresCargo = {
-                'comandancia': { bg: '#fef3c7', color: '#f59e0b', border: '#f59e0b' },
-                'compania': { bg: '#dbeafe', color: '#3b82f6', border: '#3b82f6' },
-                'consejo': { bg: '#f3e8ff', color: '#a855f7', border: '#a855f7' },
-                'tecnico': { bg: '#d1fae5', color: '#10b981', border: '#10b981' }
+                'comandancia': { bg: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: '#f59e0b' },
+                'compania': { bg: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '#3b82f6' },
+                'consejo': { bg: 'rgba(168,85,247,0.15)', color: '#c084fc', border: '#a855f7' },
+                'tecnico': { bg: 'rgba(16,185,129,0.15)', color: '#34d399', border: '#10b981' }
             };
-            
+
             const tipoCargo = cargoVigente.tipo_cargo || 'tecnico';
             const color = coloresCargo[tipoCargo] || coloresCargo.tecnico;
             const icono = iconosCargo[tipoCargo] || '';
-            
+
             badgeCargo = `
-                <span style="display: inline-block; background: ${color.bg}; color: ${color.color}; padding: 3px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1.5px solid ${color.border}; line-height: 1.2;">
+                <span class="badge-estado-voluntario" style="display: inline-block; --badge-bg: ${color.bg}; --badge-color: ${color.color}; padding: 3px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1.5px solid ${color.border}; line-height: 1.2;">
                     ${icono} ${cargoVigente.nombre_cargo.toUpperCase()}
                 </span>
             `;
@@ -825,12 +825,12 @@ renderizarBomberos() {
                     <!-- Header: Nombre + Botones -->
                     <div class="bombero-top">
                         <div>
-                            <h2 class="bombero-nombre">${nombreCompleto} 
-                                <span style="display: inline-block; background: ${estado.bgColor}; color: ${estado.color}; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-left: 10px;">
+                            <h2 class="bombero-nombre">${nombreCompleto}
+                                <span class="badge-estado-voluntario" style="display: inline-block; --badge-bg: ${estado.bgColor}; --badge-color: ${estado.color}; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-left: 10px;">
                                     ${estado.icono} ${estado.texto}
                                 </span>
                                 ${suspendido ? `
-                                <span style="display: inline-block; background: #fff3e0; color: #ff9800; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; border: 2px solid #ff9800; animation: pulse 2s infinite;">
+                                <span class="badge-estado-voluntario" style="display: inline-block; --badge-bg: rgba(255,152,0,0.15); --badge-color: #ff9800; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; border: 2px solid #ff9800; animation: pulse 2s infinite;">
                                     ⏸️ SUSPENDIDO
                                 </span>
                                 ` : ''}

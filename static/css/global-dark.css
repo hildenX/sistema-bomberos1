@@ -164,6 +164,14 @@ p, span, div, label, li, td, th, dt, dd {
     font-weight: 600 !important;
 }
 
+/* Badges de estado/cargo dentro de bombero-top: usan --badge-bg/--badge-color
+   inline para poder ganarle a la regla generica ".bombero-top span" */
+.bombero-card .bombero-top .badge-estado-voluntario {
+    background: var(--badge-bg) !important;
+    color: var(--badge-color) !important;
+    font-size: 0.7rem !important;
+}
+
 .registro-info span,
 .stat-label {
     color: var(--gd-text-sub) !important;
