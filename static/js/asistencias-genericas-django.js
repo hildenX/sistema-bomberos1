@@ -185,6 +185,12 @@ class SistemaAsistenciasGenericas {
             }
         }
 
+        Object.values(clasificados).forEach(lista => {
+            lista.sort((a, b) => this.obtenerNombreCompleto(a.bombero).localeCompare(
+                this.obtenerNombreCompleto(b.bombero), 'es', { sensitivity: 'base' }
+            ));
+        });
+
         return clasificados;
     }
 

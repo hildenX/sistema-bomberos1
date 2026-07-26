@@ -85,6 +85,12 @@ class SistemaDirectorio {
             }
         }
 
+        const comparar = (a, b) => this.obtenerNombreCompleto(a.bombero).localeCompare(
+            this.obtenerNombreCompleto(b.bombero), 'es', { sensitivity: 'base' }
+        );
+        oficialesCompania.sort(comparar);
+        cargosConfianza.sort(comparar);
+
         console.log('[DIRECTORIO] Oficiales de Compañía:', oficialesCompania.length);
         console.log('[DIRECTORIO] Cargos de Confianza:', cargosConfianza.length);
 

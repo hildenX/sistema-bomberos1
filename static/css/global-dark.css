@@ -390,6 +390,14 @@ tr:hover {
     border-color: var(--gd-rojo) !important;
 }
 
+.voluntario-nombre {
+    color: var(--gd-text) !important;
+}
+
+.voluntario-clave {
+    color: var(--gd-text-sub) !important;
+}
+
 /* ===== ALERTS ===== */
 .alert-success,
 .success {

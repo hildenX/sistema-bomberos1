@@ -31,71 +31,48 @@ class SistemaAsistencias {
 
     async cargarDatos() {
         try {
-            // Cargar voluntarios
-            const response = await fetch('/api/voluntarios/', {
-                credentials: 'include'
-            });
+            // Cargar voluntarios y cargos vigentes en paralelo
+            const [response, responseCargos] = await Promise.all([
+                fetch('/api/voluntarios/', { credentials: 'include' }),
+                fetch('/api/cargos/?vigente=true', { credentials: 'include' })
+            ]);
 
             if (!response.ok) throw new Error('Error al cargar voluntarios');
 
             const data = await response.json();
             this.bomberos = Array.isArray(data) ? data : (data.results || []);
-            
+
             // Filtrar solo activos
-            this.bomberos = this.bomberos.filter(b => 
+            this.bomberos = this.bomberos.filter(b =>
                 (b.estado_bombero || b.estadoBombero || 'activo') === 'activo'
             );
 
             console.log('[ASISTENCIAS] Voluntarios cargados:', this.bomberos.length);
 
-            // Cargar cargos vigentes
-            await this.cargarCargosVigentes();
+            if (responseCargos.ok) {
+                const dataCargos = await responseCargos.json();
+                const cargos = Array.isArray(dataCargos) ? dataCargos : (dataCargos.results || []);
+
+                cargos.forEach(cargo => {
+                    const actual = this.cargosVigentes[cargo.voluntario];
+                    if (!actual) {
+                        this.cargosVigentes[cargo.voluntario] = cargo;
+                        return;
+                    }
+                    const fechaActual = new Date(actual.fecha_inicio || actual.anio);
+                    const fechaNueva = new Date(cargo.fecha_inicio || cargo.anio);
+                    if (fechaNueva > fechaActual) {
+                        this.cargosVigentes[cargo.voluntario] = cargo;
+                    }
+                });
+            }
+
+            console.log('[ASISTENCIAS] Cargos vigentes:', Object.keys(this.cargosVigentes).length);
 
         } catch (error) {
             console.error('[ASISTENCIAS] Error al cargar datos:', error);
             Utils.mostrarNotificacion('Error al cargar datos', 'error');
         }
-    }
-
-    async cargarCargosVigentes() {
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-
-        for (const bombero of this.bomberos) {
-            try {
-                const response = await fetch(`/api/cargos/?voluntario=${bombero.id}`, {
-                    credentials: 'include'
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const cargos = Array.isArray(data) ? data : (data.results || []);
-
-                    if (cargos.length > 0) {
-                        const vigentes = cargos.filter(c => {
-                            if (!c.fecha_fin) return true;
-                            const fechaFin = new Date(c.fecha_fin);
-                            fechaFin.setHours(0, 0, 0, 0);
-                            return fechaFin >= hoy;
-                        });
-
-                        if (vigentes.length > 0) {
-                            const masReciente = vigentes.sort((a, b) => {
-                                const fechaA = new Date(a.fecha_inicio || a.anio);
-                                const fechaB = new Date(b.fecha_inicio || b.anio);
-                                return fechaB - fechaA;
-                            })[0];
-
-                            this.cargosVigentes[bombero.id] = masReciente;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error(`[ASISTENCIAS] Error cargando cargo para ${bombero.id}:`, error);
-            }
-        }
-
-        console.log('[ASISTENCIAS] Cargos vigentes:', Object.keys(this.cargosVigentes).length);
     }
 
     configurarEventos() {
@@ -306,6 +283,12 @@ class SistemaAsistencias {
             }
         }
 
+        Object.values(clasificados).forEach(lista => {
+            lista.sort((a, b) => this.obtenerNombreCompleto(a.bombero).localeCompare(
+                this.obtenerNombreCompleto(b.bombero), 'es', { sensitivity: 'base' }
+            ));
+        });
+
         return clasificados;
     }
 
@@ -330,8 +313,8 @@ class SistemaAsistencias {
                        data-cargo="${cargo ? cargo.nombre_cargo : ''}"
                        data-anio-cargo="${cargo ? cargo.anio : ''}"
                        ${this.asistentesSeleccionados.has(bombero.id) ? 'checked' : ''}>
-                <span>${this.obtenerNombreCompleto(bombero)} 
-                      ${cargo ? `<small style="color: #666;">(${cargo.nombre_cargo})</small>` : ''}
+                <span style="color: #f0f0f0;">${this.obtenerNombreCompleto(bombero)}
+                      ${cargo ? `<small style="color: #999;">(${cargo.nombre_cargo})</small>` : ''}
                 </span>
             `;
 
