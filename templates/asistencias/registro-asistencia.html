@@ -256,7 +256,7 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
-    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
 </head>
@@ -617,11 +617,10 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/claves-radiales.js' %}"></script>
-    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=13.0"></script>
+    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=14.0"></script>
     <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
     <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
-    <script>console.log('Emergencias v12.0 - Con logos dinamicos');</script>
-    
+
     <script>
         // Verificar que claves-radiales.js se haya cargado correctamente
         console.log('[INIT] Verificando funciones de claves-radiales.js...');
@@ -629,8 +628,6 @@
         console.log('[INIT] obtenerClavesSeleccionables existe?', typeof obtenerClavesSeleccionables === 'function');
         console.log('[INIT] obtenerDescripcionClave existe?', typeof obtenerDescripcionClave === 'function');
     </script>
-    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=13.0"></script>
-    <script>console.log('Emergencias v12.0 - DEBUG TOTAL DE CLAVE');</script>
     
     <script>
         // ==================== FUNCIONALIDAD DE AUTOCOMPLETADO Y MAPA ====================

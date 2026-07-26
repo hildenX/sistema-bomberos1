@@ -19,6 +19,17 @@ from .permissions import autorizar_request, RolBomberos
 ROLES_CARGA_MASIVA = (RolBomberos.SUPER_ADMIN,)
 
 
+def _limpiar_numero_celda(valor):
+    """Excel/openpyxl devuelve numeros como float (ej: 250.0). Si el valor
+    es un float con parte decimal .0, lo convierte a string sin decimales
+    para evitar strings tipo '250.0' o '942297858.0' en campos de texto."""
+    if valor is None:
+        return valor
+    if isinstance(valor, float) and valor.is_integer():
+        return str(int(valor))
+    return valor
+
+
 def _autorizar_admin(request):
     autorizado, response = autorizar_request(request, roles=ROLES_CARGA_MASIVA)
     return None if autorizado else response
@@ -227,14 +238,14 @@ def importar_masiva(request):
                 # Leer datos personales (columnas 7-16)
                 rut = ws.cell(row=row_num, column=7).value
                 fecha_nac = ws.cell(row=row_num, column=8).value
-                telefono = ws.cell(row=row_num, column=9).value
+                telefono = _limpiar_numero_celda(ws.cell(row=row_num, column=9).value)
                 email = ws.cell(row=row_num, column=10).value
                 domicilio = ws.cell(row=row_num, column=11).value
                 profesion = ws.cell(row=row_num, column=12).value
                 grupo_sang = ws.cell(row=row_num, column=13).value
                 compania = ws.cell(row=row_num, column=14).value
                 fecha_ingreso = ws.cell(row=row_num, column=15).value
-                nro_registro = ws.cell(row=row_num, column=16).value
+                nro_registro = _limpiar_numero_celda(ws.cell(row=row_num, column=16).value)
                 
                 # Leer padrinos (columnas 17-18)
                 primer_padrino = ws.cell(row=row_num, column=17).value
