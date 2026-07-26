@@ -152,13 +152,14 @@ p, span, div, label, li, td, th, dt, dd {
     color: var(--gd-text) !important;
 }
 
-.registro-run,
-.bombero-edad-antiguedad {
+.registro-run {
     color: var(--gd-text-sub) !important;
 }
 
 .bombero-clave,
-.bombero-card .bombero-clave {
+.bombero-card .bombero-clave,
+.bombero-edad-antiguedad,
+.bombero-card .bombero-edad-antiguedad {
     color: var(--gd-text) !important;
     font-weight: 600 !important;
 }
