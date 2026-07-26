@@ -159,9 +159,13 @@ p, span, div, label, li, td, th, dt, dd {
 }
 
 .registro-info span,
-.info-label,
 .stat-label {
     color: var(--gd-text-sub) !important;
+}
+
+.info-label {
+    color: var(--gd-text) !important;
+    font-weight: 700 !important;
 }
 
 .registro-info strong,
@@ -871,7 +875,8 @@ tr:hover {
 }
 
 .info-label {
-    color: var(--gd-rojo-lt) !important;
+    color: var(--gd-text) !important;
+    font-weight: 700 !important;
 }
 
 .info-value {

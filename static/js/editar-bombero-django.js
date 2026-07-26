@@ -26,6 +26,10 @@ class EditarBomberoSistema {
         const userRoleInfo = document.getElementById('userRoleInfo');
         if (currentUser) {
             userRoleInfo.textContent = `${currentUser.role}: ${currentUser.username}`;
+            const userInitials = document.getElementById('userInitials');
+            if (userInitials && currentUser.username) {
+                userInitials.textContent = currentUser.username.trim().charAt(0).toUpperCase();
+            }
         }
         document.getElementById('logoutBtn').addEventListener('click', () => logout());
     }
