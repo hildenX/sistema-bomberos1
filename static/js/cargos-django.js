@@ -84,7 +84,7 @@ class SistemaCargos {
                 <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px;">
                     <h3 style="color: #dc2626; margin-top: 0;"> No se pueden asignar cargos</h3>
                     <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">${validacion.mensaje}</p>
-                    <p style="color: #666; margin: 0;">Solo se puede consultar el historial de cargos de este voluntario.</p>
+                    <p style="color: #999; margin: 0;">Solo se puede consultar el historial de cargos de este voluntario.</p>
                 </div>
             `;
             

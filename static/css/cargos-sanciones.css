@@ -6,8 +6,8 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a237e 0%, #000051 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0e0e0e;
     min-height: 100vh;
     padding: 20px;
 }
@@ -18,10 +18,11 @@ body {
 }
 
 .container {
-    background: white;
+    background: #1c1c1c;
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     overflow: hidden;
+    border: 1px solid #2a2a2a;
 }
 
 /* ==================== HEADERS ESPECÍFICOS ==================== */
@@ -61,8 +62,8 @@ body {
 }
 
 .bombero-info {
-    background: rgba(25, 118, 210, 0.05);
-    border: 2px solid rgba(25, 118, 210, 0.2);
+    background: rgba(25, 118, 210, 0.08);
+    border: 1px solid rgba(25, 118, 210, 0.25);
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 30px;
@@ -83,9 +84,13 @@ body {
     font-size: 0.95rem;
 }
 
+.bombero-datos {
+    color: #f0f0f0;
+}
+
 .bombero-datos div {
     padding: 8px 0;
-    border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+    border-bottom: 1px solid rgba(25, 118, 210, 0.15);
 }
 
 .bombero-datos strong {
@@ -97,8 +102,8 @@ body {
 
 /* ==================== FORMULARIOS ==================== */
 .form-container {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
+    background: #161616;
+    border: 1px solid #2a2a2a;
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 40px;
@@ -127,7 +132,7 @@ body {
 .form-group label {
     font-weight: 600;
     margin-bottom: 8px;
-    color: #333;
+    color: #999;
     font-size: 0.9rem;
 }
 
@@ -135,11 +140,12 @@ body {
 .form-group select,
 .form-group textarea {
     padding: 12px 15px;
-    border: 2px solid #e0e0e0;
+    border: 1px solid #2a2a2a;
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: white;
+    background: #1a1a1a;
+    color: #f0f0f0;
 }
 
 .form-group input:focus,
@@ -165,7 +171,7 @@ body {
 }
 
 .opcional {
-    color: #666;
+    color: #999;
     font-weight: 400;
 }
 
@@ -193,19 +199,19 @@ body {
     align-items: center;
     justify-content: center;
     padding: 15px 20px;
-    background: white;
-    border: 2px solid #e0e0e0;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 500;
-    color: #333;
+    color: #f0f0f0;
     text-align: center;
 }
 
 .tipo-option:hover {
     border-color: #1976d2;
-    background: #f3f8ff;
+    background: rgba(25,118,210,0.1);
     transform: translateY(-2px);
 }
 
@@ -223,17 +229,17 @@ body {
 
 /* ==================== CAMPOS ESPECIALES ==================== */
 .campo-automatico {
-    background: #fff3e0 !important;
+    background: rgba(255,152,0,0.12) !important;
     border-color: #ffa000 !important;
-    color: #e65100 !important;
+    color: #fbbf24 !important;
     font-weight: 500;
     cursor: not-allowed;
 }
 
 .campo-calculado {
-    background: #e8f5e8 !important;
+    background: rgba(76,175,80,0.12) !important;
     border-color: #4caf50 !important;
-    color: #2e7d32 !important;
+    color: #4ade80 !important;
     font-weight: 500;
 }
 
@@ -354,8 +360,8 @@ body {
 
 /* ==================== LISTAS ==================== */
 .list-container {
-    background: #f5f5f5;
-    border: 2px solid #e0e0e0;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 30px;
@@ -371,7 +377,7 @@ body {
 }
 
 .list-header h3 {
-    color: #333;
+    color: #f0f0f0;
     font-size: 1.3rem;
     font-weight: 400;
 }
@@ -386,7 +392,7 @@ body {
     text-align: center;
     margin-bottom: 20px;
     font-size: 1.1rem;
-    color: #333;
+    color: #f0f0f0;
     font-weight: bold;
 }
 
@@ -398,11 +404,12 @@ body {
 
 /* ==================== TARJETAS DE ITEMS ==================== */
 .item-card {
-    background: white;
+    background: #161616;
     padding: 20px;
     margin: 15px 0;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid #2a2a2a;
     border-left: 4px solid;
 }
 
@@ -438,7 +445,7 @@ body {
 
 .item-fecha {
     font-size: 0.9rem;
-    color: #666;
+    color: #999;
 }
 
 .item-info {
@@ -453,12 +460,12 @@ body {
 }
 
 .item-info strong {
-    color: #333;
+    color: #ccc;
     font-weight: 500;
 }
 
 .item-info span {
-    color: #666;
+    color: #999;
 }
 
 /* ==================== MENSAJES ==================== */
@@ -572,12 +579,13 @@ body {
 /* ==================== ESTILOS PARA SELECTOR DE TIPO DE SANCIÃ"N ==================== */
 .tipo-sancion-select {
     padding: 15px 20px;
-    border: 3px solid #e0e0e0;
+    border: 1px solid #2a2a2a;
     border-radius: 10px;
     font-size: 1.1rem;
     font-weight: 600;
     transition: all 0.3s ease;
-    background: white;
+    background: #1a1a1a;
+    color: #f0f0f0;
     cursor: pointer;
 }
 
@@ -588,39 +596,39 @@ body {
 
 .tipo-sancion-select.tipo-renuncia {
     border-color: #2196f3;
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    color: #1565c0;
+    background: rgba(33,150,243,0.12);
+    color: #93c5fd;
 }
 
 .tipo-sancion-select.tipo-suspension {
     border-color: #ff9800;
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    color: #e65100;
+    background: rgba(255,152,0,0.12);
+    color: #fbbf24;
 }
 
 .tipo-sancion-select.tipo-separacion {
     border-color: #9c27b0;
-    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-    color: #6a1b9a;
+    background: rgba(156,39,176,0.12);
+    color: #d8b4fe;
 }
 
 .tipo-sancion-select.tipo-expulsion {
     border-color: #f44336;
-    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-    color: #c62828;
+    background: rgba(244,67,54,0.12);
+    color: #fca5a5;
 }
 
 /* Vista previa de documento */
 .preview-documento {
-    background: rgba(25, 118, 210, 0.05);
-    border: 2px dashed rgba(25, 118, 210, 0.3);
+    background: rgba(25, 118, 210, 0.08);
+    border: 2px dashed rgba(25, 118, 210, 0.35);
     border-radius: 10px;
     padding: 15px;
     text-align: center;
 }
 
 .preview-documento img {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* Enlace de documento en la lista */

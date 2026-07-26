@@ -116,7 +116,7 @@ class SistemaSanciones {
                 <div style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 20px; border-radius: 8px;">
                     <h3 style="color: #dc2626; margin-top: 0;"> No se pueden registrar sanciones</h3>
                     <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">${validacion.mensaje}</p>
-                    <p style="color: #666; margin: 0;">Solo se puede consultar el historial de sanciones de este voluntario.</p>
+                    <p style="color: #999; margin: 0;">Solo se puede consultar el historial de sanciones de este voluntario.</p>
                 </div>
             `;
             
@@ -564,34 +564,34 @@ class SistemaSanciones {
             }
             
             return `
-                <div style="background: #ffffff; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: #1c1c1c; border: 1px solid #2a2a2a; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #2a2a2a;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="color: #3b82f6; font-size: 18px;"></span>
-                            <strong style="font-size: 16px; color: #1f2937;">${tipoInfo.nombre}</strong>
+                            <span style="color: #60a5fa; font-size: 18px;"></span>
+                            <strong style="font-size: 16px; color: #f0f0f0;">${tipoInfo.nombre}</strong>
                         </div>
-                        <span style="font-size: 13px; color: #6b7280;">Registrado: ${fechaRegistro}</span>
+                        <span style="font-size: 13px; color: #999;">Registrado: ${fechaRegistro}</span>
                     </div>
                     
                     <!-- Grid de datos - Primera fila -->
                     <div style="display: grid; grid-template-columns: repeat(${sancion.compania_autoridad ? '4' : '3'}, 1fr); gap: 15px; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Fecha de inicio:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${Utils.formatearFecha(sancion.fecha_desde)}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Fecha de inicio:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${Utils.formatearFecha(sancion.fecha_desde)}</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Fecha de término:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${sancion.fecha_hasta ? Utils.formatearFecha(sancion.fecha_hasta) : 'Indefinida'}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Fecha de término:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${sancion.fecha_hasta ? Utils.formatearFecha(sancion.fecha_hasta) : 'Indefinida'}</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Duración:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${duracion}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Duración:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${duracion}</div>
                         </div>
                         ${sancion.compania_autoridad ? `
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Compañía responsable:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${sancion.compania_autoridad}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Compañía responsable:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${sancion.compania_autoridad}</div>
                         </div>
                         ` : ''}
                     </div>
@@ -600,28 +600,28 @@ class SistemaSanciones {
                     <div style="display: grid; grid-template-columns: repeat(${sancion.autoridad_sancionatoria ? '3' : '2'}, 1fr); gap: 15px; margin-bottom: 15px;">
                         ${sancion.autoridad_sancionatoria ? `
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Autoridad sancionatoria:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${sancion.autoridad_sancionatoria}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Autoridad sancionatoria:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${sancion.autoridad_sancionatoria}</div>
                         </div>
                         ` : ''}
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Oficio N°:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${sancion.oficio_numero}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Oficio N°:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${sancion.oficio_numero}</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Fecha del oficio:</div>
-                            <div style="font-size: 14px; color: #1f2937; font-weight: 500;">${sancion.fecha_oficio ? Utils.formatearFecha(sancion.fecha_oficio) : 'N/A'}</div>
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Fecha del oficio:</div>
+                            <div style="font-size: 14px; color: #f0f0f0; font-weight: 500;">${sancion.fecha_oficio ? Utils.formatearFecha(sancion.fecha_oficio) : 'N/A'}</div>
                         </div>
                     </div>
                     
                     <!-- Motivo -->
                     <div style="margin-bottom: 12px;">
-                        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Motivo:</div>
-                        <div style="font-size: 14px; color: #1f2937; line-height: 1.5;">${sancion.motivo}</div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Motivo:</div>
+                        <div style="font-size: 14px; color: #f0f0f0; line-height: 1.5;">${sancion.motivo}</div>
                     </div>
                     
                     <!-- Footer -->
-                    <div style="font-size: 13px; color: #6b7280; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                    <div style="font-size: 13px; color: #999; padding-top: 10px; border-top: 1px solid #2a2a2a;">
                         Registrado por: <strong>${sancion.registrado_por || 'Sistema'}</strong>
                     </div>
                 </div>

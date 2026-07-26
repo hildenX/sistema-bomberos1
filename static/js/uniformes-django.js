@@ -95,38 +95,38 @@ class SistemaUniformesDjango {
         const container = document.getElementById('bomberoDatosUniformes');
         if (container) {
             container.innerHTML = `
-                <div style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                    <h3 style="color: #2196f3; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                <div style="background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="color: #4a9eff; margin: 0 0 15px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 1.3rem;"></span> Información del Bombero
                     </h3>
-                    
+
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 10px;">
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">Nombre Completo:</span>
-                            <span style="color: #333; margin-left: 5px;">${nombreCompleto}</span>
+                            <span style="color: #4a9eff; font-weight: 500;">Nombre Completo:</span>
+                            <span style="color: #f0f0f0; margin-left: 5px;">${nombreCompleto}</span>
                         </div>
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">Clave Bombero:</span>
-                            <span style="color: #333; margin-left: 5px;">${claveBombero}</span>
+                            <span style="color: #4a9eff; font-weight: 500;">Clave Bombero:</span>
+                            <span style="color: #f0f0f0; margin-left: 5px;">${claveBombero}</span>
                         </div>
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">RUN:</span>
-                            <span style="color: #333; margin-left: 5px;">${rut}</span>
+                            <span style="color: #4a9eff; font-weight: 500;">RUN:</span>
+                            <span style="color: #f0f0f0; margin-left: 5px;">${rut}</span>
                         </div>
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">Compañía:</span>
-                            <span style="color: #333; margin-left: 5px;">Sexta Compañía De Bomberos de Puerto Montt</span>
+                            <span style="color: #4a9eff; font-weight: 500;">Compañía:</span>
+                            <span style="color: #f0f0f0; margin-left: 5px;">Sexta Compañía De Bomberos de Puerto Montt</span>
                         </div>
                     </div>
-                    
+
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">Estado:</span>
+                            <span style="color: #4a9eff; font-weight: 500;">Estado:</span>
                             <span style="margin-left: 5px;">${estadoBadge}</span>
                         </div>
                         <div>
-                            <span style="color: #2196f3; font-weight: 500;">Antigüedad:</span>
-                            <span style="color: #333; margin-left: 5px;">${antiguedad}</span>
+                            <span style="color: #4a9eff; font-weight: 500;">Antigüedad:</span>
+                            <span style="color: #f0f0f0; margin-left: 5px;">${antiguedad}</span>
                         </div>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ class SistemaUniformesDjango {
                         <p style="color: #991b1b; margin: 10px 0; font-size: 16px;">
                             Este voluntario tiene estado <strong>${this.bomberoActual.estado.toUpperCase()}</strong> y no puede recibir nuevos uniformes.
                         </p>
-                        <p style="color: #666; margin: 0; font-size: 14px;">
+                        <p style="color: #999; margin: 0; font-size: 14px;">
                             Solo se puede consultar el historial de uniformes de este voluntario.
                         </p>
                     </div>
@@ -340,7 +340,7 @@ class SistemaUniformesDjango {
         const incluyeTalla = tipo !== 'accesorios';
         
         const html = `
-            <div class="articulo-item" id="${articuloId}" style="background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; position: relative;">
+            <div class="articulo-item" id="${articuloId}" style="background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px; margin-bottom: 20px; position: relative;">
                 <button type="button" class="btn-eliminar-articulo" onclick="sistemaUniformes.eliminarArticulo('${articuloId}')" 
                         style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer;"
                         ${cantidadArticulos === 1 ? 'disabled' : ''}>
@@ -674,20 +674,20 @@ class SistemaUniformesDjango {
         
         let html = `
             <!-- BOTONES DE NAVEGACIÓN -->
-            <div style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 12px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <div style="background: #1c1c1c; border-radius: 12px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); border: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
                 <button onclick="sistemaUniformes.imprimirTabla()" 
                         style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
                      Imprimir Tabla
                 </button>
                 
                 <div style="display: flex; gap: 15px;">
-                    <button onclick="sistemaUniformes.toggleSeccion('entregas')" 
-                            style="background: ${this.mostrarEntregas ? 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' : '#e0e0e0'}; color: ${this.mostrarEntregas ? 'white' : '#666'}; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
+                    <button onclick="sistemaUniformes.toggleSeccion('entregas')"
+                            style="background: ${this.mostrarEntregas ? 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' : '#2a2a2a'}; color: ${this.mostrarEntregas ? 'white' : '#ccc'}; padding: 12px 24px; border: ${this.mostrarEntregas ? 'none' : '1px solid #333'}; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); font-size: 1em;">
                          Uniformes Asignados (${uniformesActivos.length})
                     </button>
-                    
-                    <button onclick="sistemaUniformes.toggleSeccion('devoluciones')" 
-                            style="background: ${this.mostrarDevoluciones ? 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)' : '#e0e0e0'}; color: ${this.mostrarDevoluciones ? 'white' : '#666'}; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 1em;">
+
+                    <button onclick="sistemaUniformes.toggleSeccion('devoluciones')"
+                            style="background: ${this.mostrarDevoluciones ? 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)' : '#2a2a2a'}; color: ${this.mostrarDevoluciones ? 'white' : '#ccc'}; padding: 12px 24px; border: ${this.mostrarDevoluciones ? 'none' : '1px solid #333'}; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); font-size: 1em;">
                          Historial Devoluciones
                     </button>
                 </div>
@@ -698,13 +698,13 @@ class SistemaUniformesDjango {
         if (this.mostrarEntregas) {
             html += `
                 <section style="margin-bottom: 40px; animation: fadeIn 0.3s;">
-                    <div style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border: 1px solid #e0e0e0;">
+                    <div style="background: #1c1c1c; border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid #2a2a2a;">
                         <div style="border-left: 5px solid #2196F3; padding-left: 20px; margin-bottom: 25px;">
-                            <h3 style="color: #1976D2; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
+                            <h3 style="color: #4a9eff; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
                                  Uniformes Asignados al Voluntario
                             </h3>
-                            <p style="color: #666; margin: 0; font-size: 1em;">
-                                Total de entregas registradas: <strong style="color: #2196F3; font-size: 1.2em;">${uniformesActivos.length}</strong>
+                            <p style="color: #999; margin: 0; font-size: 1em;">
+                                Total de entregas registradas: <strong style="color: #4a9eff; font-size: 1.2em;">${uniformesActivos.length}</strong>
                             </p>
                         </div>
                         <div id="contenedorEntregas"></div>
@@ -717,12 +717,12 @@ class SistemaUniformesDjango {
         if (this.mostrarDevoluciones) {
             html += `
                 <section style="margin-bottom: 40px; animation: fadeIn 0.3s;">
-                    <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(255, 152, 0, 0.15); border: 1px solid #ffe0b2;">
+                    <div style="background: #1c1c1c; border-radius: 12px; padding: 30px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); border: 1px solid #2a2a2a;">
                         <div style="border-left: 5px solid #ff9800; padding-left: 20px; margin-bottom: 25px;">
-                            <h3 style="color: #e65100; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
+                            <h3 style="color: #fb923c; margin: 0 0 10px 0; font-size: 1.5em; display: flex; align-items: center; gap: 10px;">
                                  Historial de Devoluciones
                             </h3>
-                            <p style="color: #666; margin: 0; font-size: 0.95em;">
+                            <p style="color: #999; margin: 0; font-size: 0.95em;">
                                 Registro completo de artículos devueltos por el voluntario
                             </p>
                         </div>
@@ -771,7 +771,7 @@ class SistemaUniformesDjango {
             const tipoNombre = this.obtenerNombreTipo(uniforme.tipo_uniforme);
             
             let tablaPiezas = `
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: white;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; box-shadow: 0 1px 3px rgba(0,0,0,0.4); background: #1c1c1c; color: #f0f0f0;">
                     <thead>
                         <tr style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white;">
                             <th style="padding: 12px 8px;">Artículo</th>
@@ -791,15 +791,15 @@ class SistemaUniformesDjango {
                 const fechaEntrega = pieza.fecha_entrega ? new Date(pieza.fecha_entrega).toLocaleDateString('es-CL') : '-';
                 
                 tablaPiezas += `
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr style="border-bottom: 1px solid #2a2a2a;">
                         <td style="padding: 8px;">${nombrePieza}</td>
                         <td style="padding: 8px; text-align: center;">${pieza.marca || 'N/A'}</td>
                         <td style="padding: 8px; text-align: center;">${pieza.serie || 'N/A'}</td>
                         <td style="padding: 8px; text-align: center;">${pieza.talla || 'N/A'}</td>
                         <td style="padding: 8px; text-align: center;">${this.formatearCondicion(pieza.condicion)}</td>
                         <td style="padding: 8px; text-align: center;">
-                            <select onchange="sistemaUniformes.actualizarEstado('${uniforme.id}', ${pieza.id}, this.value)" 
-                                    style="padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85em;">
+                            <select onchange="sistemaUniformes.actualizarEstado('${uniforme.id}', ${pieza.id}, this.value)"
+                                    style="padding: 4px; border: 1px solid #2a2a2a; border-radius: 4px; font-size: 0.85em; background: #1a1a1a; color: #f0f0f0;">
                                 <option value="bueno" ${pieza.estado_fisico === 'bueno' ? 'selected' : ''}> Bueno</option>
                                 <option value="regular" ${pieza.estado_fisico === 'regular' ? 'selected' : ''}> Regular</option>
                                 <option value="malo" ${pieza.estado_fisico === 'malo' ? 'selected' : ''}> Malo</option>
@@ -818,32 +818,32 @@ class SistemaUniformesDjango {
             tablaPiezas += `</tbody></table>`;
             
             return `
-                <div class="uniforme-card" style="margin-bottom: 20px; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
+                <div class="uniforme-card" style="margin-bottom: 20px; border: 1px solid #2a2a2a; border-radius: 4px; padding: 15px; background: #1c1c1c;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                        <h4 style="margin: 0;">${tipoNombre} - ID: ${uniforme.id}</h4>
+                        <h4 style="margin: 0; color: #f0f0f0;">${tipoNombre} - ID: ${uniforme.id}</h4>
                         <button class="btn btn-pdf btn-sm" onclick="sistemaUniformes.generarPDF('${uniforme.id}')"
                                 style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
                              PDF
                         </button>
                     </div>
                     ${tablaPiezas}
-                    ${uniforme.observaciones ? `<p style="margin-top: 10px; font-size: 0.9em;"><strong>Observaciones:</strong> ${uniforme.observaciones}</p>` : ''}
-                    <p style="font-size: 0.85em; color: #666; margin-top: 10px; margin-bottom: 0;">Registrado el ${fechaRegistro}</p>
+                    ${uniforme.observaciones ? `<p style="margin-top: 10px; font-size: 0.9em; color: #ccc;"><strong>Observaciones:</strong> ${uniforme.observaciones}</p>` : ''}
+                    <p style="font-size: 0.85em; color: #999; margin-top: 10px; margin-bottom: 0;">Registrado el ${fechaRegistro}</p>
                 </div>
             `;
         }).join('');
         
         // Paginación
         if (totalPaginas > 1) {
-            html += `<div style="margin-top: 25px; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">`;
+            html += `<div style="margin-top: 25px; text-align: center; padding: 20px; background: #161616; border-radius: 8px;">`;
             for (let i = 1; i <= totalPaginas; i++) {
                 const active = i === this.paginaActualEntregas;
-                const bgColor = active ? 'background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; transform: scale(1.1);' : 'background: white; color: #333;';
+                const bgColor = active ? 'background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; transform: scale(1.1);' : 'background: #2a2a2a; color: #ccc;';
                 html += `
-                    <button onclick="sistemaUniformes.cambiarPaginaEntregas(${i})" 
-                            style="${bgColor} border: 2px solid ${active ? '#1976D2' : '#e0e0e0'}; padding: 10px 16px; margin: 0 4px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 44px; transition: all 0.3s; box-shadow: ${active ? '0 4px 8px rgba(33,150,243,0.3)' : '0 2px 4px rgba(0,0,0,0.1)'};"
+                    <button onclick="sistemaUniformes.cambiarPaginaEntregas(${i})"
+                            style="${bgColor} border: 2px solid ${active ? '#1976D2' : '#333'}; padding: 10px 16px; margin: 0 4px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 44px; transition: all 0.3s; box-shadow: ${active ? '0 4px 8px rgba(33,150,243,0.3)' : '0 2px 4px rgba(0,0,0,0.3)'};"
                             onmouseover="if(${!active}) this.style.borderColor='#2196F3'; if(${!active}) this.style.transform='translateY(-2px)';"
-                            onmouseout="if(${!active}) this.style.borderColor='#e0e0e0'; if(${!active}) this.style.transform='translateY(0)';">
+                            onmouseout="if(${!active}) this.style.borderColor='#333'; if(${!active}) this.style.transform='translateY(0)';">
                         ${i}
                     </button>`;
             }
@@ -888,7 +888,6 @@ class SistemaUniformesDjango {
         // Si no hay devoluciones
         if (todasPiezasDevueltas.length === 0) {
             contenedor.innerHTML = `
-                <h3 style="color: #e65100; margin-top: 0; margin-bottom: 15px;"> Historial de Devoluciones</h3>
                 <p style="color: #999; text-align: center; padding: 40px;">No hay artículos devueltos registrados</p>
             `;
             return;
@@ -905,16 +904,16 @@ class SistemaUniformesDjango {
         const piezasPagina = todasPiezasDevueltas.slice(inicio, fin);
         
         let html = `
-            <div style="background: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
-                <p style="font-size: 1em; color: #555; margin: 0; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-weight: 600; color: #e65100;">Total de artículos devueltos:</span>
+            <div style="background: #1c1c1c; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.4); border: 1px solid #2a2a2a;">
+                <p style="font-size: 1em; color: #ccc; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: 600; color: #fb923c;">Total de artículos devueltos:</span>
                     <span style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 1.1em;">
                         ${todasPiezasDevueltas.length}
                     </span>
                 </p>
             </div>
-            
-            <div style="overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+            <div style="overflow-x: auto; background: #1c1c1c; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); border: 1px solid #2a2a2a;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
                     <thead>
                         <tr style="background: linear-gradient(135deg, #ff6f00 0%, #ff8f00 100%); color: white;">
@@ -937,12 +936,12 @@ class SistemaUniformesDjango {
             const fechaDevolucion = pieza.fecha_devolucion ? new Date(pieza.fecha_devolucion).toLocaleDateString('es-CL') : '-';
             const estadoDevolucion = this.formatearEstadoDevolucion(pieza.estado_devolucion);
             const condicionDevolucion = this.formatearCondicionDevolucion(pieza.condicion_devolucion);
-            const bgColor = index % 2 === 0 ? '#ffffff' : '#fafafa';
-            
+            const bgColor = index % 2 === 0 ? '#1c1c1c' : '#161616';
+
             html += `
-                <tr style="border-bottom: 1px solid #ddd; background: ${bgColor};">
+                <tr style="border-bottom: 1px solid #2a2a2a; background: ${bgColor}; color: #f0f0f0;">
                     <td style="padding: 8px; font-size: 0.85em;">
-                        <span style="background: #e3f2fd; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                        <span style="background: rgba(33,150,243,0.15); color: #93c5fd; padding: 4px 8px; border-radius: 4px; display: inline-block;">
                             ${pieza.tipoUniforme}<br>${pieza.uniformeId}
                         </span>
                     </td>
@@ -970,15 +969,15 @@ class SistemaUniformesDjango {
         
         // Paginación
         if (totalPaginas > 1) {
-            html += `<div style="margin-top: 25px; text-align: center; padding: 20px; background: #fff3e0; border-radius: 8px;">`;
+            html += `<div style="margin-top: 25px; text-align: center; padding: 20px; background: rgba(255,152,0,0.08); border-radius: 8px;">`;
             for (let i = 1; i <= totalPaginas; i++) {
                 const active = i === this.paginaActualDevoluciones;
-                const bgColor = active ? 'background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; transform: scale(1.1);' : 'background: white; color: #333;';
+                const bgColor = active ? 'background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; transform: scale(1.1);' : 'background: #2a2a2a; color: #ccc;';
                 html += `
-                    <button onclick="sistemaUniformes.cambiarPaginaDevoluciones(${i})" 
-                            style="${bgColor} border: 2px solid ${active ? '#f57c00' : '#ffe0b2'}; padding: 10px 16px; margin: 0 4px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 44px; transition: all 0.3s; box-shadow: ${active ? '0 4px 8px rgba(255,152,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)'};"
+                    <button onclick="sistemaUniformes.cambiarPaginaDevoluciones(${i})"
+                            style="${bgColor} border: 2px solid ${active ? '#f57c00' : '#3a2a1a'}; padding: 10px 16px; margin: 0 4px; border-radius: 8px; cursor: pointer; font-weight: 600; min-width: 44px; transition: all 0.3s; box-shadow: ${active ? '0 4px 8px rgba(255,152,0,0.3)' : '0 2px 4px rgba(0,0,0,0.3)'};"
                             onmouseover="if(${!active}) this.style.borderColor='#ff9800'; if(${!active}) this.style.transform='translateY(-2px)';"
-                            onmouseout="if(${!active}) this.style.borderColor='#ffe0b2'; if(${!active}) this.style.transform='translateY(0)';">
+                            onmouseout="if(${!active}) this.style.borderColor='#3a2a1a'; if(${!active}) this.style.transform='translateY(0)';">
                         ${i}
                     </button>`;
             }
@@ -1091,36 +1090,39 @@ class SistemaUniformesDjango {
                 z-index: 9999;
             ">
                 <div class="modal-content" style="
-                    background: white;
+                    background: #1c1c1c;
+                    border: 1px solid #2a2a2a;
                     border-radius: 8px;
                     padding: 30px;
                     width: 90%;
                     max-width: 500px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
                 ">
-                    <h3 style="margin: 0 0 20px 0; color: #333; border-left: 4px solid #dc3545; padding-left: 12px;">
-                        📤 Registrar Devolución
+                    <h3 style="margin: 0 0 20px 0; color: #f0f0f0; border-left: 4px solid #dc3545; padding-left: 12px;">
+                        Registrar Devolución
                     </h3>
-                    
+
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #999;">
                             Artículo:
                         </label>
-                        <div style="padding: 10px; background: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6;">
+                        <div style="padding: 10px; background: #161616; border-radius: 4px; border: 1px solid #2a2a2a; color: #f0f0f0;">
                             ${nombrePieza}
                         </div>
                     </div>
-                    
+
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
-                            Estado en que se devuelve: <span style="color: red;">*</span>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #999;">
+                            Estado en que se devuelve: <span style="color: #f87171;">*</span>
                         </label>
                         <select id="estadoDevolucion" style="
                             width: 100%;
                             padding: 10px;
-                            border: 1px solid #dee2e6;
+                            border: 1px solid #2a2a2a;
                             border-radius: 4px;
                             font-size: 14px;
+                            background: #1a1a1a;
+                            color: #f0f0f0;
                         ">
                             <option value="">Seleccione...</option>
                             <option value="bueno"> Bueno</option>
@@ -1131,15 +1133,17 @@ class SistemaUniformesDjango {
                     </div>
                     
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
-                            Condición en que se devuelve: <span style="color: red;">*</span>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #999;">
+                            Condición en que se devuelve: <span style="color: #f87171;">*</span>
                         </label>
                         <select id="condicionDevolucion" style="
                             width: 100%;
                             padding: 10px;
-                            border: 1px solid #dee2e6;
+                            border: 1px solid #2a2a2a;
                             border-radius: 4px;
                             font-size: 14px;
+                            background: #1a1a1a;
+                            color: #f0f0f0;
                         ">
                             <option value="">Seleccione...</option>
                             <option value="nuevo">🆕 Como Nuevo</option>
@@ -1150,20 +1154,22 @@ class SistemaUniformesDjango {
                     </div>
                     
                     <div style="margin-bottom: 25px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #999;">
                             Observaciones de devolución:
                         </label>
-                        <textarea id="observacionesDevolucion" 
-                                  placeholder="Daños, desgaste, etc..." 
+                        <textarea id="observacionesDevolucion"
+                                  placeholder="Daños, desgaste, etc..."
                                   rows="4"
                                   style="
                             width: 100%;
                             padding: 10px;
-                            border: 1px solid #dee2e6;
+                            border: 1px solid #2a2a2a;
                             border-radius: 4px;
                             font-size: 14px;
                             font-family: inherit;
                             resize: vertical;
+                            background: #1a1a1a;
+                            color: #f0f0f0;
                         "></textarea>
                     </div>
                     
