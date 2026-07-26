@@ -874,7 +874,9 @@ tr:hover {
     border-bottom-color: var(--gd-border) !important;
 }
 
-.info-label {
+.info-label,
+.bombero-card [class*="label"],
+.bombero-card .info-label {
     color: var(--gd-text) !important;
     font-weight: 700 !important;
 }
