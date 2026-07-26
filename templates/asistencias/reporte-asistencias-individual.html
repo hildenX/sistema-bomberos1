@@ -9,61 +9,67 @@
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=1">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0e0e0e;
+            color: #f0f0f0;
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: #1c1c1c;
             border-radius: 15px;
             padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
         }
-        
+
         h1 {
-            color: #333;
+            color: #f0f0f0;
             margin-bottom: 10px;
         }
-        
+
         .info-bombero {
-            background: #f8f9fa;
+            background: #161616;
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
             border-left: 4px solid #3498db;
+            border: 1px solid #2a2a2a;
+            border-left: 4px solid #3498db;
         }
-        
+
         .info-bombero h2 {
             margin: 0 0 10px 0;
-            color: #333;
+            color: #f0f0f0;
         }
-        
+
         .info-bombero p {
             margin: 5px 0;
-            color: #666;
+            color: #999;
         }
-        
+
         .form-group {
             margin: 20px 0;
         }
-        
+
         .form-group label {
             display: block;
             font-weight: bold;
             margin-bottom: 8px;
-            color: #555;
+            color: #999;
         }
-        
+
         .form-group input,
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 1px solid #2a2a2a;
             border-radius: 8px;
             font-size: 1rem;
+            background: #1a1a1a;
+            color: #f0f0f0;
         }
         
         .form-row {
@@ -108,41 +114,44 @@
         }
         
         .preview {
-            background: #f8f9fa;
+            background: #161616;
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
             max-height: 400px;
             overflow-y: auto;
+            border: 1px solid #2a2a2a;
         }
-        
+
         .preview h3 {
             margin-top: 0;
-            color: #333;
+            color: #f0f0f0;
         }
-        
+
         .mes-grupo {
-            background: white;
+            background: #1c1c1c;
             padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
             border-left: 4px solid #e74c3c;
+            border: 1px solid #2a2a2a;
+            border-left: 4px solid #e74c3c;
         }
-        
+
         .mes-grupo h4 {
             margin: 0 0 10px 0;
-            color: #333;
+            color: #f0f0f0;
         }
         
         .stat-line {
             display: flex;
             justify-content: space-between;
             padding: 5px 0;
-            color: #666;
+            color: #999;
         }
-        
+
         .total-line {
-            border-top: 2px solid #ddd;
+            border-top: 2px solid #2a2a2a;
             margin-top: 10px;
             padding-top: 10px;
             font-weight: bold;
@@ -152,7 +161,7 @@
 <body>
     <div class="container">
         <h1> Reporte de Asistencias Individual</h1>
-        <p style="color: #666;">Genera un PDF con el resumen de asistencias de un bombero en un período específico</p>
+        <p style="color: #999;">Genera un PDF con el resumen de asistencias de un bombero en un período específico</p>
         
         <div class="info-bombero" id="infoBombero">
             <h2>Cargando información del bombero...</h2>

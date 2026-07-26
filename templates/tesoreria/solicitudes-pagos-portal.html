@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,33 +10,33 @@
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <style>
         :root {
-            --bg: #eceff5;
-            --panel: #ffffff;
-            --panel-soft: #f8fafc;
-            --panel-strong: #ffffff;
-            --ink: #15202e;
-            --ink-soft: #354254;
-            --muted: #6b7689;
-            --line: #e3e8f0;
-            --line-soft: #edf1f7;
-            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
-            --shadow: 0 18px 44px -18px rgba(15, 23, 42, 0.22);
-            --shadow-lift: 0 26px 60px -22px rgba(15, 23, 42, 0.32);
+            --bg: #0e0e0e;
+            --panel: #1c1c1c;
+            --panel-soft: #161616;
+            --panel-strong: #222222;
+            --ink: #f0f0f0;
+            --ink-soft: #cccccc;
+            --muted: #888888;
+            --line: #2a2a2a;
+            --line-soft: #222222;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+            --shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
+            --shadow-lift: 0 26px 60px -22px rgba(0, 0, 0, 0.7);
             --brand: #c41e3a;
             --brand-dark: #8b1429;
-            --brand-soft: rgba(196, 30, 58, 0.1);
+            --brand-soft: rgba(196, 30, 58, 0.15);
             --gold: #eab308;
             --gold-soft: rgba(234, 179, 8, 0.15);
-            --accent: #111827;
+            --accent: #f0f0f0;
             --accent-soft: #f8d77c;
-            --success: #15803d;
-            --success-soft: #dcfce7;
-            --warning: #b45309;
-            --warning-soft: #fef3c7;
-            --danger: #b91c1c;
-            --danger-soft: #fee2e2;
-            --info: #1d4ed8;
-            --info-soft: #dbeafe;
+            --success: #4ade80;
+            --success-soft: rgba(21, 128, 61, 0.15);
+            --warning: #fbbf24;
+            --warning-soft: rgba(180, 83, 9, 0.15);
+            --danger: #f87171;
+            --danger-soft: rgba(185, 28, 28, 0.15);
+            --info: #93c5fd;
+            --info-soft: rgba(29, 78, 216, 0.15);
             --radius-lg: 22px;
             --radius-md: 16px;
             --radius-sm: 12px;
@@ -50,13 +50,13 @@
             margin: 0;
             min-height: 100vh;
             color: var(--ink);
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
             background:
-                radial-gradient(circle at 88% -6%, rgba(196, 30, 58, 0.1), transparent 34%),
-                radial-gradient(circle at 6% 0%, rgba(234, 179, 8, 0.1), transparent 30%),
-                linear-gradient(180deg, #f6f8fc 0%, var(--bg) 100%);
+                radial-gradient(circle at 88% -6%, rgba(196, 30, 58, 0.12), transparent 34%),
+                radial-gradient(circle at 6% 0%, rgba(234, 179, 8, 0.08), transparent 30%),
+                var(--bg);
             background-attachment: fixed;
         }
 
@@ -165,7 +165,7 @@
             overflow: hidden;
             padding: 12px 14px;
             border-radius: var(--radius-md);
-            background: #ffffff;
+            background: var(--panel);
             border: 1px solid var(--line);
             display: grid;
             grid-template-columns: auto minmax(0, 1fr) auto;
@@ -178,7 +178,7 @@
         .metric-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 16px 30px -16px rgba(15, 23, 42, 0.26);
-            border-color: #d6deea;
+            border-color: #333;
         }
 
         .metric-card.is-pending { --accent-color: var(--brand); }
@@ -192,7 +192,7 @@
             height: 38px;
             border-radius: 11px;
             color: var(--accent-color, var(--brand));
-            background: color-mix(in srgb, var(--accent-color, var(--brand)) 12%, #ffffff);
+            background: color-mix(in srgb, var(--accent-color, var(--brand)) 20%, #000000);
             flex-shrink: 0;
         }
 
@@ -338,7 +338,7 @@
             padding: 10px 13px;
             border-radius: 11px;
             border: 1px solid var(--line);
-            background: #ffffff;
+            background: var(--panel);
             color: var(--ink);
             font: inherit;
             outline: none;
@@ -364,7 +364,7 @@
             padding: 11px 16px;
             border-radius: 999px;
             border: 1px solid var(--line);
-            background: #ffffff;
+            background: var(--panel);
             color: var(--muted);
             font-weight: 700;
             cursor: pointer;
@@ -402,7 +402,7 @@
         .request-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
-            border-color: #d6deea;
+            border-color: #333;
         }
 
         .request-card::before {
@@ -492,7 +492,7 @@
 
         .request-meta-grid > div {
             padding: 9px 12px;
-            background: #fbfcfe;
+            background: var(--panel-soft);
         }
 
         .request-meta-grid span,
@@ -543,9 +543,9 @@
         .request-feedback {
             padding: 11px 14px;
             border-radius: 12px;
-            background: #f8fafc;
+            background: var(--panel-soft);
             margin-bottom: 10px;
-            border: 1px solid #eef2f7;
+            border: 1px solid var(--line);
         }
 
         .request-description p,
@@ -799,8 +799,8 @@
         }
 
         .secondary-btn {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-            color: #1e3a8a;
+            background: rgba(41,128,185,0.15);
+            color: #93c5fd;
         }
 
         .danger-btn {
@@ -833,7 +833,7 @@
             height: 64px;
             margin-bottom: 12px;
             border-radius: 50%;
-            background: color-mix(in srgb, var(--mark-color, var(--success)) 14%, #ffffff);
+            background: color-mix(in srgb, var(--mark-color, var(--success)) 20%, #000000);
             color: var(--mark-color, var(--success));
             box-shadow: 0 0 0 6px color-mix(in srgb, var(--mark-color, var(--success)) 8%, transparent);
         }
@@ -908,8 +908,8 @@
             padding: 28px 22px;
             text-align: center;
             border-radius: 16px;
-            background: #ffffff;
-            border: 1px dashed #d5dde7;
+            background: var(--panel);
+            border: 1px dashed #333;
             color: var(--muted);
         }
 
@@ -949,7 +949,7 @@
         .pager-btn {
             padding: 10px 14px;
             border-radius: 12px;
-            background: #ffffff;
+            background: var(--panel);
             color: var(--ink);
             border: 1px solid var(--line);
         }
@@ -992,9 +992,9 @@
             width: min(620px, 100%);
             padding: 24px;
             border-radius: 18px;
-            background: #ffffff;
+            background: var(--panel);
             box-shadow: 0 32px 90px rgba(36, 24, 19, 0.25);
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--line);
         }
 
         .modal-dialog h3 {
