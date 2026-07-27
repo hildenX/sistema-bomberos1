@@ -1,6 +1,7 @@
 import random
 import unicodedata
 from datetime import timedelta
+from decimal import Decimal
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
@@ -9,6 +10,7 @@ from .models import (
     AsignacionBeneficio,
     AsignacionRifa,
     CicloCuotas,
+    GrupoSolicitudPago,
     MovimientoFinanciero,
     PagoRifa,
     PortalVoluntarioProfile,
@@ -315,6 +317,127 @@ def serializar_solicitud(solicitud):
             'nombre': solicitud.voluntario.nombre_completo(),
             'rut': solicitud.voluntario.rut,
         }
+    }
+
+
+@transaction.atomic
+def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
+    """
+    items: lista de dicts con al menos 'tipo_pago' y 'monto', mas las
+    referencias segun tipo (cuota_mes/cuota_anio, asignacion_beneficio_id,
+    tipo_pago_beneficio, cantidad, asignacion_rifa_id).
+    datos_comunes: dict con 'fecha_pago' (date), 'cuenta_bancaria_destino'
+    (CuentaBancaria), 'numero_comprobante', 'descripcion'.
+    """
+    if not items:
+        raise ValueError('Debes seleccionar al menos un item para pagar')
+    if not archivo:
+        raise ValueError('Debes adjuntar un comprobante')
+
+    monto_total = sum(Decimal(str(item['monto'])) for item in items)
+
+    grupo = GrupoSolicitudPago.objects.create(
+        voluntario=profile.voluntario,
+        portal_user=profile.user,
+        fecha_pago=datos_comunes['fecha_pago'],
+        cuenta_bancaria_destino=datos_comunes['cuenta_bancaria_destino'],
+        numero_comprobante=datos_comunes.get('numero_comprobante', ''),
+        descripcion=datos_comunes.get('descripcion', ''),
+        monto_total=monto_total,
+        comprobante=archivo,
+    )
+
+    for item in items:
+        tipo_pago = item['tipo_pago']
+        monto = Decimal(str(item['monto']))
+
+        if tipo_pago == 'cuota':
+            mes = int(item['cuota_mes'])
+            anio = int(item['cuota_anio'])
+            cuotas_pendientes = deudas_cuotas_portal(profile.voluntario)['items']
+            if not any(c['mes'] == mes and c['anio'] == anio for c in cuotas_pendientes):
+                raise ValueError(f'La cuota {mes:02d}/{anio} ya no esta pendiente')
+            SolicitudPagoPortal.objects.create(
+                voluntario=profile.voluntario,
+                portal_user=profile.user,
+                tipo_pago='cuota',
+                nombre_pago=f'Cuota {mes:02d}/{anio}',
+                monto_solicitado=monto,
+                cuota_mes=mes,
+                cuota_anio=anio,
+                cantidad=1,
+                fecha_pago=datos_comunes['fecha_pago'],
+                grupo=grupo,
+            )
+        elif tipo_pago == 'beneficio':
+            asignacion = AsignacionBeneficio.objects.select_related('beneficio').get(
+                id=int(item['asignacion_beneficio_id']),
+                voluntario=profile.voluntario
+            )
+            tipo_beneficio = str(item.get('tipo_pago_beneficio', 'normal')).strip().lower() or 'normal'
+            cantidad = int(item.get('cantidad') or 0)
+            if cantidad <= 0:
+                raise ValueError('La cantidad de tarjetas debe ser mayor a 0')
+            SolicitudPagoPortal.objects.create(
+                voluntario=profile.voluntario,
+                portal_user=profile.user,
+                tipo_pago='beneficio',
+                nombre_pago=asignacion.beneficio.nombre,
+                monto_solicitado=monto,
+                asignacion_beneficio=asignacion,
+                tipo_pago_beneficio=tipo_beneficio,
+                cantidad=cantidad,
+                fecha_pago=datos_comunes['fecha_pago'],
+                grupo=grupo,
+            )
+        elif tipo_pago == 'rifa':
+            asignacion = AsignacionRifa.objects.select_related('rifa').get(
+                id=int(item['asignacion_rifa_id']),
+                voluntario=profile.voluntario
+            )
+            SolicitudPagoPortal.objects.create(
+                voluntario=profile.voluntario,
+                portal_user=profile.user,
+                tipo_pago='rifa',
+                nombre_pago=asignacion.rifa.nombre,
+                monto_solicitado=monto,
+                asignacion_rifa=asignacion,
+                cantidad=1,
+                fecha_pago=datos_comunes['fecha_pago'],
+                grupo=grupo,
+            )
+        else:
+            raise ValueError(f'Tipo de pago invalido: {tipo_pago}')
+
+    return grupo
+
+
+def serializar_grupo_solicitud(grupo):
+    estado_labels = {
+        'pendiente': 'Pendiente',
+        'observada': 'Observada',
+        'aprobada': 'Pagado',
+        'rechazada': 'Rechazado',
+        'expirada': 'Expirada',
+    }
+    return {
+        'id': grupo.id,
+        'estado': grupo.estado,
+        'estado_label': estado_labels.get(grupo.estado, grupo.estado),
+        'fecha_pago': grupo.fecha_pago.isoformat() if grupo.fecha_pago else None,
+        'numero_comprobante': grupo.numero_comprobante,
+        'descripcion': grupo.descripcion,
+        'monto_total': float(grupo.monto_total),
+        'comprobante_url': grupo.comprobante.url if grupo.comprobante else None,
+        'feedback_tesorero': grupo.feedback_tesorero,
+        'observada_hasta': grupo.observada_hasta.isoformat() if grupo.observada_hasta else None,
+        'created_at': grupo.created_at.isoformat() if grupo.created_at else None,
+        'voluntario': {
+            'id': grupo.voluntario_id,
+            'nombre': grupo.voluntario.nombre_completo(),
+            'rut': grupo.voluntario.rut,
+        },
+        'items': [serializar_solicitud(item) for item in grupo.items.all()],
     }
 
 

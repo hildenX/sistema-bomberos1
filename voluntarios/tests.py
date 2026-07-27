@@ -1,4 +1,5 @@
-from django.test import TestCase
+import json
+from django.test import TestCase, Client
 from .models import Voluntario, Cargo, Sancion, ItemInventario
 from datetime import date, timedelta
 from decimal import Decimal
@@ -296,3 +297,67 @@ class GrupoSolicitudPagoModelTest(TestCase):
             cuota_anio=2026,
         )
         self.assertIsNone(solicitud.grupo)
+
+
+class PortalGrupoSolicitudAPITest(TestCase):
+
+    def setUp(self):
+        from voluntarios.models import CicloCuotas
+        self.client = Client()
+        # Se crea el usuario 'cvera.26' antes que el Voluntario para que la
+        # señal post_save (voluntarios/signals.py) que autogenera un
+        # PortalVoluntarioProfile no pueda elegir por azar este mismo
+        # username para su propio usuario autogenerado.
+        self.portal_user = User.objects.create_user(username='cvera.26', password='Bomberos123!')
+        self.voluntario = Voluntario.objects.create(
+            nombre='Cristian', apellido_paterno='Vera', apellido_materno='Arriagada',
+            rut='19621524-7', clave_bombero='077',
+            fecha_nacimiento=date(1995, 3, 3),
+            fecha_ingreso=date(2019, 1, 1),
+            estado_bombero='activo'
+        )
+        # La señal post_save de Voluntario ya crea un PortalVoluntarioProfile
+        # automáticamente; como el campo es OneToOne, actualizamos ese
+        # perfil en vez de crear uno nuevo.
+        profile = self.voluntario.portal_profile
+        profile.user = self.portal_user
+        profile.activo = True
+        profile.debe_cambiar_clave = False
+        profile.save()
+        self.cuenta = CuentaBancaria.objects.create(
+            nombre='Cuenta Principal', banco='BancoEstado',
+            tipo_cuenta='corriente', numero_cuenta='1234567', rut_titular='76.123.456-7',
+            activa=True
+        )
+        CicloCuotas.objects.create(
+            anio=2026, fecha_inicio=date(2026, 1, 1), fecha_fin=date(2026, 12, 31),
+            activo=True, cerrado=False
+        )
+        self.client.force_login(self.portal_user)
+
+    def test_crear_grupo_con_dos_cuotas(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        archivo = SimpleUploadedFile('voucher.png', b'contenido-fake', content_type='image/png')
+        response = self.client.post('/api/portal/solicitudes/grupo/', {
+            'items': json.dumps([
+                {'tipo_pago': 'cuota', 'cuota_mes': 1, 'cuota_anio': 2026, 'monto': '7000'},
+                {'tipo_pago': 'cuota', 'cuota_mes': 2, 'cuota_anio': 2026, 'monto': '7000'},
+            ]),
+            'fecha_pago': '2026-07-27',
+            'cuenta_bancaria_destino_id': str(self.cuenta.id),
+            'numero_comprobante': 'ABC123',
+            'descripcion': 'Transferencia unica',
+            'comprobante': archivo,
+        })
+        self.assertEqual(response.status_code, 201, response.content)
+        data = response.json()
+        self.assertEqual(data['grupo']['monto_total'], 14000.0)
+        self.assertEqual(len(data['grupo']['items']), 2)
+
+    def test_crear_grupo_sin_items_falla(self):
+        response = self.client.post('/api/portal/solicitudes/grupo/', {
+            'items': json.dumps([]),
+            'fecha_pago': '2026-07-27',
+            'cuenta_bancaria_destino_id': str(self.cuenta.id),
+        })
+        self.assertEqual(response.status_code, 400)

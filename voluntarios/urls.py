@@ -85,6 +85,7 @@ urlpatterns = [
     path('portal/auth/change-password/', portal_views.portal_change_password_view, name='portal_change_password'),
     path('portal/dashboard/', portal_views.portal_dashboard_view, name='portal_dashboard'),
     path('portal/solicitudes/', portal_views.portal_solicitudes_view, name='portal_solicitudes'),
+    path('portal/solicitudes/grupo/', portal_views.portal_solicitudes_grupo_view, name='portal_solicitudes_grupo'),
     path('portal/solicitudes/<int:solicitud_id>/', portal_views.portal_solicitud_detalle_view, name='portal_solicitud_detalle'),
     path('portal/tesoreria/solicitudes/', portal_views.tesoreria_solicitudes_portal_view, name='portal_tesoreria_solicitudes'),
     path('portal/tesoreria/solicitudes/<int:solicitud_id>/accion/', portal_views.tesoreria_solicitud_accion_view, name='portal_tesoreria_solicitud_accion'),

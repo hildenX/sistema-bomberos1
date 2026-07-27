@@ -16,6 +16,7 @@ from .models import (
     AsignacionBeneficio,
     AsignacionRifa,
     CuentaBancaria,
+    GrupoSolicitudPago,
     PortalVoluntarioProfile,
     SolicitudPagoPortal,
 )
@@ -23,6 +24,7 @@ from .permissions import RolBomberos, obtener_rol_usuario
 from .portal_utils import (
     PORTAL_PASSWORD_INICIAL,
     crear_feedback_observacion,
+    crear_grupo_solicitud,
     deudas_beneficios_portal,
     deudas_cuotas_portal,
     deudas_rifas_portal,
@@ -30,6 +32,7 @@ from .portal_utils import (
     listar_solicitudes_usuario,
     registrar_pago_rifa,
     serializar_credencial_portal,
+    serializar_grupo_solicitud,
     serializar_solicitud,
     validar_solicitud_duplicada,
 )
@@ -372,6 +375,43 @@ def portal_solicitudes_view(request):
     except (ValueError, AsignacionBeneficio.DoesNotExist, AsignacionRifa.DoesNotExist) as exc:
         return _json_error(str(exc))
     except json.JSONDecodeError:
+        return _json_error('JSON invalido')
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def portal_solicitudes_grupo_view(request):
+    profile, error = _require_portal_user(request)
+    if error:
+        return error
+
+    try:
+        data = _parse_request_data(request)
+        items_raw = data.get('items')
+        items = json.loads(items_raw) if isinstance(items_raw, str) else (items_raw or [])
+        if not items:
+            raise ValueError('Debes seleccionar al menos un item para pagar')
+
+        fecha_raw = data.get('fecha_pago') or timezone.localdate().isoformat()
+        fecha_pago = date.fromisoformat(str(fecha_raw))
+        cuenta_destino = _obtener_cuenta_destino(data.get('cuenta_bancaria_destino_id'))
+        archivo = request.FILES.get('comprobante')
+
+        grupo = crear_grupo_solicitud(
+            profile,
+            items,
+            {
+                'fecha_pago': fecha_pago,
+                'cuenta_bancaria_destino': cuenta_destino,
+                'numero_comprobante': str(data.get('numero_comprobante', '')).strip(),
+                'descripcion': str(data.get('descripcion', '')).strip(),
+            },
+            archivo,
+        )
+        return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)}, status=201)
+    except (ValueError, AsignacionBeneficio.DoesNotExist, AsignacionRifa.DoesNotExist) as exc:
+        return _json_error(str(exc))
+    except (json.JSONDecodeError, TypeError):
         return _json_error('JSON invalido')
 
 
