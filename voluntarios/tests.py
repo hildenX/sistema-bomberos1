@@ -222,3 +222,77 @@ class ItemInventarioAPITest(TestCase):
     def test_anonimo_no_puede_ver(self):
         response = self.client.get('/api/inventario/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+from voluntarios.models import GrupoSolicitudPago, CuentaBancaria, SolicitudPagoPortal
+
+
+class GrupoSolicitudPagoModelTest(TestCase):
+
+    def setUp(self):
+        self.voluntario = Voluntario.objects.create(
+            nombre='Ana', apellido_paterno='Soto', apellido_materno='Diaz',
+            rut='11222333-4', clave_bombero='099',
+            fecha_nacimiento=date(1992, 5, 5),
+            fecha_ingreso=date(2018, 1, 1),
+            estado_bombero='activo'
+        )
+        self.portal_user = User.objects.create_user(username='asoto.01', password='pass12345')
+        self.cuenta = CuentaBancaria.objects.create(
+            nombre='Cuenta Principal', banco='BancoEstado',
+            tipo_cuenta='corriente', numero_cuenta='1234567', rut_titular='76.123.456-7',
+            activa=True
+        )
+
+    def test_creacion_grupo(self):
+        grupo = GrupoSolicitudPago.objects.create(
+            voluntario=self.voluntario,
+            portal_user=self.portal_user,
+            fecha_pago=date.today(),
+            cuenta_bancaria_destino=self.cuenta,
+            monto_total=Decimal('21000'),
+        )
+        self.assertEqual(grupo.estado, 'pendiente')
+        self.assertIsNotNone(grupo.created_at)
+
+    def test_items_relacionados(self):
+        grupo = GrupoSolicitudPago.objects.create(
+            voluntario=self.voluntario,
+            portal_user=self.portal_user,
+            fecha_pago=date.today(),
+            cuenta_bancaria_destino=self.cuenta,
+            monto_total=Decimal('14000'),
+        )
+        SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario,
+            portal_user=self.portal_user,
+            tipo_pago='cuota',
+            nombre_pago='Cuota 01/2026',
+            monto_solicitado=Decimal('7000'),
+            cuota_mes=1,
+            cuota_anio=2026,
+            grupo=grupo,
+        )
+        SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario,
+            portal_user=self.portal_user,
+            tipo_pago='cuota',
+            nombre_pago='Cuota 02/2026',
+            monto_solicitado=Decimal('7000'),
+            cuota_mes=2,
+            cuota_anio=2026,
+            grupo=grupo,
+        )
+        self.assertEqual(grupo.items.count(), 2)
+
+    def test_solicitud_sin_grupo_sigue_funcionando(self):
+        solicitud = SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario,
+            portal_user=self.portal_user,
+            tipo_pago='cuota',
+            nombre_pago='Cuota 03/2026',
+            monto_solicitado=Decimal('7000'),
+            cuota_mes=3,
+            cuota_anio=2026,
+        )
+        self.assertIsNone(solicitud.grupo)

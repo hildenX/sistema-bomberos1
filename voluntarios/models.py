@@ -1503,6 +1503,14 @@ class SolicitudPagoPortal(models.Model):
         related_name='solicitudes_portal'
     )
 
+    grupo = models.ForeignKey(
+        'GrupoSolicitudPago',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='items'
+    )
+
     revisada_por = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -1603,3 +1611,62 @@ class ItemInventario(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.cantidad} {self.unidad})".strip()
+
+
+class GrupoSolicitudPago(models.Model):
+    """
+    Agrupa varias SolicitudPagoPortal (cuotas/beneficios/rifa) que el
+    voluntario paga con un solo comprobante/transferencia.
+    """
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('observada', 'Observada'),
+        ('aprobada', 'Aprobada'),
+        ('rechazada', 'Rechazada'),
+        ('expirada', 'Expirada'),
+    ]
+
+    voluntario = models.ForeignKey(
+        Voluntario,
+        on_delete=models.CASCADE,
+        related_name='grupos_solicitud_portal'
+    )
+    portal_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='grupos_solicitud_portal'
+    )
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
+
+    fecha_pago = models.DateField(default=timezone.now)
+    cuenta_bancaria_destino = models.ForeignKey(
+        CuentaBancaria,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='grupos_solicitud_portal'
+    )
+    numero_comprobante = models.CharField(max_length=100, blank=True, null=True)
+    comprobante = models.FileField(upload_to='portal/comprobantes_grupo/%Y/%m/', blank=True, null=True)
+    descripcion = models.TextField(blank=True, null=True)
+    monto_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    feedback_tesorero = models.TextField(blank=True, null=True)
+    observada_hasta = models.DateTimeField(blank=True, null=True)
+
+    revisada_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='grupos_solicitud_revisados'
+    )
+    revisada_at = models.DateTimeField(blank=True, null=True)
+    aprobada_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Grupo #{self.id} - {self.voluntario} - {self.estado}'
