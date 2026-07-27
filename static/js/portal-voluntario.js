@@ -50,86 +50,106 @@
     }
 
     let dashboardCache = null;
-    let editSolicitudId = null;
+    let carrito = [];
 
-    function openForm(config) {
-        editSolicitudId = config.editSolicitudId || null;
-        document.getElementById('solicitudTitulo').textContent = config.title;
-        document.getElementById('tipo_pago').value = config.tipo_pago;
-        document.getElementById('nombre_pago').value = config.nombre_pago || '';
-        document.getElementById('monto_solicitado').value = config.monto_solicitado || '';
-        document.getElementById('fecha_pago').value = config.fecha_pago || new Date().toISOString().slice(0, 10);
-        document.getElementById('descripcion').value = config.descripcion || '';
-        document.getElementById('numero_comprobante').value = config.numero_comprobante || '';
-        document.getElementById('cuota_mes').value = config.cuota_mes || '';
-        document.getElementById('cuota_anio').value = config.cuota_anio || '';
-        document.getElementById('asignacion_beneficio_id').value = config.asignacion_beneficio_id || '';
-        document.getElementById('asignacion_rifa_id').value = config.asignacion_rifa_id || '';
-        document.getElementById('tipo_pago_beneficio').value = config.tipo_pago_beneficio || 'normal';
-        document.getElementById('cantidad').value = config.cantidad || 1;
-        document.getElementById('tipoBloqueCuota').style.display = config.tipo_pago === 'cuota' ? 'block' : 'none';
-        document.getElementById('tipoBloqueBeneficio').style.display = config.tipo_pago === 'beneficio' ? 'block' : 'none';
-        document.getElementById('tipoBloqueRifa').style.display = config.tipo_pago === 'rifa' ? 'block' : 'none';
-        document.getElementById('solicitudFormPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    function claveItem(tipo, ref) {
+        return `${tipo}:${ref}`;
+    }
+
+    function renderCarrito() {
+        const vacio = document.getElementById('carritoVacio');
+        const itemsDiv = document.getElementById('carritoItems');
+        const totalDiv = document.getElementById('carritoTotal');
+        const form = document.getElementById('solicitudForm');
+
+        if (!carrito.length) {
+            vacio.style.display = 'block';
+            itemsDiv.innerHTML = '';
+            totalDiv.style.display = 'none';
+            form.style.display = 'none';
+            return;
+        }
+
+        vacio.style.display = 'none';
+        form.style.display = 'grid';
+
+        itemsDiv.innerHTML = carrito.map((item) => `
+            <article class="request-card">
+                <div>
+                    <h4>${item.nombre_pago}</h4>
+                    <p>${money(item.monto)}</p>
+                </div>
+                <button class="danger-btn" onclick="quitarDelCarrito('${item.clave}')">Quitar</button>
+            </article>
+        `).join('');
+
+        const total = carrito.reduce((sum, item) => sum + item.monto, 0);
+        totalDiv.style.display = 'block';
+        totalDiv.textContent = `Total a pagar: ${money(total)}`;
+
+        if (!document.getElementById('fecha_pago').value) {
+            document.getElementById('fecha_pago').value = new Date().toISOString().slice(0, 10);
+        }
+    }
+
+    function agregarAlCarrito(item) {
+        if (carrito.some((existing) => existing.clave === item.clave)) return;
+        carrito.push(item);
+        renderCarrito();
     }
 
     function bindDashboardActions() {
-        window.prepararCuotaPortal = (mes, anio, monto) => {
-            openForm({
-                title: `Solicitar pago cuota ${String(mes).padStart(2, '0')}/${anio}`,
+        window.quitarDelCarrito = (clave) => {
+            carrito = carrito.filter((item) => item.clave !== clave);
+            renderCarrito();
+        };
+
+        window.agregarCuotaCarrito = (mes, anio, monto) => {
+            agregarAlCarrito({
+                clave: claveItem('cuota', `${anio}-${mes}`),
                 tipo_pago: 'cuota',
                 nombre_pago: `Cuota ${String(mes).padStart(2, '0')}/${anio}`,
-                monto_solicitado: monto,
+                monto,
                 cuota_mes: mes,
                 cuota_anio: anio,
             });
+
+            const atrasadas = (dashboardCache.cuotas.pendientes || [])
+                .filter((c) => (c.anio < anio) || (c.anio === anio && c.mes < mes));
+            if (atrasadas.length) {
+                atrasadas.forEach((c) => agregarAlCarrito({
+                    clave: claveItem('cuota', `${c.anio}-${c.mes}`),
+                    tipo_pago: 'cuota',
+                    nombre_pago: `Cuota ${String(c.mes).padStart(2, '0')}/${c.anio}`,
+                    monto: c.monto,
+                    cuota_mes: c.mes,
+                    cuota_anio: c.anio,
+                }));
+                const ok = document.getElementById('solicitudOk');
+                const nombres = atrasadas.map((c) => `${String(c.mes).padStart(2, '0')}/${c.anio}`).join(', ');
+                ok.textContent = `Se agregaron también las cuotas atrasadas: ${nombres}.`;
+            }
         };
 
-        window.prepararBeneficioPortal = (id, nombre, montoPendiente, precioNormal, precioExtra, disponibles) => {
-            openForm({
-                title: `Solicitar pago beneficio ${nombre}`,
+        window.agregarBeneficioCarrito = (id, nombre, montoPendiente) => {
+            agregarAlCarrito({
+                clave: claveItem('beneficio', id),
                 tipo_pago: 'beneficio',
                 nombre_pago: nombre,
-                monto_solicitado: precioNormal,
+                monto: montoPendiente,
                 asignacion_beneficio_id: id,
-                cantidad: 1,
                 tipo_pago_beneficio: 'normal',
+                cantidad: 1,
             });
-            const cantidadInput = document.getElementById('cantidad');
-            const tipoPagoBeneficio = document.getElementById('tipo_pago_beneficio');
-            const montoInput = document.getElementById('monto_solicitado');
-
-            function recalc() {
-                const qty = Math.max(parseInt(cantidadInput.value || '1', 10), 1);
-                const tipo = tipoPagoBeneficio.value;
-                const precio = tipo === 'extra' ? precioExtra : precioNormal;
-                if (tipo === 'normal' && qty > disponibles) {
-                    cantidadInput.value = disponibles;
-                }
-                montoInput.value = (Math.max(parseInt(cantidadInput.value || '1', 10), 1) * precio).toString();
-            }
-
-            cantidadInput.onchange = recalc;
-            tipoPagoBeneficio.onchange = recalc;
         };
 
-        window.prepararRifaPortal = (id, nombre, montoPendiente) => {
-            openForm({
-                title: `Solicitar pago rifa ${nombre}`,
+        window.agregarRifaCarrito = (id, nombre, montoPendiente) => {
+            agregarAlCarrito({
+                clave: claveItem('rifa', id),
                 tipo_pago: 'rifa',
                 nombre_pago: nombre,
-                monto_solicitado: montoPendiente,
+                monto: montoPendiente,
                 asignacion_rifa_id: id,
-            });
-        };
-
-        window.editarSolicitudPortal = async (solicitudId) => {
-            const solicitud = dashboardCache.solicitudes.find((item) => item.id === solicitudId);
-            if (!solicitud) return;
-            openForm({
-                editSolicitudId: solicitud.id,
-                title: `Corregir solicitud #${solicitud.id}`,
-                ...solicitud,
             });
         };
 
@@ -161,7 +181,7 @@
                     <h4>${item.nombre}</h4>
                     <p>Monto pendiente: ${money(item.monto)}</p>
                 </div>
-                <button class="primary-btn" onclick="prepararCuotaPortal(${item.mes}, ${item.anio}, ${item.monto})">Solicitar pago</button>
+                <button class="primary-btn" onclick="agregarCuotaCarrito(${item.mes}, ${item.anio}, ${item.monto})">Agregar al carrito</button>
             </article>
         `);
 
@@ -171,7 +191,7 @@
                     <h4>${item.nombre}</h4>
                     <p>Pendiente: ${money(item.monto_pendiente)} · Tarjetas disponibles: ${item.tarjetas_disponibles}</p>
                 </div>
-                <button class="primary-btn" onclick="prepararBeneficioPortal(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente}, ${item.precio_por_tarjeta}, ${item.precio_tarjeta_extra}, ${item.tarjetas_disponibles})">Solicitar pago</button>
+                <button class="primary-btn" onclick="agregarBeneficioCarrito(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente})">Agregar al carrito</button>
             </article>
         `);
 
@@ -181,7 +201,7 @@
                     <h4>${item.nombre}</h4>
                     <p>Pendiente: ${money(item.monto_pendiente)} · Estado: ${item.estado}</p>
                 </div>
-                ${item.puede_pagar ? `<button class="primary-btn" onclick="prepararRifaPortal(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente})">Solicitar pago</button>` : `<span class="pill warning">Retira los talonarios antes de pagar</span>`}
+                ${item.puede_pagar ? `<button class="primary-btn" onclick="agregarRifaCarrito(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente})">Agregar al carrito</button>` : `<span class="pill warning">Retira los talonarios antes de pagar</span>`}
             </article>
         `);
 
@@ -201,6 +221,8 @@
         cuentaSelect.innerHTML = '<option value="">Seleccione cuenta destino</option>' + data.dashboard.cuentas_bancarias.map((item) =>
             `<option value="${item.id}">${item.nombre} · ${item.banco} · ${item.numero_cuenta || 'sin número'}</option>`
         ).join('');
+
+        renderCarrito();
     }
 
     async function initPanel() {
@@ -216,45 +238,27 @@
             const error = document.getElementById('solicitudError');
             const ok = document.getElementById('solicitudOk');
             error.textContent = '';
-            ok.textContent = '';
+
+            if (!carrito.length) {
+                error.textContent = 'Agrega al menos un item al carrito.';
+                return;
+            }
 
             const formData = new FormData(form);
-            const endpoint = editSolicitudId ? `/api/portal/solicitudes/${editSolicitudId}/` : '/api/portal/solicitudes/';
-            const method = 'POST';
+            formData.set('items', JSON.stringify(carrito));
 
             try {
-                await request(endpoint, {
-                    method,
+                await request('/api/portal/solicitudes/grupo/', {
+                    method: 'POST',
                     body: formData,
                 });
-                ok.textContent = editSolicitudId ? 'Solicitud corregida y reenviada.' : 'Solicitud enviada correctamente.';
+                ok.textContent = 'Solicitud enviada correctamente.';
                 form.reset();
-                editSolicitudId = null;
+                carrito = [];
+                renderCarrito();
                 await loadDashboard();
             } catch (err) {
                 error.textContent = err.message;
-            }
-        });
-
-        document.getElementById('passwordForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const form = event.currentTarget;
-            const msg = document.getElementById('passwordMsg');
-            msg.textContent = '';
-            try {
-                await request('/api/portal/auth/change-password/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        current_password: form.current_password.value,
-                        new_password: form.new_password.value,
-                    })
-                });
-                msg.textContent = 'Contraseña actualizada.';
-                form.reset();
-                await loadDashboard();
-            } catch (err) {
-                msg.textContent = err.message;
             }
         });
     }

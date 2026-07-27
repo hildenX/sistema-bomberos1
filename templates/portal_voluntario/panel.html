@@ -96,48 +96,16 @@
 
             <div class="stack">
                 <section id="solicitudFormPanel" class="panel">
-                    <h2 id="solicitudTitulo">Nueva solicitud de pago</h2>
-                    <form id="solicitudForm" enctype="multipart/form-data">
-                        <input id="tipo_pago" name="tipo_pago" type="hidden">
-                        <input id="cuota_mes" name="cuota_mes" type="hidden">
-                        <input id="cuota_anio" name="cuota_anio" type="hidden">
-                        <input id="asignacion_beneficio_id" name="asignacion_beneficio_id" type="hidden">
-                        <input id="asignacion_rifa_id" name="asignacion_rifa_id" type="hidden">
+                    <h2>Carrito de pago</h2>
+                    <div id="carritoVacio" class="empty-state">Agrega cuotas, beneficios o rifas desde la izquierda para pagarlos juntos con un solo comprobante.</div>
+                    <div id="carritoItems"></div>
+                    <div id="carritoTotal" style="display:none; margin-top:10px; font-weight:700; font-size:1.1rem;"></div>
 
+                    <form id="solicitudForm" enctype="multipart/form-data" style="display:none; margin-top:16px;">
                         <div>
-                            <label for="nombre_pago">Nombre del pago</label>
-                            <input id="nombre_pago" name="nombre_pago" required>
+                            <label for="fecha_pago">Fecha de pago</label>
+                            <input id="fecha_pago" name="fecha_pago" type="date" required>
                         </div>
-
-                        <div class="field-row">
-                            <div>
-                                <label for="monto_solicitado">Monto</label>
-                                <input id="monto_solicitado" name="monto_solicitado" type="number" min="1" required>
-                            </div>
-                            <div>
-                                <label for="fecha_pago">Fecha de pago</label>
-                                <input id="fecha_pago" name="fecha_pago" type="date" required>
-                            </div>
-                        </div>
-
-                        <div id="tipoBloqueBeneficio" style="display:none">
-                            <div class="field-row">
-                                <div>
-                                    <label for="tipo_pago_beneficio">Tipo de rendición</label>
-                                    <select id="tipo_pago_beneficio" name="tipo_pago_beneficio">
-                                        <option value="normal">Normal</option>
-                                        <option value="extra">Extra</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="cantidad">Cantidad</label>
-                                    <input id="cantidad" name="cantidad" type="number" min="1" value="1">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="tipoBloqueCuota" style="display:none" class="empty-state">Se enviará la cuota seleccionada del ciclo activo.</div>
-                        <div id="tipoBloqueRifa" style="display:none" class="empty-state">Adjunta el comprobante del pago realizado para la rifa.</div>
 
                         <div>
                             <label for="cuenta_bancaria_destino_id">Cuenta bancaria destino</label>
@@ -156,7 +124,7 @@
 
                         <div>
                             <label for="comprobante">Voucher o comprobante</label>
-                            <input id="comprobante" name="comprobante" type="file" accept="image/*,application/pdf">
+                            <input id="comprobante" name="comprobante" type="file" accept="image/*,application/pdf" required>
                         </div>
 
                         <button class="primary-btn" type="submit">Enviar solicitud</button>
@@ -166,23 +134,11 @@
                 </section>
 
                 <section class="panel">
-                    <h2>Cambiar contraseña</h2>
-                    <form id="passwordForm">
-                        <div>
-                            <label for="current_password">Contraseña actual</label>
-                            <input id="current_password" name="current_password" type="password" required>
-                        </div>
-                        <div>
-                            <label for="new_password">Nueva contraseña</label>
-                            <input id="new_password" name="new_password" type="password" required>
-                        </div>
-                        <button class="secondary-btn" type="submit">Actualizar contraseña</button>
-                        <div id="passwordMsg" class="form-msg"></div>
-                    </form>
+                    <a class="secondary-btn" href="/portal/cambiar-clave/" style="display:inline-block; text-decoration:none; text-align:center;">Cambiar contraseña</a>
                 </section>
             </div>
         </div>
     </div>
-    <script src="{% static 'js/portal-voluntario.js' %}"></script>
+    <script src="{% static 'js/portal-voluntario.js' %}?v=2"></script>
 </body>
 </html>
