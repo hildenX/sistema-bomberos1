@@ -264,8 +264,43 @@
         });
     }
 
+    async function initCambiarClave() {
+        const form = document.getElementById('passwordForm');
+        if (!form || document.getElementById('portalPanel')) return;
+
+        const auth = await request('/api/portal/auth/check/');
+        if (!auth.authenticated) {
+            window.location.href = '/portal/';
+            return;
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const msg = document.getElementById('passwordMsg');
+            msg.className = 'form-msg';
+            msg.textContent = '';
+            try {
+                await request('/api/portal/auth/change-password/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        current_password: form.current_password.value,
+                        new_password: form.new_password.value,
+                    })
+                });
+                msg.className = 'form-msg form-ok';
+                msg.textContent = 'Contraseña actualizada. Volviendo al panel...';
+                setTimeout(() => { window.location.href = '/portal/panel/'; }, 1200);
+            } catch (err) {
+                msg.className = 'form-msg form-error';
+                msg.textContent = err.message;
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         initLogin();
         initPanel();
+        initCambiarClave();
     });
 })();

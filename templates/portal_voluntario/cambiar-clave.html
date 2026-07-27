@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña - Portal Voluntario</title>
+    <style>
+        :root { --bg:#0f0f0f; --panel:#1c1c1c; --ink:#f0f0f0; --muted:#888; --line:#2a2a2a; --accent:#c0392b; --accent-dark:#8b1429; --soft:#1a1a1a; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
+        .shell { width:min(480px, calc(100% - 32px)); margin:60px auto; }
+        .panel { background:var(--panel); border-radius:16px; padding:26px; box-shadow:0 4px 20px rgba(0,0,0,0.4); border:1px solid var(--line); }
+        .panel h2 { margin:0 0 20px; font-size:1.3rem; font-weight:700; }
+        form { display:grid; gap:14px; }
+        label { display:block; font-weight:600; margin-bottom:6px; color:#999; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; }
+        input { width:100%; padding:12px 14px; border:1.5px solid #2a2a2a; border-radius:10px; background:#1a1a1a; color:#f0f0f0; font:inherit; font-size:0.95rem; }
+        input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(192,57,43,0.12); }
+        .primary-btn, .secondary-btn { border:none; border-radius:10px; padding:12px 16px; cursor:pointer; font-weight:700; }
+        .primary-btn { background:linear-gradient(135deg, var(--accent), var(--accent-dark)); color:#fff; }
+        .secondary-btn { background:rgba(255,255,255,0.08); color:#ccc; border:1px solid #333; margin-bottom:16px; display:inline-block; text-decoration:none; text-align:center; width:fit-content; padding:10px 16px; }
+        .form-msg { min-height:24px; font-weight:700; }
+        .form-error { color:#e74c3c; }
+        .form-ok { color:#2ecc71; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="shell">
+        <a class="secondary-btn" href="/portal/panel/">&larr; Volver</a>
+        <section class="panel">
+            <h2>Cambiar contraseña</h2>
+            <form id="passwordForm">
+                <div>
+                    <label for="current_password">Contraseña actual</label>
+                    <input id="current_password" name="current_password" type="password" required>
+                </div>
+                <div>
+                    <label for="new_password">Nueva contraseña</label>
+                    <input id="new_password" name="new_password" type="password" required>
+                </div>
+                <button class="primary-btn" type="submit">Actualizar contraseña</button>
+                <div id="passwordMsg" class="form-msg"></div>
+            </form>
+        </section>
+    </div>
+    <script src="{% static 'js/portal-voluntario.js' %}?v=4"></script>
+</body>
+</html>

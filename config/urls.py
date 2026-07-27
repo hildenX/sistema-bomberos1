@@ -169,6 +169,7 @@ urlpatterns = [
     path('test-ranking-externos.html', template('asistencias/test-ranking-externos.html'), name='test_ranking'),
     path('portal/', template('portal_voluntario/login.html'), name='portal_login_page'),
     path('portal/panel/', template('portal_voluntario/panel.html'), name='portal_panel_page'),
+    path('portal/cambiar-clave/', template('portal_voluntario/cambiar-clave.html'), name='portal_cambiar_clave_page'),
 ]
 
 # Servir archivos estáticos en desarrollo
