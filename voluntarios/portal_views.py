@@ -2,10 +2,10 @@ import json
 import base64
 import mimetypes
 from datetime import date
-from decimal import Decimal
 
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import EmptyPage, Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.utils import timezone
@@ -23,7 +23,6 @@ from .models import (
 from .permissions import RolBomberos, obtener_rol_usuario
 from .portal_utils import (
     PORTAL_PASSWORD_INICIAL,
-    _normalizar_decimal,
     crear_feedback_observacion,
     crear_grupo_solicitud,
     deudas_beneficios_portal,
@@ -35,7 +34,8 @@ from .portal_utils import (
     serializar_credencial_portal,
     serializar_grupo_solicitud,
     serializar_solicitud,
-    validar_solicitud_duplicada,
+    validar_archivo_comprobante,
+    validar_item_pago,
 )
 from .utils_email import enviar_comprobante_grupo, enviar_notificacion_rechazo
 from .utils_tesoreria import registrar_pago_beneficio, registrar_pago_cuota
@@ -98,6 +98,14 @@ def _obtener_cuenta_destino(cuenta_id):
         return CuentaBancaria.objects.get(id=cuenta_id, activa=True)
     except CuentaBancaria.DoesNotExist as exc:
         raise ValueError('Cuenta bancaria destino no encontrada') from exc
+
+
+def _parsear_fecha_pago(fecha_raw):
+    fecha_raw = fecha_raw or timezone.localdate().isoformat()
+    try:
+        return date.fromisoformat(str(fecha_raw))
+    except ValueError as exc:
+        raise ValueError('Fecha de pago invalida') from exc
 
 
 def _archivo_a_data_url(file_field):
@@ -228,24 +236,38 @@ def _crear_o_actualizar_solicitud(request, profile, solicitud=None):
     if not nombre_pago:
         raise ValueError('El nombre del pago es obligatorio')
 
-    monto = _normalizar_decimal(data.get('monto_solicitado'))
-    fecha_raw = data.get('fecha_pago') or timezone.localdate().isoformat()
-    try:
-        fecha_pago = date.fromisoformat(str(fecha_raw))
-    except ValueError as exc:
-        raise ValueError('Fecha de pago invalida') from exc
+    fecha_pago = _parsear_fecha_pago(data.get('fecha_pago'))
 
     descripcion = str(data.get('descripcion', '')).strip()
     numero_comprobante = str(data.get('numero_comprobante', '')).strip()
     cuenta_destino = _obtener_cuenta_destino(data.get('cuenta_bancaria_destino_id'))
     archivo = request.FILES.get('comprobante')
+    if archivo:
+        validar_archivo_comprobante(archivo)
+
+    # Toda la validacion de integridad del dinero vive en validar_item_pago,
+    # compartida con el flujo de grupo (crear_grupo_solicitud).
+    validado = validar_item_pago(
+        profile.voluntario,
+        tipo_pago,
+        {
+            'monto': data.get('monto_solicitado'),
+            'cuota_mes': data.get('cuota_mes'),
+            'cuota_anio': data.get('cuota_anio'),
+            'asignacion_beneficio_id': data.get('asignacion_beneficio_id'),
+            'tipo_pago_beneficio': data.get('tipo_pago_beneficio'),
+            'cantidad': data.get('cantidad'),
+            'asignacion_rifa_id': data.get('asignacion_rifa_id'),
+        },
+        exclude_solicitud_id=solicitud.id if solicitud else None,
+    )
 
     common = {
         'voluntario': profile.voluntario,
         'portal_user': profile.user,
         'tipo_pago': tipo_pago,
         'nombre_pago': nombre_pago,
-        'monto_solicitado': monto,
+        'monto_solicitado': validado['monto'],
         'fecha_pago': fecha_pago,
         'descripcion': descripcion,
         'numero_comprobante': numero_comprobante,
@@ -256,86 +278,13 @@ def _crear_o_actualizar_solicitud(request, profile, solicitud=None):
         'revisada_por': None,
         'revisada_at': None,
         'aprobada_at': None,
+        'cuota_mes': validado['cuota_mes'],
+        'cuota_anio': validado['cuota_anio'],
+        'asignacion_beneficio': validado['asignacion_beneficio'],
+        'tipo_pago_beneficio': validado['tipo_pago_beneficio'],
+        'asignacion_rifa': validado['asignacion_rifa'],
+        'cantidad': validado['cantidad'],
     }
-
-    if tipo_pago == 'cuota':
-        cuota_mes = int(data.get('cuota_mes'))
-        cuota_anio = int(data.get('cuota_anio'))
-        cuotas = deudas_cuotas_portal(profile.voluntario)['items']
-        if not any(item['mes'] == cuota_mes and item['anio'] == cuota_anio for item in cuotas):
-            raise ValueError('La cuota seleccionada ya no esta pendiente en el ciclo activo')
-        if validar_solicitud_duplicada(
-            profile.voluntario, 'cuota',
-            cuota_mes=cuota_mes, cuota_anio=cuota_anio,
-            exclude_id=solicitud.id if solicitud else None
-        ):
-            raise ValueError('Ya existe una solicitud abierta para esa cuota')
-        common.update({
-            'cuota_mes': cuota_mes,
-            'cuota_anio': cuota_anio,
-            'cantidad': 1,
-            'tipo_pago_beneficio': 'normal',
-            'asignacion_beneficio': None,
-            'asignacion_rifa': None,
-        })
-
-    elif tipo_pago == 'beneficio':
-        asignacion = AsignacionBeneficio.objects.select_related('beneficio').get(
-            id=int(data.get('asignacion_beneficio_id')),
-            voluntario=profile.voluntario
-        )
-        cantidad = int(data.get('cantidad') or 0)
-        tipo_beneficio = str(data.get('tipo_pago_beneficio', 'normal')).strip().lower() or 'normal'
-        if cantidad <= 0:
-            raise ValueError('La cantidad debe ser mayor a 0')
-        if tipo_beneficio not in ['normal', 'extra']:
-            raise ValueError('Tipo de pago de beneficio invalido')
-        if tipo_beneficio == 'normal' and cantidad > asignacion.tarjetas_disponibles:
-            raise ValueError('No puede rendir mas tarjetas de las disponibles')
-        precio_unitario = asignacion.beneficio.precio_tarjeta_extra if tipo_beneficio == 'extra' else asignacion.beneficio.precio_por_tarjeta
-        monto_esperado = Decimal(str(cantidad)) * precio_unitario
-        if monto != monto_esperado:
-            raise ValueError(f'El monto debe ser exacto para la cantidad informada: ${monto_esperado}')
-        if validar_solicitud_duplicada(
-            profile.voluntario, 'beneficio',
-            asignacion_beneficio_id=asignacion.id,
-            exclude_id=solicitud.id if solicitud else None
-        ):
-            raise ValueError('Ya existe una solicitud abierta para ese beneficio')
-        common.update({
-            'cuota_mes': None,
-            'cuota_anio': None,
-            'asignacion_beneficio': asignacion,
-            'tipo_pago_beneficio': tipo_beneficio,
-            'asignacion_rifa': None,
-            'cantidad': cantidad,
-        })
-
-    else:
-        asignacion = AsignacionRifa.objects.select_related('rifa').get(
-            id=int(data.get('asignacion_rifa_id')),
-            voluntario=profile.voluntario
-        )
-        if asignacion.estado == 'no_retirada':
-            raise ValueError('Debes retirar los talonarios antes de solicitar el pago de la rifa')
-        if asignacion.estado == 'liberada':
-            raise ValueError('La asignacion de rifa fue liberada')
-        if monto != asignacion.monto_pendiente:
-            raise ValueError(f'Para la rifa debes pagar el monto pendiente exacto: ${asignacion.monto_pendiente}')
-        if validar_solicitud_duplicada(
-            profile.voluntario, 'rifa',
-            asignacion_rifa_id=asignacion.id,
-            exclude_id=solicitud.id if solicitud else None
-        ):
-            raise ValueError('Ya existe una solicitud abierta para esa rifa')
-        common.update({
-            'cuota_mes': None,
-            'cuota_anio': None,
-            'asignacion_beneficio': None,
-            'tipo_pago_beneficio': 'normal',
-            'asignacion_rifa': asignacion,
-            'cantidad': 1,
-        })
 
     if not archivo and not (solicitud and solicitud.comprobante):
         raise ValueError('Debes adjuntar un comprobante')
@@ -388,8 +337,7 @@ def portal_solicitudes_grupo_view(request):
         if not items:
             raise ValueError('Debes seleccionar al menos un item para pagar')
 
-        fecha_raw = data.get('fecha_pago') or timezone.localdate().isoformat()
-        fecha_pago = date.fromisoformat(str(fecha_raw))
+        fecha_pago = _parsear_fecha_pago(data.get('fecha_pago'))
         cuenta_destino = _obtener_cuenta_destino(data.get('cuenta_bancaria_destino_id'))
         archivo = request.FILES.get('comprobante')
 
@@ -585,55 +533,76 @@ def _aprobar_solicitud(solicitud, reviewer):
 
 
 def _aprobar_grupo(grupo, reviewer):
+    """
+    Registra los pagos de todos los items del grupo de forma atomica: si
+    cualquiera falla (cuota duplicada, tarjetas insuficientes, rifa cerrada),
+    se revierte el grupo completo y queda 'pendiente' para reintentar sin
+    riesgo de cobrar dos veces los items que si habian pasado.
+    """
     comprobante_base64 = _archivo_a_data_url(grupo.comprobante)
 
-    for item in grupo.items.all():
-        datos_pago = {
-            'fecha_pago': grupo.fecha_pago,
-            'metodo_pago': 'transferencia',
-            'numero_comprobante': grupo.numero_comprobante,
-            'observaciones': grupo.descripcion,
-            'cuenta_bancaria': grupo.cuenta_bancaria_destino,
-            'comprobante_base64': comprobante_base64,
-        }
+    with transaction.atomic():
+        primer_item = True
+        # order_by('id') fija el orden en que el voluntario armo el carrito
+        # (el ordering por defecto del modelo es '-created_at').
+        for item in grupo.items.order_by('id'):
+            # Idempotencia: si un intento anterior (previo a esta correccion)
+            # alcanzo a registrar el pago de este item, no se vuelve a cobrar.
+            if item.estado == 'aprobada':
+                continue
 
-        if item.tipo_pago == 'cuota':
-            pago = registrar_pago_cuota(
-                item.voluntario_id, item.cuota_mes, item.cuota_anio,
-                item.monto_solicitado, datos_pago, reviewer,
-            )
-            item.pago_cuota = pago
-        elif item.tipo_pago == 'beneficio':
-            pago = registrar_pago_beneficio(
-                item.asignacion_beneficio_id, item.tipo_pago_beneficio,
-                item.cantidad, item.monto_solicitado, datos_pago, reviewer,
-            )
-            item.pago_beneficio = pago
-        else:
-            pago = registrar_pago_rifa(
-                item.asignacion_rifa_id, item.monto_solicitado,
-                {**datos_pago, 'es_extra': item.asignacion_rifa.pagos.exists()},
-                reviewer,
-            )
-            item.pago_rifa = pago
+            datos_pago = {
+                'fecha_pago': grupo.fecha_pago,
+                'metodo_pago': 'transferencia',
+                'numero_comprobante': grupo.numero_comprobante,
+                'observaciones': grupo.descripcion,
+                'cuenta_bancaria': grupo.cuenta_bancaria_destino,
+                # El voucher es uno solo para todo el grupo: se guarda su
+                # base64 solo en el primer pago para no escribir N copias del
+                # archivo en la base. El resto lo resuelve por el FileField
+                # compartido de cada SolicitudPagoPortal del grupo.
+                'comprobante_base64': comprobante_base64 if primer_item else None,
+            }
 
-        item.estado = 'aprobada'
-        item.feedback_tesorero = ''
-        item.revisada_por = reviewer
-        item.revisada_at = timezone.now()
-        item.aprobada_at = timezone.now()
-        item.save()
+            if item.tipo_pago == 'cuota':
+                pago = registrar_pago_cuota(
+                    item.voluntario_id, item.cuota_mes, item.cuota_anio,
+                    item.monto_solicitado, datos_pago, reviewer,
+                )
+                item.pago_cuota = pago
+            elif item.tipo_pago == 'beneficio':
+                pago = registrar_pago_beneficio(
+                    item.asignacion_beneficio_id, item.tipo_pago_beneficio,
+                    item.cantidad, item.monto_solicitado, datos_pago, reviewer,
+                )
+                item.pago_beneficio = pago
+            else:
+                pago = registrar_pago_rifa(
+                    item.asignacion_rifa_id, item.monto_solicitado,
+                    {**datos_pago, 'es_extra': item.asignacion_rifa.pagos.exists()},
+                    reviewer,
+                )
+                item.pago_rifa = pago
 
-    grupo.estado = 'aprobada'
-    grupo.feedback_tesorero = ''
-    grupo.observada_hasta = None
-    grupo.revisada_por = reviewer
-    grupo.revisada_at = timezone.now()
-    grupo.aprobada_at = timezone.now()
+            item.estado = 'aprobada'
+            item.feedback_tesorero = ''
+            item.revisada_por = reviewer
+            item.revisada_at = timezone.now()
+            item.aprobada_at = timezone.now()
+            item.save()
+            primer_item = False
 
+        grupo.estado = 'aprobada'
+        grupo.feedback_tesorero = ''
+        grupo.observada_hasta = None
+        grupo.revisada_por = reviewer
+        grupo.revisada_at = timezone.now()
+        grupo.aprobada_at = timezone.now()
+        grupo.save()
+
+    # El comprobante se envia recien cuando el grupo quedo efectivamente
+    # guardado como aprobado.
     enviar_comprobante_grupo(grupo, grupo.voluntario)
-
-    grupo.save()
 
 
 @csrf_exempt
@@ -661,16 +630,13 @@ def tesoreria_grupo_accion_view(request, grupo_id):
             return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
 
         if accion == 'observar':
-            if not feedback:
-                return _json_error('Debes indicar retroalimentacion para observar el grupo')
-            grupo.estado = 'observada'
-            grupo.feedback_tesorero = feedback
-            grupo.observada_hasta = crear_feedback_observacion()
-            grupo.revisada_por = request.user
-            grupo.revisada_at = timezone.now()
-            grupo.save()
-            grupo.items.update(estado='observada', feedback_tesorero=feedback)
-            return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
+            # Un grupo observado quedaria congelado: el voluntario no tiene un
+            # flujo de correccion por grupo. Se rechaza con motivo y el
+            # voluntario reenvia un carrito nuevo.
+            return _json_error(
+                'La accion Observar no esta disponible para solicitudes combinadas. '
+                'Rechaza el grupo indicando el motivo para que el voluntario lo reenvie corregido.'
+            )
 
         if accion == 'rechazar':
             if not feedback:

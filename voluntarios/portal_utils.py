@@ -1,3 +1,4 @@
+import os
 import random
 import unicodedata
 from datetime import timedelta
@@ -24,6 +25,11 @@ from .utils_tesoreria import (
 
 PORTAL_PASSWORD_INICIAL = 'Bomberos123!'
 VENTANA_CORRECCION_HORAS = 48
+
+# Validacion del comprobante subido por el voluntario (server-side; el
+# atributo accept del input HTML es solo una sugerencia del navegador).
+EXTENSIONES_COMPROBANTE_PERMITIDAS = ('.jpg', '.jpeg', '.png', '.pdf', '.webp')
+MAX_TAMANO_COMPROBANTE_BYTES = 10 * 1024 * 1024
 
 
 def _normalizar_decimal(value, field_name='monto'):
@@ -218,6 +224,181 @@ def validar_solicitud_duplicada(voluntario, tipo_pago, cuota_mes=None, cuota_ani
     return False
 
 
+def validar_archivo_comprobante(archivo):
+    """
+    Valida el archivo de comprobante subido por el voluntario.
+    Levanta ValueError con un mensaje claro si no cumple.
+    """
+    if not archivo:
+        raise ValueError('Debes adjuntar un comprobante')
+
+    nombre = getattr(archivo, 'name', '') or ''
+    extension = os.path.splitext(nombre)[1].lower()
+    if extension not in EXTENSIONES_COMPROBANTE_PERMITIDAS:
+        permitidas = ', '.join(EXTENSIONES_COMPROBANTE_PERMITIDAS)
+        raise ValueError(f'El comprobante debe ser un archivo {permitidas}')
+
+    tamano = getattr(archivo, 'size', 0) or 0
+    if tamano > MAX_TAMANO_COMPROBANTE_BYTES:
+        maximo_mb = MAX_TAMANO_COMPROBANTE_BYTES // (1024 * 1024)
+        raise ValueError(f'El comprobante no puede superar los {maximo_mb} MB')
+
+    return archivo
+
+
+def validar_item_pago(voluntario, tipo_pago, item_data, exclude_solicitud_id=None):
+    """
+    Valida un item de pago del portal (cuota, beneficio o rifa) y devuelve
+    los datos ya normalizados y resueltos para construir la SolicitudPagoPortal.
+
+    Es el unico lugar donde viven las validaciones de integridad del dinero:
+    tanto el flujo de solicitud simple (`_crear_o_actualizar_solicitud`) como
+    el flujo de grupo (`crear_grupo_solicitud`) lo usan, para que no puedan
+    volver a divergir.
+
+    item_data acepta las claves: monto, cuota_mes, cuota_anio,
+    asignacion_beneficio_id, tipo_pago_beneficio, cantidad, asignacion_rifa_id.
+
+    Levanta ValueError con un mensaje para el usuario final si algo no cuadra.
+    """
+    tipo_pago = str(tipo_pago or '').strip().lower()
+    if tipo_pago not in ['cuota', 'beneficio', 'rifa']:
+        raise ValueError('Tipo de pago invalido')
+
+    monto = _normalizar_decimal(item_data.get('monto'))
+
+    validado = {
+        'tipo_pago': tipo_pago,
+        'monto': monto,
+        'nombre_pago': '',
+        'cuota_mes': None,
+        'cuota_anio': None,
+        'asignacion_beneficio': None,
+        'tipo_pago_beneficio': 'normal',
+        'asignacion_rifa': None,
+        'cantidad': 1,
+    }
+
+    if tipo_pago == 'cuota':
+        try:
+            cuota_mes = int(item_data.get('cuota_mes'))
+            cuota_anio = int(item_data.get('cuota_anio'))
+        except (TypeError, ValueError) as exc:
+            raise ValueError('El mes y el ano de la cuota son obligatorios') from exc
+
+        cuotas = deudas_cuotas_portal(voluntario)['items']
+        if not any(item['mes'] == cuota_mes and item['anio'] == cuota_anio for item in cuotas):
+            raise ValueError('La cuota seleccionada ya no esta pendiente en el ciclo activo')
+
+        # El precio lo define el servidor: el monto no puede venir del cliente,
+        # o se podria saldar una cuota completa declarando $1.
+        monto_esperado = obtener_precio_cuota(voluntario)
+        if monto != monto_esperado:
+            raise ValueError(f'Para la cuota debes pagar el monto exacto: ${monto_esperado}')
+
+        if validar_solicitud_duplicada(
+            voluntario, 'cuota',
+            cuota_mes=cuota_mes, cuota_anio=cuota_anio,
+            exclude_id=exclude_solicitud_id
+        ):
+            raise ValueError('Ya existe una solicitud abierta para esa cuota')
+
+        validado.update({
+            'cuota_mes': cuota_mes,
+            'cuota_anio': cuota_anio,
+            'cantidad': 1,
+            'nombre_pago': f'Cuota {cuota_mes:02d}/{cuota_anio}',
+        })
+
+    elif tipo_pago == 'beneficio':
+        try:
+            asignacion = AsignacionBeneficio.objects.select_related('beneficio').get(
+                id=int(item_data.get('asignacion_beneficio_id')),
+                voluntario=voluntario
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError('El beneficio seleccionado es invalido') from exc
+        except AsignacionBeneficio.DoesNotExist as exc:
+            raise ValueError('El beneficio seleccionado no esta asignado a ti') from exc
+
+        tipo_beneficio = str(item_data.get('tipo_pago_beneficio') or 'normal').strip().lower() or 'normal'
+        if tipo_beneficio not in ['normal', 'extra']:
+            raise ValueError('Tipo de pago de beneficio invalido')
+
+        try:
+            cantidad = int(item_data.get('cantidad') or 0)
+        except (TypeError, ValueError) as exc:
+            raise ValueError('La cantidad de tarjetas es invalida') from exc
+        if cantidad <= 0:
+            raise ValueError('La cantidad debe ser mayor a 0')
+        if tipo_beneficio == 'normal' and cantidad > asignacion.tarjetas_disponibles:
+            raise ValueError('No puede rendir mas tarjetas de las disponibles')
+
+        precio_unitario = (
+            asignacion.beneficio.precio_tarjeta_extra if tipo_beneficio == 'extra'
+            else asignacion.beneficio.precio_por_tarjeta
+        )
+        monto_esperado = Decimal(str(cantidad)) * precio_unitario
+        if monto != monto_esperado:
+            raise ValueError(f'El monto debe ser exacto para la cantidad informada: ${monto_esperado}')
+
+        if validar_solicitud_duplicada(
+            voluntario, 'beneficio',
+            asignacion_beneficio_id=asignacion.id,
+            exclude_id=exclude_solicitud_id
+        ):
+            raise ValueError('Ya existe una solicitud abierta para ese beneficio')
+
+        validado.update({
+            'asignacion_beneficio': asignacion,
+            'tipo_pago_beneficio': tipo_beneficio,
+            'cantidad': cantidad,
+            'nombre_pago': asignacion.beneficio.nombre,
+        })
+
+    else:
+        try:
+            asignacion = AsignacionRifa.objects.select_related('rifa').get(
+                id=int(item_data.get('asignacion_rifa_id')),
+                voluntario=voluntario
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError('La rifa seleccionada es invalida') from exc
+        except AsignacionRifa.DoesNotExist as exc:
+            raise ValueError('La rifa seleccionada no esta asignada a ti') from exc
+
+        if asignacion.estado == 'no_retirada':
+            raise ValueError('Debes retirar los talonarios antes de solicitar el pago de la rifa')
+        if asignacion.estado == 'liberada':
+            raise ValueError('La asignacion de rifa fue liberada')
+        if monto != asignacion.monto_pendiente:
+            raise ValueError(f'Para la rifa debes pagar el monto pendiente exacto: ${asignacion.monto_pendiente}')
+
+        if validar_solicitud_duplicada(
+            voluntario, 'rifa',
+            asignacion_rifa_id=asignacion.id,
+            exclude_id=exclude_solicitud_id
+        ):
+            raise ValueError('Ya existe una solicitud abierta para esa rifa')
+
+        validado.update({
+            'asignacion_rifa': asignacion,
+            'cantidad': 1,
+            'nombre_pago': asignacion.rifa.nombre,
+        })
+
+    return validado
+
+
+def _clave_referencia_item(validado):
+    """Identifica a que concepto apunta un item ya validado, para detectar repetidos."""
+    if validado['tipo_pago'] == 'cuota':
+        return ('cuota', validado['cuota_mes'], validado['cuota_anio'])
+    if validado['tipo_pago'] == 'beneficio':
+        return ('beneficio', validado['asignacion_beneficio'].id)
+    return ('rifa', validado['asignacion_rifa'].id)
+
+
 @transaction.atomic
 def registrar_pago_rifa(asignacion_id, monto, datos_pago, usuario):
     asignacion = AsignacionRifa.objects.select_for_update().select_related('rifa', 'voluntario').get(id=asignacion_id)
@@ -341,14 +522,26 @@ def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
     """
     if not items:
         raise ValueError('Debes seleccionar al menos un item para pagar')
-    if not archivo:
-        raise ValueError('Debes adjuntar un comprobante')
+    validar_archivo_comprobante(archivo)
 
-    montos = [
-        _normalizar_decimal(item.get('monto'), f"monto de {item.get('tipo_pago', 'item')}")
-        for item in items
-    ]
-    monto_total = sum(montos)
+    voluntario = profile.voluntario
+
+    # Se validan TODOS los items antes de crear nada: si se creara la
+    # solicitud del item 1 primero, la validacion de duplicados del item 2
+    # la veria como una solicitud abierta preexistente.
+    validados = []
+    referencias = set()
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError('Formato de item invalido')
+        validado = validar_item_pago(voluntario, item.get('tipo_pago'), item)
+        referencia = _clave_referencia_item(validado)
+        if referencia in referencias:
+            raise ValueError(f'El carrito tiene repetido el concepto "{validado["nombre_pago"]}"')
+        referencias.add(referencia)
+        validados.append(validado)
+
+    monto_total = sum(validado['monto'] for validado in validados)
 
     grupo = GrupoSolicitudPago.objects.create(
         voluntario=profile.voluntario,
@@ -361,66 +554,33 @@ def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
         comprobante=archivo,
     )
 
-    for item, monto in zip(items, montos):
-        tipo_pago = item['tipo_pago']
-
-        if tipo_pago == 'cuota':
-            mes = int(item['cuota_mes'])
-            anio = int(item['cuota_anio'])
-            cuotas_pendientes = deudas_cuotas_portal(profile.voluntario)['items']
-            if not any(c['mes'] == mes and c['anio'] == anio for c in cuotas_pendientes):
-                raise ValueError(f'La cuota {mes:02d}/{anio} ya no esta pendiente')
-            SolicitudPagoPortal.objects.create(
-                voluntario=profile.voluntario,
-                portal_user=profile.user,
-                tipo_pago='cuota',
-                nombre_pago=f'Cuota {mes:02d}/{anio}',
-                monto_solicitado=monto,
-                cuota_mes=mes,
-                cuota_anio=anio,
-                cantidad=1,
-                fecha_pago=datos_comunes['fecha_pago'],
-                grupo=grupo,
-            )
-        elif tipo_pago == 'beneficio':
-            asignacion = AsignacionBeneficio.objects.select_related('beneficio').get(
-                id=int(item['asignacion_beneficio_id']),
-                voluntario=profile.voluntario
-            )
-            tipo_beneficio = str(item.get('tipo_pago_beneficio', 'normal')).strip().lower() or 'normal'
-            cantidad = int(item.get('cantidad') or 0)
-            if cantidad <= 0:
-                raise ValueError('La cantidad de tarjetas debe ser mayor a 0')
-            SolicitudPagoPortal.objects.create(
-                voluntario=profile.voluntario,
-                portal_user=profile.user,
-                tipo_pago='beneficio',
-                nombre_pago=asignacion.beneficio.nombre,
-                monto_solicitado=monto,
-                asignacion_beneficio=asignacion,
-                tipo_pago_beneficio=tipo_beneficio,
-                cantidad=cantidad,
-                fecha_pago=datos_comunes['fecha_pago'],
-                grupo=grupo,
-            )
-        elif tipo_pago == 'rifa':
-            asignacion = AsignacionRifa.objects.select_related('rifa').get(
-                id=int(item['asignacion_rifa_id']),
-                voluntario=profile.voluntario
-            )
-            SolicitudPagoPortal.objects.create(
-                voluntario=profile.voluntario,
-                portal_user=profile.user,
-                tipo_pago='rifa',
-                nombre_pago=asignacion.rifa.nombre,
-                monto_solicitado=monto,
-                asignacion_rifa=asignacion,
-                cantidad=1,
-                fecha_pago=datos_comunes['fecha_pago'],
-                grupo=grupo,
-            )
-        else:
-            raise ValueError(f'Tipo de pago invalido: {tipo_pago}')
+    for validado in validados:
+        solicitud = SolicitudPagoPortal(
+            voluntario=voluntario,
+            portal_user=profile.user,
+            tipo_pago=validado['tipo_pago'],
+            nombre_pago=validado['nombre_pago'],
+            monto_solicitado=validado['monto'],
+            cuota_mes=validado['cuota_mes'],
+            cuota_anio=validado['cuota_anio'],
+            asignacion_beneficio=validado['asignacion_beneficio'],
+            tipo_pago_beneficio=validado['tipo_pago_beneficio'],
+            asignacion_rifa=validado['asignacion_rifa'],
+            cantidad=validado['cantidad'],
+            fecha_pago=datos_comunes['fecha_pago'],
+            numero_comprobante=datos_comunes.get('numero_comprobante', ''),
+            descripcion=datos_comunes.get('descripcion', ''),
+            cuenta_bancaria_destino=datos_comunes['cuenta_bancaria_destino'],
+            grupo=grupo,
+        )
+        # Se comparte la ruta del archivo ya guardado en el grupo en vez de
+        # subir una copia por item: asi los listados de tesoreria que buscan
+        # el comprobante via `pago.solicitudes_portal` siguen encontrandolo,
+        # sin duplicar el archivo ni su base64 (ver _aprobar_grupo).
+        if grupo.comprobante:
+            solicitud.comprobante.name = grupo.comprobante.name
+        solicitud.full_clean()
+        solicitud.save()
 
     return grupo
 
