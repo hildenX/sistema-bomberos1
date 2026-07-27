@@ -6,7 +6,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
-from voluntarios import cuotas_simple_views, ciclos_cuotas_simple_views, pdf_cuotas_views, configuracion_cuotas_simple_views, estado_cuotas_simple_views, beneficios_simple_views, voluntarios_simple_views, deudores_views, carga_masiva_views, ciclos_beneficios_simple_views, cuentas_views, rifa_views
+from voluntarios import cuotas_simple_views, ciclos_cuotas_simple_views, pdf_cuotas_views, configuracion_cuotas_simple_views, estado_cuotas_simple_views, beneficios_simple_views, voluntarios_simple_views, deudores_views, carga_masiva_views, ciclos_beneficios_simple_views, cuentas_views, rifa_views, inventario_excel_views
 
 # Helper para servir templates
 def template(name):
@@ -84,7 +84,10 @@ urlpatterns = [
     # Carga Masiva - Importación desde Excel (SIN AUTENTICACIÓN)
     path('api/voluntarios/descargar-plantilla-masiva/', carga_masiva_views.descargar_plantilla_masiva, name='descargar_plantilla_masiva_direct'),
     path('api/voluntarios/importar-masiva/', carga_masiva_views.importar_masiva, name='importar_masiva_direct'),
-    
+
+    # Inventario del Pañol - Exportar a Excel
+    path('api/voluntarios/inventario/exportar-excel/', inventario_excel_views.exportar_inventario_excel, name='exportar_inventario_excel'),
+
     # API REST (include de DRF)
     path('api/', include('voluntarios.urls')),
     
