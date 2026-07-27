@@ -1,6 +1,7 @@
 from django.test import TestCase
-from .models import Voluntario, Cargo, Sancion
+from .models import Voluntario, Cargo, Sancion, ItemInventario
 from datetime import date, timedelta
+from decimal import Decimal
 
 class VoluntarioModelTest(TestCase):
     
@@ -115,3 +116,51 @@ class SancionModelTest(TestCase):
         """Test creación de sanción"""
         self.assertEqual(self.sancion.tipo_sancion, 'suspension')
         self.assertEqual(self.sancion.dias_sancion, 15)
+
+
+class ItemInventarioModelTest(TestCase):
+
+    def setUp(self):
+        self.item = ItemInventario.objects.create(
+            nombre='Pitón 52mm',
+            categoria='Mangueras/Pitones',
+            cantidad=Decimal('8'),
+            unidad='unidades',
+            tamano='52mm',
+            responsable='Miguel Vásquez',
+            ubicacion='Pañol',
+            registrado_por='testuser'
+        )
+
+    def test_creation_defaults(self):
+        """Un item recién creado tiene fecha_registro y fecha_actualizacion automáticas"""
+        self.assertIsNotNone(self.item.fecha_registro)
+        self.assertIsNotNone(self.item.fecha_actualizacion)
+
+    def test_optional_fields_can_be_blank(self):
+        """marca, estado, numero_serie, observaciones son opcionales"""
+        item = ItemInventario.objects.create(
+            nombre='Extintor',
+            cantidad=Decimal('3'),
+            responsable='Miguel Vásquez',
+            ubicacion='Pañol',
+            registrado_por='testuser'
+        )
+        self.assertEqual(item.marca, '')
+        self.assertIsNone(item.estado or None)
+
+    def test_cantidad_admite_decimales(self):
+        """cantidad admite decimales (ej: litros a granel)"""
+        item = ItemInventario.objects.create(
+            nombre='Concentrado de espuma AFFF/AR',
+            cantidad=Decimal('18.5'),
+            unidad='litros',
+            responsable='Miguel Vásquez',
+            ubicacion='Pañol',
+            registrado_por='testuser'
+        )
+        self.assertEqual(item.cantidad, Decimal('18.5'))
+
+    def test_str_method(self):
+        self.assertIn('Pitón 52mm', str(self.item))
+        self.assertIn('8', str(self.item))

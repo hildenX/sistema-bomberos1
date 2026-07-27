@@ -1570,3 +1570,36 @@ class SolicitudPagoPortal(models.Model):
     @property
     def puede_ser_corregida(self):
         return self.estado in ['observada', 'expirada']
+
+
+class ItemInventario(models.Model):
+    """Item de inventario del pañol/bodega de la compañía"""
+    ESTADO_CHOICES = [
+        ('bueno', 'Bueno'),
+        ('regular', 'Regular'),
+        ('malo', 'Malo'),
+    ]
+
+    nombre = models.CharField(max_length=200)
+    categoria = models.CharField(max_length=100, blank=True, default='')
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
+    unidad = models.CharField(max_length=50, blank=True, default='')
+    marca = models.CharField(max_length=100, blank=True, default='')
+    tamano = models.CharField(max_length=100, blank=True, default='')
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, blank=True, default='')
+    numero_serie = models.CharField(max_length=100, blank=True, default='')
+    responsable = models.CharField(max_length=150, blank=True, default='')
+    ubicacion = models.CharField(max_length=150, blank=True, default='')
+    observaciones = models.TextField(blank=True, default='')
+
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    registrado_por = models.CharField(max_length=100, blank=True, default='')
+
+    class Meta:
+        ordering = ['categoria', 'nombre']
+        verbose_name = 'Item de Inventario'
+        verbose_name_plural = 'Items de Inventario'
+
+    def __str__(self):
+        return f"{self.nombre} ({self.cantidad} {self.unidad})".strip()
