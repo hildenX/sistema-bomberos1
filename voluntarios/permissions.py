@@ -34,6 +34,7 @@ class RolBomberos:
             'cargos': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'felicitaciones': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'uniformes': {'view': False, 'create': False, 'edit': False, 'delete': False},
+            'inventario': {'view': True, 'create': False, 'edit': False, 'delete': False},
             'cuotas': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'beneficios': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'finanzas': {'view': False},
@@ -47,6 +48,7 @@ class RolBomberos:
             'cargos': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'felicitaciones': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'uniformes': {'view': True, 'create': True, 'edit': True, 'delete': False},  # Entrega/devolución
+            'inventario': {'view': True, 'create': False, 'edit': False, 'delete': False},
             'cuotas': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'beneficios': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'finanzas': {'view': False},
@@ -60,6 +62,7 @@ class RolBomberos:
             'cargos': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'felicitaciones': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'uniformes': {'view': True, 'create': True, 'edit': True, 'delete': True},
+            'inventario': {'view': True, 'create': False, 'edit': False, 'delete': False},
             'cuotas': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'beneficios': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'finanzas': {'view': False},
@@ -73,6 +76,7 @@ class RolBomberos:
             'cargos': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'felicitaciones': {'view': False, 'create': False, 'edit': False, 'delete': False},
             'uniformes': {'view': True, 'create': False, 'edit': False, 'delete': False},  # Puede VER uniformes
+            'inventario': {'view': True, 'create': False, 'edit': False, 'delete': False},
             'cuotas': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'beneficios': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'finanzas': {'view': True},
@@ -86,6 +90,7 @@ class RolBomberos:
             'cargos': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'felicitaciones': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'uniformes': {'view': True, 'create': True, 'edit': True, 'delete': True},
+            'inventario': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'cuotas': {'view': True, 'create': False, 'edit': False, 'delete': False},  # Solo lectura
             'beneficios': {'view': True, 'create': False, 'edit': False, 'delete': False},  # Solo lectura
             'finanzas': {'view': True},  # Solo lectura
@@ -99,6 +104,7 @@ class RolBomberos:
             'cargos': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'felicitaciones': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'uniformes': {'view': True, 'create': True, 'edit': True, 'delete': True},
+            'inventario': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'cuotas': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'beneficios': {'view': True, 'create': True, 'edit': True, 'delete': True},
             'finanzas': {'view': True},

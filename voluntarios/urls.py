@@ -7,7 +7,7 @@ from .views import (
     CuotaViewSet,
     EventoAsistenciaViewSet, DetalleAsistenciaViewSet,
     VoluntarioExternoViewSet, RankingAsistenciaViewSet, CicloAsistenciaViewSet,
-    LogoCompaniaViewSet,
+    LogoCompaniaViewSet, ItemInventarioViewSet,
 )
 from .sancion_views import SancionViewSet, ReintegroViewSet
 from .views_tesoreria import (
@@ -38,6 +38,9 @@ router.register(r'felicitaciones', FelicitacionViewSet, basename='felicitacion')
 
 # Uniformes
 router.register(r'uniformes', UniformeViewSet, basename='uniforme')
+
+# Inventario / Pañol
+router.register(r'inventario', ItemInventarioViewSet, basename='inventario')
 
 # Cuotas y Tesorería
 router.register(r'cuotas', CuotaViewSet, basename='cuota')  # Modelo antiguo (mantener compatibilidad)

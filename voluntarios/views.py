@@ -14,7 +14,7 @@ from .models import (
     RankingAsistencia, CicloAsistencia,
     Uniforme, PiezaUniforme, Cuota, PagoCuota,
     Beneficio, AsignacionBeneficio, PagoBeneficio,
-    LogoCompania
+    LogoCompania, ItemInventario
 )
 
 from .serializers import (
@@ -25,7 +25,7 @@ from .serializers import (
     RankingAsistenciaSerializer, CicloAsistenciaSerializer,
     UniformeSerializer, CrearUniformeSerializer, CuotaSerializer, PagoCuotaSerializer,
     BeneficioSerializer, AsignacionBeneficioSerializer, PagoBeneficioSerializer,
-    LogoCompaniaSerializer
+    LogoCompaniaSerializer, ItemInventarioSerializer
 )
 
 # Importar serializers de sanciones desde el archivo dedicado
@@ -1228,5 +1228,31 @@ class LogoCompaniaViewSet(viewsets.ModelViewSet):
             'message': f'Logo "{logo.nombre}" {"activado" if activar else "desactivado"} en {contexto}',
             'logo': self.get_serializer(logo).data
         })
+
+
+class ItemInventarioViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints para el Inventario del Pañol.
+    Ver: cualquier usuario autenticado. Crear/editar/borrar: Director/Super Admin.
+    """
+    queryset = ItemInventario.objects.all()
+    serializer_class = ItemInventarioSerializer
+    permission_classes = [PermisosPorModulo]
+    modulo_permisos = 'inventario'
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['nombre', 'categoria', 'marca', 'numero_serie']
+    ordering_fields = ['nombre', 'categoria', 'cantidad', 'fecha_actualizacion']
+    ordering = ['categoria', 'nombre']
+
+    def get_permissions(self):
+        if self.action in ('list', 'retrieve'):
+            return [IsAuthenticated()]
+        return super().get_permissions()
+
+    def perform_create(self, serializer):
+        serializer.save(registrado_por=self.request.user.username)
+
+    def perform_update(self, serializer):
+        serializer.save(registrado_por=self.request.user.username)
 
 

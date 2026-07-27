@@ -7,7 +7,7 @@ from .models import (
     Beneficio, AsignacionBeneficio, PagoBeneficio, Felicitacion,
     EventoAsistencia, DetalleAsistencia, VoluntarioExterno, RankingAsistencia, CicloAsistencia,
     ConfiguracionCuotas, EstadoCuotasBombero, MovimientoFinanciero, CicloCuotas,
-    LogoCompania
+    LogoCompania, ItemInventario
 )
 
 
@@ -1040,3 +1040,10 @@ class SubirDocumentoEstudianteSerializer(serializers.Serializer):
     voluntario_id = serializers.IntegerField()
     documento_base64 = serializers.CharField()
     observaciones = serializers.CharField(required=False, allow_blank=True)
+
+
+class ItemInventarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemInventario
+        fields = '__all__'
+        read_only_fields = ['fecha_registro', 'fecha_actualizacion', 'registrado_por']

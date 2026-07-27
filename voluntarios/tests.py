@@ -164,3 +164,61 @@ class ItemInventarioModelTest(TestCase):
     def test_str_method(self):
         self.assertIn('Pitón 52mm', str(self.item))
         self.assertIn('8', str(self.item))
+
+
+from django.contrib.auth.models import Group, User
+from rest_framework.test import APIClient
+from rest_framework import status
+
+
+class ItemInventarioAPITest(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+        director_group, _ = Group.objects.get_or_create(name='Director')
+        self.director = User.objects.create_user(username='director1', password='pass12345')
+        self.director.groups.add(director_group)
+
+        ayudante_group, _ = Group.objects.get_or_create(name='Ayudante')
+        self.ayudante = User.objects.create_user(username='ayudante1', password='pass12345')
+        self.ayudante.groups.add(ayudante_group)
+
+        self.item = ItemInventario.objects.create(
+            nombre='Extintor',
+            cantidad=Decimal('3'),
+            responsable='Miguel Vásquez',
+            ubicacion='Pañol',
+            registrado_por='seed'
+        )
+
+    def test_ayudante_puede_ver_lista(self):
+        self.client.force_authenticate(user=self.ayudante)
+        response = self.client.get('/api/inventario/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_ayudante_no_puede_crear(self):
+        self.client.force_authenticate(user=self.ayudante)
+        response = self.client.post('/api/inventario/', {
+            'nombre': 'Casco', 'cantidad': '1'
+        })
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_director_puede_crear(self):
+        self.client.force_authenticate(user=self.director)
+        response = self.client.post('/api/inventario/', {
+            'nombre': 'Casco estructural', 'cantidad': '6'
+        })
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_director_puede_editar_y_borrar(self):
+        self.client.force_authenticate(user=self.director)
+        response = self.client.patch(f'/api/inventario/{self.item.id}/', {'cantidad': '5'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.delete(f'/api/inventario/{self.item.id}/')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_anonimo_no_puede_ver(self):
+        response = self.client.get('/api/inventario/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
