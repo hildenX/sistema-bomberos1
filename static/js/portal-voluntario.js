@@ -56,6 +56,39 @@
         return `${tipo}:${ref}`;
     }
 
+    function precioUnitarioBeneficio(item) {
+        return item.tipo_pago_beneficio === 'extra'
+            ? item.precio_tarjeta_extra
+            : item.precio_por_tarjeta;
+    }
+
+    // El monto de un beneficio siempre se deriva de la cantidad de tarjetas
+    // por su precio unitario: el backend exige que coincidan exactamente.
+    function recalcularBeneficio(item) {
+        item.monto = item.cantidad * precioUnitarioBeneficio(item);
+    }
+
+    function controlesBeneficio(item) {
+        if (item.tipo_pago !== 'beneficio') return '';
+        const maxAttr = item.tipo_pago_beneficio === 'normal' && item.tarjetas_disponibles > 0
+            ? `max="${item.tarjetas_disponibles}"`
+            : '';
+        return `
+            <div class="carrito-controles">
+                <label>Tipo de venta
+                    <select data-cart-tipo="${item.clave}">
+                        <option value="normal" ${item.tipo_pago_beneficio === 'normal' ? 'selected' : ''}>Tarjetas asignadas</option>
+                        <option value="extra" ${item.tipo_pago_beneficio === 'extra' ? 'selected' : ''}>Tarjetas extra</option>
+                    </select>
+                </label>
+                <label>Cantidad de tarjetas
+                    <input type="number" min="1" step="1" ${maxAttr} value="${item.cantidad}" data-cart-cantidad="${item.clave}">
+                </label>
+                <span class="carrito-precio">${money(precioUnitarioBeneficio(item))} por tarjeta</span>
+            </div>
+        `;
+    }
+
     function renderCarrito() {
         const vacio = document.getElementById('carritoVacio');
         const itemsDiv = document.getElementById('carritoItems');
@@ -78,10 +111,23 @@
                 <div>
                     <h4>${item.nombre_pago}</h4>
                     <p>${money(item.monto)}</p>
+                    ${controlesBeneficio(item)}
                 </div>
                 <button class="danger-btn" onclick="quitarDelCarrito('${item.clave}')">Quitar</button>
             </article>
         `).join('');
+
+        itemsDiv.querySelectorAll('[data-cart-cantidad]').forEach((input) => {
+            input.addEventListener('change', () => {
+                actualizarCantidadCarrito(input.getAttribute('data-cart-cantidad'), input.value);
+            });
+        });
+
+        itemsDiv.querySelectorAll('[data-cart-tipo]').forEach((select) => {
+            select.addEventListener('change', () => {
+                actualizarTipoBeneficioCarrito(select.getAttribute('data-cart-tipo'), select.value);
+            });
+        });
 
         const total = carrito.reduce((sum, item) => sum + item.monto, 0);
         totalDiv.style.display = 'block';
@@ -95,6 +141,32 @@
     function agregarAlCarrito(item) {
         if (carrito.some((existing) => existing.clave === item.clave)) return;
         carrito.push(item);
+        renderCarrito();
+    }
+
+    function limitarCantidadBeneficio(item, cantidad) {
+        let valor = parseInt(cantidad, 10);
+        if (!Number.isFinite(valor) || valor < 1) valor = 1;
+        if (item.tipo_pago_beneficio === 'normal' && item.tarjetas_disponibles > 0) {
+            valor = Math.min(valor, item.tarjetas_disponibles);
+        }
+        return valor;
+    }
+
+    function actualizarCantidadCarrito(clave, valor) {
+        const item = carrito.find((existing) => existing.clave === clave);
+        if (!item || item.tipo_pago !== 'beneficio') return;
+        item.cantidad = limitarCantidadBeneficio(item, valor);
+        recalcularBeneficio(item);
+        renderCarrito();
+    }
+
+    function actualizarTipoBeneficioCarrito(clave, valor) {
+        const item = carrito.find((existing) => existing.clave === clave);
+        if (!item || item.tipo_pago !== 'beneficio') return;
+        item.tipo_pago_beneficio = valor === 'extra' ? 'extra' : 'normal';
+        item.cantidad = limitarCantidadBeneficio(item, item.cantidad);
+        recalcularBeneficio(item);
         renderCarrito();
     }
 
@@ -131,24 +203,36 @@
             }
         };
 
-        window.agregarBeneficioCarrito = (id, nombre, montoPendiente) => {
-            agregarAlCarrito({
+        window.agregarBeneficioCarrito = (id) => {
+            const beneficio = (dashboardCache.beneficios || []).find((b) => b.asignacion_id === id);
+            if (!beneficio) return;
+
+            const hayDisponibles = beneficio.tarjetas_disponibles > 0;
+            const item = {
                 clave: claveItem('beneficio', id),
                 tipo_pago: 'beneficio',
-                nombre_pago: nombre,
-                monto: montoPendiente,
+                nombre_pago: beneficio.nombre,
+                monto: 0,
                 asignacion_beneficio_id: id,
-                tipo_pago_beneficio: 'normal',
-                cantidad: 1,
-            });
+                tipo_pago_beneficio: hayDisponibles ? 'normal' : 'extra',
+                cantidad: hayDisponibles ? beneficio.tarjetas_disponibles : 1,
+                precio_por_tarjeta: beneficio.precio_por_tarjeta,
+                precio_tarjeta_extra: beneficio.precio_tarjeta_extra,
+                tarjetas_disponibles: beneficio.tarjetas_disponibles,
+            };
+            recalcularBeneficio(item);
+            agregarAlCarrito(item);
         };
 
-        window.agregarRifaCarrito = (id, nombre, montoPendiente) => {
+        window.agregarRifaCarrito = (id) => {
+            const rifa = (dashboardCache.rifas || []).find((r) => r.asignacion_id === id);
+            if (!rifa) return;
+
             agregarAlCarrito({
                 clave: claveItem('rifa', id),
                 tipo_pago: 'rifa',
-                nombre_pago: nombre,
-                monto: montoPendiente,
+                nombre_pago: rifa.nombre,
+                monto: rifa.monto_pendiente,
                 asignacion_rifa_id: id,
             });
         };
@@ -189,9 +273,9 @@
             <article class="debt-card">
                 <div>
                     <h4>${item.nombre}</h4>
-                    <p>Pendiente: ${money(item.monto_pendiente)} · Tarjetas disponibles: ${item.tarjetas_disponibles}</p>
+                    <p>Pendiente: ${money(item.monto_pendiente)} · Tarjetas disponibles: ${item.tarjetas_disponibles} · ${money(item.precio_por_tarjeta)} por tarjeta</p>
                 </div>
-                <button class="primary-btn" onclick="agregarBeneficioCarrito(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente})">Agregar al carrito</button>
+                <button class="primary-btn" onclick="agregarBeneficioCarrito(${item.asignacion_id})">Agregar al carrito</button>
             </article>
         `);
 
@@ -201,7 +285,7 @@
                     <h4>${item.nombre}</h4>
                     <p>Pendiente: ${money(item.monto_pendiente)} · Estado: ${item.estado}</p>
                 </div>
-                ${item.puede_pagar ? `<button class="primary-btn" onclick="agregarRifaCarrito(${item.asignacion_id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.monto_pendiente})">Agregar al carrito</button>` : `<span class="pill warning">Retira los talonarios antes de pagar</span>`}
+                ${item.puede_pagar ? `<button class="primary-btn" onclick="agregarRifaCarrito(${item.asignacion_id})">Agregar al carrito</button>` : `<span class="pill warning">Retira los talonarios antes de pagar</span>`}
             </article>
         `);
 

@@ -47,6 +47,10 @@
         .form-error { color:#e74c3c; }
         .form-ok { color:#2ecc71; }
         select option { background:#1c1c1c; color:#f0f0f0; }
+        .carrito-controles { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; align-items:end; }
+        .carrito-controles label { margin-bottom:4px; }
+        .carrito-controles input, .carrito-controles select { padding:8px 10px; font-size:0.9rem; }
+        .carrito-precio { grid-column:1 / -1; color:#999; font-size:0.85rem; }
         ::-webkit-scrollbar { width:8px; }
         ::-webkit-scrollbar-track { background:#161616; }
         ::-webkit-scrollbar-thumb { background:#333; border-radius:4px; }
@@ -139,6 +143,6 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'js/portal-voluntario.js' %}?v=4"></script>
+    <script src="{% static 'js/portal-voluntario.js' %}?v=5"></script>
 </body>
 </html>

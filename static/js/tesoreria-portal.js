@@ -343,10 +343,9 @@
                     </ul>
                     ${grupo.feedback_tesorero ? `<p>Feedback: ${escapeHtml(grupo.feedback_tesorero)}</p>` : ''}
                 </div>
-                ${grupo.estado === 'pendiente' ? `
+                ${(grupo.estado === 'pendiente' || grupo.estado === 'observada') ? `
                 <div>
                     <button class="primary-btn" data-grupo-action="aprobar" data-grupo-id="${grupo.id}">Aprobar</button>
-                    <button class="secondary-btn" data-grupo-action="observar" data-grupo-id="${grupo.id}">Observar</button>
                     <button class="danger-btn" data-grupo-action="rechazar" data-grupo-id="${grupo.id}">Rechazar</button>
                 </div>` : ''}
             </article>
@@ -366,12 +365,16 @@
     }
 
     async function accionGrupoPortal(id, accion, feedback = '') {
-        await request(`/api/portal/tesoreria/solicitudes/grupo/${id}/accion/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accion, feedback }),
-        });
-        await loadGrupos();
+        try {
+            await request(`/api/portal/tesoreria/solicitudes/grupo/${id}/accion/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accion, feedback }),
+            });
+            await loadGrupos();
+        } catch (err) {
+            alert(err.message);
+        }
     }
 
     async function loadGrupos() {
