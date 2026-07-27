@@ -39,6 +39,15 @@
             background: #1a1a1a; color: #f0f0f0; font-size: 0.9rem; box-sizing: border-box;
         }
 
+        .inv-tabs { margin: 0 16px 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .inv-tab {
+            padding: 8px 16px; border-radius: 20px; border: 1px solid #2a2a2a;
+            background: #1a1a1a; color: #ccc; font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; transition: all .15s; white-space: nowrap;
+        }
+        .inv-tab:hover { background: #222; color: #fff; }
+        .inv-tab.activo { background: #c41e3a; border-color: #c41e3a; color: #fff; }
+
         .inv-categoria { margin: 0 16px 24px; }
         .inv-categoria-titulo {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
@@ -113,6 +122,8 @@
     <div class="inv-buscador">
         <input type="text" id="invBuscador" placeholder="Buscar por nombre, categoría o marca..." oninput="inventario.filtrar(this.value)">
     </div>
+
+    <div id="invTabs" class="inv-tabs"></div>
 
     <div id="invListado"></div>
 </div>
@@ -189,6 +200,6 @@
 
 <script src="{% static 'js/auth_django.js' %}"></script>
 <script src="{% static 'js/utils.js' %}"></script>
-<script src="{% static 'js/inventario-django.js' %}?v=1"></script>
+<script src="{% static 'js/inventario-django.js' %}?v=2"></script>
 </body>
 </html>

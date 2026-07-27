@@ -17,6 +17,7 @@ class SistemaInventario {
     constructor() {
         this.items = [];
         this.terminoBusqueda = '';
+        this.categoriaActiva = 'Todos';
         this.init();
     }
 
@@ -58,12 +59,47 @@ class SistemaInventario {
         this.renderizar();
     }
 
+    seleccionarCategoria(categoria) {
+        this.categoriaActiva = categoria;
+        this.renderizar();
+    }
+
+    formatCantidad(cantidad) {
+        const numero = parseFloat(cantidad);
+        if (Number.isNaN(numero)) return cantidad;
+        return numero.toString();
+    }
+
+    renderizarTabs() {
+        const categoriasUnicas = [...new Set(this.items.map(item => item.categoria || 'Sin categoría'))].sort();
+        const tabs = ['Todos', ...categoriasUnicas];
+
+        return `
+            <div class="inv-tabs">
+                ${tabs.map(cat => `
+                    <button
+                        class="inv-tab ${this.categoriaActiva === cat ? 'activo' : ''}"
+                        onclick="inventario.seleccionarCategoria('${cat.replace(/'/g, "\\'")}')"
+                    >${cat}</button>
+                `).join('')}
+            </div>
+        `;
+    }
+
     renderizar() {
+        const tabsContenedor = document.getElementById('invTabs');
+        tabsContenedor.innerHTML = this.renderizarTabs();
+
         const contenedor = document.getElementById('invListado');
 
         let itemsFiltrados = this.items;
+
+        if (this.categoriaActiva !== 'Todos') {
+            itemsFiltrados = itemsFiltrados.filter(item => (item.categoria || 'Sin categoría') === this.categoriaActiva);
+        }
+
         if (this.terminoBusqueda) {
-            itemsFiltrados = this.items.filter(item =>
+            itemsFiltrados = itemsFiltrados.filter(item =>
                 (item.nombre || '').toLowerCase().includes(this.terminoBusqueda) ||
                 (item.categoria || '').toLowerCase().includes(this.terminoBusqueda) ||
                 (item.marca || '').toLowerCase().includes(this.terminoBusqueda)
@@ -120,7 +156,7 @@ class SistemaInventario {
         return `
             <tr>
                 <td>${item.nombre}</td>
-                <td>${item.cantidad} ${item.unidad || ''}</td>
+                <td>${this.formatCantidad(item.cantidad)} ${item.unidad || ''}</td>
                 <td>${item.marca || '—'}</td>
                 <td>${item.tamano || '—'}</td>
                 <td>${estadoBadge}</td>
@@ -151,7 +187,7 @@ class SistemaInventario {
         document.getElementById('invItemId').value = item.id;
         document.getElementById('invNombre').value = item.nombre || '';
         document.getElementById('invCategoria').value = item.categoria || '';
-        document.getElementById('invCantidad').value = item.cantidad || '';
+        document.getElementById('invCantidad').value = item.cantidad ? this.formatCantidad(item.cantidad) : '';
         document.getElementById('invUnidad').value = item.unidad || '';
         document.getElementById('invMarca').value = item.marca || '';
         document.getElementById('invTamano').value = item.tamano || '';
