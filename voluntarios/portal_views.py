@@ -196,6 +196,9 @@ def portal_dashboard_view(request):
     solicitudes = [serializar_solicitud(s) for s in listar_solicitudes_usuario(profile.user)]
     cuentas = list(CuentaBancaria.objects.filter(activa=True).values('id', 'nombre', 'banco', 'numero_cuenta'))
 
+    grupos = GrupoSolicitudPago.objects.filter(portal_user=profile.user).prefetch_related('items').order_by('-created_at')
+    grupos_serializados = [serializar_grupo_solicitud(g) for g in grupos]
+
     return JsonResponse({
         'success': True,
         'dashboard': {
@@ -208,6 +211,7 @@ def portal_dashboard_view(request):
             'beneficios': beneficios,
             'rifas': rifas,
             'solicitudes': solicitudes,
+            'grupos_solicitud': grupos_serializados,
             'cuentas_bancarias': cuentas,
             'password_inicial': PORTAL_PASSWORD_INICIAL if profile.debe_cambiar_clave else '',
         }
@@ -501,6 +505,23 @@ def tesoreria_solicitudes_portal_view(request):
             'end_index': page_obj.end_index() if paginator.count else 0,
         }
     })
+
+
+@require_http_methods(["GET"])
+def tesoreria_grupos_portal_view(request):
+    _, error = _require_tesoreria(request)
+    if error:
+        return error
+
+    estado = str(request.GET.get('estado', '')).strip().lower()
+    qs = GrupoSolicitudPago.objects.select_related('voluntario', 'revisada_por').prefetch_related('items').order_by('-created_at')
+
+    if estado and estado not in ['todos', 'all']:
+        estado_real = 'aprobada' if estado == 'pagado' else estado
+        qs = qs.filter(estado=estado_real)
+
+    grupos = [serializar_grupo_solicitud(g) for g in qs[:100]]
+    return JsonResponse({'success': True, 'grupos': grupos})
 
 
 def _aprobar_solicitud(solicitud, reviewer):

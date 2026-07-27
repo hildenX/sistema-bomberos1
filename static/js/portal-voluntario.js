@@ -205,15 +205,16 @@
             </article>
         `);
 
-        renderList('solicitudesHistorial', data.dashboard.solicitudes, '<div class="empty-state">Todavía no envías solicitudes.</div>', (item) => `
-            <article class="request-card">
+        renderList('solicitudesHistorial', data.dashboard.grupos_solicitud, '<div class="empty-state">Todavía no envías solicitudes.</div>', (grupo) => `
+            <article class="request-card" style="flex-direction:column; align-items:stretch;">
                 <div>
-                    <h4>${item.nombre_pago}</h4>
-                    <p>${item.tipo_pago} · ${money(item.monto_solicitado)} · ${item.estado}</p>
-                    <p>${item.feedback_tesorero || ''}</p>
-                    ${item.observada_hasta ? `<p>Debes corregir antes de ${new Date(item.observada_hasta).toLocaleString('es-CL')}</p>` : ''}
+                    <h4>Grupo #${grupo.id} · ${money(grupo.monto_total)} · ${grupo.estado_label}</h4>
+                    <ul>
+                        ${grupo.items.map((item) => `<li>${item.nombre_pago}: ${money(item.monto_solicitado)}</li>`).join('')}
+                    </ul>
+                    ${grupo.feedback_tesorero ? `<p>${grupo.feedback_tesorero}</p>` : ''}
+                    ${grupo.observada_hasta ? `<p>Debes corregir antes de ${new Date(grupo.observada_hasta).toLocaleString('es-CL')}</p>` : ''}
                 </div>
-                ${(item.estado === 'observada' || item.estado === 'expirada') ? `<button class="secondary-btn" onclick="editarSolicitudPortal(${item.id})">Corregir</button>` : ''}
             </article>
         `);
 

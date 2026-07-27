@@ -88,6 +88,7 @@ urlpatterns = [
     path('portal/solicitudes/grupo/', portal_views.portal_solicitudes_grupo_view, name='portal_solicitudes_grupo'),
     path('portal/solicitudes/<int:solicitud_id>/', portal_views.portal_solicitud_detalle_view, name='portal_solicitud_detalle'),
     path('portal/tesoreria/solicitudes/', portal_views.tesoreria_solicitudes_portal_view, name='portal_tesoreria_solicitudes'),
+    path('portal/tesoreria/solicitudes/grupo/', portal_views.tesoreria_grupos_portal_view, name='portal_tesoreria_grupos'),
     path('portal/tesoreria/solicitudes/<int:solicitud_id>/accion/', portal_views.tesoreria_solicitud_accion_view, name='portal_tesoreria_solicitud_accion'),
     path('portal/tesoreria/solicitudes/grupo/<int:grupo_id>/accion/', portal_views.tesoreria_grupo_accion_view, name='portal_tesoreria_grupo_accion'),
     path('portal/tesoreria/credenciales/', portal_views.tesoreria_credenciales_portal_view, name='portal_tesoreria_credenciales'),

@@ -6,6 +6,7 @@
         estado: 'todos',
         selectedAction: null,
         selectedSolicitudId: null,
+        selectedGrupoId: null,
     };
 
     const STATUS_META = {
@@ -322,6 +323,62 @@
         }
     }
 
+    function renderGrupos(data) {
+        const container = document.getElementById('gruposPortal');
+        if (!container) return;
+
+        if (!data.grupos.length) {
+            container.innerHTML = '<div class="empty-state">No hay solicitudes combinadas.</div>';
+            return;
+        }
+
+        container.innerHTML = data.grupos.map((grupo) => `
+            <article class="request-card" style="flex-direction:column; align-items:stretch;">
+                <div>
+                    <h4>${grupo.voluntario.nombre} — Grupo #${grupo.id} — ${grupo.estado_label}</h4>
+                    <p>${fmtDate(grupo.fecha_pago)} · Comprobante N° ${grupo.numero_comprobante || '—'} · Total ${money(grupo.monto_total)}</p>
+                    ${grupo.comprobante_url ? renderComprobanteButton(grupo.comprobante_url) : ''}
+                    <ul>
+                        ${grupo.items.map((item) => `<li>${item.nombre_pago}: ${money(item.monto_solicitado)}</li>`).join('')}
+                    </ul>
+                    ${grupo.feedback_tesorero ? `<p>Feedback: ${escapeHtml(grupo.feedback_tesorero)}</p>` : ''}
+                </div>
+                ${grupo.estado === 'pendiente' ? `
+                <div>
+                    <button class="primary-btn" data-grupo-action="aprobar" data-grupo-id="${grupo.id}">Aprobar</button>
+                    <button class="secondary-btn" data-grupo-action="observar" data-grupo-id="${grupo.id}">Observar</button>
+                    <button class="danger-btn" data-grupo-action="rechazar" data-grupo-id="${grupo.id}">Rechazar</button>
+                </div>` : ''}
+            </article>
+        `).join('');
+
+        container.querySelectorAll('[data-grupo-action]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const grupoId = btn.dataset.grupoId;
+                const action = btn.dataset.grupoAction;
+                if (action === 'aprobar') {
+                    accionGrupoPortal(grupoId, 'aprobar');
+                } else {
+                    abrirModalGestionGrupo(grupoId, action);
+                }
+            });
+        });
+    }
+
+    async function accionGrupoPortal(id, accion, feedback = '') {
+        await request(`/api/portal/tesoreria/solicitudes/grupo/${id}/accion/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accion, feedback }),
+        });
+        await loadGrupos();
+    }
+
+    async function loadGrupos() {
+        const data = await request('/api/portal/tesoreria/solicitudes/grupo/');
+        renderGrupos(data);
+    }
+
     async function accionSolicitudPortal(id, accion, feedback = '') {
         try {
             await request(`/api/portal/tesoreria/solicitudes/${id}/accion/`, {
@@ -333,6 +390,13 @@
         } catch (err) {
             alert(err.message);
         }
+    }
+
+    function abrirModalGestionGrupo(id, accion) {
+        state.selectedGrupoId = id;
+        state.selectedSolicitudId = null;
+        state.selectedAction = accion;
+        abrirModalGestionSolicitud(id, accion);
     }
 
     function abrirModalGestionSolicitud(id, accion) {
@@ -368,7 +432,12 @@
             textarea.focus();
             return;
         }
-        await accionSolicitudPortal(state.selectedSolicitudId, state.selectedAction, feedback);
+        if (state.selectedGrupoId) {
+            await accionGrupoPortal(state.selectedGrupoId, state.selectedAction, feedback);
+            state.selectedGrupoId = null;
+        } else {
+            await accionSolicitudPortal(state.selectedSolicitudId, state.selectedAction, feedback);
+        }
         cerrarModalGestionSolicitud();
     }
 
@@ -407,6 +476,7 @@
 
         syncQuickFilters();
         loadSolicitudes();
+        loadGrupos();
     }
 
     async function loadCredenciales() {

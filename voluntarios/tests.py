@@ -572,3 +572,76 @@ class NotificacionesPortalEmailTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('cvera@example.com', mail.outbox[0].to)
         self.assertIn('Voucher ilegible', mail.outbox[0].body)
+
+
+class PortalDashboardGruposYTesoreriaListadoTest(TestCase):
+
+    def setUp(self):
+        from voluntarios.models import CicloCuotas
+        self.client = Client()
+        # Se crea el usuario 'cvera.29' antes que el Voluntario para que la
+        # señal post_save (voluntarios/signals.py) que autogenera un
+        # PortalVoluntarioProfile no pueda elegir por azar este mismo
+        # username para su propio usuario autogenerado.
+        self.portal_user = User.objects.create_user(username='cvera.29', password='Bomberos123!')
+        self.voluntario = Voluntario.objects.create(
+            nombre='Cristian', apellido_paterno='Vera', apellido_materno='Arriagada',
+            rut='19621524-9', clave_bombero='079',
+            fecha_nacimiento=date(1995, 3, 3),
+            fecha_ingreso=date(2019, 1, 1),
+            estado_bombero='activo'
+        )
+        # La señal post_save de Voluntario ya crea un PortalVoluntarioProfile
+        # automáticamente; como el campo es OneToOne, actualizamos ese
+        # perfil en vez de crear uno nuevo.
+        profile = self.voluntario.portal_profile
+        profile.user = self.portal_user
+        profile.activo = True
+        profile.debe_cambiar_clave = False
+        profile.save()
+        self.cuenta = CuentaBancaria.objects.create(
+            nombre='Cuenta Principal', banco='BancoEstado',
+            tipo_cuenta='corriente', numero_cuenta='1112223', rut_titular='76.123.456-7',
+            activa=True
+        )
+        CicloCuotas.objects.create(
+            anio=2026, fecha_inicio=date(2026, 1, 1), fecha_fin=date(2026, 12, 31),
+            activo=True, cerrado=False
+        )
+        self.grupo = GrupoSolicitudPago.objects.create(
+            voluntario=self.voluntario, portal_user=self.portal_user,
+            fecha_pago=date(2026, 7, 27), cuenta_bancaria_destino=self.cuenta,
+            monto_total=Decimal('7000'),
+        )
+        SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario, portal_user=self.portal_user,
+            tipo_pago='cuota', nombre_pago='Cuota 01/2026',
+            monto_solicitado=Decimal('7000'), cuota_mes=1, cuota_anio=2026,
+            fecha_pago=date(2026, 7, 27), grupo=self.grupo,
+        )
+
+    def test_dashboard_incluye_grupos_solicitud(self):
+        self.client.force_login(self.portal_user)
+        response = self.client.get('/api/portal/dashboard/')
+        self.assertEqual(response.status_code, 200, response.content)
+        data = response.json()
+        self.assertIn('grupos_solicitud', data['dashboard'])
+        self.assertEqual(len(data['dashboard']['grupos_solicitud']), 1)
+        self.assertEqual(data['dashboard']['grupos_solicitud'][0]['id'], self.grupo.id)
+
+    def test_tesoreria_listado_grupos_devuelve_grupos(self):
+        director_group, _ = Group.objects.get_or_create(name='Director')
+        tesorero = User.objects.create_user(username='director_test3', password='pass12345')
+        tesorero.groups.add(director_group)
+        self.client.force_login(tesorero)
+        response = self.client.get('/api/portal/tesoreria/solicitudes/grupo/')
+        self.assertEqual(response.status_code, 200, response.content)
+        data = response.json()
+        self.assertIn('grupos', data)
+        self.assertEqual(len(data['grupos']), 1)
+        self.assertEqual(data['grupos'][0]['id'], self.grupo.id)
+
+    def test_tesoreria_listado_grupos_requiere_tesoreria(self):
+        self.client.force_login(self.portal_user)
+        response = self.client.get('/api/portal/tesoreria/solicitudes/grupo/')
+        self.assertNotEqual(response.status_code, 200)
