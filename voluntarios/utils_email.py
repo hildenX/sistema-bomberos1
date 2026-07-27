@@ -37,15 +37,15 @@ def generar_pdf_comprobante(html_content):
         pdf = pisa.pisaDocument(BytesIO(html_content.encode("UTF-8")), result)
         
         if pdf.err:
-            print(f'[PDF] ❌ Error al generar PDF: {pdf.err}')
+            print(f'[PDF] Error al generar PDF: {pdf.err}')
             return None
         
-        print('[PDF] ✅ PDF generado exitosamente')
+        print('[PDF] PDF generado exitosamente')
         result.seek(0)
         return result
         
     except Exception as e:
-        print(f'[PDF] ❌ Error al generar PDF: {str(e)}')
+        print(f'[PDF] Error al generar PDF: {str(e)}')
         return None
 
 
@@ -66,11 +66,11 @@ def enviar_comprobante_cuota(pago, voluntario):
         
         # Verificar que el voluntario tenga email
         if not voluntario.email:
-            print(f'[EMAIL DEBUG] ❌ Voluntario {voluntario.clave_bombero} NO tiene email')
+            print(f'[EMAIL DEBUG] Voluntario {voluntario.clave_bombero} NO tiene email')
             logger.warning(f'Voluntario {voluntario.clave_bombero} no tiene email configurado')
             return False
         
-        print(f'[EMAIL DEBUG] ✅ Email encontrado: {voluntario.email}')
+        print(f'[EMAIL DEBUG] Email encontrado: {voluntario.email}')
         
         # Preparar contexto para el template
         context = {
@@ -82,7 +82,7 @@ def enviar_comprobante_cuota(pago, voluntario):
         
         # Renderizar template HTML
         html_content = render_to_string('emails/comprobante_cuota.html', context)
-        print('[EMAIL DEBUG] ✅ Template renderizado correctamente')
+        print('[EMAIL DEBUG] Template renderizado correctamente')
         
         # Crear texto plano alternativo (para clientes de email que no soporten HTML)
         # Formatear fecha correctamente
@@ -137,16 +137,16 @@ def enviar_comprobante_cuota(pago, voluntario):
         if pdf_buffer:
             filename = f'Comprobante_Cuota_{pago.id}_{voluntario.clave_bombero}.pdf'
             msg.attach(filename, pdf_buffer.read(), 'application/pdf')
-            print(f'[EMAIL DEBUG] ✅ PDF adjuntado: {filename}')
+            print(f'[EMAIL DEBUG] PDF adjuntado: {filename}')
         else:
-            print('[EMAIL DEBUG] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
+            print('[EMAIL DEBUG] No se pudo adjuntar PDF (continúa con el envío)')
         
         print('[EMAIL DEBUG] Enviando email por SMTP...')
         
         # Enviar email
         result = msg.send(fail_silently=False)
         
-        print('[EMAIL DEBUG] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
+        print('[EMAIL DEBUG] EMAIL ENVIADO EXITOSAMENTE!')
         print(f'[EMAIL DEBUG] Result: {result}')
         print('=' * 60)
         
@@ -154,7 +154,7 @@ def enviar_comprobante_cuota(pago, voluntario):
         return True
         
     except Exception as e:
-        print('[EMAIL DEBUG] ❌❌❌ ERROR AL ENVIAR EMAIL!')
+        print('[EMAIL DEBUG] ERROR AL ENVIAR EMAIL!')
         print(f'[EMAIL DEBUG] Error: {str(e)}')
         print(f'[EMAIL DEBUG] Tipo: {type(e).__name__}')
         import traceback
@@ -183,11 +183,11 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         
         # Verificar que el voluntario tenga email
         if not voluntario.email:
-            print(f'[EMAIL BENEFICIO] ❌ Voluntario {voluntario.clave_bombero} NO tiene email')
+            print(f'[EMAIL BENEFICIO] Voluntario {voluntario.clave_bombero} NO tiene email')
             logger.warning(f'Voluntario {voluntario.clave_bombero} no tiene email configurado')
             return False
         
-        print(f'[EMAIL BENEFICIO] ✅ Email encontrado: {voluntario.email}')
+        print(f'[EMAIL BENEFICIO] Email encontrado: {voluntario.email}')
         
         # Preparar contexto
         context = {
@@ -199,7 +199,7 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         
         # Renderizar template HTML
         html_content = render_to_string('emails/comprobante_beneficio.html', context)
-        print('[EMAIL BENEFICIO] ✅ Template renderizado correctamente')
+        print('[EMAIL BENEFICIO] Template renderizado correctamente')
         
         # Formatear fecha correctamente
         if hasattr(pago_beneficio.fecha_pago, 'strftime'):
@@ -247,16 +247,16 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         if pdf_buffer:
             filename = f'Comprobante_Beneficio_{pago_beneficio.id}_{voluntario.clave_bombero}.pdf'
             msg.attach(filename, pdf_buffer.read(), 'application/pdf')
-            print(f'[EMAIL BENEFICIO] ✅ PDF adjuntado: {filename}')
+            print(f'[EMAIL BENEFICIO] PDF adjuntado: {filename}')
         else:
-            print('[EMAIL BENEFICIO] ⚠️ No se pudo adjuntar PDF (continúa con el envío)')
+            print('[EMAIL BENEFICIO] No se pudo adjuntar PDF (continúa con el envío)')
         
         print('[EMAIL BENEFICIO] Enviando email por SMTP...')
         
         # Enviar email
         result = msg.send(fail_silently=False)
         
-        print('[EMAIL BENEFICIO] ✅✅✅ EMAIL ENVIADO EXITOSAMENTE!')
+        print('[EMAIL BENEFICIO] EMAIL ENVIADO EXITOSAMENTE!')
         print(f'[EMAIL BENEFICIO] Result: {result}')
         print('=' * 60)
         
@@ -264,7 +264,7 @@ def enviar_comprobante_beneficio(pago_beneficio, voluntario, beneficio):
         return True
         
     except Exception as e:
-        print('[EMAIL BENEFICIO] ❌❌❌ ERROR AL ENVIAR EMAIL!')
+        print('[EMAIL BENEFICIO] ERROR AL ENVIAR EMAIL!')
         print(f'[EMAIL BENEFICIO] Error: {str(e)}')
         import traceback
         traceback.print_exc()
