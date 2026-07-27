@@ -352,3 +352,131 @@ Sistema de Gestión de Bomberos - Proyecto SEIS
     except Exception as e:
         logger.error(f'Error al enviar comprobante de rifa: {str(e)}')
         return False
+
+
+def enviar_comprobante_grupo(grupo, voluntario):
+    """
+    Envía un comprobante único itemizado por email para un GrupoSolicitudPago aprobado.
+    """
+    try:
+        if not voluntario.email:
+            logger.warning(f'Voluntario {voluntario.clave_bombero} no tiene email configurado')
+            return False
+
+        items = list(grupo.items.all())
+        fecha_formateada = grupo.fecha_pago.strftime('%d/%m/%Y') if hasattr(grupo.fecha_pago, 'strftime') else str(grupo.fecha_pago)
+
+        context = {
+            'grupo': grupo,
+            'voluntario': voluntario,
+            'items': items,
+            'monto_total': grupo.monto_total,
+            'fecha_formateada': fecha_formateada,
+        }
+        html_content = render_to_string('emails/comprobante_grupo.html', context)
+
+        items_texto = '\n'.join(f'  - {item.nombre_pago}: ${item.monto_solicitado:,.0f}' for item in items)
+        text_content = f"""
+        COMPROBANTE DE PAGO
+        Bomberos
+
+        Comprobante de Grupo N° {grupo.id}
+
+        Voluntario: {voluntario.nombre} {voluntario.apellido_paterno} {voluntario.apellido_materno}
+        Clave: {voluntario.clave_bombero}
+        RUT: {voluntario.rut}
+
+        Fecha de Pago: {fecha_formateada}
+
+        Conceptos pagados:
+        {items_texto}
+
+        MONTO TOTAL PAGADO: ${grupo.monto_total:,.0f}
+
+        Este es un comprobante electrónico válido.
+        Sistema de Gestión de Bomberos - Proyecto SEIS
+        """
+
+        msg = EmailMultiAlternatives(
+            subject=f'Comprobante de Pago - Grupo #{grupo.id}',
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[voluntario.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+
+        pdf_buffer = generar_pdf_comprobante(html_content)
+        if pdf_buffer:
+            msg.attach(f'Comprobante_Grupo_{grupo.id}_{voluntario.clave_bombero}.pdf', pdf_buffer.read(), 'application/pdf')
+
+        msg.send(fail_silently=False)
+        logger.info(f'Comprobante de grupo enviado a {voluntario.email} para grupo {grupo.id}')
+        return True
+    except Exception as e:
+        logger.error(f'Error al enviar comprobante de grupo: {str(e)}')
+        return False
+
+
+def enviar_notificacion_rechazo(voluntario, motivo, concepto):
+    """
+    Envía un email notificando que una solicitud de pago (simple o grupo) fue rechazada.
+
+    Args:
+        voluntario: objeto Voluntario
+        motivo: texto escrito por el tesorero (feedback_tesorero)
+        concepto: descripcion corta de lo que se rechazo (ej. "Cuota 03/2026" o "Grupo #12")
+    """
+    try:
+        if not voluntario.email:
+            logger.warning(f'Voluntario {voluntario.clave_bombero} no tiene email configurado')
+            return False
+
+        subject = f'Solicitud de pago rechazada - {concepto}'
+        text_content = f"""
+        SOLICITUD DE PAGO RECHAZADA
+        Bomberos
+
+        Estimado/a {voluntario.nombre} {voluntario.apellido_paterno},
+
+        Tu solicitud de pago "{concepto}" fue rechazada por el tesorero.
+
+        Motivo: {motivo}
+
+        Ingresa al portal de voluntarios para revisar el detalle y volver a enviar tu solicitud
+        con la informacion corregida.
+
+        Sistema de Gestión de Bomberos - Proyecto SEIS
+        """
+        html_content = f"""
+        <!DOCTYPE html>
+        <html><head><meta charset="UTF-8"></head>
+        <body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
+            <div style="background:#7f1d1d;color:white;padding:20px;border-radius:8px 8px 0 0">
+                <h2 style="margin:0">Solicitud de Pago Rechazada</h2>
+            </div>
+            <div style="background:white;padding:20px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px">
+                <p>Estimado/a <strong>{voluntario.nombre} {voluntario.apellido_paterno}</strong>,</p>
+                <p>Tu solicitud de pago <strong>{concepto}</strong> fue rechazada por el tesorero.</p>
+                <div style="background:#fef2f2;border-radius:8px;padding:16px;margin:16px 0">
+                    <div style="font-size:0.8rem;color:#7f1d1d;text-transform:uppercase">Motivo</div>
+                    <div style="font-size:1rem;color:#333;margin-top:4px">{motivo}</div>
+                </div>
+                <p>Ingresa al portal de voluntarios para revisar el detalle y volver a enviar tu solicitud.</p>
+                <p style="font-size:0.8rem;color:#9ca3af;margin-top:20px">Sistema de Gestión de Bomberos - Proyecto SEIS</p>
+            </div>
+        </body></html>
+        """
+
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[voluntario.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+        logger.info(f'Notificacion de rechazo enviada a {voluntario.email}')
+        return True
+    except Exception as e:
+        logger.error(f'Error al enviar notificacion de rechazo: {str(e)}')
+        return False

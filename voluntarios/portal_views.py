@@ -37,6 +37,7 @@ from .portal_utils import (
     serializar_solicitud,
     validar_solicitud_duplicada,
 )
+from .utils_email import enviar_comprobante_grupo, enviar_notificacion_rechazo
 from .utils_tesoreria import registrar_pago_beneficio, registrar_pago_cuota
 
 
@@ -548,6 +549,17 @@ def _aprobar_solicitud(solicitud, reviewer):
     solicitud.revisada_por = reviewer
     solicitud.revisada_at = timezone.now()
     solicitud.aprobada_at = timezone.now()
+
+    if solicitud.tipo_pago == 'cuota':
+        from .utils_email import enviar_comprobante_cuota
+        enviar_comprobante_cuota(pago, solicitud.voluntario)
+    elif solicitud.tipo_pago == 'beneficio':
+        from .utils_email import enviar_comprobante_beneficio
+        enviar_comprobante_beneficio(pago, solicitud.voluntario, solicitud.asignacion_beneficio.beneficio)
+    else:
+        from .utils_email import enviar_comprobante_rifa
+        enviar_comprobante_rifa(pago, solicitud.voluntario, solicitud.asignacion_rifa.rifa)
+
     solicitud.save()
 
 
@@ -597,6 +609,9 @@ def _aprobar_grupo(grupo, reviewer):
     grupo.revisada_por = reviewer
     grupo.revisada_at = timezone.now()
     grupo.aprobada_at = timezone.now()
+
+    enviar_comprobante_grupo(grupo, grupo.voluntario)
+
     grupo.save()
 
 
@@ -646,6 +661,7 @@ def tesoreria_grupo_accion_view(request, grupo_id):
             grupo.revisada_at = timezone.now()
             grupo.save()
             grupo.items.update(estado='rechazada', feedback_tesorero=feedback)
+            enviar_notificacion_rechazo(grupo.voluntario, feedback, f'Grupo #{grupo.id}')
             return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
 
         return _json_error('Accion invalida')
@@ -701,6 +717,7 @@ def tesoreria_solicitud_accion_view(request, solicitud_id):
             solicitud.revisada_por = request.user
             solicitud.revisada_at = timezone.now()
             solicitud.save()
+            enviar_notificacion_rechazo(solicitud.voluntario, feedback, solicitud.nombre_pago)
             return JsonResponse({'success': True, 'solicitud': serializar_solicitud(solicitud)})
 
         return _json_error('Accion invalida')
