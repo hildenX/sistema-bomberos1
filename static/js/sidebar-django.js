@@ -213,6 +213,13 @@ function generarMenuSegunRol(role) {
         });
     }
 
+    menuItems.push({
+        titulo: 'PA\u00d1OL',
+        items: [
+            { icono: '&#9633;', texto: 'Inventario', url: '/inventario.html' }
+        ]
+    });
+
     if (['Super Administrador'].includes(role)) {
         menuItems.push({
             titulo: 'ADMINISTRACI\u00d3N',

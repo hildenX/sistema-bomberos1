@@ -130,7 +130,10 @@ urlpatterns = [
     # ==================== UNIFORMES ====================
     path('uniformes.html', template('uniformes/lista.html'), name='uniformes'),
     path('tabla-uniformes-voluntario.html', template('uniformes/tabla-voluntario.html'), name='tabla_uniformes'),
-    
+
+    # ==================== INVENTARIO / PAÑOL ====================
+    path('inventario.html', template('inventario/lista.html'), name='inventario'),
+
     # ==================== CARGA MASIVA ====================
     path('carga-masiva.html', template('voluntarios/carga-masiva.html'), name='carga_masiva'),
     
