@@ -1,7 +1,7 @@
 import random
 import unicodedata
 from datetime import timedelta
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
@@ -24,6 +24,16 @@ from .utils_tesoreria import (
 
 PORTAL_PASSWORD_INICIAL = 'Bomberos123!'
 VENTANA_CORRECCION_HORAS = 48
+
+
+def _normalizar_decimal(value, field_name='monto'):
+    try:
+        monto = Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError):
+        raise ValueError(f'{field_name} invalido')
+    if monto <= 0:
+        raise ValueError(f'{field_name} debe ser mayor a 0')
+    return monto
 
 
 def _ascii_slug(texto):
@@ -334,7 +344,11 @@ def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
     if not archivo:
         raise ValueError('Debes adjuntar un comprobante')
 
-    monto_total = sum(Decimal(str(item['monto'])) for item in items)
+    montos = [
+        _normalizar_decimal(item.get('monto'), f"monto de {item.get('tipo_pago', 'item')}")
+        for item in items
+    ]
+    monto_total = sum(montos)
 
     grupo = GrupoSolicitudPago.objects.create(
         voluntario=profile.voluntario,
@@ -347,9 +361,8 @@ def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
         comprobante=archivo,
     )
 
-    for item in items:
+    for item, monto in zip(items, montos):
         tipo_pago = item['tipo_pago']
-        monto = Decimal(str(item['monto']))
 
         if tipo_pago == 'cuota':
             mes = int(item['cuota_mes'])

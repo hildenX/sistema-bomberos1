@@ -2,7 +2,7 @@ import json
 import base64
 import mimetypes
 from datetime import date
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import EmptyPage, Paginator
@@ -23,6 +23,7 @@ from .models import (
 from .permissions import RolBomberos, obtener_rol_usuario
 from .portal_utils import (
     PORTAL_PASSWORD_INICIAL,
+    _normalizar_decimal,
     crear_feedback_observacion,
     crear_grupo_solicitud,
     deudas_beneficios_portal,
@@ -87,16 +88,6 @@ def _portal_user_payload(profile):
             'email': profile.voluntario.email,
         }
     }
-
-
-def _normalizar_decimal(value, field_name='monto'):
-    try:
-        monto = Decimal(str(value))
-    except (InvalidOperation, TypeError, ValueError):
-        raise ValueError(f'{field_name} invalido')
-    if monto <= 0:
-        raise ValueError(f'{field_name} debe ser mayor a 0')
-    return monto
 
 
 def _obtener_cuenta_destino(cuenta_id):

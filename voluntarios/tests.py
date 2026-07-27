@@ -361,3 +361,42 @@ class PortalGrupoSolicitudAPITest(TestCase):
             'cuenta_bancaria_destino_id': str(self.cuenta.id),
         })
         self.assertEqual(response.status_code, 400)
+
+    def test_crear_grupo_con_monto_invalido_falla_con_400(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        casos = [
+            ('abc', 'monto no numerico'),
+            ('0', 'monto cero'),
+            ('-5', 'monto negativo'),
+        ]
+        for monto_invalido, descripcion_caso in casos:
+            with self.subTest(caso=descripcion_caso):
+                archivo = SimpleUploadedFile('voucher.png', b'contenido-fake', content_type='image/png')
+                response = self.client.post('/api/portal/solicitudes/grupo/', {
+                    'items': json.dumps([
+                        {'tipo_pago': 'cuota', 'cuota_mes': 1, 'cuota_anio': 2026, 'monto': monto_invalido},
+                    ]),
+                    'fecha_pago': '2026-07-27',
+                    'cuenta_bancaria_destino_id': str(self.cuenta.id),
+                    'comprobante': archivo,
+                })
+                self.assertEqual(response.status_code, 400, response.content)
+                data = response.json()
+                self.assertFalse(data['success'])
+                self.assertIn('monto', data['error'].lower())
+
+    def test_crear_grupo_con_monto_ausente_falla_con_400(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        archivo = SimpleUploadedFile('voucher.png', b'contenido-fake', content_type='image/png')
+        response = self.client.post('/api/portal/solicitudes/grupo/', {
+            'items': json.dumps([
+                {'tipo_pago': 'cuota', 'cuota_mes': 1, 'cuota_anio': 2026},
+            ]),
+            'fecha_pago': '2026-07-27',
+            'cuenta_bancaria_destino_id': str(self.cuenta.id),
+            'comprobante': archivo,
+        })
+        self.assertEqual(response.status_code, 400, response.content)
+        data = response.json()
+        self.assertFalse(data['success'])
