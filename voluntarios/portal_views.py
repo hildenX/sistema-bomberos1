@@ -551,6 +551,110 @@ def _aprobar_solicitud(solicitud, reviewer):
     solicitud.save()
 
 
+def _aprobar_grupo(grupo, reviewer):
+    comprobante_base64 = _archivo_a_data_url(grupo.comprobante)
+
+    for item in grupo.items.all():
+        datos_pago = {
+            'fecha_pago': grupo.fecha_pago,
+            'metodo_pago': 'transferencia',
+            'numero_comprobante': grupo.numero_comprobante,
+            'observaciones': grupo.descripcion,
+            'cuenta_bancaria': grupo.cuenta_bancaria_destino,
+            'comprobante_base64': comprobante_base64,
+        }
+
+        if item.tipo_pago == 'cuota':
+            pago = registrar_pago_cuota(
+                item.voluntario_id, item.cuota_mes, item.cuota_anio,
+                item.monto_solicitado, datos_pago, reviewer,
+            )
+            item.pago_cuota = pago
+        elif item.tipo_pago == 'beneficio':
+            pago = registrar_pago_beneficio(
+                item.asignacion_beneficio_id, item.tipo_pago_beneficio,
+                item.cantidad, item.monto_solicitado, datos_pago, reviewer,
+            )
+            item.pago_beneficio = pago
+        else:
+            pago = registrar_pago_rifa(
+                item.asignacion_rifa_id, item.monto_solicitado,
+                {**datos_pago, 'es_extra': item.asignacion_rifa.pagos.exists()},
+                reviewer,
+            )
+            item.pago_rifa = pago
+
+        item.estado = 'aprobada'
+        item.feedback_tesorero = ''
+        item.revisada_por = reviewer
+        item.revisada_at = timezone.now()
+        item.aprobada_at = timezone.now()
+        item.save()
+
+    grupo.estado = 'aprobada'
+    grupo.feedback_tesorero = ''
+    grupo.observada_hasta = None
+    grupo.revisada_por = reviewer
+    grupo.revisada_at = timezone.now()
+    grupo.aprobada_at = timezone.now()
+    grupo.save()
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def tesoreria_grupo_accion_view(request, grupo_id):
+    _, error = _require_tesoreria(request)
+    if error:
+        return error
+
+    try:
+        grupo = GrupoSolicitudPago.objects.prefetch_related('items').get(id=grupo_id)
+    except GrupoSolicitudPago.DoesNotExist:
+        return _json_error('Grupo no encontrado', 404)
+
+    if grupo.estado not in ['pendiente', 'observada']:
+        return _json_error('El grupo ya fue cerrado', 400)
+
+    try:
+        data = _parse_request_data(request)
+        accion = str(data.get('accion', '')).strip().lower()
+        feedback = str(data.get('feedback', '')).strip()
+
+        if accion == 'aprobar':
+            _aprobar_grupo(grupo, request.user)
+            return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
+
+        if accion == 'observar':
+            if not feedback:
+                return _json_error('Debes indicar retroalimentacion para observar el grupo')
+            grupo.estado = 'observada'
+            grupo.feedback_tesorero = feedback
+            grupo.observada_hasta = crear_feedback_observacion()
+            grupo.revisada_por = request.user
+            grupo.revisada_at = timezone.now()
+            grupo.save()
+            grupo.items.update(estado='observada', feedback_tesorero=feedback)
+            return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
+
+        if accion == 'rechazar':
+            if not feedback:
+                return _json_error('Debes indicar el motivo del rechazo')
+            grupo.estado = 'rechazada'
+            grupo.feedback_tesorero = feedback
+            grupo.observada_hasta = None
+            grupo.revisada_por = request.user
+            grupo.revisada_at = timezone.now()
+            grupo.save()
+            grupo.items.update(estado='rechazada', feedback_tesorero=feedback)
+            return JsonResponse({'success': True, 'grupo': serializar_grupo_solicitud(grupo)})
+
+        return _json_error('Accion invalida')
+    except ValueError as exc:
+        return _json_error(str(exc))
+    except json.JSONDecodeError:
+        return _json_error('JSON invalido')
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def tesoreria_solicitud_accion_view(request, solicitud_id):

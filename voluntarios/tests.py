@@ -400,3 +400,97 @@ class PortalGrupoSolicitudAPITest(TestCase):
         self.assertEqual(response.status_code, 400, response.content)
         data = response.json()
         self.assertFalse(data['success'])
+
+
+class TesoreriaGrupoAccionAPITest(TestCase):
+
+    def setUp(self):
+        from voluntarios.models import CicloCuotas
+        self.client = Client()
+        # Se crea el usuario 'cvera.27' antes que el Voluntario para que la
+        # señal post_save (voluntarios/signals.py) que autogenera un
+        # PortalVoluntarioProfile no pueda elegir por azar este mismo
+        # username para su propio usuario autogenerado.
+        self.portal_user = User.objects.create_user(username='cvera.27', password='Bomberos123!')
+        self.voluntario = Voluntario.objects.create(
+            nombre='Cristian', apellido_paterno='Vera', apellido_materno='Arriagada',
+            rut='19621524-8', clave_bombero='078',
+            fecha_nacimiento=date(1995, 3, 3),
+            fecha_ingreso=date(2019, 1, 1),
+            estado_bombero='activo'
+        )
+        # La señal post_save de Voluntario ya crea un PortalVoluntarioProfile
+        # automáticamente; como el campo es OneToOne, actualizamos ese
+        # perfil en vez de crear uno nuevo.
+        profile = self.voluntario.portal_profile
+        profile.user = self.portal_user
+        profile.activo = True
+        profile.debe_cambiar_clave = False
+        profile.save()
+        self.cuenta = CuentaBancaria.objects.create(
+            nombre='Cuenta Principal', banco='BancoEstado',
+            tipo_cuenta='corriente', numero_cuenta='7654321', rut_titular='76.123.456-7',
+            activa=True
+        )
+        CicloCuotas.objects.create(
+            anio=2026, fecha_inicio=date(2026, 1, 1), fecha_fin=date(2026, 12, 31),
+            activo=True, cerrado=False
+        )
+        self.grupo = GrupoSolicitudPago.objects.create(
+            voluntario=self.voluntario, portal_user=self.portal_user,
+            fecha_pago=date(2026, 7, 27), cuenta_bancaria_destino=self.cuenta,
+            monto_total=Decimal('14000'),
+        )
+        SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario, portal_user=self.portal_user,
+            tipo_pago='cuota', nombre_pago='Cuota 01/2026',
+            monto_solicitado=Decimal('7000'), cuota_mes=1, cuota_anio=2026,
+            fecha_pago=date(2026, 7, 27), grupo=self.grupo,
+        )
+        SolicitudPagoPortal.objects.create(
+            voluntario=self.voluntario, portal_user=self.portal_user,
+            tipo_pago='cuota', nombre_pago='Cuota 02/2026',
+            monto_solicitado=Decimal('7000'), cuota_mes=2, cuota_anio=2026,
+            fecha_pago=date(2026, 7, 27), grupo=self.grupo,
+        )
+
+        director_group, _ = Group.objects.get_or_create(name='Director')
+        self.tesorero = User.objects.create_user(username='director_test', password='pass12345')
+        self.tesorero.groups.add(director_group)
+        self.client.force_login(self.tesorero)
+
+    def test_aprobar_grupo_registra_cada_cuota(self):
+        response = self.client.post(
+            f'/api/portal/tesoreria/solicitudes/grupo/{self.grupo.id}/accion/',
+            data=json.dumps({'accion': 'aprobar'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.grupo.refresh_from_db()
+        self.assertEqual(self.grupo.estado, 'aprobada')
+        from voluntarios.models import PagoCuota
+        self.assertEqual(PagoCuota.objects.filter(voluntario=self.voluntario).count(), 2)
+        for item in self.grupo.items.all():
+            self.assertEqual(item.estado, 'aprobada')
+            self.assertIsNotNone(item.pago_cuota_id)
+
+    def test_rechazar_grupo_exige_motivo(self):
+        response = self.client.post(
+            f'/api/portal/tesoreria/solicitudes/grupo/{self.grupo.id}/accion/',
+            data=json.dumps({'accion': 'rechazar'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_rechazar_grupo_con_motivo(self):
+        response = self.client.post(
+            f'/api/portal/tesoreria/solicitudes/grupo/{self.grupo.id}/accion/',
+            data=json.dumps({'accion': 'rechazar', 'feedback': 'Voucher ilegible'}),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.grupo.refresh_from_db()
+        self.assertEqual(self.grupo.estado, 'rechazada')
+        self.assertEqual(self.grupo.feedback_tesorero, 'Voucher ilegible')
+        for item in self.grupo.items.all():
+            self.assertEqual(item.estado, 'rechazada')
