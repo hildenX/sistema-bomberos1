@@ -402,7 +402,7 @@ def tesoreria_solicitudes_portal_view(request):
     page_size = 10
     qs = SolicitudPagoPortal.objects.select_related(
         'voluntario', 'revisada_por', 'asignacion_beneficio__beneficio', 'asignacion_rifa__rifa'
-    ).order_by('-created_at')
+    ).filter(grupo__isnull=True).order_by('-created_at')
 
     if estado and estado not in ['todos', 'all']:
         estado_real = 'aprobada' if estado == 'pagado' else estado
@@ -424,14 +424,16 @@ def tesoreria_solicitudes_portal_view(request):
         page_obj = paginator.page(paginator.num_pages or 1)
 
     solicitudes = [serializar_solicitud(s) for s in page_obj.object_list]
-    pendientes = SolicitudPagoPortal.objects.filter(estado='pendiente').count()
+    solicitudes_simples = SolicitudPagoPortal.objects.filter(grupo__isnull=True)
+    grupos_qs = GrupoSolicitudPago.objects.all()
+    pendientes = solicitudes_simples.filter(estado='pendiente').count() + grupos_qs.filter(estado='pendiente').count()
     resumen = {
-        'total': SolicitudPagoPortal.objects.count(),
-        'pendientes': SolicitudPagoPortal.objects.filter(estado='pendiente').count(),
-        'pagados': SolicitudPagoPortal.objects.filter(estado='aprobada').count(),
-        'observadas': SolicitudPagoPortal.objects.filter(estado='observada').count(),
-        'rechazadas': SolicitudPagoPortal.objects.filter(estado='rechazada').count(),
-        'expiradas': SolicitudPagoPortal.objects.filter(estado='expirada').count(),
+        'total': solicitudes_simples.count() + grupos_qs.count(),
+        'pendientes': pendientes,
+        'pagados': solicitudes_simples.filter(estado='aprobada').count() + grupos_qs.filter(estado='aprobada').count(),
+        'observadas': solicitudes_simples.filter(estado='observada').count() + grupos_qs.filter(estado='observada').count(),
+        'rechazadas': solicitudes_simples.filter(estado='rechazada').count() + grupos_qs.filter(estado='rechazada').count(),
+        'expiradas': solicitudes_simples.filter(estado='expirada').count() + grupos_qs.filter(estado='expirada').count(),
     }
     return JsonResponse({
         'success': True,
