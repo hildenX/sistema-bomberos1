@@ -548,6 +548,33 @@
             border: 1px solid var(--line);
         }
 
+        .grupo-items-list {
+            list-style: none;
+            margin: 6px 0 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .grupo-items-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            font-size: 0.85rem;
+        }
+
+        .grupo-items-list li strong {
+            color: var(--success);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
         .request-description p,
         .request-feedback p {
             margin: 0;
@@ -1260,6 +1287,6 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=31.1"></script>
-    <script src="{% static 'js/tesoreria-portal.js' %}?v=3"></script>
+    <script src="{% static 'js/tesoreria-portal.js' %}?v=4"></script>
 </body>
 </html>

@@ -328,28 +328,78 @@
         if (!container) return;
 
         if (!data.grupos.length) {
-            container.innerHTML = '<div class="empty-state">No hay solicitudes combinadas.</div>';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">#</div>
+                    <h3>No hay solicitudes combinadas</h3>
+                    <p>Los carritos de pago del portal apareceran aqui.</p>
+                </div>
+            `;
             return;
         }
 
-        container.innerHTML = data.grupos.map((grupo) => `
-            <article class="request-card" style="flex-direction:column; align-items:stretch;">
-                <div>
-                    <h4>${grupo.voluntario.nombre} — Grupo #${grupo.id} — ${grupo.estado_label}</h4>
-                    <p>${fmtDate(grupo.fecha_pago)} · Comprobante N° ${grupo.numero_comprobante || '—'} · Total ${money(grupo.monto_total)}</p>
-                    ${grupo.comprobante_url ? renderComprobanteButton(grupo.comprobante_url) : ''}
-                    <ul>
-                        ${grupo.items.map((item) => `<li>${item.nombre_pago}: ${money(item.monto_solicitado)}</li>`).join('')}
-                    </ul>
-                    ${grupo.feedback_tesorero ? `<p>Feedback: ${escapeHtml(grupo.feedback_tesorero)}</p>` : ''}
-                </div>
-                ${(grupo.estado === 'pendiente' || grupo.estado === 'observada') ? `
-                <div>
-                    <button class="primary-btn" data-grupo-action="aprobar" data-grupo-id="${grupo.id}">Aprobar</button>
-                    <button class="danger-btn" data-grupo-action="rechazar" data-grupo-id="${grupo.id}">Rechazar</button>
-                </div>` : ''}
-            </article>
-        `).join('');
+        container.innerHTML = data.grupos.map((grupo, index) => {
+            const meta = getStatusMeta(grupo);
+            const puedeGestionarse = grupo.estado === 'pendiente' || grupo.estado === 'observada';
+
+            return `
+                <article class="request-card">
+                    <div class="request-index">#${index + 1}</div>
+                    <div class="request-main">
+                        <div class="request-topline">
+                            <div>
+                                <h3>Grupo #${grupo.id} &middot; ${escapeHtml(grupo.voluntario.nombre)}</h3>
+                                <p class="request-subtitle">${escapeHtml(grupo.voluntario.rut)} &middot; ${grupo.items.length} conceptos combinados</p>
+                            </div>
+                            <div class="amount-wrap">
+                                <span class="amount-label">Total</span>
+                                <div class="request-amount">${money(grupo.monto_total)}</div>
+                            </div>
+                        </div>
+
+                        <div class="request-meta-grid">
+                            <div><span>Estado operativo</span><strong class="status-pill ${meta.className}">${meta.label}</strong></div>
+                            <div><span>Fecha de pago</span><strong>${fmtDate(grupo.fecha_pago)}</strong></div>
+                            <div><span>N. comprobante</span><strong>${escapeHtml(grupo.numero_comprobante || '-')}</strong></div>
+                        </div>
+
+                        <div class="request-description">
+                            <span>Conceptos pagados</span>
+                            <ul class="grupo-items-list">
+                                ${grupo.items.map((item) => `
+                                    <li><span>${escapeHtml(item.nombre_pago)}</span><strong>${money(item.monto_solicitado)}</strong></li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        ${grupo.descripcion ? `
+                            <div class="request-description">
+                                <span>Descripci&oacute;n / Notas</span>
+                                <p>${escapeHtml(grupo.descripcion)}</p>
+                            </div>
+                        ` : ''}
+
+                        ${grupo.feedback_tesorero ? `
+                            <div class="request-feedback">
+                                <span>Feedback tesoreria</span>
+                                <p>${escapeHtml(grupo.feedback_tesorero)}</p>
+                            </div>
+                        ` : ''}
+
+                        <div class="request-links">
+                            ${grupo.comprobante_url ? renderComprobanteButton(grupo.comprobante_url) : '<span class="muted-link">Sin comprobante adjunto</span>'}
+                        </div>
+                    </div>
+                    <div class="request-actions ${puedeGestionarse ? '' : 'is-closed'}">
+                        ${puedeGestionarse ? `
+                            <p class="request-actions-title">Acciones</p>
+                            <button class="primary-btn" data-grupo-action="aprobar" data-grupo-id="${grupo.id}">Aprobar</button>
+                            <button class="danger-btn" data-grupo-action="rechazar" data-grupo-id="${grupo.id}">Rechazar</button>
+                        ` : renderClosedNote(grupo, meta)}
+                    </div>
+                </article>
+            `;
+        }).join('');
 
         container.querySelectorAll('[data-grupo-action]').forEach((btn) => {
             btn.addEventListener('click', () => {
