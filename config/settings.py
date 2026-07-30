@@ -18,15 +18,20 @@ DEBUG = config('DEBUG', default='True').lower() in ('true', '1', 'yes')
 # Hosts permitidos: por env (coma-separado). Default '*' para dev/Render.
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
-# ---- Endurecimiento de seguridad (seguro sin HTTPS aún) ----
+# ---- Endurecimiento de seguridad ----
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-# Cuando haya dominio + SSL, activar también:
-#   SECURE_SSL_REDIRECT = True
-#   SESSION_COOKIE_SECURE = True
-#   CSRF_COOKIE_SECURE = True
-#   SECURE_HSTS_SECONDS = 31536000
+
+# Nginx ya redirige HTTP->HTTPS y reenvía el protocolo original via X-Forwarded-Proto.
+# Sin esto, Django no sabe que la conexión es segura (Gunicorn habla HTTP puro internamente).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Activados por env solo en el VPS (donde ya hay dominio + SSL). Default False = seguro para dev local sin HTTPS.
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default='False').lower() in ('true', '1', 'yes')
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
+SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0
 
 # Application definition
 INSTALLED_APPS = [
@@ -168,17 +173,19 @@ SESSION_COOKIE_AGE = 86400  # 24 horas
 SESSION_SAVE_EVERY_REQUEST = True  # Actualizar cookie en cada request
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'  # Permitir cookies en navegación normal
-SESSION_COOKIE_SECURE = False  # False para localhost (HTTP)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default='False').lower() in ('true', '1', 'yes')
 
 # CSRF CONFIGURATION
 CSRF_COOKIE_HTTPONLY = False  # Permitir leer desde JavaScript
 CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = False  # False para localhost (HTTP)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default='False').lower() in ('true', '1', 'yes')
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://*.pythonanywhere.com',
     'https://*.onrender.com',
+    'https://cuartelsexta.com',
+    'https://www.cuartelsexta.com',
 ]
 
 # EMAIL CONFIGURATION - Para envío de comprobantes
