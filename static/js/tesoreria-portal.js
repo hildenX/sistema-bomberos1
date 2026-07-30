@@ -220,7 +220,13 @@
 
     function renderSolicitudes(data) {
         const list = document.getElementById('listaSolicitudesPortal');
+        const panel = document.getElementById('panelSolicitudesSimples');
         const pagination = data.pagination;
+
+        const vistaPorDefecto = (!state.estado || state.estado === 'todos') && !state.search;
+        if (panel) {
+            panel.style.display = (vistaPorDefecto && !data.solicitudes.length) ? 'none' : '';
+        }
 
         if (!data.solicitudes.length) {
             list.innerHTML = `

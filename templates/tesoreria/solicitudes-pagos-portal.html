@@ -552,8 +552,8 @@
             list-style: none;
             margin: 6px 0 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 6px;
         }
 
@@ -561,12 +561,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
+            gap: 8px;
+            padding: 6px 10px;
             border-radius: 8px;
             background: var(--panel);
             border: 1px solid var(--line);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+        }
+
+        .grupo-items-list li span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .grupo-items-list li strong {
@@ -1107,6 +1113,10 @@
                 margin: 18px auto 28px;
             }
 
+            .grupo-items-list {
+                grid-template-columns: 1fr;
+            }
+
             .hero-card,
             .panel,
             .modal-dialog {
@@ -1226,7 +1236,7 @@
             <div id="gruposPortal"></div>
         </section>
 
-        <section class="panel">
+        <section class="panel" id="panelSolicitudesSimples">
             <div class="panel-head">
                 <div>
                     <h2>Solicitudes del portal</h2>
@@ -1287,6 +1297,6 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=31.1"></script>
-    <script src="{% static 'js/tesoreria-portal.js' %}?v=4"></script>
+    <script src="{% static 'js/tesoreria-portal.js' %}?v=5"></script>
 </body>
 </html>
