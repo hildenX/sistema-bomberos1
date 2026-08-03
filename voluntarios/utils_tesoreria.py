@@ -21,22 +21,22 @@ from .models import (
 
 def calcular_categoria_bombero(fecha_ingreso):
     """
-    Calcula la categoría del bombero según su antigüedad
-    Replica la lógica de Utils.calcularCategoriaBombero del P6P
+    Calcula la categoría del bombero según su antigüedad.
+
+    Tramos oficiales: Voluntario (0-19 años), Honorario de Compañía
+    (20-24 años), Honorario del Cuerpo (25-49 años), Insigne (50+ años).
     """
     if not fecha_ingreso:
         return 'Voluntario'
-    
+
     hoy = date.today()
     anos_servicio = (hoy - fecha_ingreso).days / 365.25
-    
+
     if anos_servicio >= 50:
-        return 'Insigne de 50 Años'
+        return 'Insigne'
     elif anos_servicio >= 25:
-        return 'Insigne de 25 Años'
-    elif anos_servicio >= 20:
         return 'Honorario del Cuerpo'
-    elif anos_servicio >= 5:
+    elif anos_servicio >= 20:
         return 'Honorario de Compañía'
     else:
         return 'Voluntario'
@@ -50,8 +50,7 @@ def obtener_tarjetas_por_categoria(categoria):
         'Voluntario': 5,
         'Honorario de Compañía': 3,
         'Honorario del Cuerpo': 3,
-        'Insigne de 25 Años': 2,
-        'Insigne de 50 Años': 2,
+        'Insigne': 2,
     }
     return tarjetas_map.get(categoria, 5)
 
