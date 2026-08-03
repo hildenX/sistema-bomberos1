@@ -368,8 +368,8 @@ def crear_beneficio_con_asignaciones(datos_beneficio, usuario):
     
     asignaciones = []
     for voluntario in voluntarios:
-        categoria = calcular_categoria_bombero(voluntario.fecha_ingreso)
-        
+        categoria = calcular_categoria_bombero(voluntario.fecha_base_antiguedad)
+
         # Determinar tarjetas según categoría
         if 'Insigne' in categoria:
             tarjetas = beneficio.tarjetas_insignes
