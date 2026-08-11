@@ -182,15 +182,188 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-        
+
         .btn-volver:hover {
             transform: translateY(-2px);
+        }
+
+        .header-acciones {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: -10px;
+        }
+
+        .btn-editar-acta {
+            background: #1c1c1c;
+            color: #f0f0f0;
+            border: 1px solid #2a2a2a;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-editar-acta:hover {
+            border-color: #c0392b;
+            color: #fff;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-editar {
+            background: #1c1c1c;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        .modal-editar-header {
+            background: linear-gradient(135deg, #c0392b 0%, #8b1429 100%);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-editar-header h3 { margin: 0; font-size: 1.1em; }
+
+        .modal-editar-body { padding: 22px; }
+
+        .modal-editar-body label {
+            display: block;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        #textareaDescripcion {
+            width: 100%;
+            min-height: 140px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1.5px solid #2a2a2a;
+            background: #161616;
+            color: #f0f0f0;
+            font-family: inherit;
+            font-size: 0.98em;
+            line-height: 1.5;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        #textareaDescripcion:focus {
+            outline: none;
+            border-color: #c0392b;
+        }
+
+        .redaccion-estado {
+            margin-top: 8px;
+            font-size: 0.82em;
+            color: #888;
+            min-height: 18px;
+        }
+
+        .lista-sugerencias {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .sugerencia-item {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-left: 3px solid #c8942a;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .sugerencia-mensaje {
+            color: #ddd;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+
+        .sugerencia-original {
+            color: #f87171;
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+
+        .sugerencia-botones {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sugerencia {
+            background: rgba(200,148,42,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(200,148,42,0.3);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.82em;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-sugerencia:hover { background: rgba(200,148,42,0.25); }
+
+        .modal-editar-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding: 0 22px 22px;
+        }
+
+        .btn-modal {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .btn-modal.secundario {
+            background: #2a2a2a;
+            color: #ccc;
+        }
+
+        .btn-modal.primario {
+            background: linear-gradient(135deg, #c0392b 0%, #8b1429 100%);
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-detalle">
+            <div class="header-acciones">
+                <button class="btn-editar-acta" id="btnEditarActa" style="display:none" onclick="detalleSistema.abrirModalEditar()">Editar acta</button>
+            </div>
             <h1 id="tituloAsistencia">Detalle de Asistencia</h1>
             <div class="info-principal" id="infoPrincipal">
                 <!-- Se llena dinámicamente -->
@@ -210,11 +383,31 @@
             </button>
         </div>
     </div>
-    
+
+    <!-- MODAL EDITAR ACTA -->
+    <div class="modal-overlay" id="modalEditarActa" onclick="if(event.target===this) detalleSistema.cerrarModalEditar()">
+        <div class="modal-editar">
+            <div class="modal-editar-header">
+                <h3>Editar descripción del acta</h3>
+                <button class="btn-modal secundario" style="padding:4px 10px;" onclick="detalleSistema.cerrarModalEditar()">✕</button>
+            </div>
+            <div class="modal-editar-body">
+                <label for="textareaDescripcion">Descripción</label>
+                <textarea id="textareaDescripcion" spellcheck="true" lang="es" oninput="detalleSistema.onCambioTexto()"></textarea>
+                <div class="redaccion-estado" id="redaccionEstado"></div>
+                <div class="lista-sugerencias" id="listaSugerencias"></div>
+            </div>
+            <div class="modal-editar-footer">
+                <button class="btn-modal secundario" onclick="detalleSistema.cerrarModalEditar()">Cancelar</button>
+                <button class="btn-modal primario" onclick="detalleSistema.guardarDescripcion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/claves-radiales.js' %}"></script>
-    <script src="{% static 'js/detalle-asistencia-django.js' %}?v=10.0"></script>
+    <script src="{% static 'js/detalle-asistencia-django.js' %}?v=11.0"></script>
     <script>console.log('Detalle Asistencia v10.0 - HORAS SIEMPRE VISIBLES');</script>
     
     <!-- SCRIPT ANTIGUO COMENTADO -->

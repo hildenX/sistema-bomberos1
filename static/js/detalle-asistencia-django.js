@@ -5,6 +5,8 @@ class DetalleAsistenciaDjango {
     constructor() {
         this.evento = null;
         this.detalles = [];
+        this.timerRevision = null;
+        this.sugerenciasActuales = [];
         this.init();
     }
     
@@ -17,12 +19,14 @@ class DetalleAsistenciaDjango {
         }
         
         const eventoId = localStorage.getItem('emergenciaDetalleId');
-        
+
         if (!eventoId) {
             alert('No se especificó un evento');
             window.history.back();
             return;
         }
+
+        this.eventoId = eventoId;
         
         // Mostrar mensaje de carga
         document.getElementById('contenidoAsistentes').innerHTML = `
@@ -108,8 +112,14 @@ class DetalleAsistenciaDjango {
             'otras': ' Otra Actividad'
         };
         titulo = tipoMap[this.evento.tipo] || ' Asistencia';
-        
+
         document.getElementById('tituloAsistencia').innerHTML = titulo;
+
+        const btnEditar = document.getElementById('btnEditarActa');
+        if (btnEditar) {
+            const tiposConActa = ['asamblea', 'directorio', 'ejercicios', 'citaciones', 'otras'];
+            btnEditar.style.display = tiposConActa.includes(this.evento.tipo) ? 'inline-block' : 'none';
+        }
         
         //  CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
         console.log('═══════════════════════════════════════════');
@@ -443,9 +453,145 @@ class DetalleAsistenciaDjango {
             return 'N/A';
         }
     }
+
+    // ==================== EDITAR ACTA ====================
+
+    abrirModalEditar() {
+        const textoActual = this.evento.descripcion || this.evento.observaciones || '';
+        document.getElementById('textareaDescripcion').value = textoActual;
+        document.getElementById('listaSugerencias').innerHTML = '';
+        document.getElementById('redaccionEstado').textContent = '';
+        this.sugerenciasActuales = [];
+        document.getElementById('modalEditarActa').style.display = 'flex';
+    }
+
+    cerrarModalEditar() {
+        document.getElementById('modalEditarActa').style.display = 'none';
+        clearTimeout(this.timerRevision);
+    }
+
+    onCambioTexto() {
+        clearTimeout(this.timerRevision);
+        document.getElementById('redaccionEstado').textContent = 'Revisando redacción...';
+        this.timerRevision = setTimeout(() => this.revisarRedaccion(), 1200);
+    }
+
+    async revisarRedaccion() {
+        const texto = document.getElementById('textareaDescripcion').value;
+        const estadoEl = document.getElementById('redaccionEstado');
+        const listaEl = document.getElementById('listaSugerencias');
+
+        if (!texto.trim()) {
+            estadoEl.textContent = '';
+            listaEl.innerHTML = '';
+            this.sugerenciasActuales = [];
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams({ text: texto, language: 'es' });
+            const response = await fetch('https://api.languagetool.org/v2/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString(),
+            });
+
+            if (!response.ok) throw new Error('No se pudo revisar la redacción');
+
+            const data = await response.json();
+            this.sugerenciasActuales = data.matches || [];
+
+            if (this.sugerenciasActuales.length === 0) {
+                estadoEl.textContent = 'Sin observaciones de redacción.';
+                listaEl.innerHTML = '';
+                return;
+            }
+
+            estadoEl.textContent = `${this.sugerenciasActuales.length} observación(es) de redacción:`;
+            listaEl.innerHTML = this.sugerenciasActuales.map((m, idx) => {
+                const original = texto.substring(m.offset, m.offset + m.length);
+                const sugerencias = (m.replacements || []).slice(0, 3);
+                return `
+                    <div class="sugerencia-item">
+                        <div class="sugerencia-mensaje">${this.escapeHtml(m.message)}: <span class="sugerencia-original">${this.escapeHtml(original)}</span></div>
+                        <div class="sugerencia-botones">
+                            ${sugerencias.map((s) => `<button type="button" class="btn-sugerencia" onclick="detalleSistema.aplicarSugerencia(${idx}, '${this.escapeAttr(s.value)}')">${this.escapeHtml(s.value)}</button>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            console.error('[DETALLE] Error revisando redacción:', error);
+            estadoEl.textContent = 'No se pudo revisar la redacción en este momento (el corrector externo no respondió).';
+        }
+    }
+
+    aplicarSugerencia(idx, reemplazo) {
+        const match = this.sugerenciasActuales[idx];
+        if (!match) return;
+
+        const textarea = document.getElementById('textareaDescripcion');
+        const texto = textarea.value;
+        textarea.value = texto.substring(0, match.offset) + reemplazo + texto.substring(match.offset + match.length);
+
+        clearTimeout(this.timerRevision);
+        this.revisarRedaccion();
+    }
+
+    formatearTexto(texto) {
+        let resultado = texto.trim().replace(/\s+/g, ' ');
+        if (!resultado) return resultado;
+
+        // Mayúscula al inicio y después de cada punto seguido
+        resultado = resultado.replace(/(^\s*\w|[.!?]\s+\w)/g, (letra) => letra.toUpperCase());
+
+        // Punto final si no termina con signo de puntuación
+        if (!/[.!?]$/.test(resultado)) {
+            resultado += '.';
+        }
+
+        return resultado;
+    }
+
+    async guardarDescripcion() {
+        const textoOriginal = document.getElementById('textareaDescripcion').value;
+        const textoFormateado = this.formatearTexto(textoOriginal);
+
+        try {
+            const response = await fetch(`/api/eventos-asistencia/${this.eventoId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                credentials: 'include',
+                body: JSON.stringify({ descripcion: textoFormateado }),
+            });
+
+            if (!response.ok) throw new Error('Error al guardar el acta');
+
+            this.evento.descripcion = textoFormateado;
+            this.cerrarModalEditar();
+            this.renderizarInfo();
+        } catch (error) {
+            console.error('[DETALLE] Error guardando descripción:', error);
+            alert('No se pudo guardar el acta. Intenta nuevamente.');
+        }
+    }
+
+    escapeHtml(texto) {
+        const div = document.createElement('div');
+        div.textContent = texto || '';
+        return div.innerHTML;
+    }
+
+    escapeAttr(texto) {
+        return (texto || '').replace(/'/g, "\\'");
+    }
 }
 
 // Inicializar
+let detalleSistema;
 document.addEventListener('DOMContentLoaded', () => {
-    new DetalleAsistenciaDjango();
+    detalleSistema = new DetalleAsistenciaDjango();
 });
