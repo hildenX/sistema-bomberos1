@@ -359,12 +359,16 @@ def generar_pdf_acta_directorio(evento):
     c.drawString(MARGEN, p.y, texto1)
     c.setFont('Helvetica-Bold', 10)
     c.drawString(MARGEN + ancho_texto1, p.y, texto2)
-    p.y -= 90
 
     # ---- FIRMAS ----
+    # Se reserva todo el bloque (espacio en blanco para firmar + firmas) ANTES de
+    # descontar el espacio en blanco, para que si hay que saltar de página el
+    # espacio para firmar quede visible debajo del margen superior de la página
+    # nueva, en vez de perderse justo antes del salto.
     nombre_secretario = _buscar_nombre_por_cargo_exacto(asistentes, 'Secretario')
 
-    p.asegurar_espacio(50 + 26)
+    p.asegurar_espacio(90 + 50 + 26)
+    p.y -= 90
     ancho_firma = 70 * mm
     x_izq = MARGEN + 5 * mm
     x_der = ANCHO - MARGEN - ancho_firma - 5 * mm
