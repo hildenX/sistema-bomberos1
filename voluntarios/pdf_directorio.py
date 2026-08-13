@@ -226,10 +226,10 @@ def generar_pdf_acta_directorio(evento):
     # ---- ENCABEZADO ----
     logo = _obtener_logo_pdf()
     if logo:
-        logo_tam = 20 * mm
+        logo_tam = 15 * mm
         c.drawImage(
-            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam + 10,
-            width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True
+            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
         )
 
     p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=16)
@@ -359,7 +359,7 @@ def generar_pdf_acta_directorio(evento):
     c.drawString(MARGEN, p.y, texto1)
     c.setFont('Helvetica-Bold', 10)
     c.drawString(MARGEN + ancho_texto1, p.y, texto2)
-    p.y -= 40
+    p.y -= 90
 
     # ---- FIRMAS ----
     nombre_secretario = _buscar_nombre_por_cargo_exacto(asistentes, 'Secretario')
