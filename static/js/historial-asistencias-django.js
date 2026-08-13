@@ -10,6 +10,7 @@ class HistorialAsistencias {
         this.filtroClave = '';
         this.filtroAsamblea = '';
         this.filtroEjercicio = '';
+        this.busqueda = '';
         this.ciclosAsistencias = new CiclosAsistencias();
         this.init();
     }
@@ -22,6 +23,7 @@ class HistorialAsistencias {
             return;
         }
 
+        this.aplicarRestriccionesPorRol();
         await this.cargarDatos();
         this.configurarEventos();
         this.cargarCicloActivo();
@@ -30,6 +32,30 @@ class HistorialAsistencias {
         this.renderizar();
         
         console.log('[HISTORIAL]  Sistema inicializado');
+    }
+
+    // El Secretario no ve Emergencias ni el ranking/Top de asistencias.
+    aplicarRestriccionesPorRol() {
+        this.tiposOcultosParaRol = [];
+
+        if (window.currentUser && window.currentUser.role === 'Secretario') {
+            this.tiposOcultosParaRol = ['emergencia'];
+
+            const opcionEmergencia = document.getElementById('opcionEmergencia');
+            if (opcionEmergencia) opcionEmergencia.remove();
+
+            const grupoFiltroClave = document.getElementById('grupoFiltroClave');
+            if (grupoFiltroClave) grupoFiltroClave.style.display = 'none';
+
+            const grupoFiltroTop = document.getElementById('grupoFiltroTop');
+            if (grupoFiltroTop) grupoFiltroTop.style.display = 'none';
+
+            const rankingContainer = document.getElementById('rankingContainer');
+            if (rankingContainer) rankingContainer.style.display = 'none';
+
+            const contentLayout = document.querySelector('.content-layout');
+            if (contentLayout) contentLayout.classList.add('sin-ranking');
+        }
     }
 
     async cargarDatos() {
@@ -98,6 +124,14 @@ class HistorialAsistencias {
             filtroTipo.addEventListener('change', (e) => {
                 this.filtroTipo = e.target.value;
                 this.mostrarOcultarFiltroClave();
+                this.renderizar();
+            });
+        }
+
+        const buscador = document.getElementById('buscadorAsistencias');
+        if (buscador) {
+            buscador.addEventListener('input', (e) => {
+                this.busqueda = e.target.value.toLowerCase().trim();
                 this.renderizar();
             });
         }
@@ -233,6 +267,18 @@ class HistorialAsistencias {
         });
 
         let asistenciasFiltradas = this.asistencias.filter(a => {
+            // Restricciones por rol (ej: Secretario no ve Emergencias)
+            if (this.tiposOcultosParaRol && this.tiposOcultosParaRol.includes(a.tipo)) return false;
+
+            // Buscador: texto en descripcion/observaciones o en la fecha
+            if (this.busqueda) {
+                const textoFecha = a.fecha ? new Date(a.fecha).toLocaleDateString('es-CL', { day: '2-digit', month: 'long', year: 'numeric' }).toLowerCase() : '';
+                const coincide = (a.descripcion || '').toLowerCase().includes(this.busqueda)
+                    || (a.observaciones || '').toLowerCase().includes(this.busqueda)
+                    || textoFecha.includes(this.busqueda);
+                if (!coincide) return false;
+            }
+
             // Filtrar por ciclo activo
             if (this.cicloActivo && a.fecha) {
                 const fechaEvento = new Date(a.fecha);
@@ -391,6 +437,7 @@ class HistorialAsistencias {
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
                      Ver Detalle Completo
                 </button>
+                ${asistencia.tipo !== 'emergencia' ? `<button onclick='event.stopPropagation(); descargarActaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#1565c0; border:2px solid #1565c0; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📄 Descargar PDF</button>` : ''}
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
                     ${(this.puedeEditar() && asistencia.tipo !== 'emergencia') ? `<button onclick='event.stopPropagation(); editarAsistencia("${asistencia.tipo}", ${asistencia.id})' style="flex:1; background:#fff; color:#f57c00; border:2px solid #f57c00; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✏️ Editar</button>` : ''}
@@ -413,9 +460,11 @@ class HistorialAsistencias {
     }
 
     // El Secretario solo puede editar/eliminar las asistencias que él registró.
+    // Si el evento no tiene un registrante asignado (registrado_por = None), no se bloquea.
     // Los demás roles (Director, Super Admin) pueden gestionar todas.
     puedeGestionar(asistencia) {
         if (window.currentUser && window.currentUser.role === 'Secretario') {
+            if (!asistencia.registradoPorNombre) return true;
             return asistencia.registradoPorNombre === window.currentUser.username;
         }
         return true;
@@ -820,6 +869,11 @@ function _getCookieHist(name) {
         });
     }
     return v;
+}
+
+// Descargar el PDF del acta directamente desde la tarjeta del historial
+function descargarActaPdfDesdeHistorial(id) {
+    window.open(`/api/eventos-asistencia/${id}/pdf_acta/`, '_blank');
 }
 
 // Ir a la página de registro en modo edición

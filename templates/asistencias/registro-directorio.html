@@ -11,6 +11,179 @@
     <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
+    <style>
+        .info-box-directorio {
+            background: rgba(33, 150, 243, 0.12) !important;
+            border-left: 4px solid #2196f3 !important;
+            color: #f0f0f0 !important;
+        }
+        .voluntarios-lista {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+            gap: 10px !important;
+        }
+        .voluntario-item {
+            align-items: center !important;
+            row-gap: 6px !important;
+            padding: 12px 14px !important;
+            border-radius: 10px !important;
+        }
+        .voluntario-item .voluntario-nombre {
+            font-size: 0.95rem;
+        }
+        .voluntario-item input[type="checkbox"] {
+            width: 20px !important;
+            height: 20px !important;
+            accent-color: #c41e3a;
+        }
+        .voluntario-cargo {
+            flex-basis: 100%;
+            margin-left: 30px;
+        }
+        .datos-emergencia {
+            padding: 28px !important;
+        }
+        .form-grid {
+            gap: 24px !important;
+        }
+        #observaciones {
+            resize: vertical;
+            min-height: 90px;
+            line-height: 1.5;
+        }
+        .categoria-titulo {
+            gap: 12px !important;
+        }
+        .tema-item {
+            background: rgba(196, 30, 58, 0.05);
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .tema-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .tema-item-header strong {
+            color: #f0f0f0;
+            font-size: 0.95rem;
+        }
+        .btn-quitar-tema {
+            background: transparent;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-quitar-tema:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+        .tema-item input[type="text"],
+        .tema-item textarea,
+        #observaciones {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 1.5px solid #2a2a2a;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.55;
+            background: #161616;
+            color: #f0f0f0;
+            font-family: inherit;
+            margin-bottom: 10px;
+            transition: border-color 0.2s ease;
+        }
+        .tema-item input[type="text"]:focus,
+        .tema-item textarea:focus,
+        #observaciones:focus {
+            outline: none;
+            border-color: #c41e3a;
+        }
+        .tema-item textarea,
+        #observaciones {
+            min-height: 220px;
+            resize: vertical;
+            margin-bottom: 0;
+        }
+        #listaTemas:empty::after {
+            content: 'Aún no hay temas agregados. Usá "+ Agregar Tema" para empezar.';
+            display: block;
+            color: #888;
+            font-style: italic;
+            padding: 10px 0;
+        }
+
+        /* ---- Corrector ortográfico (LanguageTool) ---- */
+        .corrector-wrap {
+            margin-top: 6px;
+        }
+        .redaccion-estado {
+            font-size: 0.85em;
+            color: #999;
+            min-height: 18px;
+        }
+        .lista-sugerencias {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .sugerencia-item {
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-left: 4px solid #c8942a;
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+        .sugerencia-mensaje {
+            color: #ddd;
+            font-size: 0.92em;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .sugerencia-original {
+            color: #f87171;
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+        .sugerencia-botones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn-sugerencia {
+            background: rgba(200,148,42,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(200,148,42,0.3);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-sugerencia:hover { background: rgba(200,148,42,0.25); }
+        .btn-ignorar-sugerencia {
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-ignorar-sugerencia:hover { color: #ccc; border-color: #555; }
+    </style>
 </head>
 <body>
     <div class="page-container asistencias-page">
@@ -38,6 +211,11 @@
                     
                     <div class="form-grid">
                         <div class="form-group">
+                            <label for="numeroActa">N° de Acta</label>
+                            <input type="text" id="numeroActa" placeholder="Ej: 007/2026">
+                        </div>
+
+                        <div class="form-group">
                             <label for="fechaDirectorio">Fecha <span class="required">*</span></label>
                             <input type="date" id="fechaDirectorio" required>
                         </div>
@@ -52,9 +230,23 @@
                             <input type="time" id="horaTermino" required>
                         </div>
 
-                        <div class="form-group full-width">
-                            <label for="observaciones">Observaciones / Temas Tratados</label>
-                            <textarea id="observaciones" rows="3" placeholder="Temas tratados, acuerdos tomados, etc."></textarea>
+                    </div>
+                </div>
+
+                <!-- TEMAS A TRATAR -->
+                <div class="datos-emergencia">
+                    <h3>Temas a Tratar</h3>
+                    <div id="listaTemas"></div>
+                    <button type="button" class="btn-mini btn-success" onclick="directorioSistema.agregarTema()" style="margin-top:10px;">
+                        + Agregar Tema
+                    </button>
+
+                    <div class="form-group full-width" style="margin-top:24px;">
+                        <label for="observaciones">Observaciones (opcional)</label>
+                        <textarea id="observaciones" rows="3" spellcheck="true" lang="es" placeholder="Cualquier otra observación que no corresponda a un tema puntual..." oninput="directorioSistema.onCambioTextoCorrector(this)"></textarea>
+                        <div class="corrector-wrap">
+                            <div class="redaccion-estado"></div>
+                            <div class="lista-sugerencias"></div>
                         </div>
                     </div>
                 </div>
@@ -150,7 +342,7 @@
 
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/asistencias-directorio-django.js' %}?v=2.0"></script>
+    <script src="{% static 'js/asistencias-directorio-django.js' %}?v=7.0"></script>
     <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
     <script>console.log('Directorio v1.0 - Solo Oficiales');</script>
 </body>

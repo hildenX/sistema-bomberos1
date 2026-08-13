@@ -728,7 +728,7 @@ class EventoAsistenciaListSerializer(serializers.ModelSerializer):
                  'tipo_asamblea', 'tipo_ejercicio', 'nombre_citacion', 'motivo_otras',
                  'total_asistentes', 'oficiales_comandancia', 'oficiales_compania', 'total_oficiales',
                  'cargos_confianza', 'voluntarios', 'participantes', 'canjes', 'observaciones',
-                 'suma_ranking', 'porcentaje_asistencia', 'registrado_por_nombre', 'fecha_registro']
+                 'numero_acta', 'temas', 'suma_ranking', 'porcentaje_asistencia', 'registrado_por_nombre', 'fecha_registro']
 
     def get_registrado_por_nombre(self, obj):
         return obj.registrado_por.username if obj.registrado_por else None

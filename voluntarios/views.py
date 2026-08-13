@@ -865,6 +865,7 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
         'por_rango_fechas': 'view',
         'asistentes': 'view',
         'estadisticas_periodo': 'view',
+        'pdf_acta': 'view',
     }
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['tipo', 'fecha']
@@ -933,6 +934,31 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
         asistentes = evento.asistentes.all()
         serializer = DetalleAsistenciaSerializer(asistentes, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def pdf_acta(self, request, pk=None):
+        """Genera el PDF del acta/comprobante de un evento de asistencia"""
+        from django.http import HttpResponse
+        from .pdf_directorio import generar_pdf_acta_directorio, generar_pdf_generico
+
+        evento = self.get_object()
+        if evento.tipo == 'emergencia':
+            return Response({'error': 'Las emergencias no tienen acta descargable'}, status=400)
+
+        try:
+            if evento.tipo == 'directorio':
+                pdf_buffer = generar_pdf_acta_directorio(evento)
+            else:
+                pdf_buffer = generar_pdf_generico(evento)
+            nombre_archivo = f"acta_{evento.tipo}_{evento.fecha}.pdf"
+            response = HttpResponse(pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+            return response
+        except Exception as e:
+            print(f"[PDF ACTA ERROR] {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
 
     @action(detail=False, methods=['get'])
     def estadisticas_periodo(self, request):

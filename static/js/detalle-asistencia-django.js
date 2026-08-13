@@ -120,6 +120,11 @@ class DetalleAsistenciaDjango {
             const tiposConActa = ['asamblea', 'directorio', 'ejercicios', 'citaciones', 'otras'];
             btnEditar.style.display = tiposConActa.includes(this.evento.tipo) ? 'inline-block' : 'none';
         }
+
+        const btnPdf = document.getElementById('btnDescargarActaPdf');
+        if (btnPdf) {
+            btnPdf.style.display = this.evento.tipo !== 'emergencia' ? 'inline-block' : 'none';
+        }
         
         //  CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
         console.log('═══════════════════════════════════════════');
@@ -577,6 +582,10 @@ class DetalleAsistenciaDjango {
             console.error('[DETALLE] Error guardando descripción:', error);
             alert('No se pudo guardar el acta. Intenta nuevamente.');
         }
+    }
+
+    descargarActaPdf() {
+        window.open(`/api/eventos-asistencia/${this.eventoId}/pdf_acta/`, '_blank');
     }
 
     escapeHtml(texto) {
