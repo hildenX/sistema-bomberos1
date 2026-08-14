@@ -33,6 +33,25 @@ def _formatear_hora(hora):
     return hora.strftime('%H:%M')
 
 
+def _calcular_numero_acta_fallback(evento):
+    """
+    Si el evento no tiene numero_acta asignado, calcula uno en base a su posición
+    entre los directorios del mismo año (orden cronológico), para no mostrar un
+    placeholder vacío en el PDF.
+    """
+    from .models import EventoAsistencia
+    directorios_anio = list(
+        EventoAsistencia.objects.filter(tipo='directorio', fecha__year=evento.fecha.year)
+        .order_by('fecha', 'id')
+        .values_list('id', flat=True)
+    )
+    try:
+        posicion = directorios_anio.index(evento.id) + 1
+    except ValueError:
+        posicion = len(directorios_anio) + 1
+    return f"{posicion:03d}/{evento.fecha.year}"
+
+
 def _buscar_nombre_por_cargo(asistentes, palabras_clave):
     for asistente in asistentes:
         cargo = (asistente.cargo or '').lower()
@@ -151,12 +170,14 @@ def generar_pdf_generico(evento):
     Returns:
         BytesIO: buffer con el PDF generado
     """
+    titulo = TIPO_DISPLAY.get(evento.tipo, 'Acta de Asistencia')
+
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle(f"{titulo} - {evento.fecha}")
     p = _PaginadorPDF(c)
 
     asistentes = list(evento.asistentes.all().order_by('nombre_completo'))
-    titulo = TIPO_DISPLAY.get(evento.tipo, 'Acta de Asistencia')
 
     # ---- ENCABEZADO ----
     p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=18)
@@ -215,8 +236,11 @@ def generar_pdf_acta_directorio(evento):
     Returns:
         BytesIO: buffer con el PDF generado
     """
+    numero_acta = evento.numero_acta or _calcular_numero_acta_fallback(evento)
+
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle(f"Acta Directorio N {numero_acta} - {evento.fecha}")
     p = _PaginadorPDF(c)
 
     asistentes = list(evento.asistentes.all().order_by('nombre_completo'))
@@ -251,7 +275,6 @@ def generar_pdf_acta_directorio(evento):
     p.y -= barra_alto + 14
 
     # ---- ACTA N° ----
-    numero_acta = evento.numero_acta or "___/____"
     caja_ancho = 55 * mm
     caja_alto = 14
     x_caja = ANCHO - MARGEN - caja_ancho

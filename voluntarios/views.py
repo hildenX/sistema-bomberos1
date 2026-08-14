@@ -947,10 +947,13 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
 
         try:
             if evento.tipo == 'directorio':
+                from .pdf_directorio import _calcular_numero_acta_fallback
                 pdf_buffer = generar_pdf_acta_directorio(evento)
+                numero_acta = (evento.numero_acta or _calcular_numero_acta_fallback(evento)).replace('/', '-')
+                nombre_archivo = f"Acta_Directorio_{numero_acta}.pdf"
             else:
                 pdf_buffer = generar_pdf_generico(evento)
-            nombre_archivo = f"acta_{evento.tipo}_{evento.fecha}.pdf"
+                nombre_archivo = f"acta_{evento.tipo}_{evento.fecha}.pdf"
             response = HttpResponse(pdf_buffer, content_type='application/pdf')
             response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
             return response
