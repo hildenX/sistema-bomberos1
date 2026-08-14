@@ -36,19 +36,19 @@ def _formatear_hora(hora):
 def _calcular_numero_acta_fallback(evento):
     """
     Si el evento no tiene numero_acta asignado, calcula uno en base a su posición
-    entre los directorios del mismo año (orden cronológico), para no mostrar un
-    placeholder vacío en el PDF.
+    entre los eventos del mismo tipo y año (orden cronológico), para no mostrar
+    un placeholder vacío en el PDF.
     """
     from .models import EventoAsistencia
-    directorios_anio = list(
-        EventoAsistencia.objects.filter(tipo='directorio', fecha__year=evento.fecha.year)
+    eventos_anio = list(
+        EventoAsistencia.objects.filter(tipo=evento.tipo, fecha__year=evento.fecha.year)
         .order_by('fecha', 'id')
         .values_list('id', flat=True)
     )
     try:
-        posicion = directorios_anio.index(evento.id) + 1
+        posicion = eventos_anio.index(evento.id) + 1
     except ValueError:
-        posicion = len(directorios_anio) + 1
+        posicion = len(eventos_anio) + 1
     return f"{posicion:03d}/{evento.fecha.year}"
 
 
@@ -332,6 +332,23 @@ def generar_pdf_acta_directorio(evento):
 
     p.espacio(16)
 
+    intro = (
+        "Dando comienzo a éste directorio, se inicia la sesión con el resumen de puntos "
+        "tratados en el Directorio de compañía anterior."
+    )
+    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro)
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro_texto):
+    """
+    Bloque compartido entre el acta de Directorio y de Asamblea: resumen de
+    temas a tratar, desarrollo de cada tema (siempre cerrando con "Varios" si
+    hay observaciones), cierre con la hora en negrita, firmas y "Dist:".
+    """
     # ---- TEMAS A TRATAR (resumen) ----
     p.linea("Temas a Tratar:", negrita=True, tamano=10, salto=14)
     if temas:
@@ -348,11 +365,7 @@ def generar_pdf_acta_directorio(evento):
     p.espacio(14)
 
     # ---- INTRODUCCIÓN ----
-    intro = (
-        "Dando comienzo a éste directorio, se inicia la sesión con el resumen de puntos "
-        "tratados en el Directorio de compañía anterior."
-    )
-    p.parrafo(intro, tamano=10, salto=14)
+    p.parrafo(intro_texto, tamano=10, salto=14)
     p.espacio(12)
 
     # ---- DESARROLLO DE TEMAS ----
@@ -407,6 +420,114 @@ def generar_pdf_acta_directorio(evento):
 
     p.linea("Dist:", tamano=9, salto=12)
     p.linea("- Archivos de Cía.", tamano=9, salto=14)
+
+
+def generar_pdf_acta_asamblea(evento):
+    """
+    Genera el PDF del Acta de Asamblea de Compañía para un EventoAsistencia de tipo 'asamblea'.
+
+    Args:
+        evento: instancia de EventoAsistencia (tipo='asamblea')
+
+    Returns:
+        BytesIO: buffer con el PDF generado
+    """
+    numero_acta = evento.numero_acta or _calcular_numero_acta_fallback(evento)
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle(f"Acta Asamblea N {numero_acta} - {evento.fecha}")
+    p = _PaginadorPDF(c)
+
+    asistentes = list(evento.asistentes.all().order_by('nombre_completo'))
+    temas = evento.temas if isinstance(evento.temas, list) else []
+    nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or ''
+
+    # ---- ENCABEZADO ----
+    logo = _obtener_logo_pdf()
+    if logo:
+        logo_tam = 15 * mm
+        c.drawImage(
+            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
+        )
+
+    p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=16)
+    if nombre_director:
+        p.linea(f"DIRECTOR {nombre_director.upper()}", centrado=True, negrita=True, tamano=9, salto=13)
+    p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=14)
+
+    c.setLineWidth(0.6)
+    c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
+    p.y -= 16
+
+    # ---- TÍTULO ----
+    barra_alto = 18
+    c.setFillColorRGB(0.85, 0.85, 0.85)
+    c.rect(MARGEN, p.y - barra_alto + 4, ANCHO - 2 * MARGEN, barra_alto, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(MARGEN + 6, p.y - barra_alto + 9, "ACTA ASAMBLEA DE COMPAÑÍA")
+    p.y -= barra_alto + 14
+
+    # ---- ACTA N° ----
+    caja_ancho = 55 * mm
+    caja_alto = 14
+    x_caja = ANCHO - MARGEN - caja_ancho
+    c.setLineWidth(0.8)
+    c.rect(x_caja, p.y - caja_alto + 4, caja_ancho, caja_alto)
+    c.line(x_caja + 22 * mm, p.y - caja_alto + 4, x_caja + 22 * mm, p.y + 4)
+    c.setFont('Helvetica-Bold', 9)
+    c.drawString(x_caja + 4, p.y - caja_alto + 9, "Acta N°")
+    c.setFont('Helvetica', 9)
+    c.drawString(x_caja + 22 * mm + 4, p.y - caja_alto + 9, numero_acta)
+    p.y -= caja_alto + 14
+
+    # ---- FECHA ----
+    c.setFont('Helvetica-Bold', 10)
+    c.drawRightString(ANCHO - MARGEN, p.y, f"PUERTO MONTT, {_formatear_fecha(evento.fecha)}")
+    p.y -= 22
+
+    # ---- TIPO DE CITACIÓN ----
+    x0 = MARGEN
+    w_total = ANCHO - 2 * MARGEN
+    fila_alto = 16
+    mitad = w_total / 2
+
+    p.asegurar_espacio(fila_alto * 2)
+
+    c.setFillColorRGB(0.85, 0.85, 0.85)
+    c.rect(x0, p.y - fila_alto + 4, w_total, fila_alto, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont('Helvetica-Bold', 10)
+    c.drawCentredString(x0 + w_total / 2, p.y - fila_alto + 9, "TIPO DE CITACIÓN")
+    p.y -= fila_alto
+
+    y_fila = p.y - fila_alto + 4
+    marca_ord = 'X' if evento.tipo_asamblea == 'ordinaria' else ''
+    marca_extra = 'X' if evento.tipo_asamblea == 'extraordinaria' else ''
+
+    c.setFillColorRGB(0.93, 0.95, 0.98)
+    c.rect(x0, y_fila, mitad, fila_alto, fill=1, stroke=1)
+    c.rect(x0 + mitad, y_fila, mitad, fila_alto, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont('Helvetica-Bold', 9)
+    c.drawString(x0 + 4, y_fila + 5, "Asamblea Extraordinaria")
+    c.drawString(x0 + mitad + 4, y_fila + 5, "Asamblea Ordinaria")
+    c.rect(x0 + mitad - 24, y_fila + 3, 10, 10)
+    c.rect(x0 + w_total - 24, y_fila + 3, 10, 10)
+    c.setFont('Helvetica-Bold', 9)
+    c.drawCentredString(x0 + mitad - 19, y_fila + 5, marca_extra)
+    c.drawCentredString(x0 + w_total - 19, y_fila + 5, marca_ord)
+    p.y -= fila_alto
+
+    p.espacio(16)
+
+    intro = (
+        "Dando comienzo a ésta asamblea, se inicia la sesión con el resumen de puntos "
+        "tratados en el Directorio del Cuerpo de Bomberos realizado recientemente."
+    )
+    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro)
 
     c.save()
     buffer.seek(0)

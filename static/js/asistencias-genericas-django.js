@@ -18,12 +18,15 @@ class SistemaAsistenciasGenericas {
         };
         // Si viene ?editar=<id> en la URL, entramos en modo edición
         this.editarId = new URLSearchParams(window.location.search).get('editar');
+        this.contadorTemas = 0;
+        this.timersCorrector = new WeakMap();
+        this.sugerenciasPorElemento = new WeakMap();
         this.init();
     }
 
     async init() {
         console.log(`[${this.tipo.toUpperCase()}] Iniciando sistema...`);
-        
+
         const isAuthenticated = await checkAuth();
         if (!isAuthenticated) {
             window.location.href = '/login.html';
@@ -37,9 +40,199 @@ class SistemaAsistenciasGenericas {
 
         if (this.editarId) {
             await this.cargarParaEditar();
+        } else {
+            await this.sugerirNumeroActa();
+            if (document.getElementById('listaTemas')) this.agregarTema();
         }
 
         console.log(`[${this.tipo.toUpperCase()}]  Sistema inicializado`);
+    }
+
+    // ==================== N° DE ACTA ====================
+
+    async sugerirNumeroActa() {
+        const input = document.getElementById('numeroActa');
+        if (!input) return;
+        try {
+            const anioActual = new Date().getFullYear();
+            const resp = await fetch(`/api/eventos-asistencia/?tipo=${this.tipo}`, { credentials: 'include' });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const eventos = Array.isArray(data) ? data : (data.results || []);
+
+            let maxNumero = 0;
+            eventos.forEach(ev => {
+                if (!ev.numero_acta) return;
+                const match = ev.numero_acta.match(/^(\d+)\/(\d{4})$/);
+                if (match && parseInt(match[2]) === anioActual) {
+                    maxNumero = Math.max(maxNumero, parseInt(match[1]));
+                }
+            });
+
+            const siguienteNumero = String(maxNumero + 1).padStart(3, '0');
+            input.value = `${siguienteNumero}/${anioActual}`;
+        } catch (error) {
+            console.error(`[${this.tipo.toUpperCase()}] No se pudo sugerir el número de acta:`, error);
+        }
+    }
+
+    // ==================== TEMAS A TRATAR (dinámicos) ====================
+
+    agregarTema(titulo = '', contenido = '') {
+        this.contadorTemas++;
+        const id = this.contadorTemas;
+        const contenedor = document.getElementById('listaTemas');
+        if (!contenedor) return;
+
+        const div = document.createElement('div');
+        div.className = 'tema-item';
+        div.dataset.temaId = id;
+        div.innerHTML = `
+            <div class="tema-item-header">
+                <strong>Tema ${contenedor.children.length + 1}</strong>
+                <button type="button" class="btn-quitar-tema" onclick="${this.tipo}Sistema.quitarTema(${id})">✕ Quitar</button>
+            </div>
+            <input type="text" class="tema-titulo" placeholder="Título del tema">
+            <textarea class="tema-contenido" spellcheck="true" lang="es" placeholder="Detalle / acuerdo tomado..." oninput="${this.tipo}Sistema.onCambioTextoCorrector(this)"></textarea>
+            <div class="corrector-wrap">
+                <div class="redaccion-estado"></div>
+                <div class="lista-sugerencias"></div>
+            </div>
+        `;
+        div.querySelector('.tema-titulo').value = titulo;
+        div.querySelector('.tema-contenido').value = contenido;
+        contenedor.appendChild(div);
+    }
+
+    quitarTema(id) {
+        const div = document.querySelector(`.tema-item[data-tema-id="${id}"]`);
+        if (div) div.remove();
+        this.renumerarTemas();
+    }
+
+    renumerarTemas() {
+        const items = document.querySelectorAll('#listaTemas .tema-item');
+        items.forEach((item, index) => {
+            const titulo = item.querySelector('.tema-item-header strong');
+            if (titulo) titulo.textContent = `Tema ${index + 1}`;
+        });
+    }
+
+    obtenerTemas() {
+        const items = document.querySelectorAll('#listaTemas .tema-item');
+        const temas = [];
+        items.forEach(item => {
+            const titulo = item.querySelector('.tema-titulo')?.value.trim() || '';
+            const contenido = item.querySelector('.tema-contenido')?.value.trim() || '';
+            if (titulo || contenido) {
+                temas.push({ titulo, contenido });
+            }
+        });
+        return temas;
+    }
+
+    // ==================== CORRECTOR ORTOGRÁFICO (LanguageTool) ====================
+
+    onCambioTextoCorrector(textareaEl) {
+        clearTimeout(this.timersCorrector.get(textareaEl));
+        const contenedor = textareaEl.nextElementSibling;
+        const estadoEl = contenedor?.querySelector('.redaccion-estado');
+        if (estadoEl) estadoEl.textContent = 'Revisando redacción...';
+        this.timersCorrector.set(textareaEl, setTimeout(() => this.revisarRedaccionElemento(textareaEl), 1200));
+    }
+
+    async revisarRedaccionElemento(textareaEl) {
+        const contenedor = textareaEl.nextElementSibling;
+        const estadoEl = contenedor?.querySelector('.redaccion-estado');
+        const listaEl = contenedor?.querySelector('.lista-sugerencias');
+        if (!estadoEl || !listaEl) return;
+
+        const texto = textareaEl.value;
+        if (!texto.trim()) {
+            estadoEl.textContent = '';
+            listaEl.innerHTML = '';
+            this.sugerenciasPorElemento.set(textareaEl, []);
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams({ text: texto, language: 'es' });
+            const response = await fetch('https://api.languagetool.org/v2/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString(),
+            });
+
+            if (!response.ok) throw new Error('No se pudo revisar la redacción');
+
+            const data = await response.json();
+            const matches = data.matches || [];
+            this.sugerenciasPorElemento.set(textareaEl, matches);
+
+            if (matches.length === 0) {
+                estadoEl.textContent = 'Sin observaciones de redacción.';
+                listaEl.innerHTML = '';
+                return;
+            }
+
+            estadoEl.textContent = `${matches.length} observación(es) de redacción:`;
+            listaEl.innerHTML = matches.map((m, idx) => {
+                const original = texto.substring(m.offset, m.offset + m.length);
+                const sugerencias = (m.replacements || []).slice(0, 3);
+                return `
+                    <div class="sugerencia-item">
+                        <div class="sugerencia-mensaje">${this.escapeHtml(m.message)}: <span class="sugerencia-original">${this.escapeHtml(original)}</span></div>
+                        <div class="sugerencia-botones">
+                            ${sugerencias.map((s) => `<button type="button" class="btn-sugerencia" onclick="${this.tipo}Sistema.aplicarSugerenciaElemento(this, ${idx}, '${this.escapeAttr(s.value)}')">${this.escapeHtml(s.value)}</button>`).join('')}
+                            <button type="button" class="btn-ignorar-sugerencia" onclick="${this.tipo}Sistema.ignorarSugerenciaElemento(this)">Ignorar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            console.error(`[${this.tipo.toUpperCase()}] Error revisando redacción:`, error);
+            estadoEl.textContent = 'No se pudo revisar la redacción en este momento (el corrector externo no respondió).';
+        }
+    }
+
+    aplicarSugerenciaElemento(botonEl, idx, reemplazo) {
+        const contenedor = botonEl.closest('.corrector-wrap');
+        const textareaEl = contenedor?.previousElementSibling;
+        if (!textareaEl) return;
+
+        const matches = this.sugerenciasPorElemento.get(textareaEl) || [];
+        const match = matches[idx];
+        if (!match) return;
+
+        const texto = textareaEl.value;
+        textareaEl.value = texto.substring(0, match.offset) + reemplazo + texto.substring(match.offset + match.length);
+
+        clearTimeout(this.timersCorrector.get(textareaEl));
+        this.revisarRedaccionElemento(textareaEl);
+    }
+
+    ignorarSugerenciaElemento(botonEl) {
+        const item = botonEl.closest('.sugerencia-item');
+        const listaEl = botonEl.closest('.lista-sugerencias');
+        if (item) item.remove();
+
+        const estadoEl = listaEl?.previousElementSibling;
+        const restantes = listaEl?.querySelectorAll('.sugerencia-item').length || 0;
+        if (estadoEl) {
+            estadoEl.textContent = restantes > 0
+                ? `${restantes} observación(es) de redacción:`
+                : 'Sin observaciones de redacción.';
+        }
+    }
+
+    escapeHtml(texto) {
+        const div = document.createElement('div');
+        div.textContent = texto || '';
+        return div.innerHTML;
+    }
+
+    escapeAttr(texto) {
+        return (texto || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
     }
 
     // Carga una asistencia existente y prellena el formulario (modo edición)
@@ -66,6 +259,17 @@ class SistemaAsistenciasGenericas {
             setVal('tipoEjercicio', ev.tipo_ejercicio);
             setVal('nombreCitacion', ev.nombre_citacion);
             setVal('motivoOtras', ev.motivo_otras);
+            setVal('numeroActa', ev.numero_acta);
+            setVal('observaciones', ev.observaciones);
+
+            if (document.getElementById('listaTemas')) {
+                const temas = Array.isArray(ev.temas) ? ev.temas : [];
+                if (temas.length > 0) {
+                    temas.forEach(t => this.agregarTema(t.titulo || '', t.contenido || ''));
+                } else {
+                    this.agregarTema();
+                }
+            }
 
             // Marcar los asistentes que ya estaban
             const idsPresentes = new Set(detalles.filter(d => !d.es_externo && d.voluntario).map(d => String(d.voluntario)));
@@ -768,7 +972,10 @@ class SistemaAsistenciasGenericas {
         let descripcion = '';
         let camposExtra = {
             hora_inicio: horaInicio,
-            hora_termino: horaTermino
+            hora_termino: horaTermino,
+            numero_acta: document.getElementById('numeroActa')?.value || '',
+            observaciones: document.getElementById('observaciones')?.value || '',
+            temas: document.getElementById('listaTemas') ? this.obtenerTemas() : []
         };
 
         switch(this.tipo) {

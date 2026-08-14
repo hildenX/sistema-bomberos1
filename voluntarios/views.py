@@ -939,7 +939,10 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
     def pdf_acta(self, request, pk=None):
         """Genera el PDF del acta/comprobante de un evento de asistencia"""
         from django.http import HttpResponse
-        from .pdf_directorio import generar_pdf_acta_directorio, generar_pdf_generico
+        from .pdf_directorio import (
+            generar_pdf_acta_directorio, generar_pdf_acta_asamblea,
+            generar_pdf_generico, _calcular_numero_acta_fallback,
+        )
 
         evento = self.get_object()
         if evento.tipo == 'emergencia':
@@ -947,10 +950,13 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
 
         try:
             if evento.tipo == 'directorio':
-                from .pdf_directorio import _calcular_numero_acta_fallback
                 pdf_buffer = generar_pdf_acta_directorio(evento)
                 numero_acta = (evento.numero_acta or _calcular_numero_acta_fallback(evento)).replace('/', '-')
                 nombre_archivo = f"Acta_Directorio_{numero_acta}.pdf"
+            elif evento.tipo == 'asamblea':
+                pdf_buffer = generar_pdf_acta_asamblea(evento)
+                numero_acta = (evento.numero_acta or _calcular_numero_acta_fallback(evento)).replace('/', '-')
+                nombre_archivo = f"Acta_Asamblea_{numero_acta}.pdf"
             else:
                 pdf_buffer = generar_pdf_generico(evento)
                 nombre_archivo = f"acta_{evento.tipo}_{evento.fecha}.pdf"
