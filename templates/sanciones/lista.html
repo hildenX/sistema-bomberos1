@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
-    <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/cargos-sanciones.css' %}?v=3">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
 </head>
@@ -42,6 +42,8 @@
                                 <label for="tipoSancion" class="required">Tipo de Sanción Disciplinaria</label>
                                 <select id="tipoSancion" name="tipoSancion" required class="tipo-sancion-select">
                                     <option value="">Seleccione el tipo de sanción</option>
+                                    <option value="amonestacion_verbal">Amonestación Verbal</option>
+                                    <option value="amonestacion_escrita">Amonestación Escrita en su Hoja de Vida</option>
                                     <option value="renuncia">Renuncia</option>
                                     <option value="suspension">Suspensión</option>
                                     <option value="separacion">Separación</option>
@@ -65,7 +67,7 @@
                                     <option value="Consejo de Disciplina de Cía">Consejo de Disciplina de Cía</option>
                                     <option value="Capitanía">Capitanía</option>
                                     <option value="Comandancia">Comandancia</option>
-                                    <option value="Directorio">Directorio</option>
+                                    <option value="Directorio de Cía">Directorio de Cía</option>
                                 </select>
                                 <div class="error" id="error-autoridadSancionatoria"></div>
                             </div>
@@ -171,7 +173,7 @@
 
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/sanciones-django.js' %}?v=2.2"></script>
+    <script src="{% static 'js/sanciones-django.js' %}?v=2.3"></script>
     <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
 </body>
 </html>

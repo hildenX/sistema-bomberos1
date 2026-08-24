@@ -162,6 +162,7 @@ class CrearBomberoSistema {
             fechaIngreso: datos.fechaIngreso,
             compania: datos.compania || '',
             estadoBombero: datos.estadoBombero || 'activo',
+            tipoVoluntario: datos.tipoVoluntario || 'voluntario',
             
             // Campos opcionales
             otrosCuerpos: datos.otrosCuerpos || '',

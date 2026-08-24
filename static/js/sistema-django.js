@@ -242,7 +242,21 @@ class SistemaBomberos {
             }
             
             console.log('[DATA] Datos recibidos de la API:', this.bomberos);
-            
+
+            // Canje y Participante no pertenecen a la 6ta: se registran aparte y no
+            // aparecen en el listado/ranking principal de voluntarios de la compañía.
+            // El Aspirante sí queda mezclado (se está formando en esta compañía).
+            this.bomberosExternos = this.bomberos.filter(b => {
+                const tipo = b.tipoVoluntario || 'voluntario';
+                return tipo === 'canje' || tipo === 'participante';
+            });
+            this.bomberos = this.bomberos.filter(b => {
+                const tipo = b.tipoVoluntario || 'voluntario';
+                return tipo !== 'canje' && tipo !== 'participante';
+            });
+            this.bomberosCompania = this.bomberos;
+            this.modoExternos = false;
+
             // Fecha base para la antigüedad: la efectiva (reconocida) si existe, si no la de ingreso
             this.bomberos.forEach((b) => {
                 b.fechaAntiguedad = b.fechaIngresoEfectiva || b.fechaIngreso || b.fecha_ingreso;
@@ -372,8 +386,8 @@ class SistemaBomberos {
             this.renderizarBomberos();
         });
 
-        // Configurar botones de filtro de estado
-        const botonesFilter = document.querySelectorAll('.btn-filtro-estado');
+        // Configurar botones de filtro de estado (excluye los de categoría, que tienen data-categoria en vez de data-estado)
+        const botonesFilter = document.querySelectorAll('.btn-filtro-estado[data-estado]');
         botonesFilter.forEach(btn => {
             btn.addEventListener('click', () => {
                 // Remover clase active de todos
@@ -414,6 +428,35 @@ class SistemaBomberos {
                 
                 // Aplicar filtro
                 this.filtroEstado = btn.dataset.estado;
+                this.renderizarBomberos();
+            });
+        });
+
+        // Configurar botones de filtro de categoría (Insignes/Hon.Cpo/Hon.Cía/Voluntarios/Aspirantes)
+        this.filtroCategoria = null;
+        const botonesCategoria = document.querySelectorAll('.btn-filtro-estado[data-categoria]');
+        botonesCategoria.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const yaActivo = btn.classList.contains('active');
+
+                botonesCategoria.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                    b.style.background = 'white';
+                    b.style.color = '#4caf50';
+                });
+
+                if (yaActivo) {
+                    // Volver a clickear el mismo botón lo desactiva (muestra todas las categorías)
+                    this.filtroCategoria = null;
+                } else {
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-pressed', 'true');
+                    btn.style.background = '#4caf50';
+                    btn.style.color = 'white';
+                    this.filtroCategoria = btn.dataset.categoria;
+                }
+
                 this.renderizarBomberos();
             });
         });
@@ -460,6 +503,24 @@ class SistemaBomberos {
         saldoSidebar.textContent = saldoFormateado;
     }
 
+    // Canje/Participante quedan fuera del listado principal; este botón alterna la vista.
+    toggleExternos() {
+        this.modoExternos = !this.modoExternos;
+        this.bomberos = this.modoExternos ? this.bomberosExternos : this.bomberosCompania;
+
+        this.filtroEstado = 'todos';
+        this.filtroCategoria = null;
+        document.querySelectorAll('.btn-filtro-estado[data-estado]').forEach(b => b.classList.remove('active'));
+        document.querySelector('.btn-filtro-estado[data-estado="todos"]')?.classList.add('active');
+        document.querySelectorAll('.btn-filtro-estado[data-categoria]').forEach(b => b.classList.remove('active'));
+
+        const btn = document.getElementById('btnToggleExternos');
+        if (btn) btn.textContent = this.modoExternos ? '← Ver Voluntarios de la Cía' : 'Ver Canjes / Participantes';
+
+        if (this.paginationBomberos) this.paginationBomberos.setItems(this.bomberos);
+        this.renderizarBomberos();
+    }
+
     // ==================== REDIRIGIR A CREAR VOLUNTARIO ====================
     irACrear() {
         Utils.mostrarNotificacion('Redirigiendo a crear nuevo voluntario...', 'info');
@@ -495,7 +556,27 @@ renderizarBomberos() {
         
         console.log(`[FILTRO] Resultados después de filtrar: ${bomberosFiltrados.length}`);
     }
-    
+
+    // Filtrar por categoría (Insignes/Hon. Cuerpo/Hon. Compañía/Voluntarios/Aspirantes)
+    if (this.filtroCategoria) {
+        bomberosFiltrados = bomberosFiltrados.filter(b => {
+            if (this.filtroCategoria === 'aspirante') {
+                return (b.tipoVoluntario || 'voluntario') === 'aspirante';
+            }
+            // Los Aspirantes no tienen categoría por antigüedad todavía
+            if ((b.tipoVoluntario || 'voluntario') === 'aspirante') return false;
+
+            const categoria = Utils.calcularCategoriaBombero(b.fechaAntiguedad).categoria;
+            const mapaCategoria = {
+                'insigne': 'Voluntario Insigne de Chile',
+                'honorario_cuerpo': 'Voluntario Honorario del Cuerpo',
+                'honorario_compania': 'Voluntario Honorario de Compañía',
+                'voluntario': 'Voluntario',
+            };
+            return categoria === mapaCategoria[this.filtroCategoria];
+        });
+    }
+
     // Aplicar paginación
     const bomberosToShow = this.paginationBomberos ? 
         this.paginationBomberos.getCurrentPageItems() : 

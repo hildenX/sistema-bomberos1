@@ -211,14 +211,26 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="tipoVoluntario">Tipo de Voluntario <span class="required">*</span></label>
+                        <select id="tipoVoluntario" name="tipoVoluntario" required onchange="actualizarCampoCompania()">
+                            <option value="voluntario">Voluntario</option>
+                            <option value="aspirante">Aspirante (en formación, sin cuotas)</option>
+                            <option value="canje">Canje (voluntario de otra compañía)</option>
+                            <option value="participante">Participante (sin pertenencia formal)</option>
+                        </select>
+                        <small>Aspirante, Canje y Participante quedan exentos de cuotas automáticamente</small>
+                    </div>
+
                     <div class="form-grid form-grid-2">
                         <div class="form-group">
-                            <label for="compania">Compañía <span class="required">*</span></label>
-                            <input type="text" 
-                                   id="compania" 
-                                   name="compania" 
-                                   placeholder="Compañía de bomberos" 
+                            <label for="compania" id="labelCompania">Compañía <span class="required">*</span></label>
+                            <input type="text"
+                                   id="compania"
+                                   name="compania"
+                                   placeholder="Compañía de bomberos"
                                    required>
+                            <small id="ayudaCompania" style="display:none;">Obligatorio: indicar de qué compañía viene</small>
                         </div>
 
                         <div class="form-group">
@@ -475,6 +487,24 @@
     </div>
 
     <script>
+        // Canje/Participante vienen de otra parte: la Compañía indica de dónde.
+        function actualizarCampoCompania() {
+            const tipo = document.getElementById('tipoVoluntario').value;
+            const label = document.getElementById('labelCompania');
+            const input = document.getElementById('compania');
+            const ayuda = document.getElementById('ayudaCompania');
+
+            if (tipo === 'canje' || tipo === 'participante') {
+                label.innerHTML = 'Compañía de Procedencia <span class="required">*</span>';
+                input.placeholder = tipo === 'canje' ? 'Compañía de origen del canje' : 'De dónde viene (si aplica)';
+                ayuda.style.display = 'block';
+            } else {
+                label.innerHTML = 'Compañía <span class="required">*</span>';
+                input.placeholder = 'Compañía de bomberos';
+                ayuda.style.display = 'none';
+            }
+        }
+
         // Función para mostrar/ocultar campos según el estado seleccionado
         function mostrarCamposEstado() {
             const estado = document.getElementById('estadoBombero').value;
@@ -542,6 +572,6 @@
     <!-- Scripts Django - Usan APIs en lugar de localStorage -->
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
-    <script src="{% static 'js/crear-bombero-django.js' %}?v=4"></script>
+    <script src="{% static 'js/crear-bombero-django.js' %}?v=5"></script>
 </body>
 </html>

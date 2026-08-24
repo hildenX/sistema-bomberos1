@@ -62,6 +62,19 @@
 </div>
 
 <div class="form-group full-width">
+    <label class="opcional">Departamentos de Comandancia</label>
+    <select id="cargoDepartamento" name="cargoDepartamento" onchange="cargosSistema.seleccionarCargo('departamento_comandancia')">
+        <option value="">Seleccione departamento de comandancia</option>
+        <option value="Depto. Investigación de Incendio">Depto. Investigación de Incendio</option>
+        <option value="Depto. Comunicaciones">Depto. Comunicaciones</option>
+        <option value="Depto. Prevención de Riesgos">Depto. Prevención de Riesgos</option>
+        <option value="Depto. Material Mayor">Depto. Material Mayor</option>
+        <option value="Depto. Capacitaciones">Depto. Capacitaciones</option>
+        <option value="Depto. Hazmat">Depto. Hazmat</option>
+    </select>
+</div>
+
+<div class="form-group full-width">
     <label class="opcional">Cargos de Compañía</label>
     <select id="cargoCompania" name="cargoCompania" onchange="cargosSistema.seleccionarCargo('compania')">
         <option value="">Seleccione cargo de compañía</option>
@@ -171,7 +184,7 @@
     <!-- Scripts -->
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
-    <script src="{% static 'js/cargos-django.js' %}?v=9.2"></script>
+    <script src="{% static 'js/cargos-django.js' %}?v=9.3"></script>
     <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
 </body>
 </html>

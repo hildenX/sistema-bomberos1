@@ -56,6 +56,14 @@ class HistorialAsistencias {
             const contentLayout = document.querySelector('.content-layout');
             if (contentLayout) contentLayout.classList.add('sin-ranking');
         }
+
+        // El Capitán no gestiona Directorio de Cía (solo Emergencias, Asamblea, Ejercicios, Citaciones y Otras)
+        if (window.currentUser && window.currentUser.role === 'Capitán') {
+            this.tiposOcultosParaRol.push('directorio');
+
+            const opcionDirectorio = document.getElementById('opcionDirectorio');
+            if (opcionDirectorio) opcionDirectorio.remove();
+        }
     }
 
     async cargarDatos() {

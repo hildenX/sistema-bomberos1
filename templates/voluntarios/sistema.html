@@ -181,6 +181,9 @@
                             <button type="button" class="btn btn-pdf" onclick="sistemaBomberos.generarPDFConsultaVoluntarios()">
                                 PDF Voluntarios por Antigüedad
                             </button>
+                            <button type="button" class="btn btn-info" id="btnToggleExternos" onclick="sistemaBomberos.toggleExternos()">
+                                Ver Canjes / Participantes
+                            </button>
                         </div>
                     </div>
 
@@ -213,6 +216,14 @@
                         <button class="btn-filtro-estado" data-estado="expulsado" aria-pressed="false">Expulsados</button>
                         <button class="btn-filtro-estado" data-estado="martir" aria-pressed="false">Mártires</button>
                         <button class="btn-filtro-estado" data-estado="fallecido" aria-pressed="false">Fallecidos</button>
+                    </div>
+
+                    <div class="filtros-estado-container" role="group" aria-label="Filtrar bomberos por categoría">
+                        <button class="btn-filtro-estado" data-categoria="insigne" aria-pressed="false">Insignes</button>
+                        <button class="btn-filtro-estado" data-categoria="honorario_cuerpo" aria-pressed="false">Hon. Cpo.</button>
+                        <button class="btn-filtro-estado" data-categoria="honorario_compania" aria-pressed="false">Hon. Cía.</button>
+                        <button class="btn-filtro-estado" data-categoria="voluntario" aria-pressed="false">Voluntarios</button>
+                        <button class="btn-filtro-estado" data-categoria="aspirante" aria-pressed="false">Aspirantes</button>
                     </div>
 
                     <div id="infoCategorias" class="info-categorias" style="display: none;">
@@ -252,7 +263,7 @@
     <script src="{% static 'js/auth_django.js' %}?v=2"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=37"></script>
-    <script src="{% static 'js/sistema-django.js' %}?v=2026072604"></script>
+    <script src="{% static 'js/sistema-django.js' %}?v=2026081201"></script>
     <script>
         console.log('Sistema actualizado - Finanzas Django');
         // Validar la sesión contra el servidor; si caducó, al login

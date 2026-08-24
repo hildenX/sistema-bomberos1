@@ -20,6 +20,18 @@ class Voluntario(models.Model):
         ('martir', 'Mártir'),
         ('fallecido', 'Fallecido'),
     ]
+
+    # Tipo de voluntario: Voluntario normal, Aspirante (en formación, sin antigüedad
+    # todavía, exento de cuotas), Canje (voluntario de otra compañía) o Participante
+    # (sin pertenencia formal a ninguna compañía). Canje y Participante requieren
+    # el campo `compania` (de dónde vienen). Ambos, junto con Aspirante, quedan
+    # exentos de cuotas automáticamente al crearse.
+    TIPO_VOLUNTARIO_CHOICES = [
+        ('voluntario', 'Voluntario'),
+        ('aspirante', 'Aspirante'),
+        ('canje', 'Canje'),
+        ('participante', 'Participante'),
+    ]
     
     # Información básica
     nombre = models.CharField(max_length=100, blank=True, null=True)
@@ -44,6 +56,11 @@ class Voluntario(models.Model):
     fecha_ingreso_efectiva = models.DateField(blank=True, null=True)
     nro_registro = models.CharField(max_length=50, blank=True, null=True)
     compania = models.CharField(max_length=100, blank=True, null=True)
+
+    tipo_voluntario = models.CharField(max_length=20, choices=TIPO_VOLUNTARIO_CHOICES, default='voluntario')
+    # Fecha en que ingresó como Aspirante. Se conserva aunque después pase a ser
+    # Voluntario pleno, como registro histórico de su formación.
+    fecha_aspirante = models.DateField(blank=True, null=True)
     
     # Padrinos (requeridos en p6p)
     nombre_primer_padrino = models.CharField(max_length=200, blank=True, null=True)
@@ -250,10 +267,11 @@ class Cargo(models.Model):
         ('compania', 'Compañía'),
         ('consejo', 'Consejo de Compañía'),
         ('tecnico', 'Confianza'),
+        ('departamento_comandancia', 'Departamento de Comandancia'),
     ]
     
     voluntario = models.ForeignKey(Voluntario, on_delete=models.CASCADE, related_name='cargos')
-    tipo_cargo = models.CharField(max_length=20, choices=TIPO_CARGO_CHOICES)
+    tipo_cargo = models.CharField(max_length=30, choices=TIPO_CARGO_CHOICES)
     nombre_cargo = models.CharField(max_length=100)
     anio = models.IntegerField()
     fecha_inicio = models.DateField(blank=True, null=True)
@@ -280,6 +298,8 @@ class Sancion(models.Model):
         ('renuncia', 'Renuncia'),
         ('separacion', 'Separación'),
         ('expulsion', 'Expulsión'),
+        ('amonestacion_verbal', 'Amonestación Verbal'),
+        ('amonestacion_escrita', 'Amonestación Escrita en su Hoja de Vida'),
     ]
     
     voluntario = models.ForeignKey(Voluntario, on_delete=models.CASCADE, related_name='sanciones')

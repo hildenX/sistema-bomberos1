@@ -618,6 +618,12 @@ body {
     color: #fca5a5;
 }
 
+.tipo-sancion-select.tipo-amonestacion {
+    border-color: #4caf50;
+    background: rgba(76,175,80,0.12);
+    color: #86efac;
+}
+
 /* Vista previa de documento */
 .preview-documento {
     background: rgba(25, 118, 210, 0.08);

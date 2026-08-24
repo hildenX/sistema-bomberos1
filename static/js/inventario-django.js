@@ -132,6 +132,7 @@ class SistemaInventario {
                                     <th>Marca</th>
                                     <th>Tamaño</th>
                                     <th>Estado</th>
+                                    <th>Ubicación</th>
                                     <th>Responsable</th>
                                     ${this.puedeEditar ? '<th>Acciones</th>' : ''}
                                 </tr>
@@ -160,6 +161,7 @@ class SistemaInventario {
                 <td>${item.marca || '—'}</td>
                 <td>${item.tamano || '—'}</td>
                 <td>${estadoBadge}</td>
+                <td>${item.ubicacion || '—'}</td>
                 <td>${item.responsable || '—'}</td>
                 ${this.puedeEditar ? `
                 <td>

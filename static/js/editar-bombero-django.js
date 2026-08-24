@@ -150,6 +150,8 @@ class EditarBomberoSistema {
         document.getElementById('nroRegistro').value = this.bomberoActual.nroRegistro || '';
         document.getElementById('fechaIngreso').value = this.bomberoActual.fechaIngreso || '';
         document.getElementById('compania').value = this.bomberoActual.compania || '';
+        document.getElementById('tipoVoluntario').value = this.bomberoActual.tipoVoluntario || 'voluntario';
+        if (typeof actualizarCampoCompania === 'function') actualizarCampoCompania();
         document.getElementById('grupoSanguineo').value = this.bomberoActual.grupoSanguineo || '';
         document.getElementById('estadoBombero').value = this.bomberoActual.estadoBombero || 'activo';
         // FORZAR que el select de estado NO esté deshabilitado (permitir cambiar desde cualquier estado)
@@ -283,6 +285,7 @@ class EditarBomberoSistema {
             fechaIngreso: datos.fechaIngreso,
             compania: datos.compania || '',
             estadoBombero: datos.estadoBombero || 'activo',
+            tipoVoluntario: datos.tipoVoluntario || 'voluntario',
             otrosCuerpos: datos.otrosCuerpos || '',
             companiaOpcional: datos.companiaOpcional || '',
             desde: datos.desde || '',

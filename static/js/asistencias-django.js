@@ -351,7 +351,13 @@ class SistemaAsistencias {
             'Intendente General',
             'Tesorero General',
             'Secretario General',
-            'Ayudante General'
+            'Ayudante General',
+            'Depto. Investigación de Incendio',
+            'Depto. Comunicaciones',
+            'Depto. Prevención de Riesgos',
+            'Depto. Material Mayor',
+            'Depto. Capacitaciones',
+            'Depto. Hazmat'
         ];
         return cargosComandancia.includes(nombreCargo);
     }

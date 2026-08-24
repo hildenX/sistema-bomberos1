@@ -170,7 +170,8 @@ class SistemaCargos {
             'comandancia': document.getElementById('cargoComandancia'),
             'compania': document.getElementById('cargoCompania'),
             'consejo': document.getElementById('cargoConsejo'),
-            'tecnico': document.getElementById('cargoTecnico')
+            'tecnico': document.getElementById('cargoTecnico'),
+            'departamento_comandancia': document.getElementById('cargoDepartamento')
         };
 
         // Limpiar todos excepto el actual
@@ -202,12 +203,16 @@ class SistemaCargos {
         const cargoCompania = document.getElementById('cargoCompania')?.value;
         const cargoConsejo = document.getElementById('cargoConsejo')?.value;
         const cargoTecnico = document.getElementById('cargoTecnico')?.value;
+        const cargoDepartamento = document.getElementById('cargoDepartamento')?.value;
 
         let tipoCargo, nombreCargo;
 
         if (cargoComandancia) {
             tipoCargo = 'comandancia';
             nombreCargo = cargoComandancia;
+        } else if (cargoDepartamento) {
+            tipoCargo = 'departamento_comandancia';
+            nombreCargo = cargoDepartamento;
         } else if (cargoCompania) {
             tipoCargo = 'compania';
             nombreCargo = cargoCompania;
@@ -366,7 +371,8 @@ class SistemaCargos {
             'comandancia': 'Comandancia',
             'compania': 'Compañía',
             'consejo': 'Consejo',
-            'tecnico': 'Confianza'
+            'tecnico': 'Confianza',
+            'departamento_comandancia': 'Departamento de Comandancia'
         };
         return nombres[tipo] || tipo;
     }
@@ -390,7 +396,8 @@ class SistemaCargos {
             'comandancia': document.getElementById('cargoComandancia'),
             'compania': document.getElementById('cargoCompania'),
             'consejo': document.getElementById('cargoConsejo'),
-            'tecnico': document.getElementById('cargoTecnico')
+            'tecnico': document.getElementById('cargoTecnico'),
+            'departamento_comandancia': document.getElementById('cargoDepartamento')
         };
 
         // Limpiar todos
@@ -447,6 +454,7 @@ class SistemaCargos {
         document.getElementById('cargoCompania').value = '';
         document.getElementById('cargoConsejo').value = '';
         document.getElementById('cargoTecnico').value = '';
+        document.getElementById('cargoDepartamento').value = '';
         document.getElementById('tipoCargo').value = '';
         
         this.cargoEditando = null;

@@ -228,6 +228,11 @@
                     document.querySelectorAll('.tipo-card.emergencia, .tipo-card.ejercicios')
                         .forEach(c => c.style.display = 'none');
                 }
+                // El Capitán no gestiona Directorio de Cía (solo Emergencias, Asamblea, Ejercicios, Citaciones y Otras)
+                if (u.role === 'Capitán') {
+                    document.querySelectorAll('.tipo-card.directorio')
+                        .forEach(c => c.style.display = 'none');
+                }
             } catch (e) {}
         });
     </script>

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.utils import timezone as django_timezone
 from .models import (
     Voluntario, Cargo, Sancion, TipoAsistencia, Asistencia,
     Uniforme, PiezaUniforme, Cuota, PagoCuota,
@@ -119,6 +120,8 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                 'fechaNacimiento': 'fecha_nacimiento',
                 'fechaIngreso': 'fecha_ingreso',
                 'estadoBombero': 'estado_bombero',
+                'tipoVoluntario': 'tipo_voluntario',
+                'fechaAspirante': 'fecha_aspirante',
             }
             
             for camel, snake in field_mapping.items():
@@ -135,6 +138,15 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                 return super().to_internal_value(data_sin_foto)
             return super().to_internal_value(data)
     
+    def validate(self, data):
+        tipo_voluntario = data.get('tipo_voluntario', getattr(self.instance, 'tipo_voluntario', 'voluntario'))
+        compania = data.get('compania', getattr(self.instance, 'compania', None))
+        if tipo_voluntario in ('canje', 'participante') and not (compania or '').strip():
+            raise serializers.ValidationError({
+                'compania': 'La compañía de procedencia es obligatoria para Canje y Participante.'
+            })
+        return data
+
     def create(self, validated_data):
         """Crea un voluntario con lógica del p6p"""
         print("[CREATE] Datos validados ANTES de procesar:")
@@ -270,8 +282,34 @@ class VoluntarioSerializer(serializers.ModelSerializer):
         # Usuario que crea
         if self.context.get('request'):
             validated_data['created_by'] = self.context['request'].user
-        
-        return super().create(validated_data)
+
+        # Aspirante: registrar la fecha de ingreso como aspirante (se conserva
+        # aunque después pase a ser Voluntario pleno).
+        tipo_voluntario = validated_data.get('tipo_voluntario', 'voluntario')
+        if tipo_voluntario == 'aspirante' and not validated_data.get('fecha_aspirante'):
+            validated_data['fecha_aspirante'] = validated_data.get('fecha_ingreso') or datetime.now().date()
+
+        instancia = super().create(validated_data)
+
+        # Aspirante, Canje y Participante quedan exentos de cuotas automáticamente.
+        if tipo_voluntario in ('aspirante', 'canje', 'participante'):
+            from .models import EstadoCuotasBombero
+            motivos = {
+                'aspirante': 'Aspirante (en formación, sin cuotas)',
+                'canje': 'Canje de otra compañía (exento)',
+                'participante': 'Participante (exento)',
+            }
+            EstadoCuotasBombero.objects.update_or_create(
+                voluntario=instancia,
+                defaults={
+                    'cuotas_desactivadas': True,
+                    'motivo_desactivacion': motivos[tipo_voluntario],
+                    'fecha_desactivacion': django_timezone.now(),
+                    'desactivado_por': 'sistema',
+                }
+            )
+
+        return instancia
     
     def update(self, instance, validated_data):
         """Actualiza un voluntario con lógica del p6p"""
@@ -414,7 +452,33 @@ class VoluntarioSerializer(serializers.ModelSerializer):
                         validated_data['fecha_congelamiento'] = validated_data.get('fecha_martir')
                     elif estado_nuevo == 'fallecido':
                         validated_data['fecha_congelamiento'] = validated_data.get('fecha_fallecimiento')
-        
+
+        # Cambio de tipo de voluntario (ej: promoción de Aspirante a Voluntario pleno).
+        tipo_anterior = instance.tipo_voluntario
+        tipo_nuevo = validated_data.get('tipo_voluntario', tipo_anterior)
+        if tipo_nuevo != tipo_anterior:
+            # Si pasa a ser Aspirante y no tenía fecha registrada, se guarda ahora.
+            if tipo_nuevo == 'aspirante' and not instance.fecha_aspirante and not validated_data.get('fecha_aspirante'):
+                validated_data['fecha_aspirante'] = validated_data.get('fecha_ingreso') or instance.fecha_ingreso or datetime.now().date()
+
+            # Si pasa a Aspirante, Canje o Participante, queda exento de cuotas automáticamente.
+            if tipo_nuevo in ('aspirante', 'canje', 'participante'):
+                from .models import EstadoCuotasBombero
+                motivos = {
+                    'aspirante': 'Aspirante (en formación, sin cuotas)',
+                    'canje': 'Canje de otra compañía (exento)',
+                    'participante': 'Participante (exento)',
+                }
+                EstadoCuotasBombero.objects.update_or_create(
+                    voluntario=instance,
+                    defaults={
+                        'cuotas_desactivadas': True,
+                        'motivo_desactivacion': motivos[tipo_nuevo],
+                        'fecha_desactivacion': django_timezone.now(),
+                        'desactivado_por': 'sistema',
+                    }
+                )
+
         return super().update(instance, validated_data)
     
     def to_representation(self, instance):
@@ -443,6 +507,8 @@ class VoluntarioSerializer(serializers.ModelSerializer):
             'grupoSanguineo': instance.grupo_sanguineo or '',
             'nroRegistro': instance.nro_registro or '',
             'compania': instance.compania or '',
+            'tipoVoluntario': instance.tipo_voluntario or 'voluntario',
+            'fechaAspirante': instance.fecha_aspirante.isoformat() if instance.fecha_aspirante else None,
             'estadoBombero': instance.estado_bombero,
             'foto': instance.foto.url if instance.foto else None,
             'cuotasActivas': instance.cuotas_activas,
@@ -487,8 +553,8 @@ class VoluntarioListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Voluntario
-        fields = ['id', 'clave_bombero', 'nombre_completo', 'rut', 'estado_bombero', 
-                  'fecha_ingreso', 'compania', 'foto']
+        fields = ['id', 'clave_bombero', 'nombre_completo', 'rut', 'estado_bombero',
+                  'fecha_ingreso', 'compania', 'foto', 'tipo_voluntario']
     
     def get_nombre_completo(self, obj):
         return obj.nombre_completo()

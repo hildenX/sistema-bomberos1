@@ -256,6 +256,8 @@ class SistemaSanciones {
             select.classList.add('tipo-separacion');
         } else if (valor === 'expulsion') {
             select.classList.add('tipo-expulsion');
+        } else if (valor === 'amonestacion_verbal' || valor === 'amonestacion_escrita') {
+            select.classList.add('tipo-amonestacion');
         }
         
         // OCULTAR/MOSTRAR CAMPOS SEGÚN TIPO DE SANCIÓN
@@ -332,6 +334,21 @@ class SistemaSanciones {
             if (labelMotivo) labelMotivo.textContent = 'Motivo de la Suspensión';
         }
         
+        // AMONESTACIÓN VERBAL / ESCRITA: sin días ni fecha término, mismo trato que separación
+        else if (tipoSancion === 'amonestacion_verbal' || tipoSancion === 'amonestacion_escrita') {
+            if (companiaAutoridad) companiaAutoridad.style.display = 'block';
+            if (autoridadSancionatoria) autoridadSancionatoria.style.display = 'block';
+            if (diasSancion) diasSancion.style.display = 'none';
+            if (fechaHasta) fechaHasta.style.display = 'none';
+            if (fechaOficio) fechaOficio.style.display = 'block';
+
+            const esVerbal = tipoSancion === 'amonestacion_verbal';
+            if (labelFechaDesde) labelFechaDesde.textContent = esVerbal ? 'Fecha de la Amonestación Verbal' : 'Fecha de la Amonestación Escrita';
+            if (labelOficioNumero) labelOficioNumero.textContent = 'Identificador del Oficio';
+            if (labelDoc) labelDoc.textContent = esVerbal ? '📎 Adjuntar Respaldo (si aplica)' : '📎 Adjuntar Documento de Amonestación';
+            if (labelMotivo) labelMotivo.textContent = esVerbal ? 'Motivo de la Amonestación Verbal' : 'Motivo de la Amonestación Escrita';
+        }
+
         // DEFAULT: Mostrar todos
         else {
             if (companiaAutoridad) companiaAutoridad.style.display = 'block';
@@ -634,7 +651,9 @@ class SistemaSanciones {
             'suspension': { nombre: 'Suspensión', icono: '⏸️', clase: 'tipo-suspension' },
             'renuncia': { nombre: 'Renuncia', icono: '', clase: 'tipo-renuncia' },
             'separacion': { nombre: 'Separación', icono: '⏸️', clase: 'tipo-separacion' },
-            'expulsion': { nombre: 'Expulsión', icono: '', clase: 'tipo-expulsion' }
+            'expulsion': { nombre: 'Expulsión', icono: '', clase: 'tipo-expulsion' },
+            'amonestacion_verbal': { nombre: 'Amonestación Verbal', icono: '', clase: 'tipo-amonestacion' },
+            'amonestacion_escrita': { nombre: 'Amonestación Escrita en su Hoja de Vida', icono: '📝', clase: 'tipo-amonestacion' }
         };
         return tipos[tipo] || { nombre: tipo, icono: '', clase: '' };
     }
