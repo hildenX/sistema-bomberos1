@@ -132,6 +132,14 @@ class CrearBomberoSistema {
             return;
         }
 
+        // Aspirante/Canje/Participante se eligen desde el select de Estado, pero para
+        // el backend siguen "activos" (solo cambia el tipo de voluntario).
+        const tiposEspecialesEstado = ['aspirante', 'canje', 'participante'];
+        if (tiposEspecialesEstado.includes(datos.estadoBombero)) {
+            datos.tipoVoluntario = datos.estadoBombero;
+            datos.estadoBombero = 'activo';
+        }
+
         // Padrinos son opcionales
 
         // Preparar datos para enviar a Django

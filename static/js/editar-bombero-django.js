@@ -150,12 +150,21 @@ class EditarBomberoSistema {
         document.getElementById('nroRegistro').value = this.bomberoActual.nroRegistro || '';
         document.getElementById('fechaIngreso').value = this.bomberoActual.fechaIngreso || '';
         document.getElementById('compania').value = this.bomberoActual.compania || '';
-        document.getElementById('tipoVoluntario').value = this.bomberoActual.tipoVoluntario || 'voluntario';
-        if (typeof actualizarCampoCompania === 'function') actualizarCampoCompania();
+
+        // Aspirante/Canje/Participante se muestran en el mismo selector de Estado.
+        const tipoAlmacenado = this.bomberoActual.tipoVoluntario || 'voluntario';
+        const estadoAlmacenado = this.bomberoActual.estadoBombero || 'activo';
+        const tiposEspeciales = ['aspirante', 'canje', 'participante'];
+        document.getElementById('tipoVoluntario').value = tipoAlmacenado;
+
         document.getElementById('grupoSanguineo').value = this.bomberoActual.grupoSanguineo || '';
-        document.getElementById('estadoBombero').value = this.bomberoActual.estadoBombero || 'activo';
+        document.getElementById('estadoBombero').value = (estadoAlmacenado === 'activo' && tiposEspeciales.includes(tipoAlmacenado))
+            ? tipoAlmacenado
+            : estadoAlmacenado;
         // FORZAR que el select de estado NO esté deshabilitado (permitir cambiar desde cualquier estado)
         document.getElementById('estadoBombero').disabled = false;
+        if (typeof actualizarCampoCompania === 'function') actualizarCampoCompania();
+        if (typeof mostrarCamposEstado === 'function') mostrarCamposEstado();
         document.getElementById('telefono').value = this.bomberoActual.telefono || '';
         document.getElementById('email').value = this.bomberoActual.email || '';
         document.getElementById('otrosCuerpos').value = this.bomberoActual.otrosCuerpos || '';
@@ -263,6 +272,14 @@ class EditarBomberoSistema {
         }
 
         // Padrinos son opcionales
+
+        // Aspirante/Canje/Participante se eligen desde el select de Estado, pero para
+        // el backend siguen "activos" (solo cambia el tipo de voluntario).
+        const tiposEspecialesEstado = ['aspirante', 'canje', 'participante'];
+        if (tiposEspecialesEstado.includes(datos.estadoBombero)) {
+            datos.tipoVoluntario = datos.estadoBombero;
+            datos.estadoBombero = 'activo';
+        }
 
         // Preparar datos para Django (misma estructura que crear)
         const voluntarioData = {

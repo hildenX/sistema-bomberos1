@@ -224,16 +224,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="tipoVoluntario">Tipo de Voluntario <span class="required">*</span></label>
-                        <select id="tipoVoluntario" name="tipoVoluntario" required onchange="actualizarCampoCompania()">
-                            <option value="voluntario">Voluntario</option>
-                            <option value="aspirante">Aspirante (en formación, sin cuotas)</option>
-                            <option value="canje">Canje (voluntario de otra compañía)</option>
-                            <option value="participante">Participante (sin pertenencia formal)</option>
-                        </select>
-                        <small>Aspirante, Canje y Participante quedan exentos de cuotas automáticamente</small>
-                    </div>
+                    <input type="hidden" id="tipoVoluntario" name="tipoVoluntario" value="voluntario">
 
                     <div class="form-grid form-grid-2">
                         <div class="form-group">
@@ -265,15 +256,18 @@
 
                     <div class="form-group">
                         <label for="estadoBombero">Estado del Voluntario <span class="required">*</span></label>
-                        <select id="estadoBombero" name="estadoBombero" required onchange="mostrarCamposEstado()">
+                        <select id="estadoBombero" name="estadoBombero" required onchange="mostrarCamposEstado(); sincronizarTipoDesdeEstado();">
                             <option value="activo">Activo - En servicio</option>
+                            <option value="aspirante">Aspirante - En formación, sin cuotas</option>
+                            <option value="canje">Canje - Voluntario de otra compañía</option>
+                            <option value="participante">Participante - Sin pertenencia formal</option>
                             <option value="renunciado">Renunciado - Puede reintegrarse</option>
                             <option value="separado">Separado - Por periodo determinado</option>
                             <option value="expulsado">Expulsado - Permanente</option>
                             <option value="martir">Mártir - Fallecido en acto de servicio</option>
                             <option value="fallecido">Fallecido - Fallecido (no en servicio)</option>
                         </select>
-                        <small>Los estados Renunciado, Separado y Expulsado se asignan automáticamente al aplicar sanciones</small>
+                        <small>Aspirante, Canje y Participante quedan exentos de cuotas automáticamente. Los estados Renunciado, Separado y Expulsado se asignan automáticamente al aplicar sanciones</small>
                     </div>
 
                     <!-- CAMPOS CONDICIONALES PARA MÁRTIR -->
@@ -500,6 +494,16 @@
     </div>
 
     <script>
+        // Aspirante/Canje/Participante se eligen desde el mismo selector de Estado.
+        // Esta función sincroniza el campo oculto tipoVoluntario y deja estadoBombero
+        // en "activo" para esos tres casos (siguen en servicio, solo cambia su tipo).
+        function sincronizarTipoDesdeEstado() {
+            const valor = document.getElementById('estadoBombero').value;
+            const tiposEspeciales = ['aspirante', 'canje', 'participante'];
+            document.getElementById('tipoVoluntario').value = tiposEspeciales.includes(valor) ? valor : 'voluntario';
+            actualizarCampoCompania();
+        }
+
         // Canje/Participante vienen de otra parte: la Compañía indica de dónde.
         function actualizarCampoCompania() {
             const tipo = document.getElementById('tipoVoluntario').value;
@@ -585,6 +589,6 @@
     <!-- Scripts Django - Usan APIs en lugar de localStorage -->
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}?v=5"></script>
-    <script src="{% static 'js/editar-bombero-django.js' %}?v=1.4"></script>
+    <script src="{% static 'js/editar-bombero-django.js' %}?v=1.5"></script>
 </body>
 </html>
