@@ -6,14 +6,6 @@ class SistemaAsistenciasEmergencias {
         this.bomberos = [];
         this.cargosVigentes = {};
         this.asistentesSeleccionados = new Set();
-        this.catalogoExternos = {
-            participantes: {},  // Catálogo global (para datalist)
-            canjes: {}
-        };
-        this.externosSeleccionados = {
-            participantes: {},  // Seleccionados para ESTA asistencia
-            canjes: {}
-        };
         this.init();
     }
 
@@ -30,8 +22,7 @@ class SistemaAsistenciasEmergencias {
         await this.cargarDatos();
         this.inicializarFechaHora();
         this.renderizarVoluntarios();
-        this.cargarListasExternos();
-        
+
         console.log('[ASISTENCIAS]  Sistema inicializado');
     }
 
@@ -120,6 +111,8 @@ class SistemaAsistenciasEmergencias {
         this.renderizarCategoria('listaHonorariosCuerpo', clasificados.honorariosCuerpo);
         this.renderizarCategoria('listaHonorariosCia', clasificados.honorariosCia);
         this.renderizarCategoria('listaVoluntarios', clasificados.voluntarios);
+        this.renderizarCategoria('listaCanje', clasificados.canje);
+        this.renderizarCategoria('listaParticipante', clasificados.participante);
 
         this.actualizarEstadisticas();
     }
@@ -133,17 +126,24 @@ class SistemaAsistenciasEmergencias {
             insignes: [],
             honorariosCuerpo: [],
             honorariosCia: [],
-            voluntarios: []
+            voluntarios: [],
+            canje: [],
+            participante: []
         };
 
         for (const bombero of this.bomberos) {
             const cargo = this.cargosVigentes[bombero.id];
             // Usar la antigüedad ya calculada por el backend (respeta honorarios/insignes).
             const anos = (bombero.antiguedad_anos != null) ? bombero.antiguedad_anos : 0;
+            const tipoVol = bombero.tipo_voluntario || bombero.tipoVoluntario || 'voluntario';
 
             // Clasificar según estado y categoría
             if ((bombero.estado_bombero || bombero.estadoBombero) === 'martir') {
                 clasificados.martires.push({ bombero, cargo });
+            } else if (tipoVol === 'canje') {
+                clasificados.canje.push({ bombero, cargo });
+            } else if (tipoVol === 'participante') {
+                clasificados.participante.push({ bombero, cargo });
             } else if (cargo && this.esCargoComandancia(cargo.nombre_cargo)) {
                 clasificados.comandancia.push({ bombero, cargo });
             } else if (cargo && this.esCargoOficialCompania(cargo.nombre_cargo)) {
@@ -229,6 +229,9 @@ class SistemaAsistenciasEmergencias {
 
     obtenerCategoriaTexto(bombero, cargo) {
         if ((bombero.estado_bombero || bombero.estadoBombero) === 'martir') return 'Mártir';
+        const tipoVol = bombero.tipo_voluntario || bombero.tipoVoluntario || 'voluntario';
+        if (tipoVol === 'canje') return 'Canje';
+        if (tipoVol === 'participante') return 'Participante';
         if (cargo) {
             if (this.esCargoComandancia(cargo.nombre_cargo)) return 'Comandancia';
             if (this.esCargoOficialCompania(cargo.nombre_cargo)) return 'Oficial Compañía';
@@ -272,7 +275,9 @@ class SistemaAsistenciasEmergencias {
             'insigne': 'listaInsignes',
             'honorarioCuerpo': 'listaHonorariosCuerpo',
             'honorarioCia': 'listaHonorariosCia',
-            'voluntario': 'listaVoluntarios'
+            'voluntario': 'listaVoluntarios',
+            'canje': 'listaCanje',
+            'participante': 'listaParticipante'
         };
 
         const containerId = containerMap[categoria];
@@ -292,7 +297,9 @@ class SistemaAsistenciasEmergencias {
             'insigne': 'listaInsignes',
             'honorarioCuerpo': 'listaHonorariosCuerpo',
             'honorarioCia': 'listaHonorariosCia',
-            'voluntario': 'listaVoluntarios'
+            'voluntario': 'listaVoluntarios',
+            'canje': 'listaCanje',
+            'participante': 'listaParticipante'
         };
 
         const containerId = containerMap[categoria];
@@ -346,249 +353,6 @@ class SistemaAsistenciasEmergencias {
         document.getElementById('resumenVoluntarios').textContent = stats.voluntarios;
     }
 
-    async cargarListasExternos() {
-        try {
-            // Cargar catálogo de externos desde API
-            const response = await fetch('/api/externos/', {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const externos = Array.isArray(data) ? data : (data.results || []);
-                
-                console.log('[ASISTENCIAS] Externos cargados:', externos.length);
-                
-                // Limpiar catálogos
-                this.catalogoExternos.participantes = {};
-                this.catalogoExternos.canjes = {};
-                
-                // Separar por tipo
-                externos.forEach(ext => {
-                    if (ext.tipo === 'participante') {
-                        this.catalogoExternos.participantes[ext.id] = {
-                            id: ext.id,
-                            nombre: ext.nombre_completo,
-                            totalAsistencias: ext.total_asistencias || 0
-                        };
-                    } else if (ext.tipo === 'canje') {
-                        this.catalogoExternos.canjes[ext.id] = {
-                            id: ext.id,
-                            nombre: ext.nombre_completo,
-                            compania: ext.compania_origen || '',
-                            totalAsistencias: ext.total_asistencias || 0
-                        };
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('[ASISTENCIAS] Error cargando externos:', error);
-        }
-
-        // Llenar datalists
-        this.actualizarDatalistExternos();
-        
-        // NO renderizar en las listas (solo datalist para autocompletado)
-    }
-
-    actualizarDatalistExternos() {
-        const listaParticipantes = document.getElementById('listaParticipantes');
-        const listaCanjes = document.getElementById('listaCanjes');
-
-        if (listaParticipantes) {
-            listaParticipantes.innerHTML = Object.values(this.catalogoExternos.participantes)
-                .map(p => `<option value="${p.nombre}">`)
-                .join('');
-        }
-
-        if (listaCanjes) {
-            listaCanjes.innerHTML = Object.values(this.catalogoExternos.canjes)
-                .map(c => `<option value="${c.nombre}">`)
-                .join('');
-        }
-    }
-
-    async agregarParticipante() {
-        const input = document.getElementById('inputParticipante');
-        const nombre = input.value.trim();
-
-        if (!nombre) {
-            Utils.mostrarNotificacion('Ingrese el nombre del participante', 'error');
-            return;
-        }
-
-        try {
-            // Verificar si ya existe en el catálogo global
-            let externoId = null;
-            for (const [id, ext] of Object.entries(this.catalogoExternos.participantes)) {
-                if (ext.nombre.toLowerCase() === nombre.toLowerCase()) {
-                    externoId = id;
-                    break;
-                }
-            }
-
-            // Si no existe, guardarlo en BD
-            if (!externoId) {
-                const response = await fetch('/api/externos/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        nombre_completo: nombre,
-                        tipo: 'participante'
-                    })
-                });
-
-                if (response.ok) {
-                    const externo = await response.json();
-                    externoId = externo.id;
-                    
-                    // Agregar al catálogo global
-                    this.catalogoExternos.participantes[externoId] = {
-                        id: externoId,
-                        nombre: externo.nombre_completo,
-                        totalAsistencias: 0
-                    };
-                    
-                    this.actualizarDatalistExternos();
-                } else {
-                    throw new Error('Error al guardar en BD');
-                }
-            }
-
-            // Agregar a seleccionados para esta asistencia
-            this.externosSeleccionados.participantes[externoId] = {
-                id: externoId,
-                nombre: nombre
-            };
-            
-            this.renderizarParticipantes();
-            input.value = '';
-            
-        } catch (error) {
-            console.error('Error:', error);
-            Utils.mostrarNotificacion('Error al agregar participante', 'error');
-        }
-    }
-
-    async agregarCanje() {
-        const input = document.getElementById('inputCanje');
-        const texto = input.value.trim();
-
-        if (!texto) {
-            Utils.mostrarNotificacion('Ingrese el nombre y compañía del canje', 'error');
-            return;
-        }
-
-        try {
-            // Verificar si ya existe en el catálogo global
-            let externoId = null;
-            for (const [id, ext] of Object.entries(this.catalogoExternos.canjes)) {
-                if (ext.nombre.toLowerCase() === texto.toLowerCase()) {
-                    externoId = id;
-                    break;
-                }
-            }
-
-            // Si no existe, guardarlo en BD
-            if (!externoId) {
-                const response = await fetch('/api/externos/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        nombre_completo: texto,
-                        tipo: 'canje'
-                    })
-                });
-
-                if (response.ok) {
-                    const externo = await response.json();
-                    externoId = externo.id;
-                    
-                    // Agregar al catálogo global
-                    this.catalogoExternos.canjes[externoId] = {
-                        id: externoId,
-                        nombre: externo.nombre_completo,
-                        compania: '',
-                        totalAsistencias: 0
-                    };
-                    
-                    this.actualizarDatalistExternos();
-                } else {
-                    throw new Error('Error al guardar en BD');
-                }
-            }
-
-            // Agregar a seleccionados para esta asistencia
-            this.externosSeleccionados.canjes[externoId] = {
-                id: externoId,
-                nombre: texto
-            };
-            
-            this.renderizarCanjes();
-            input.value = '';
-            
-        } catch (error) {
-            console.error('Error:', error);
-            Utils.mostrarNotificacion('Error al agregar canje', 'error');
-        }
-    }
-
-    renderizarParticipantes() {
-        const container = document.getElementById('participantesSeleccionados');
-        if (!container) return;
-
-        const items = Object.values(this.externosSeleccionados.participantes);
-        
-        if (items.length === 0) {
-            container.innerHTML = '<p class="no-data">Sin participantes agregados</p>';
-            return;
-        }
-
-        container.innerHTML = items.map(p => `
-            <div class="externo-item">
-                <span>${p.nombre}</span>
-                <button onclick="asistencias.eliminarParticipante(${p.id})" class="btn-eliminar">×</button>
-            </div>
-        `).join('');
-    }
-
-    renderizarCanjes() {
-        const container = document.getElementById('canjesSeleccionados');
-        if (!container) return;
-
-        const items = Object.values(this.externosSeleccionados.canjes);
-        
-        if (items.length === 0) {
-            container.innerHTML = '<p class="no-data">Sin canjes agregados</p>';
-            return;
-        }
-
-        container.innerHTML = items.map(c => `
-            <div class="externo-item">
-                <span>${c.nombre}</span>
-                <button onclick="asistencias.eliminarCanje(${c.id})" class="btn-eliminar">×</button>
-            </div>
-        `).join('');
-    }
-
-    eliminarParticipante(id) {
-        delete this.externosSeleccionados.participantes[id];
-        this.renderizarParticipantes();
-    }
-
-    eliminarCanje(id) {
-        delete this.externosSeleccionados.canjes[id];
-        this.renderizarCanjes();
-    }
-
     async guardarRegistro() {
         try {
             // Validaciones
@@ -632,8 +396,8 @@ class SistemaAsistenciasEmergencias {
                 oficiales_compania: 0,
                 cargos_confianza: 0,
                 voluntarios: 0,
-                participantes: Object.keys(this.externosSeleccionados.participantes).length,
-                canjes: Object.keys(this.externosSeleccionados.canjes).length,
+                participantes: 0,
+                canjes: 0,
                 porcentaje_asistencia: 0,
                 observaciones: observaciones
             };
@@ -641,7 +405,12 @@ class SistemaAsistenciasEmergencias {
             // Contar por categoría
             checkboxes.forEach(cb => {
                 const cargo = cb.dataset.cargo;
-                if (this.esCargoComandancia(cargo)) {
+                const categoria = cb.dataset.categoria;
+                if (categoria === 'Participante') {
+                    eventoData.participantes++;
+                } else if (categoria === 'Canje') {
+                    eventoData.canjes++;
+                } else if (this.esCargoComandancia(cargo)) {
                     eventoData.oficiales_comandancia++;
                 } else if (this.esCargoOficialCompania(cargo)) {
                     eventoData.oficiales_compania++;
@@ -651,10 +420,9 @@ class SistemaAsistenciasEmergencias {
                     eventoData.voluntarios++;
                 }
             });
-            
+
             // Calcular totales
             eventoData.total_oficiales = eventoData.oficiales_comandancia + eventoData.oficiales_compania;
-            eventoData.total_asistentes = checkboxes.length + eventoData.participantes + eventoData.canjes;
 
             console.log('[ASISTENCIAS] 📤 Datos a enviar:', eventoData);
             console.log('[ASISTENCIAS]  Clave en eventoData:', eventoData.clave_emergencia);
@@ -700,44 +468,6 @@ class SistemaAsistenciasEmergencias {
                     },
                     credentials: 'include',
                     body: JSON.stringify(detalle)
-                });
-            }
-
-            // Guardar externos
-            for (const externo of Object.values(this.externosSeleccionados.participantes)) {
-                await fetch('/api/detalles-asistencia/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        evento: eventoGuardado.id,
-                        nombre_completo: externo.nombre,
-                        categoria: 'Externo',
-                        es_externo: true,
-                        tipo_externo: 'participante'
-                    })
-                });
-            }
-
-            // Guardar canjes
-            for (const canje of Object.values(this.externosSeleccionados.canjes)) {
-                await fetch('/api/detalles-asistencia/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        evento: eventoGuardado.id,
-                        nombre_completo: canje.nombre,
-                        categoria: 'Canje',
-                        es_externo: true,
-                        tipo_externo: 'canje'
-                    })
                 });
             }
 

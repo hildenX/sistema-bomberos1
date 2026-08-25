@@ -8,14 +8,6 @@ class SistemaAsistenciasGenericas {
         this.bomberos = [];
         this.cargosVigentes = {};
         this.asistentesSeleccionados = new Set();
-        this.externosSeleccionados = {
-            participantes: {},
-            canjes: {}
-        };
-        this.catalogoExternos = {
-            participantes: {},
-            canjes: {}
-        };
         // Si viene ?editar=<id> en la URL, entramos en modo edición
         this.editarId = new URLSearchParams(window.location.search).get('editar');
         this.contadorTemas = 0;
@@ -36,7 +28,6 @@ class SistemaAsistenciasGenericas {
         await this.cargarDatos();
         this.inicializarFechaHora();
         this.renderizarVoluntarios();
-        this.cargarListasExternos();
 
         if (this.editarId) {
             await this.cargarParaEditar();
@@ -349,6 +340,8 @@ class SistemaAsistenciasGenericas {
         this.renderizarCategoria('listaHonorariosCuerpo', clasificados.honorariosCuerpo);
         this.renderizarCategoria('listaHonorariosCia', clasificados.honorariosCia);
         this.renderizarCategoria('listaVoluntarios', clasificados.voluntarios);
+        this.renderizarCategoria('listaCanje', clasificados.canje);
+        this.renderizarCategoria('listaParticipante', clasificados.participante);
 
         this.actualizarEstadisticas();
     }
@@ -362,16 +355,23 @@ class SistemaAsistenciasGenericas {
             insignes: [],
             honorariosCuerpo: [],
             honorariosCia: [],
-            voluntarios: []
+            voluntarios: [],
+            canje: [],
+            participante: []
         };
 
         for (const bombero of this.bomberos) {
             const cargo = this.cargosVigentes[bombero.id];
             // Usar la antigüedad ya calculada por el backend (respeta honorarios/insignes).
             const anos = (bombero.antiguedad_anos != null) ? bombero.antiguedad_anos : 0;
+            const tipoVol = bombero.tipo_voluntario || bombero.tipoVoluntario || 'voluntario';
 
             if ((bombero.estado_bombero || bombero.estadoBombero) === 'martir') {
                 clasificados.martires.push({ bombero, cargo });
+            } else if (tipoVol === 'canje') {
+                clasificados.canje.push({ bombero, cargo });
+            } else if (tipoVol === 'participante') {
+                clasificados.participante.push({ bombero, cargo });
             } else if (cargo && this.esCargoComandancia(cargo.nombre_cargo)) {
                 clasificados.comandancia.push({ bombero, cargo });
             } else if (cargo && this.esCargoOficialCompania(cargo.nombre_cargo)) {
@@ -453,6 +453,9 @@ class SistemaAsistenciasGenericas {
 
     obtenerCategoriaTexto(bombero, cargo) {
         if ((bombero.estado_bombero || bombero.estadoBombero) === 'martir') return 'Mártir';
+        const tipoVol = bombero.tipo_voluntario || bombero.tipoVoluntario || 'voluntario';
+        if (tipoVol === 'canje') return 'Canje';
+        if (tipoVol === 'participante') return 'Participante';
         if (cargo) {
             if (this.esCargoComandancia(cargo.nombre_cargo)) return 'Comandancia';
             if (this.esCargoOficialCompania(cargo.nombre_cargo)) return 'Oficial Compañía';
@@ -496,7 +499,9 @@ class SistemaAsistenciasGenericas {
             'insignes': 'listaInsignes',
             'honorariosCuerpo': 'listaHonorariosCuerpo',
             'honorariosCia': 'listaHonorariosCia',
-            'voluntarios': 'listaVoluntarios'
+            'voluntarios': 'listaVoluntarios',
+            'canje': 'listaCanje',
+            'participante': 'listaParticipante'
         };
 
         const containerId = containerMap[categoria];
@@ -519,7 +524,9 @@ class SistemaAsistenciasGenericas {
             'insignes': 'listaInsignes',
             'honorariosCuerpo': 'listaHonorariosCuerpo',
             'honorariosCia': 'listaHonorariosCia',
-            'voluntarios': 'listaVoluntarios'
+            'voluntarios': 'listaVoluntarios',
+            'canje': 'listaCanje',
+            'participante': 'listaParticipante'
         };
 
         const containerId = containerMap[categoria];
@@ -580,227 +587,6 @@ class SistemaAsistenciasGenericas {
         document.getElementById('resumenVoluntarios').textContent = stats.voluntarios;
     }
 
-    async cargarListasExternos() {
-        try {
-            const response = await fetch('/api/externos/', {
-                credentials: 'include'
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const externos = Array.isArray(data) ? data : (data.results || []);
-                
-                this.catalogoExternos.participantes = {};
-                this.catalogoExternos.canjes = {};
-                
-                externos.forEach(ext => {
-                    if (ext.tipo === 'participante') {
-                        this.catalogoExternos.participantes[ext.id] = {
-                            id: ext.id,
-                            nombre: ext.nombre_completo,
-                            totalAsistencias: ext.total_asistencias || 0
-                        };
-                    } else if (ext.tipo === 'canje') {
-                        this.catalogoExternos.canjes[ext.id] = {
-                            id: ext.id,
-                            nombre: ext.nombre_completo,
-                            totalAsistencias: ext.total_asistencias || 0
-                        };
-                    }
-                });
-            }
-        } catch (error) {
-            console.error(`[${this.tipo.toUpperCase()}] Error cargando externos:`, error);
-        }
-
-        this.actualizarDatalistExternos();
-    }
-
-    actualizarDatalistExternos() {
-        const listaParticipantes = document.getElementById('listaParticipantes');
-        const listaCanjes = document.getElementById('listaCanjes');
-
-        if (listaParticipantes) {
-            listaParticipantes.innerHTML = Object.values(this.catalogoExternos.participantes)
-                .map(p => `<option value="${p.nombre}">`)
-                .join('');
-        }
-
-        if (listaCanjes) {
-            listaCanjes.innerHTML = Object.values(this.catalogoExternos.canjes)
-                .map(c => `<option value="${c.nombre}">`)
-                .join('');
-        }
-    }
-
-    async agregarParticipante() {
-        const input = document.getElementById('inputParticipante');
-        const nombre = input?.value?.trim();
-        
-        if (!nombre) {
-            Utils.mostrarNotificacion('Ingrese un nombre', 'error');
-            return;
-        }
-
-        // Buscar en catálogo
-        let existente = Object.values(this.catalogoExternos.participantes).find(p => 
-            p.nombre.toLowerCase() === nombre.toLowerCase()
-        );
-
-        // Si no existe, crear nuevo
-        if (!existente) {
-            try {
-                const response = await fetch('/api/externos/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        nombre_completo: nombre,
-                        tipo: 'participante'
-                    })
-                });
-
-                if (response.ok) {
-                    const externo = await response.json();
-                    existente = {
-                        id: externo.id,
-                        nombre: externo.nombre_completo,
-                        totalAsistencias: 0
-                    };
-                    this.catalogoExternos.participantes[externo.id] = existente;
-                    this.actualizarDatalistExternos();
-                }
-            } catch (error) {
-                console.error('Error creando participante:', error);
-                Utils.mostrarNotificacion('Error al agregar participante', 'error');
-                return;
-            }
-        }
-
-        // Agregar a seleccionados
-        this.externosSeleccionados.participantes[existente.id] = existente;
-        console.log('[EXTERNOS] Participante agregado:', existente);
-        console.log('[EXTERNOS] Total participantes:', Object.keys(this.externosSeleccionados.participantes).length);
-        this.renderizarParticipantes();
-        input.value = '';
-        this.actualizarEstadisticas();
-    }
-
-    async agregarCanje() {
-        const input = document.getElementById('inputCanje');
-        const nombre = input?.value?.trim();
-        
-        if (!nombre) {
-            Utils.mostrarNotificacion('Ingrese un nombre', 'error');
-            return;
-        }
-
-        // Buscar en catálogo
-        let existente = Object.values(this.catalogoExternos.canjes).find(c => 
-            c.nombre.toLowerCase() === nombre.toLowerCase()
-        );
-
-        // Si no existe, crear nuevo
-        if (!existente) {
-            try {
-                const response = await fetch('/api/externos/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        nombre_completo: nombre,
-                        tipo: 'canje'
-                    })
-                });
-
-                if (response.ok) {
-                    const externo = await response.json();
-                    existente = {
-                        id: externo.id,
-                        nombre: externo.nombre_completo,
-                        totalAsistencias: 0
-                    };
-                    this.catalogoExternos.canjes[externo.id] = existente;
-                    this.actualizarDatalistExternos();
-                }
-            } catch (error) {
-                console.error('Error creando canje:', error);
-                Utils.mostrarNotificacion('Error al agregar canje', 'error');
-                return;
-            }
-        }
-
-        // Agregar a seleccionados
-        this.externosSeleccionados.canjes[existente.id] = existente;
-        console.log('[EXTERNOS] Canje agregado:', existente);
-        console.log('[EXTERNOS] Total canjes:', Object.keys(this.externosSeleccionados.canjes).length);
-        this.renderizarCanjes();
-        input.value = '';
-        this.actualizarEstadisticas();
-    }
-
-    renderizarParticipantes() {
-        const container = document.getElementById('participantesSeleccionados');
-        if (!container) {
-            console.warn('[EXTERNOS] Contenedor participantesSeleccionados no encontrado');
-            return;
-        }
-
-        const participantes = Object.values(this.externosSeleccionados.participantes);
-        
-        if (participantes.length === 0) {
-            container.innerHTML = '<p class="no-data">No hay participantes seleccionados</p>';
-            return;
-        }
-
-        container.innerHTML = participantes.map(p => `
-            <div class="externo-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px;">
-                <span style="font-weight: 500;"> ${p.nombre}</span>
-                <button type="button" class="btn-eliminar" onclick="${this.tipo}Sistema.eliminarParticipante(${p.id})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✕</button>
-            </div>
-        `).join('');
-    }
-
-    renderizarCanjes() {
-        const container = document.getElementById('canjesSeleccionados');
-        if (!container) {
-            console.warn('[EXTERNOS] Contenedor canjesSeleccionados no encontrado');
-            return;
-        }
-
-        const canjes = Object.values(this.externosSeleccionados.canjes);
-        
-        if (canjes.length === 0) {
-            container.innerHTML = '<p class="no-data">No hay canjes seleccionados</p>';
-            return;
-        }
-
-        container.innerHTML = canjes.map(c => `
-            <div class="externo-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px;">
-                <span style="font-weight: 500;"> ${c.nombre}</span>
-                <button type="button" class="btn-eliminar" onclick="${this.tipo}Sistema.eliminarCanje(${c.id})" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">✕</button>
-            </div>
-        `).join('');
-    }
-
-    eliminarParticipante(id) {
-        delete this.externosSeleccionados.participantes[id];
-        this.renderizarParticipantes();
-        this.actualizarEstadisticas();
-    }
-
-    eliminarCanje(id) {
-        delete this.externosSeleccionados.canjes[id];
-        this.renderizarCanjes();
-        this.actualizarEstadisticas();
-    }
-
     async guardarRegistro() {
         try {
             console.log(`[${this.tipo.toUpperCase()}] Guardando registro...`);
@@ -827,8 +613,8 @@ class SistemaAsistenciasGenericas {
                 oficiales_compania: 0,
                 cargos_confianza: 0,
                 voluntarios: 0,
-                participantes: Object.keys(this.externosSeleccionados.participantes).length,
-                canjes: Object.keys(this.externosSeleccionados.canjes).length,
+                participantes: 0,
+                canjes: 0,
                 porcentaje_asistencia: 0,
                 ...datosEspecificos.camposExtra
             };
@@ -836,7 +622,12 @@ class SistemaAsistenciasGenericas {
             // Contar por categoría
             checkboxes.forEach(cb => {
                 const cargo = cb.dataset.cargo;
-                if (this.esCargoComandancia(cargo)) {
+                const categoria = cb.dataset.categoria;
+                if (categoria === 'Participante') {
+                    eventoData.participantes++;
+                } else if (categoria === 'Canje') {
+                    eventoData.canjes++;
+                } else if (this.esCargoComandancia(cargo)) {
                     eventoData.oficiales_comandancia++;
                 } else if (this.esCargoOficialCompania(cargo)) {
                     eventoData.oficiales_compania++;
@@ -846,9 +637,8 @@ class SistemaAsistenciasGenericas {
                     eventoData.voluntarios++;
                 }
             });
-            
+
             eventoData.total_oficiales = eventoData.oficiales_comandancia + eventoData.oficiales_compania;
-            eventoData.total_asistentes = checkboxes.length + eventoData.participantes + eventoData.canjes;
 
             console.log(`[${this.tipo.toUpperCase()}] 📤 Datos a enviar:`, eventoData);
 
@@ -908,43 +698,6 @@ class SistemaAsistenciasGenericas {
                     },
                     credentials: 'include',
                     body: JSON.stringify(detalle)
-                });
-            }
-
-            // Guardar externos
-            for (const externo of Object.values(this.externosSeleccionados.participantes)) {
-                await fetch('/api/detalles-asistencia/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        evento: eventoGuardado.id,
-                        nombre_completo: externo.nombre,
-                        categoria: 'Externo',
-                        es_externo: true,
-                        tipo_externo: 'participante'
-                    })
-                });
-            }
-
-            for (const canje of Object.values(this.externosSeleccionados.canjes)) {
-                await fetch('/api/detalles-asistencia/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        evento: eventoGuardado.id,
-                        nombre_completo: canje.nombre,
-                        categoria: 'Canje',
-                        es_externo: true,
-                        tipo_externo: 'canje'
-                    })
                 });
             }
 

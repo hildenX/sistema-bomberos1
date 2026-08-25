@@ -72,6 +72,8 @@ def listar_voluntarios_simple(request):
                 'compania': vol.compania or 'Sexta Compañía',
                 'estado_bombero': vol.estado_bombero,
                 'estadoBombero': vol.estado_bombero,  # Alias para compatibilidad
+                'tipo_voluntario': vol.tipo_voluntario,
+                'tipoVoluntario': vol.tipo_voluntario,
                 'categoria_bombero': categoria,
                 'antiguedad_anos': antiguedad,
                 'telefono': vol.telefono or '',
