@@ -334,6 +334,7 @@ class SistemaAsistenciasGenericas {
         
         this.renderizarCategoria('listaMartires', clasificados.martires);
         this.renderizarCategoria('listaGenerales', clasificados.comandancia);
+        this.renderizarCategoria('listaConfianzaComandancia', clasificados.confianzaComandancia);
         this.renderizarCategoria('listaCompania', clasificados.compania);
         this.renderizarCategoria('listaCargosConfianza', clasificados.confianza);
         this.renderizarCategoria('listaInsignes', clasificados.insignes);
@@ -357,7 +358,8 @@ class SistemaAsistenciasGenericas {
             honorariosCia: [],
             voluntarios: [],
             canje: [],
-            participante: []
+            participante: [],
+            confianzaComandancia: []
         };
 
         for (const bombero of this.bomberos) {
@@ -372,6 +374,8 @@ class SistemaAsistenciasGenericas {
                 clasificados.canje.push({ bombero, cargo });
             } else if (tipoVol === 'participante') {
                 clasificados.participante.push({ bombero, cargo });
+            } else if (cargo && this.esDepartamentoComandancia(cargo.nombre_cargo)) {
+                clasificados.confianzaComandancia.push({ bombero, cargo });
             } else if (cargo && this.esCargoComandancia(cargo.nombre_cargo)) {
                 clasificados.comandancia.push({ bombero, cargo });
             } else if (cargo && this.esCargoOficialCompania(cargo.nombre_cargo)) {
@@ -457,11 +461,12 @@ class SistemaAsistenciasGenericas {
         if (tipoVol === 'canje') return 'Canje';
         if (tipoVol === 'participante') return 'Participante';
         if (cargo) {
+            if (this.esDepartamentoComandancia(cargo.nombre_cargo)) return 'Confianza Comandancia';
             if (this.esCargoComandancia(cargo.nombre_cargo)) return 'Comandancia';
             if (this.esCargoOficialCompania(cargo.nombre_cargo)) return 'Oficial Compañía';
             if (this.esCargoConfianza(cargo.nombre_cargo)) return 'Confianza';
         }
-        
+
         const categoria = Utils.calcularCategoriaBombero(bombero);
         return categoria.categoria;
     }
@@ -471,6 +476,12 @@ class SistemaAsistenciasGenericas {
                        'Intendente General', 'Tesorero General', 'Secretario General', 'Ayudante General',
                        'Depto. Investigación de Incendio', 'Depto. Comunicaciones', 'Depto. Prevención de Riesgos',
                        'Depto. Material Mayor', 'Depto. Capacitaciones', 'Depto. Hazmat'];
+        return cargos.includes(nombreCargo);
+    }
+
+    esDepartamentoComandancia(nombreCargo) {
+        const cargos = ['Depto. Investigación de Incendio', 'Depto. Comunicaciones', 'Depto. Prevención de Riesgos',
+                       'Depto. Material Mayor', 'Depto. Capacitaciones', 'Depto. Hazmat', 'Ayudante General'];
         return cargos.includes(nombreCargo);
     }
 
@@ -501,7 +512,8 @@ class SistemaAsistenciasGenericas {
             'honorariosCia': 'listaHonorariosCia',
             'voluntarios': 'listaVoluntarios',
             'canje': 'listaCanje',
-            'participante': 'listaParticipante'
+            'participante': 'listaParticipante',
+            'confianzaComandancia': 'listaConfianzaComandancia'
         };
 
         const containerId = containerMap[categoria];
@@ -526,7 +538,8 @@ class SistemaAsistenciasGenericas {
             'honorariosCia': 'listaHonorariosCia',
             'voluntarios': 'listaVoluntarios',
             'canje': 'listaCanje',
-            'participante': 'listaParticipante'
+            'participante': 'listaParticipante',
+            'confianzaComandancia': 'listaConfianzaComandancia'
         };
 
         const containerId = containerMap[categoria];

@@ -130,6 +130,17 @@
 
                     <div class="categoria-container">
                         <div class="categoria-header">
+                            <div class="categoria-titulo"><span class="categoria-icono">&#9733;</span> CARGOS DE CONFIANZA COMANDANCIA</div>
+                            <div class="categoria-botones">
+                                <button onclick="ejerciciosSistema.seleccionarTodos('confianzaComandancia')" class="btn-mini btn-success">✓ Todos</button>
+                                <button onclick="ejerciciosSistema.deseleccionarTodos('confianzaComandancia')" class="btn-mini btn-secondary">✗ Ninguno</button>
+                            </div>
+                        </div>
+                        <div id="listaConfianzaComandancia" class="voluntarios-lista"></div>
+                    </div>
+
+                    <div class="categoria-container">
+                        <div class="categoria-header">
                             <div class="categoria-titulo"><span class="categoria-icono">&#9670;</span> OFICIALES DE COMPAÑÍA</div>
                             <div class="categoria-botones">
                                 <button onclick="ejerciciosSistema.seleccionarTodos('compania')" class="btn-mini btn-success">✓ Todos</button>
@@ -262,7 +273,7 @@
 
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/asistencias-genericas-django.js' %}?v=8.0"></script>
+    <script src="{% static 'js/asistencias-genericas-django.js' %}?v=9.0"></script>
     <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
     <script>console.log('Ejercicios v1.0 - Sistema Django Genérico');</script>
     <script>

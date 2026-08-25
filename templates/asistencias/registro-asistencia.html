@@ -408,6 +408,25 @@
                         <div id="listaGenerales" class="voluntarios-lista"></div>
                     </div>
 
+                    <!-- CARGOS DE CONFIANZA COMANDANCIA -->
+                    <div class="categoria-container">
+                        <div class="categoria-header">
+                            <div class="categoria-titulo">
+                                <span class="categoria-icono"></span>
+                                CARGOS DE CONFIANZA COMANDANCIA
+                            </div>
+                            <div class="categoria-botones">
+                                <button onclick="asistencias.seleccionarTodos('confianzaComandancia')" class="btn-mini btn-success">
+                                    ✓ Todos
+                                </button>
+                                <button onclick="asistencias.deseleccionarTodos('confianzaComandancia')" class="btn-mini btn-secondary">
+                                    ✗ Ninguno
+                                </button>
+                            </div>
+                        </div>
+                        <div id="listaConfianzaComandancia" class="voluntarios-lista"></div>
+                    </div>
+
                     <!-- OFICIALES DE COMPAÑÍA -->
                     <div class="categoria-container">
                         <div class="categoria-header">
@@ -609,7 +628,7 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/claves-radiales.js' %}"></script>
-    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=16.0"></script>
+    <script src="{% static 'js/asistencias-emergencias-django.js' %}?v=17.0"></script>
     <script src="{% static 'js/cargar-logo-auto.js' %}?v=1.0"></script>
     <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
 
