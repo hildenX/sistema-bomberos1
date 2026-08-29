@@ -25,6 +25,52 @@
         .acuerdo-acciones { white-space: nowrap; }
         .sin-acuerdos { text-align: center; color: #888; font-style: italic; padding: 20px; }
         .btn-mini.btn-danger { background: #7f1d1d; color: white; }
+
+        .glosa-item {
+            background: rgba(196, 30, 58, 0.05);
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .glosa-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .glosa-item-header strong { color: #f0f0f0; font-size: 0.9rem; }
+        .btn-quitar-glosa {
+            background: transparent;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-quitar-glosa:hover { background: rgba(220, 38, 38, 0.1); }
+        .glosa-texto {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            min-height: 70px;
+            resize: vertical;
+            background: #1a1a1a;
+            color: #f0f0f0;
+            font-family: inherit;
+        }
+        #listaGlosas:empty::after {
+            content: 'Agregá al menos un acuerdo.';
+            display: block;
+            color: #888;
+            font-style: italic;
+            padding: 8px 0;
+        }
     </style>
 </head>
 <body>
@@ -46,30 +92,24 @@
                     <h3 id="tituloFormAcuerdo">Agregar Acuerdo</h3>
 
                     <form id="formAcuerdo" onsubmit="acuerdosSistema.guardarAcuerdo(event)">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="fechaAcuerdo">Fecha del Acuerdo <span class="required">*</span></label>
-                                <input type="date" id="fechaAcuerdo" required>
-                            </div>
+                        <div class="form-group">
+                            <label for="eventoAcuerdo">Directorio al que pertenece <span class="required">*</span></label>
+                            <select id="eventoAcuerdo" required>
+                                <option value="">Cargando sesiones...</option>
+                            </select>
+                            <small>Si no aparece la sesión que buscás, primero tenés que registrarla en "Registro de Asistencias"</small>
+                        </div>
 
-                            <div class="form-group">
-                                <label for="tipoSesionAcuerdo">Tipo de Directorio <span class="required">*</span></label>
-                                <select id="tipoSesionAcuerdo" required>
-                                    <option value="">Seleccione tipo</option>
-                                    <option value="ordinaria">Ordinaria</option>
-                                    <option value="extraordinaria">Extraordinaria</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label for="glosaAcuerdo">Glosa de Acuerdo <span class="required">*</span></label>
-                                <textarea id="glosaAcuerdo" rows="3" placeholder="Detalle del acuerdo tomado..." required></textarea>
-                            </div>
+                        <div class="form-group full-width" style="margin-top: 18px;">
+                            <label>Acuerdos de esta sesión <span class="required">*</span></label>
+                            <div id="listaGlosas"></div>
+                            <button type="button" class="btn-mini btn-success" onclick="acuerdosSistema.agregarGlosa()" style="margin-top:10px;">
+                                + Agregar otro Acuerdo
+                            </button>
                         </div>
 
                         <div class="botones-accion" style="justify-content: flex-start; padding: 20px 0 0;">
-                            <button type="submit" class="btn btn-success" id="btnGuardarAcuerdo">+ Agregar Acuerdo</button>
-                            <button type="button" class="btn btn-secondary" id="btnCancelarEdicion" style="display:none;" onclick="acuerdosSistema.cancelarEdicion()">Cancelar edición</button>
+                            <button type="submit" class="btn btn-success" id="btnGuardarAcuerdo">Guardar Acuerdos</button>
                         </div>
                     </form>
                 </div>
@@ -102,7 +142,7 @@
 
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/acuerdos-django.js' %}?v=1.0"></script>
+    <script src="{% static 'js/acuerdos-django.js' %}?v=2.0"></script>
     <script>
         let acuerdosSistema;
         window.addEventListener('load', function() {

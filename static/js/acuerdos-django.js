@@ -4,8 +4,9 @@ console.log('🚀 [ACUERDOS] Cargando acuerdos-django.js');
 class SistemaAcuerdos {
     constructor(tipoOrgano) {
         this.tipoOrgano = tipoOrgano; // 'asamblea' | 'directorio'
+        this.eventos = [];
         this.acuerdos = [];
-        this.editandoId = null;
+        this.contadorGlosas = 0;
         this.init();
     }
 
@@ -18,14 +19,87 @@ class SistemaAcuerdos {
             return;
         }
 
-        this.inicializarFecha();
+        await this.cargarEventos();
+        this.agregarGlosa();
         await this.cargarAcuerdos();
     }
 
-    inicializarFecha() {
-        const fechaInput = document.getElementById('fechaAcuerdo');
-        if (fechaInput) fechaInput.valueAsDate = new Date();
+    async cargarEventos() {
+        try {
+            const resp = await fetch(`/api/eventos-asistencia/?tipo=${this.tipoOrgano}`, { credentials: 'include' });
+            if (!resp.ok) throw new Error('Error al cargar eventos');
+            const data = await resp.json();
+            const eventos = Array.isArray(data) ? data : (data.results || []);
+            this.eventos = eventos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            const select = document.getElementById('eventoAcuerdo');
+            if (!select) return;
+
+            if (this.eventos.length === 0) {
+                select.innerHTML = '<option value="">No hay eventos registrados todavía</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">Seleccione la sesión</option>' + this.eventos.map(ev => {
+                const etiquetaTipo = ev.tipo_asamblea
+                    ? (ev.tipo_asamblea === 'ordinaria' ? 'Ordinaria' : 'Extraordinaria')
+                    : (this.tipoOrgano === 'asamblea' ? 'Asamblea' : 'Directorio');
+                return `<option value="${ev.id}">${Utils.formatearFecha(ev.fecha)} - ${etiquetaTipo}</option>`;
+            }).join('');
+        } catch (error) {
+            console.error('[ACUERDOS] Error cargando eventos:', error);
+            Utils.mostrarNotificacion('No se pudieron cargar las sesiones registradas', 'error');
+        }
     }
+
+    // ==================== GLOSAS DINÁMICAS (varios acuerdos en una sola sesión) ====================
+
+    agregarGlosa(valor = '') {
+        this.contadorGlosas++;
+        const id = this.contadorGlosas;
+        const contenedor = document.getElementById('listaGlosas');
+        if (!contenedor) return;
+
+        const div = document.createElement('div');
+        div.className = 'glosa-item';
+        div.dataset.glosaId = id;
+        div.innerHTML = `
+            <div class="glosa-item-header">
+                <strong>Acuerdo ${contenedor.children.length + 1}</strong>
+                <button type="button" class="btn-quitar-glosa" onclick="acuerdosSistema.quitarGlosa(${id})">✕ Quitar</button>
+            </div>
+            <textarea class="glosa-texto" placeholder="Glosa del acuerdo tomado..." required></textarea>
+        `;
+        div.querySelector('.glosa-texto').value = valor;
+        contenedor.appendChild(div);
+    }
+
+    quitarGlosa(id) {
+        const items = document.querySelectorAll('#listaGlosas .glosa-item');
+        if (items.length <= 1) {
+            Utils.mostrarNotificacion('Debe quedar al menos un acuerdo en el formulario', 'error');
+            return;
+        }
+        const div = document.querySelector(`.glosa-item[data-glosa-id="${id}"]`);
+        if (div) div.remove();
+        this.renumerarGlosas();
+    }
+
+    renumerarGlosas() {
+        document.querySelectorAll('#listaGlosas .glosa-item').forEach((item, index) => {
+            const titulo = item.querySelector('.glosa-item-header strong');
+            if (titulo) titulo.textContent = `Acuerdo ${index + 1}`;
+        });
+    }
+
+    obtenerGlosas() {
+        const textareas = document.querySelectorAll('#listaGlosas .glosa-texto');
+        return Array.from(textareas)
+            .map(t => t.value.trim())
+            .filter(v => v.length > 0);
+    }
+
+    // ==================== TABLA DE ACUERDOS YA REGISTRADOS ====================
 
     async cargarAcuerdos() {
         try {
@@ -55,75 +129,66 @@ class SistemaAcuerdos {
                 <td>${a.tipo_sesion === 'ordinaria' ? 'Ordinaria' : 'Extraordinaria'}</td>
                 <td>${this.escapeHtml(a.glosa)}</td>
                 <td class="acuerdo-acciones">
-                    <button type="button" class="btn-mini btn-secondary" onclick="acuerdosSistema.editarAcuerdo(${a.id})">Editar</button>
                     <button type="button" class="btn-mini btn-danger" onclick="acuerdosSistema.eliminarAcuerdo(${a.id})">Eliminar</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    editarAcuerdo(id) {
-        const acuerdo = this.acuerdos.find(a => a.id === id);
-        if (!acuerdo) return;
-
-        this.editandoId = id;
-        document.getElementById('fechaAcuerdo').value = acuerdo.fecha_acuerdo;
-        document.getElementById('tipoSesionAcuerdo').value = acuerdo.tipo_sesion;
-        document.getElementById('glosaAcuerdo').value = acuerdo.glosa;
-        document.getElementById('btnGuardarAcuerdo').textContent = 'Guardar Cambios';
-        document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
-        document.getElementById('formAcuerdo').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    cancelarEdicion() {
-        this.editandoId = null;
-        document.getElementById('formAcuerdo').reset();
-        this.inicializarFecha();
-        document.getElementById('btnGuardarAcuerdo').textContent = '+ Agregar Acuerdo';
-        document.getElementById('btnCancelarEdicion').style.display = 'none';
-    }
-
     async guardarAcuerdo(event) {
         event.preventDefault();
 
-        const fecha = document.getElementById('fechaAcuerdo').value;
-        const tipoSesion = document.getElementById('tipoSesionAcuerdo').value;
-        const glosa = document.getElementById('glosaAcuerdo').value.trim();
-
-        if (!fecha || !tipoSesion || !glosa) {
-            Utils.mostrarNotificacion('Complete todos los campos', 'error');
+        const eventoId = document.getElementById('eventoAcuerdo').value;
+        if (!eventoId) {
+            Utils.mostrarNotificacion('Seleccione a qué sesión pertenece este acuerdo', 'error');
             return;
         }
 
-        const payload = {
-            tipo_organo: this.tipoOrgano,
-            fecha_acuerdo: fecha,
-            tipo_sesion: tipoSesion,
-            glosa: glosa,
-        };
+        const evento = this.eventos.find(ev => String(ev.id) === String(eventoId));
+        if (!evento) {
+            Utils.mostrarNotificacion('La sesión seleccionada ya no está disponible', 'error');
+            return;
+        }
+
+        const glosas = this.obtenerGlosas();
+        if (glosas.length === 0) {
+            Utils.mostrarNotificacion('Escriba al menos un acuerdo', 'error');
+            return;
+        }
+
+        const tipoSesion = evento.tipo_asamblea || 'ordinaria';
 
         try {
-            const url = this.editandoId ? `/api/acuerdos/${this.editandoId}/` : '/api/acuerdos/';
-            const method = this.editandoId ? 'PATCH' : 'POST';
+            for (const glosa of glosas) {
+                const payload = {
+                    tipo_organo: this.tipoOrgano,
+                    evento: evento.id,
+                    fecha_acuerdo: evento.fecha,
+                    tipo_sesion: tipoSesion,
+                    glosa: glosa,
+                };
 
-            const resp = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                credentials: 'include',
-                body: JSON.stringify(payload),
-            });
+                const resp = await fetch('/api/acuerdos/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload),
+                });
 
-            if (!resp.ok) throw new Error('Error al guardar el acuerdo');
+                if (!resp.ok) throw new Error('Error al guardar un acuerdo');
+            }
 
-            Utils.mostrarNotificacion(this.editandoId ? 'Acuerdo actualizado' : 'Acuerdo agregado', 'success');
-            this.cancelarEdicion();
+            Utils.mostrarNotificacion(`${glosas.length} acuerdo(s) agregado(s)`, 'success');
+            document.getElementById('formAcuerdo').reset();
+            document.getElementById('listaGlosas').innerHTML = '';
+            this.agregarGlosa();
             await this.cargarAcuerdos();
         } catch (error) {
             console.error('[ACUERDOS] Error guardando:', error);
-            Utils.mostrarNotificacion('Error al guardar el acuerdo', 'error');
+            Utils.mostrarNotificacion('Error al guardar los acuerdos', 'error');
         }
     }
 
@@ -140,7 +205,6 @@ class SistemaAcuerdos {
             if (!resp.ok && resp.status !== 204) throw new Error('Error al eliminar');
 
             Utils.mostrarNotificacion('Acuerdo eliminado', 'success');
-            if (this.editandoId === id) this.cancelarEdicion();
             await this.cargarAcuerdos();
         } catch (error) {
             console.error('[ACUERDOS] Error eliminando:', error);

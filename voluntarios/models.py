@@ -306,6 +306,10 @@ class AcuerdoOrgano(models.Model):
     ]
 
     tipo_organo = models.CharField(max_length=20, choices=TIPO_ORGANO_CHOICES)
+    evento = models.ForeignKey(
+        'EventoAsistencia', on_delete=models.CASCADE, null=True, blank=True,
+        related_name='acuerdos', help_text="Asamblea o Directorio del que salió este acuerdo"
+    )
     fecha_acuerdo = models.DateField()
     tipo_sesion = models.CharField(max_length=20, choices=TIPO_SESION_CHOICES)
     glosa = models.TextField()
