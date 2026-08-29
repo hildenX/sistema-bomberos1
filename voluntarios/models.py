@@ -290,6 +290,38 @@ class Cargo(models.Model):
         return f"{self.voluntario.clave_bombero} - {self.nombre_cargo} ({self.anio})"
 
 
+class AcuerdoOrgano(models.Model):
+    """
+    Registro acumulativo de acuerdos tomados en Asamblea o Directorio de Compañía.
+    Cada fila es un acuerdo individual (fecha, tipo de sesión, glosa), y se exportan
+    todos juntos en el "Acta - Acuerdos de Asamblea/Directorio de Compañía".
+    """
+    TIPO_ORGANO_CHOICES = [
+        ('asamblea', 'Asamblea'),
+        ('directorio', 'Directorio'),
+    ]
+    TIPO_SESION_CHOICES = [
+        ('ordinaria', 'Ordinaria'),
+        ('extraordinaria', 'Extraordinaria'),
+    ]
+
+    tipo_organo = models.CharField(max_length=20, choices=TIPO_ORGANO_CHOICES)
+    fecha_acuerdo = models.DateField()
+    tipo_sesion = models.CharField(max_length=20, choices=TIPO_SESION_CHOICES)
+    glosa = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['fecha_acuerdo', 'id']
+        verbose_name = 'Acuerdo de Asamblea/Directorio'
+        verbose_name_plural = 'Acuerdos de Asamblea/Directorio'
+
+    def __str__(self):
+        return f"{self.get_tipo_organo_display()} - {self.fecha_acuerdo} - {self.glosa[:40]}"
+
+
 class Sancion(models.Model):
     """Modelo para registrar sanciones"""
     

@@ -7,7 +7,7 @@ from .views import (
     CuotaViewSet,
     EventoAsistenciaViewSet, DetalleAsistenciaViewSet,
     VoluntarioExternoViewSet, RankingAsistenciaViewSet, CicloAsistenciaViewSet,
-    LogoCompaniaViewSet, ItemInventarioViewSet,
+    LogoCompaniaViewSet, ItemInventarioViewSet, AcuerdoOrganoViewSet,
 )
 from .sancion_views import SancionViewSet, ReintegroViewSet
 from .views_tesoreria import (
@@ -31,6 +31,7 @@ router.register(r'cargos', CargoViewSet, basename='cargo')
 router.register(r'sanciones', SancionViewSet, basename='sancion')
 router.register(r'reintegros', ReintegroViewSet, basename='reintegro')
 router.register(r'felicitaciones', FelicitacionViewSet, basename='felicitacion')
+router.register(r'acuerdos', AcuerdoOrganoViewSet, basename='acuerdo')
 
 # Asistencias básicas (TODO: Descomentar cuando existan serializers)
 # router.register(r'tipos-asistencia', TipoAsistenciaViewSet, basename='tipo-asistencia')

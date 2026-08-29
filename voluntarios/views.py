@@ -14,7 +14,7 @@ from .models import (
     RankingAsistencia, CicloAsistencia,
     Uniforme, PiezaUniforme, Cuota, PagoCuota,
     Beneficio, AsignacionBeneficio, PagoBeneficio,
-    LogoCompania, ItemInventario
+    LogoCompania, ItemInventario, AcuerdoOrgano
 )
 
 from .serializers import (
@@ -25,7 +25,7 @@ from .serializers import (
     RankingAsistenciaSerializer, CicloAsistenciaSerializer,
     UniformeSerializer, CrearUniformeSerializer, CuotaSerializer, PagoCuotaSerializer,
     BeneficioSerializer, AsignacionBeneficioSerializer, PagoBeneficioSerializer,
-    LogoCompaniaSerializer, ItemInventarioSerializer
+    LogoCompaniaSerializer, ItemInventarioSerializer, AcuerdoOrganoSerializer
 )
 
 # Importar serializers de sanciones desde el archivo dedicado
@@ -233,6 +233,51 @@ class CargoViewSet(viewsets.ModelViewSet):
             'total': cargos_anio.count(),
             'por_tipo': por_tipo,
         })
+
+
+# ==================== ACUERDOS DE ASAMBLEA / DIRECTORIO ====================
+
+class AcuerdoOrganoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints para el registro acumulativo de Acuerdos de Asamblea/Directorio
+    """
+    queryset = AcuerdoOrgano.objects.all()
+    serializer_class = AcuerdoOrganoSerializer
+    permission_classes = [PermisosPorModulo]
+    modulo_permisos = 'asistencias'
+    acciones_permisos = {
+        'pdf_acuerdos': 'view',
+    }
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['tipo_organo', 'tipo_sesion']
+    ordering_fields = ['fecha_acuerdo']
+    ordering = ['fecha_acuerdo']
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['get'])
+    def pdf_acuerdos(self, request):
+        """Genera el PDF con todos los acuerdos de un órgano (asamblea/directorio)"""
+        from django.http import HttpResponse
+        from .pdf_directorio import generar_pdf_acuerdos
+
+        tipo_organo = request.query_params.get('tipo_organo')
+        if tipo_organo not in ('asamblea', 'directorio'):
+            return Response({'error': 'tipo_organo debe ser "asamblea" o "directorio"'}, status=400)
+
+        try:
+            acuerdos = self.queryset.filter(tipo_organo=tipo_organo)
+            pdf_buffer = generar_pdf_acuerdos(tipo_organo, acuerdos)
+            nombre_archivo = f"Acuerdos_{tipo_organo.capitalize()}.pdf"
+            response = HttpResponse(pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+            return response
+        except Exception as e:
+            print(f"[PDF ACUERDOS ERROR] {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
 
 
 # ==================== SANCIONES ====================

@@ -8,7 +8,7 @@ from .models import (
     Beneficio, AsignacionBeneficio, PagoBeneficio, Felicitacion,
     EventoAsistencia, DetalleAsistencia, VoluntarioExterno, RankingAsistencia, CicloAsistencia,
     ConfiguracionCuotas, EstadoCuotasBombero, MovimientoFinanciero, CicloCuotas,
-    LogoCompania, ItemInventario
+    LogoCompania, ItemInventario, AcuerdoOrgano
 )
 
 
@@ -582,6 +582,13 @@ class SancionSerializer(serializers.ModelSerializer):
     
     def get_voluntario_nombre(self, obj):
         return obj.voluntario.nombre_completo()
+
+
+class AcuerdoOrganoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcuerdoOrgano
+        fields = '__all__'
+        read_only_fields = ['created_at', 'created_by']
 
 
 class UserSerializer(serializers.ModelSerializer):

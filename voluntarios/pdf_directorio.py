@@ -3,6 +3,7 @@ Generación de PDF del Acta de Directorio de Compañía.
 Sigue el formato del acta institucional de la 6ta Compañía de Bomberos Puerto Montt.
 """
 import base64
+from datetime import date
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -25,6 +26,10 @@ ANCHO, ALTO = A4
 
 def _formatear_fecha(fecha):
     return f"{fecha.day} de {MESES[fecha.month - 1]} de {fecha.year}"
+
+
+def _formatear_fecha_corta(fecha):
+    return f"{fecha.day:02d}/{fecha.month:02d}/{fecha.year}"
 
 
 def _formatear_hora(hora):
@@ -58,6 +63,58 @@ def _buscar_nombre_por_cargo(asistentes, palabras_clave):
         if any(palabra in cargo for palabra in palabras_clave):
             return asistente.nombre_completo
     return None
+
+
+def _obtener_timbre_asamblea():
+    """Carga el timbre 'Acta Aprobada' de Asamblea desde los archivos estáticos."""
+    try:
+        from django.contrib.staticfiles import finders
+        ruta = finders.find('images/timbre-acta-asamblea.jpg')
+        if not ruta:
+            return None
+        return ImageReader(ruta)
+    except Exception:
+        return None
+
+
+def _dibujar_timbre_asamblea(c, x, y, diametro, fecha):
+    """
+    Dibuja el timbre circular 'Acta Aprobada' de Asamblea (esquina inferior
+    izquierda del rect en (x, y), tamaño diametro x diametro), con la fecha
+    superpuesta sobre la línea en blanco que trae la imagen.
+    """
+    timbre = _obtener_timbre_asamblea()
+    if not timbre:
+        return
+    c.drawImage(timbre, x, y, width=diametro, height=diametro, mask='auto', preserveAspectRatio=True)
+    if fecha:
+        texto_fecha = f"{fecha.day:02d}/{fecha.month:02d}/{fecha.year}"
+        y_texto = y + diametro * 0.42
+        c.setFont('Helvetica-Bold', max(7, diametro * 0.045))
+        c.setFillColorRGB(0.05, 0.15, 0.45)
+        c.drawCentredString(x + diametro / 2, y_texto, texto_fecha)
+        c.setFillColorRGB(0, 0, 0)
+
+
+def _obtener_secretario_director_vigentes():
+    """Busca quién ejerce hoy los cargos de Secretario y Director de Compañía."""
+    try:
+        from .models import Cargo
+        hoy_query = Cargo.objects.filter(
+            tipo_cargo='compania', nombre_cargo__in=['Secretario', 'Director']
+        ).select_related('voluntario')
+
+        secretario = None
+        director = None
+        for cargo in hoy_query:
+            nombre = cargo.voluntario.nombre_completo() if hasattr(cargo.voluntario, 'nombre_completo') else str(cargo.voluntario)
+            if cargo.nombre_cargo == 'Secretario' and not secretario:
+                secretario = nombre
+            elif cargo.nombre_cargo == 'Director' and not director:
+                director = nombre
+        return secretario or '', director or ''
+    except Exception:
+        return '', ''
 
 
 def _truncar_texto(c, texto, ancho_max, fuente='Helvetica', tamano=9):
@@ -343,7 +400,7 @@ def generar_pdf_acta_directorio(evento):
     return buffer
 
 
-def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro_texto):
+def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro_texto, mostrar_timbre=False):
     """
     Bloque compartido entre el acta de Directorio y de Asamblea: resumen de
     temas a tratar, desarrollo de cada tema (siempre cerrando con "Varios" si
@@ -408,6 +465,11 @@ def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_direc
     ancho_firma = 70 * mm
     x_izq = MARGEN + 5 * mm
     x_der = ANCHO - MARGEN - ancho_firma - 5 * mm
+
+    if mostrar_timbre:
+        diametro_timbre = 26 * mm
+        x_timbre = x_der + ancho_firma / 2 - diametro_timbre / 2
+        _dibujar_timbre_asamblea(c, x_timbre, p.y + 4, diametro_timbre, evento.fecha)
 
     c.setFont('Helvetica-Bold', 10)
     c.drawCentredString(x_izq + ancho_firma / 2, p.y, nombre_secretario)
@@ -527,7 +589,142 @@ def generar_pdf_acta_asamblea(evento):
         "Dando comienzo a ésta asamblea, se inicia la sesión con el resumen de puntos "
         "tratados en el Directorio del Cuerpo de Bomberos realizado recientemente."
     )
-    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro)
+    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro, mostrar_timbre=True)
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+def generar_pdf_acuerdos(tipo_organo, acuerdos):
+    """
+    Genera el PDF con el registro acumulado de Acuerdos de Asamblea o Directorio
+    de Compañía (formato "ACTA - ACUERDOS DE ... - REGISTRO DE ACUERDOS").
+
+    Args:
+        tipo_organo: 'asamblea' o 'directorio'
+        acuerdos: queryset/iterable de AcuerdoOrgano ordenado por fecha
+
+    Returns:
+        BytesIO: buffer con el PDF generado
+    """
+    etiqueta = 'ASAMBLEA' if tipo_organo == 'asamblea' else 'DIRECTORIO'
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle(f"Acuerdos de {etiqueta.capitalize()} de Compañía")
+    p = _PaginadorPDF(c)
+
+    nombre_secretario, nombre_director = _obtener_secretario_director_vigentes()
+
+    # ---- ENCABEZADO ----
+    logo = _obtener_logo_pdf()
+    if logo:
+        logo_tam = 15 * mm
+        c.drawImage(
+            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
+        )
+
+    p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=16)
+    if nombre_director:
+        p.linea(f"DIRECTOR {nombre_director.upper()}", centrado=True, negrita=True, tamano=9, salto=13)
+    p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=14)
+    c.setLineWidth(0.6)
+    c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
+    p.y -= 16
+
+    # ---- TÍTULO ----
+    barra_alto = 18
+    c.setFillColorRGB(0.85, 0.85, 0.85)
+    c.rect(MARGEN, p.y - barra_alto + 4, ANCHO - 2 * MARGEN, barra_alto, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont('Helvetica-Bold', 11)
+    c.drawCentredString(ANCHO / 2, p.y - barra_alto + 9, f"ACTA - ACUERDOS DE {etiqueta} DE COMPAÑÍA")
+    p.y -= barra_alto + 14
+
+    # ---- SUBTÍTULO ----
+    barra_alto2 = 16
+    c.setFillColorRGB(0.85, 0.85, 0.85)
+    c.rect(MARGEN, p.y - barra_alto2 + 4, ANCHO - 2 * MARGEN, barra_alto2, fill=1, stroke=1)
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont('Helvetica-Bold', 10)
+    c.drawCentredString(ANCHO / 2, p.y - barra_alto2 + 8, "REGISTRO DE ACUERDOS")
+    p.y -= barra_alto2 + 10
+
+    # ---- TABLA ----
+    x0 = MARGEN
+    w_total = ANCHO - 2 * MARGEN
+    col1_w = 28 * mm
+    col2_w = 42 * mm
+    col3_w = w_total - col1_w - col2_w
+    fila_alto_min = 16
+
+    def dibujar_header_tabla():
+        c.setFillColorRGB(0.93, 0.95, 0.98)
+        c.rect(x0, p.y - fila_alto_min + 4, w_total, fila_alto_min, fill=1, stroke=1)
+        c.setFillColorRGB(0, 0, 0)
+        c.setFont('Helvetica-Bold', 8)
+        c.drawCentredString(x0 + col1_w / 2, p.y - fila_alto_min + 9, "Fecha de Acuerdo")
+        c.drawCentredString(x0 + col1_w + col2_w / 2, p.y - fila_alto_min + 9, f"Tipo {etiqueta.capitalize()}")
+        c.drawCentredString(x0 + col1_w + col2_w + col3_w / 2, p.y - fila_alto_min + 9, "Glosa de Acuerdo")
+        p.y -= fila_alto_min
+
+    p.asegurar_espacio(fila_alto_min * 3)
+    dibujar_header_tabla()
+
+    acuerdos = list(acuerdos)
+    if not acuerdos:
+        p.linea("Sin acuerdos registrados.", tamano=9, salto=14)
+    else:
+        for acuerdo in acuerdos:
+            lineas_glosa = simpleSplit(acuerdo.glosa or '', 'Helvetica', 8, col3_w - 8) or ['']
+            alto_fila = max(fila_alto_min, len(lineas_glosa) * 10 + 6)
+
+            if p.y - alto_fila < MARGEN:
+                p.nueva_pagina()
+                dibujar_header_tabla()
+
+            y_fila_top = p.y
+            y_fila_bottom = p.y - alto_fila
+
+            c.setLineWidth(0.6)
+            c.rect(x0, y_fila_bottom, col1_w, alto_fila)
+            c.rect(x0 + col1_w, y_fila_bottom, col2_w, alto_fila)
+            c.rect(x0 + col1_w + col2_w, y_fila_bottom, col3_w, alto_fila)
+
+            c.setFont('Helvetica', 8)
+            c.drawCentredString(x0 + col1_w / 2, y_fila_top - 12, _formatear_fecha_corta(acuerdo.fecha_acuerdo))
+            c.drawCentredString(x0 + col1_w + col2_w / 2, y_fila_top - 12, acuerdo.get_tipo_sesion_display())
+
+            ty = y_fila_top - 12
+            for linea in lineas_glosa:
+                c.drawString(x0 + col1_w + col2_w + 4, ty, linea)
+                ty -= 10
+
+            p.y -= alto_fila
+
+    p.espacio(20)
+
+    # ---- FIRMAS ----
+    p.asegurar_espacio(90 + 50 + 26)
+    p.y -= 90
+    ancho_firma = 70 * mm
+    x_izq = MARGEN + 5 * mm
+    x_der = ANCHO - MARGEN - ancho_firma - 5 * mm
+
+    if tipo_organo == 'asamblea':
+        diametro_timbre = 26 * mm
+        x_timbre = x_der + ancho_firma / 2 - diametro_timbre / 2
+        _dibujar_timbre_asamblea(c, x_timbre, p.y + 4, diametro_timbre, date.today())
+
+    c.setFont('Helvetica-Bold', 10)
+    c.drawCentredString(x_izq + ancho_firma / 2, p.y, nombre_secretario)
+    c.drawCentredString(x_der + ancho_firma / 2, p.y, nombre_director)
+    p.y -= 14
+    c.setFont('Helvetica-Oblique', 9)
+    c.drawCentredString(x_izq + ancho_firma / 2, p.y, "Secretario")
+    c.drawCentredString(x_der + ancho_firma / 2, p.y, "Director")
 
     c.save()
     buffer.seek(0)

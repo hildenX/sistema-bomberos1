@@ -125,6 +125,8 @@ urlpatterns = [
     path('listado-sanciones.html', template('sanciones/listado.html'), name='listado_sanciones'),
     path('cargos.html', template('cargos/lista.html'), name='cargos'),
     path('registro-directorio.html', template('asistencias/registro-directorio.html'), name='registro_directorio'),
+    path('registro-acuerdos-asamblea.html', template('asistencias/registro-acuerdos-asamblea.html'), name='registro_acuerdos_asamblea'),
+    path('registro-acuerdos-directorio.html', template('asistencias/registro-acuerdos-directorio.html'), name='registro_acuerdos_directorio'),
     path('felicitaciones.html', template('felicitaciones/lista.html'), name='felicitaciones'),
     
     # ==================== UNIFORMES ====================

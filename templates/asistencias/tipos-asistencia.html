@@ -64,6 +64,16 @@
             background: linear-gradient(135deg, #1c1c1c 0%, rgba(96,125,139,0.1) 100%);
         }
 
+        .tipo-card.acuerdos-asamblea {
+            border-color: #eab308;
+            background: linear-gradient(135deg, #1c1c1c 0%, rgba(234,179,8,0.1) 100%);
+        }
+
+        .tipo-card.acuerdos-directorio {
+            border-color: #22c55e;
+            background: linear-gradient(135deg, #1c1c1c 0%, rgba(34,197,94,0.1) 100%);
+        }
+
         .tipo-icono {
             font-size: 5rem;
             margin-bottom: 20px;
@@ -178,6 +188,24 @@
                 <div class="tipo-titulo">DIRECTORIO DE CIA.</div>
                 <div class="tipo-descripcion">
                     Reuniones del directorio de compañía (solo oficiales y cargos de confianza)
+                </div>
+            </div>
+
+            <!-- ACUERDOS DE ASAMBLEA -->
+            <div class="tipo-card acuerdos-asamblea" onclick="window.location.href='registro-acuerdos-asamblea.html'">
+                <span class="tipo-icono"></span>
+                <div class="tipo-titulo">ACUERDOS DE ASAMBLEA</div>
+                <div class="tipo-descripcion">
+                    Registro acumulativo de acuerdos tomados en asamblea
+                </div>
+            </div>
+
+            <!-- ACUERDOS DE DIRECTORIO -->
+            <div class="tipo-card acuerdos-directorio" onclick="window.location.href='registro-acuerdos-directorio.html'">
+                <span class="tipo-icono"></span>
+                <div class="tipo-titulo">ACUERDOS DE DIRECTORIO</div>
+                <div class="tipo-descripcion">
+                    Registro acumulativo de acuerdos tomados en directorio
                 </div>
             </div>
         </div>

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acuerdos de Directorio - Sistema Bomberos</title>
+
+    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/asistencias-cargos.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
+    <style>
+        .tabla-acuerdos-wrap { overflow-x: auto; }
+        .tabla-acuerdos { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .tabla-acuerdos th {
+            background: #161616; padding: 10px 12px; text-align: left; color: #999;
+            font-weight: 700; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .tabla-acuerdos td { padding: 10px 12px; border-bottom: 1px solid #2a2a2a; color: #f0f0f0; vertical-align: top; }
+        .tabla-acuerdos tr:last-child td { border-bottom: none; }
+        .tabla-acuerdos tr:hover td { background: #1a1a1a; }
+        .acuerdo-acciones { white-space: nowrap; }
+        .sin-acuerdos { text-align: center; color: #888; font-style: italic; padding: 20px; }
+        .btn-mini.btn-danger { background: #7f1d1d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="page-container asistencias-page">
+        <div class="container">
+            <div class="page-header asistencias-header" style="background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);">
+                <button type="button" class="btn btn-volver" onclick="window.location.href='tipos-asistencia.html'" style="position: absolute; left: 20px; top: 20px;">
+                    ← Volver
+                </button>
+                <div class="header-logo" style="margin-bottom: 15px;">
+                    <img id="logoHeader" src="{% static 'images/logo.png' %}" alt="Logo Bomberos" style="height: 80px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                </div>
+                <h2>ACUERDOS DE DIRECTORIO DE COMPAÑÍA</h2>
+                <p>Registro acumulativo de acuerdos tomados en directorio</p>
+            </div>
+
+            <div class="page-content">
+                <div class="datos-emergencia">
+                    <h3 id="tituloFormAcuerdo">Agregar Acuerdo</h3>
+
+                    <form id="formAcuerdo" onsubmit="acuerdosSistema.guardarAcuerdo(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fechaAcuerdo">Fecha del Acuerdo <span class="required">*</span></label>
+                                <input type="date" id="fechaAcuerdo" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tipoSesionAcuerdo">Tipo de Directorio <span class="required">*</span></label>
+                                <select id="tipoSesionAcuerdo" required>
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="ordinaria">Ordinaria</option>
+                                    <option value="extraordinaria">Extraordinaria</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="glosaAcuerdo">Glosa de Acuerdo <span class="required">*</span></label>
+                                <textarea id="glosaAcuerdo" rows="3" placeholder="Detalle del acuerdo tomado..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="botones-accion" style="justify-content: flex-start; padding: 20px 0 0;">
+                            <button type="submit" class="btn btn-success" id="btnGuardarAcuerdo">+ Agregar Acuerdo</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelarEdicion" style="display:none;" onclick="acuerdosSistema.cancelarEdicion()">Cancelar edición</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="datos-emergencia">
+                    <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <h3 style="margin:0;">Registro de Acuerdos</h3>
+                        <button type="button" class="btn btn-success" onclick="acuerdosSistema.descargarPdf()">📄 Descargar PDF</button>
+                    </div>
+
+                    <div class="tabla-acuerdos-wrap" style="margin-top: 16px;">
+                        <table class="tabla-acuerdos">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Glosa de Acuerdo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaAcuerdosBody">
+                                <tr><td colspan="4" class="sin-acuerdos">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/auth_django.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/acuerdos-django.js' %}?v=1.0"></script>
+    <script>
+        let acuerdosSistema;
+        window.addEventListener('load', function() {
+            acuerdosSistema = new SistemaAcuerdos('directorio');
+        });
+    </script>
+    <script src="{% static 'js/cargar-logo-header.js' %}?v=1.1"></script>
+</body>
+</html>
