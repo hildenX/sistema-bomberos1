@@ -92,9 +92,9 @@ def _dibujar_timbre_asamblea(c, x, y, diametro, fecha):
         # La línea en blanco de la imagen no queda al centro del círculo: el
         # texto "FECHA:" la corre hacia la derecha, así que el número se
         # centra sobre ESA línea (≈63% del ancho), no sobre todo el timbre.
-        x_texto = x + diametro * 0.63
+        x_texto = x + diametro * 0.58
         y_texto = y + diametro * 0.415
-        c.setFont('Helvetica-Bold', max(7, diametro * 0.045))
+        c.setFont('Helvetica-Bold', max(7, diametro * 0.038))
         c.setFillColorRGB(0.05, 0.15, 0.45)
         c.drawCentredString(x_texto, y_texto, texto_fecha)
         c.setFillColorRGB(0, 0, 0)
