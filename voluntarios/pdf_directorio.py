@@ -69,7 +69,7 @@ def _obtener_timbre_asamblea():
     """Carga el timbre 'Acta Aprobada' de Asamblea desde los archivos estáticos."""
     try:
         from django.contrib.staticfiles import finders
-        ruta = finders.find('images/timbre-acta-asamblea.jpg')
+        ruta = finders.find('images/timbre-acta-asamblea.png')
         if not ruta:
             return None
         return ImageReader(ruta)
@@ -464,11 +464,6 @@ def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_direc
     espacio_timbre = (diametro_timbre + 10) if mostrar_timbre else 0
     p.asegurar_espacio(90 + 50 + 26 + espacio_timbre)
 
-    if mostrar_timbre:
-        x_timbre = ANCHO / 2 - diametro_timbre / 2
-        _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre, evento.fecha)
-        p.y -= espacio_timbre
-
     p.y -= 90
     ancho_firma = 70 * mm
     x_izq = MARGEN + 5 * mm
@@ -481,7 +476,14 @@ def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_direc
     c.setFont('Helvetica-Oblique', 9)
     c.drawCentredString(x_izq + ancho_firma / 2, p.y, "Secretario")
     c.drawCentredString(x_der + ancho_firma / 2, p.y, "Director")
-    p.y -= 26
+    p.y -= 10
+
+    if mostrar_timbre:
+        x_timbre = ANCHO / 2 - diametro_timbre / 2
+        _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre, evento.fecha)
+        p.y -= espacio_timbre
+
+    p.y -= 16
 
     p.linea("Dist:", tamano=9, salto=12)
     p.linea("- Archivos de Cía.", tamano=9, salto=14)
@@ -714,11 +716,6 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     espacio_timbre = (diametro_timbre + 10) if tipo_organo == 'asamblea' else 0
     p.asegurar_espacio(90 + 50 + 26 + espacio_timbre)
 
-    if tipo_organo == 'asamblea':
-        x_timbre = ANCHO / 2 - diametro_timbre / 2
-        _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre, date.today())
-        p.y -= espacio_timbre
-
     p.y -= 90
     ancho_firma = 70 * mm
     x_izq = MARGEN + 5 * mm
@@ -731,6 +728,12 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     c.setFont('Helvetica-Oblique', 9)
     c.drawCentredString(x_izq + ancho_firma / 2, p.y, "Secretario")
     c.drawCentredString(x_der + ancho_firma / 2, p.y, "Director")
+    p.y -= 10
+
+    if tipo_organo == 'asamblea':
+        x_timbre = ANCHO / 2 - diametro_timbre / 2
+        _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre, date.today())
+        p.y -= espacio_timbre
 
     c.save()
     buffer.seek(0)
