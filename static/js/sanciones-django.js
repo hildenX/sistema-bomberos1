@@ -689,116 +689,136 @@ class SistemaSanciones {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.getWidth();
-            
-            // ==================== HEADER NEGRO ====================
-            doc.setFillColor(0, 0, 0);
-            doc.rect(0, 0, pageWidth, 50, 'F');
-            
-            // Foto del voluntario (izquierda)
-            if (this.bomberoActual.foto) {
-                try {
-                    doc.addImage(this.bomberoActual.foto, 'JPEG', 10, 10, 30, 30);
-                } catch (e) {
-                    console.warn('No se pudo cargar foto del voluntario');
-                }
-            }
-            
-            // Logo de bomberos (derecha)
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            // Paleta institucional (igual que Cargos): azul marino + guinda,
+            // marco de página, sin header negro ni barras "app".
+            const AZUL = [15, 35, 70];
+            const GUINDA = [110, 18, 34];
+            const TEXTO = [25, 25, 25];
+            const TEXTO_SUAVE = [95, 95, 95];
+            const MARGEN = 12;
+            const xIzq = MARGEN + 6;
+            const xDer = pageWidth - MARGEN - 6;
+            const anchoUtil = xDer - xIzq;
+
+            const dibujarMarco = () => {
+                doc.setDrawColor(...AZUL);
+                doc.setLineWidth(0.6);
+                doc.rect(MARGEN, MARGEN, pageWidth - 2 * MARGEN, pageHeight - 2 * MARGEN);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('Chorrillos 1339 - Fono 65-2252666 - Puerto Montt', pageWidth / 2, pageHeight - MARGEN - 4, { align: 'center' });
+            };
+
+            dibujarMarco();
+
+            let yPos = MARGEN + 14;
+
+            // ========== ENCABEZADO INSTITUCIONAL ==========
             const logoCompania = localStorage.getItem('logoCompania');
             if (logoCompania) {
-                try {
-                    doc.addImage(logoCompania, 'PNG', pageWidth - 40, 10, 30, 30);
-                } catch (e) {
-                    console.warn('No se pudo cargar logo de compañía');
-                }
+                try { doc.addImage(logoCompania, 'PNG', xDer - 18, yPos - 10, 18, 18); } catch (e) { /* sin logo, no es crítico */ }
             }
-            
-            // Título "CERTIFICADO DE SANCIONES"
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.setFont('helvetica', 'bold');
-            doc.text('CERTIFICADO DE SANCIONES', pageWidth / 2, 25, { align: 'center' });
-            
-            // Subtítulo "Cuerpo de Bomberos"
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Cuerpo de Bomberos', pageWidth / 2, 33, { align: 'center' });
-            
-            // Fecha
+
+            doc.setFont('times', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(...TEXTO);
+            doc.text('SEXTA COMPAÑIA DE BOMBEROS PUERTO MONTT', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+            doc.setFont('times', 'italic');
             doc.setFontSize(10);
-            const fechaHoy = new Date().toLocaleDateString('es-CL', { 
-                day: '2-digit', 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            doc.text(fechaHoy, pageWidth / 2, 42, { align: 'center' });
-            
-            // ==================== DATOS DEL VOLUNTARIO ====================
-            let y = 65;
-            
-            // Header rojo "DATOS DEL VOLUNTARIO"
-            doc.setFillColor(196, 30, 58); // Rojo bomberos
-            doc.rect(15, y, pageWidth - 30, 10, 'F');
-            
+            doc.text('"Abnegación y Constancia"', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.3);
+            doc.line(xIzq, yPos, xDer, yPos);
+            yPos += 12;
+
+            // ========== TÍTULO DEL CERTIFICADO ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 9, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('DATOS DEL VOLUNTARIO', pageWidth / 2, y + 7, { align: 'center' });
-            
-            // Contenido - fondo blanco
-            y += 10;
-            doc.setFillColor(255, 255, 255);
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(15, y, pageWidth - 30, 35, 'FD');
-            
-            y += 8;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            
-            doc.text(`Nombre: ${this.bomberoActual.nombreCompleto}`, pageWidth / 2, y, { align: 'center' });
-            y += 6;
-            doc.text(`Clave Bombero: ${this.bomberoActual.claveBombero}`, pageWidth / 2, y, { align: 'center' });
-            y += 6;
-            doc.text(`N° Registro: ${this.bomberoActual.nroRegistro || 'N/A'}`, pageWidth / 2, y, { align: 'center' });
-            y += 6;
-            doc.text(`RUN: ${this.bomberoActual.rut}`, pageWidth / 2, y, { align: 'center' });
-            y += 6;
-            doc.text(`Compañía: ${this.bomberoActual.compania || 'N/A'}`, pageWidth / 2, y, { align: 'center' });
-            
-            // ==================== SANCIONES DISCIPLINARIAS ====================
-            y += 15;
-            
-            // Header rojo "SANCIONES DISCIPLINARIAS REGISTRADAS"
-            doc.setFillColor(196, 30, 58);
-            doc.rect(15, y, pageWidth - 30, 10, 'F');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SANCIONES DISCIPLINARIAS REGISTRADAS', pageWidth / 2, y + 7, { align: 'center' });
-            
-            y += 15;
-            
-            // Lista de sanciones
-            if (this.sanciones.length === 0) {
-                doc.setTextColor(100, 100, 100);
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'italic');
-                doc.text('No hay sanciones registradas', pageWidth / 2, y + 10, { align: 'center' });
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12.5);
+            doc.text('CERTIFICADO DE SANCIONES DISCIPLINARIAS', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 16;
+
+            // ========== FOTO Y DATOS DEL VOLUNTARIO ==========
+            const fotoAncho = 28;
+            const fotoAlto = 34;
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.4);
+            doc.rect(xIzq, yPos, fotoAncho, fotoAlto);
+            if (this.bomberoActual.foto) {
+                try {
+                    doc.addImage(this.bomberoActual.foto, 'JPEG', xIzq + 0.6, yPos + 0.6, fotoAncho - 1.2, fotoAlto - 1.2);
+                } catch (e) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(...TEXTO_SUAVE);
+                    doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
+                }
             } else {
-                this.sanciones.forEach((sancion, index) => {
-                    if (y > 250) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
+            }
+
+            const datosX = xIzq + fotoAncho + 8;
+            let datosY = yPos + 5;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...TEXTO_SUAVE);
+            doc.text('NOMBRE', datosX, datosY);
+            datosY += 5.5;
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(...TEXTO);
+            doc.text(this.bomberoActual.nombreCompleto || '', datosX, datosY);
+            datosY += 7;
+
+            const filasDatos = [
+                ['Clave Bombero', this.bomberoActual.claveBombero || 'N/A'],
+                ['N° de Registro', this.bomberoActual.nroRegistro || 'N/A'],
+                ['RUN', this.bomberoActual.rut || 'N/A'],
+                ['Compañía', this.bomberoActual.compania || 'N/A'],
+            ];
+            doc.setFontSize(9.5);
+            filasDatos.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`${label}:`, datosX, datosY);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...TEXTO);
+                doc.text(String(value), datosX + 32, datosY);
+                datosY += 5.5;
+            });
+
+            yPos += fotoAlto + 12;
+
+            // ========== TABLA DE SANCIONES ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(11);
+            doc.text('SANCIONES DISCIPLINARIAS REGISTRADAS', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+
+            if (this.sanciones.length === 0) {
+                doc.setFont('helvetica', 'italic');
+                doc.setFontSize(10);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('No hay sanciones registradas.', pageWidth / 2, yPos + 6, { align: 'center' });
+                yPos += 16;
+            } else {
+                const filasSanciones = this.sanciones.map((sancion, index) => {
                     const tipoInfo = this.obtenerInfoTipoSancion(sancion.tipo_sancion);
-                    const anio = sancion.fecha_desde ? new Date(sancion.fecha_desde).getFullYear() : '';
-                    
-                    // Determinar duración según tipo de sanción
+
                     let duracionTexto = 'N/A';
-                    switch(sancion.tipo_sancion) {
+                    switch (sancion.tipo_sancion) {
                         case 'suspension':
                             duracionTexto = sancion.dias_sancion ? `${sancion.dias_sancion} días` : 'N/A';
                             break;
@@ -812,85 +832,77 @@ class SistemaSanciones {
                             duracionTexto = '2 años';
                             break;
                     }
-                    
-                    // Barra roja lateral
-                    doc.setFillColor(196, 30, 58);
-                    doc.rect(20, y, 3, 40, 'F');
-                    
-                    // Contenido de la sanción
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(11);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(`${index + 1}. ${tipoInfo.nombre} (${anio})`, 28, y + 6);
-                    
-                    y += 10;
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'normal');
-                    
-                    // Desde y Hasta
-                    let detalles = `Desde: ${Utils.formatearFecha(sancion.fecha_desde)}`;
-                    if (sancion.fecha_hasta) {
-                        detalles += ` | Hasta: ${Utils.formatearFecha(sancion.fecha_hasta)}`;
-                    } else {
-                        detalles += ' | Estado: Indefinida';
-                    }
-                    doc.text(detalles, 28, y);
-                    
-                    y += 6;
-                    doc.text(`Oficio N°: ${sancion.oficio_numero}`, 28, y);
-                    
-                    y += 6;
-                    doc.text(`Duración: ${duracionTexto}`, 28, y);
-                    
-                    // Solo mostrar Compañía si existe
-                    if (sancion.compania_autoridad) {
-                        y += 6;
-                        doc.text(`Compañía: ${sancion.compania_autoridad}`, 28, y);
-                    }
-                    
-                    // Solo mostrar Autoridad si existe
-                    if (sancion.autoridad_sancionatoria) {
-                        y += 6;
-                        doc.text(`Autoridad: ${sancion.autoridad_sancionatoria}`, 28, y);
-                    }
-                    
-                    y += 6;
-                    
-                    // Observación (motivo)
-                    const motivoLines = doc.splitTextToSize(`Obs: ${sancion.motivo}`, 160);
-                    doc.text(motivoLines, 28, y);
-                    
-                    y += (motivoLines.length * 5) + 15;
+
+                    let periodo = Utils.formatearFecha(sancion.fecha_desde);
+                    periodo += sancion.fecha_hasta ? `\na ${Utils.formatearFecha(sancion.fecha_hasta)}` : '\n(indefinida)';
+
+                    const autoridad = [sancion.compania_autoridad, sancion.autoridad_sancionatoria].filter(Boolean).join(' - ') || '—';
+
+                    return [
+                        String(index + 1),
+                        tipoInfo.nombre,
+                        periodo,
+                        duracionTexto,
+                        sancion.oficio_numero || '—',
+                        autoridad,
+                        sancion.motivo || '',
+                    ];
                 });
+
+                doc.autoTable({
+                    startY: yPos,
+                    margin: { left: xIzq, right: MARGEN + 6, bottom: MARGEN + 10 },
+                    head: [['N°', 'Tipo', 'Período', 'Duración', 'Oficio N°', 'Autoridad', 'Motivo']],
+                    body: filasSanciones,
+                    theme: 'grid',
+                    styles: { font: 'helvetica', fontSize: 8.5, textColor: TEXTO, lineColor: [195, 195, 200], lineWidth: 0.2, cellPadding: 2.5, valign: 'top' },
+                    headStyles: { fillColor: AZUL, textColor: 255, fontStyle: 'bold', halign: 'center' },
+                    alternateRowStyles: { fillColor: [246, 246, 248] },
+                    columnStyles: {
+                        0: { cellWidth: 8, halign: 'center' },
+                        1: { cellWidth: 20 },
+                        2: { cellWidth: 22, halign: 'center' },
+                        3: { cellWidth: 16, halign: 'center' },
+                        4: { cellWidth: 18, halign: 'center' },
+                        5: { cellWidth: 28 },
+                    },
+                    didDrawPage: () => dibujarMarco(),
+                });
+
+                yPos = doc.lastAutoTable.finalY + 10;
             }
-            
-            // ==================== FOOTER ====================
+
+            // ========== TEXTO DE CIERRE ==========
+            if (yPos > pageHeight - MARGEN - 30) {
+                doc.addPage();
+                dibujarMarco();
+                yPos = MARGEN + 20;
+            }
+
+            const fechaHoy = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO);
+            const textoCierre = `Se extiende el presente certificado a petición del interesado, para los fines que estime pertinentes, en Puerto Montt a ${fechaHoy}.`;
+            const lineasCierre = doc.splitTextToSize(textoCierre, anchoUtil);
+            doc.text(lineasCierre, xIzq, yPos);
+
+            // ========== NUMERACIÓN DE PÁGINAS ==========
             const totalPages = doc.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 doc.setPage(i);
+                doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.setFont('helvetica', 'italic');
-                
-                const footerText = 'Este certificado acredita las sanciones disciplinarias registradas del voluntario\nen el Cuerpo de Bomberos.';
-                const footerLines = footerText.split('\n');
-                
-                let footerY = doc.internal.pageSize.getHeight() - 20;
-                footerLines.forEach(line => {
-                    doc.text(line, pageWidth / 2, footerY, { align: 'center' });
-                    footerY += 4;
-                });
-                
-                // Número de página
-                doc.text(`Página ${i}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`Página ${i} de ${totalPages}`, xDer, pageHeight - MARGEN - 4, { align: 'right' });
             }
-            
+
             // Guardar PDF
-            const nombreArchivo = `Certificado_Sanciones_${this.bomberoActual.claveBombero}_${new Date().toISOString().split('T')[0]}.pdf`;
+            const nombreArchivo = `Certificado_Sanciones_${this.bomberoActual.claveBombero}.pdf`;
             doc.save(nombreArchivo);
-            
+
             Utils.mostrarNotificacion('Certificado PDF generado exitosamente', 'success');
-            
+
         } catch (error) {
             console.error('Error al generar PDF:', error);
             Utils.mostrarNotificacion('Error al generar PDF. Asegúrate de que jsPDF esté cargado.', 'error');

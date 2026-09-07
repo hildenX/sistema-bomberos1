@@ -565,185 +565,199 @@ class SistemaFelicitaciones {
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.width;
             const pageHeight = doc.internal.pageSize.height;
-            const margin = 20;
-            let yPos = 20;
-            let currentPage = 1;
 
-            // Obtener logo de compañía
+            // Paleta institucional (igual que Cargos y Sanciones): azul marino
+            // + guinda, marco de página, sin header a color ni barras "app".
+            const AZUL = [15, 35, 70];
+            const GUINDA = [110, 18, 34];
+            const TEXTO = [25, 25, 25];
+            const TEXTO_SUAVE = [95, 95, 95];
+            const MARGEN = 12;
+            const xIzq = MARGEN + 6;
+            const xDer = pageWidth - MARGEN - 6;
+            const anchoUtil = xDer - xIzq;
+
+            const dibujarMarco = () => {
+                doc.setDrawColor(...AZUL);
+                doc.setLineWidth(0.6);
+                doc.rect(MARGEN, MARGEN, pageWidth - 2 * MARGEN, pageHeight - 2 * MARGEN);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('Chorrillos 1339 - Fono 65-2252666 - Puerto Montt', pageWidth / 2, pageHeight - MARGEN - 4, { align: 'center' });
+            };
+
+            dibujarMarco();
+
+            let yPos = MARGEN + 14;
+
+            // ========== ENCABEZADO INSTITUCIONAL ==========
             const logoCompania = localStorage.getItem('logoCompania');
+            if (logoCompania) {
+                try { doc.addImage(logoCompania, 'PNG', xDer - 18, yPos - 10, 18, 18); } catch (e) { /* sin logo, no es crítico */ }
+            }
 
-            // Función para agregar encabezado
-            const addHeader = () => {
-                // Fondo verde para el encabezado
-                doc.setFillColor(40, 167, 69); // Verde
-                doc.rect(0, 0, pageWidth, 55, 'F');
-                
-                // FOTO DEL VOLUNTARIO (izquierda)
-                if (this.bomberoActual.foto) {
-                    try {
-                        doc.addImage(this.bomberoActual.foto, 'JPEG', 12, 13, 28, 28);
-                    } catch (error) {
-                        console.warn('No se pudo cargar la foto del voluntario');
-                    }
-                }
-                
-                // LOGO DE LA COMPAÑÍA (derecha)
-                if (logoCompania) {
-                    try {
-                        doc.addImage(logoCompania, 'PNG', pageWidth - 40, 13, 28, 28);
-                    } catch (error) {
-                        console.warn('No se pudo cargar el logo de la compañía');
-                    }
-                }
-                
-                // Título principal (centro)
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(17);
-                doc.setFont(undefined, 'bold');
-                doc.text('CERTIFICADO DE RECONOCIMIENTOS', pageWidth / 2, 20, { align: 'center' });
-                
-                // Subtítulo
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'normal');
-                doc.text('Cuerpo de Bomberos', pageWidth / 2, 30, { align: 'center' });
-                
-                // Fecha
-                doc.setFontSize(10);
-                doc.text(new Date().toLocaleDateString('es-CL', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric' 
-                }), pageWidth / 2, 45, { align: 'center' });
-                
-                return 65;
-            };
-
-            // Función para agregar footer
-            const addFooter = (pageNum, totalPages) => {
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'italic');
-                doc.setTextColor(120, 120, 120);
-                doc.text('Este certificado acredita las felicitaciones y reconocimientos otorgados al voluntario', pageWidth / 2, pageHeight - 15, { align: 'center' });
-                doc.text('en el Cuerpo de Bomberos', pageWidth / 2, pageHeight - 10, { align: 'center' });
-                doc.setFont(undefined, 'normal');
-                doc.text(`Página ${pageNum} de ${totalPages}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
-            };
-
-            // Calcular páginas necesarias
-            const itemsPerPage = 4;
-            const totalPages = Math.ceil(this.felicitaciones.length / itemsPerPage) || 1;
-
-            // Primera página - Encabezado y datos del bombero
-            yPos = addHeader();
-            
-            // DATOS DEL VOLUNTARIO
-            doc.setTextColor(0, 0, 0);
-            
-            // Título de sección con fondo verde
-            yPos += 10;
-            doc.setFillColor(40, 167, 69);
-            doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
-            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('DATOS DEL VOLUNTARIO', pageWidth / 2, yPos + 7, { align: 'center' });
-            
-            yPos += 20;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            
-            // Datos centrados
-            const fechaIngreso = this.bomberoActual.fechaIngreso || this.bomberoActual.fecha_ingreso;
-            const antiguedad = Utils.calcularAntiguedadDetallada(fechaIngreso);
+            doc.setTextColor(...TEXTO);
+            doc.text('SEXTA COMPAÑIA DE BOMBEROS PUERTO MONTT', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+            doc.setFont('times', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Abnegación y Constancia"', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.3);
+            doc.line(xIzq, yPos, xDer, yPos);
+            yPos += 12;
+
+            // ========== TÍTULO DEL CERTIFICADO ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 9, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12.5);
+            doc.text('CERTIFICADO DE FELICITACIONES Y RECONOCIMIENTOS', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 16;
+
+            // ========== FOTO Y DATOS DEL VOLUNTARIO ==========
             const nombreCompleto = Utils.obtenerNombreCompleto(this.bomberoActual);
             const claveBombero = this.bomberoActual.claveBombero || this.bomberoActual.clave_bombero;
             const nroRegistro = this.bomberoActual.nroRegistro || this.bomberoActual.nro_registro || 'N/A';
-            
-            doc.text(`Nombre: ${nombreCompleto}`, pageWidth / 2, yPos, { align: 'center' });
-            yPos += 6;
-            doc.text(`Clave Bombero: ${claveBombero}`, pageWidth / 2, yPos, { align: 'center' });
-            yPos += 6;
-            doc.text(`N° Registro: ${nroRegistro}`, pageWidth / 2, yPos, { align: 'center' });
-            yPos += 6;
-            doc.text(`RUN: ${this.bomberoActual.rut}`, pageWidth / 2, yPos, { align: 'center' });
-            yPos += 6;
-            doc.text(`Compañía: ${this.bomberoActual.compania}`, pageWidth / 2, yPos, { align: 'center' });
-            
-            yPos += 15;
 
-            // FELICITACIONES Y RECONOCIMIENTOS
-            doc.setFillColor(40, 167, 69);
-            doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('FELICITACIONES Y RECONOCIMIENTOS', pageWidth / 2, yPos + 7, { align: 'center' });
-            
-            yPos += 18;
-            doc.setTextColor(0, 0, 0);
-
-            // Listado de felicitaciones
-            this.felicitaciones.forEach((felicitacion, index) => {
-                const tipo = felicitacion.tipo_felicitacion || felicitacion.tipoFelicitacion;
-                const fechaFelicitacion = felicitacion.fecha_felicitacion || felicitacion.fechaFelicitacion;
-                const oficioNumero = felicitacion.oficio_numero || felicitacion.oficioNumero;
-                const autoridadOtorgante = felicitacion.autoridad_otorgante || felicitacion.autoridadOtorgante;
-                // Verificar si necesitamos nueva página
-                if (yPos > pageHeight - 60) {
-                    addFooter(currentPage, totalPages);
-                    doc.addPage();
-                    currentPage++;
-                    yPos = addHeader();
-                    yPos += 10;
+            const fotoAncho = 28;
+            const fotoAlto = 34;
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.4);
+            doc.rect(xIzq, yPos, fotoAncho, fotoAlto);
+            if (this.bomberoActual.foto) {
+                try {
+                    doc.addImage(this.bomberoActual.foto, 'JPEG', xIzq + 0.6, yPos + 0.6, fotoAncho - 1.2, fotoAlto - 1.2);
+                } catch (e) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(...TEXTO_SUAVE);
+                    doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
                 }
+            } else {
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
+            }
 
-                const tipoTexto = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-                const año = new Date(fechaFelicitacion).getFullYear();
+            const datosX = xIzq + fotoAncho + 8;
+            let datosY = yPos + 5;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...TEXTO_SUAVE);
+            doc.text('NOMBRE', datosX, datosY);
+            datosY += 5.5;
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(...TEXTO);
+            doc.text(nombreCompleto || '', datosX, datosY);
+            datosY += 7;
 
-                // Barra verde lateral
-                doc.setFillColor(40, 167, 69);
-                doc.rect(margin, yPos - 3, 4, 22, 'F');
-
-                // Número y título
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text(`${index + 1}. ${tipoTexto} (${año})`, margin + 8, yPos + 3);
-
-                yPos += 8;
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                
-                // Fecha
-                doc.text(`Fecha: ${Utils.formatearFecha(fechaFelicitacion)}`, margin + 8, yPos);
-                yPos += 5;
-
-                // Documento
-                doc.text(`Documento N°: ${oficioNumero}`, margin + 8, yPos);
-                yPos += 5;
-
-                // Autoridad si existe
-                if (autoridadOtorgante) {
-                    doc.text(`Otorgado por: ${autoridadOtorgante}`, margin + 8, yPos);
-                    yPos += 5;
-                }
-
-                // Descripción (truncada)
-                if (felicitacion.motivo) {
-                    const motivoCorto = felicitacion.motivo.length > 80 
-                        ? felicitacion.motivo.substring(0, 80) + '...' 
-                        : felicitacion.motivo;
-                    doc.text(`Mérito: ${motivoCorto}`, margin + 8, yPos);
-                    yPos += 5;
-                }
-
-                yPos += 8; // Espaciado entre felicitaciones
+            const filasDatos = [
+                ['Clave Bombero', claveBombero || 'N/A'],
+                ['N° de Registro', nroRegistro],
+                ['RUN', this.bomberoActual.rut || 'N/A'],
+                ['Compañía', this.bomberoActual.compania || 'N/A'],
+            ];
+            doc.setFontSize(9.5);
+            filasDatos.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`${label}:`, datosX, datosY);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...TEXTO);
+                doc.text(String(value), datosX + 32, datosY);
+                datosY += 5.5;
             });
 
-            // Footer de la última página
-            addFooter(currentPage, totalPages);
+            yPos += fotoAlto + 12;
 
-            doc.save(`Certificado_Felicitaciones_${claveBombero}_${new Date().toISOString().split('T')[0]}.pdf`);
+            // ========== TABLA DE FELICITACIONES ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(11);
+            doc.text('FELICITACIONES Y RECONOCIMIENTOS', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+
+            if (this.felicitaciones.length === 0) {
+                doc.setFont('helvetica', 'italic');
+                doc.setFontSize(10);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('No hay felicitaciones registradas.', pageWidth / 2, yPos + 6, { align: 'center' });
+                yPos += 16;
+            } else {
+                const filas = this.felicitaciones.map((felicitacion, index) => {
+                    const tipo = felicitacion.tipo_felicitacion || felicitacion.tipoFelicitacion || '';
+                    const fechaFelicitacion = felicitacion.fecha_felicitacion || felicitacion.fechaFelicitacion;
+                    const oficioNumero = felicitacion.oficio_numero || felicitacion.oficioNumero || '—';
+                    const autoridadOtorgante = felicitacion.autoridad_otorgante || felicitacion.autoridadOtorgante || '—';
+                    const tipoTexto = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : 'Reconocimiento';
+
+                    return [
+                        String(index + 1),
+                        tipoTexto,
+                        Utils.formatearFecha(fechaFelicitacion),
+                        oficioNumero,
+                        autoridadOtorgante,
+                        felicitacion.motivo || '',
+                    ];
+                });
+
+                doc.autoTable({
+                    startY: yPos,
+                    margin: { left: xIzq, right: MARGEN + 6, bottom: MARGEN + 10 },
+                    head: [['N°', 'Tipo', 'Fecha', 'Documento N°', 'Otorgado por', 'Mérito']],
+                    body: filas,
+                    theme: 'grid',
+                    styles: { font: 'helvetica', fontSize: 8.5, textColor: TEXTO, lineColor: [195, 195, 200], lineWidth: 0.2, cellPadding: 2.5, valign: 'top' },
+                    headStyles: { fillColor: AZUL, textColor: 255, fontStyle: 'bold', halign: 'center' },
+                    alternateRowStyles: { fillColor: [246, 246, 248] },
+                    columnStyles: {
+                        0: { cellWidth: 8, halign: 'center' },
+                        1: { cellWidth: 24 },
+                        2: { cellWidth: 20, halign: 'center' },
+                        3: { cellWidth: 22, halign: 'center' },
+                        4: { cellWidth: 30 },
+                    },
+                    didDrawPage: () => dibujarMarco(),
+                });
+
+                yPos = doc.lastAutoTable.finalY + 10;
+            }
+
+            // ========== TEXTO DE CIERRE ==========
+            if (yPos > pageHeight - MARGEN - 30) {
+                doc.addPage();
+                dibujarMarco();
+                yPos = MARGEN + 20;
+            }
+
+            const fechaHoy = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO);
+            const textoCierre = `Se extiende el presente certificado a petición del interesado, para los fines que estime pertinentes, en Puerto Montt a ${fechaHoy}.`;
+            const lineasCierre = doc.splitTextToSize(textoCierre, anchoUtil);
+            doc.text(lineasCierre, xIzq, yPos);
+
+            // ========== NUMERACIÓN DE PÁGINAS ==========
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`Página ${i} de ${totalPages}`, xDer, pageHeight - MARGEN - 4, { align: 'right' });
+            }
+
+            doc.save(`Certificado_Felicitaciones_${claveBombero}.pdf`);
             Utils.mostrarNotificacion('PDF generado exitosamente', 'success');
         } catch (error) {
             console.error('Error:', error);

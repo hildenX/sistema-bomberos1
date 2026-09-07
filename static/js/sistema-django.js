@@ -1320,256 +1320,189 @@ async cambiarEstadoBombero(id) {
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.width;
             const pageHeight = doc.internal.pageSize.height;
-            const margin = 20;
-            let yPos = 20;
 
-            // Obtener logo de compañía
+            // Paleta institucional (igual que Cargos/Sanciones/Felicitaciones):
+            // azul marino + guinda, marco de página, sin header negro.
+            const AZUL = [15, 35, 70];
+            const GUINDA = [110, 18, 34];
+            const TEXTO = [25, 25, 25];
+            const TEXTO_SUAVE = [95, 95, 95];
+            const MARGEN = 12;
+            const xIzq = MARGEN + 6;
+            const xDer = pageWidth - MARGEN - 6;
+            const anchoUtil = xDer - xIzq;
+
+            const dibujarMarco = () => {
+                doc.setDrawColor(...AZUL);
+                doc.setLineWidth(0.6);
+                doc.rect(MARGEN, MARGEN, pageWidth - 2 * MARGEN, pageHeight - 2 * MARGEN);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('Chorrillos 1339 - Fono 65-2252666 - Puerto Montt', pageWidth / 2, pageHeight - MARGEN - 4, { align: 'center' });
+            };
+
+            const dibujarSeccion = (titulo) => {
+                if (yPos > pageHeight - MARGEN - 30) {
+                    doc.addPage();
+                    dibujarMarco();
+                    yPos = MARGEN + 20;
+                }
+                doc.setFillColor(...GUINDA);
+                doc.rect(xIzq, yPos - 6, anchoUtil, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('times', 'bold');
+                doc.setFontSize(11);
+                doc.text(titulo, pageWidth / 2, yPos, { align: 'center' });
+                yPos += 10;
+                doc.setTextColor(...TEXTO);
+            };
+
+            const dibujarDato = (label, value) => {
+                if (yPos > pageHeight - MARGEN - 14) {
+                    doc.addPage();
+                    dibujarMarco();
+                    yPos = MARGEN + 20;
+                }
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9.5);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`${label}:`, xIzq, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...TEXTO);
+                const lineas = doc.splitTextToSize(String(value || 'N/A'), anchoUtil - 45);
+                doc.text(lineas, xIzq + 45, yPos);
+                yPos += lineas.length * 5.5;
+            };
+
+            dibujarMarco();
+
+            let yPos = MARGEN + 14;
+
+            // ========== ENCABEZADO INSTITUCIONAL ==========
             const logoCompania = localStorage.getItem('logoCompania');
+            if (logoCompania) {
+                try { doc.addImage(logoCompania, 'PNG', xDer - 18, yPos - 10, 18, 18); } catch (e) { /* sin logo, no es crítico */ }
+            }
 
-            // ENCABEZADO con fondo negro
-            doc.setFillColor(0, 0, 0); // Negro
-            doc.rect(0, 0, pageWidth, 60, 'F');
+            doc.setFont('times', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(...TEXTO);
+            doc.text('SEXTA COMPAÑIA DE BOMBEROS PUERTO MONTT', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+            doc.setFont('times', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Abnegación y Constancia"', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
 
-            // FOTO DEL VOLUNTARIO (izquierda)
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.3);
+            doc.line(xIzq, yPos, xDer, yPos);
+            yPos += 12;
+
+            // ========== TÍTULO ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 9, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12.5);
+            doc.text('FICHA PERSONAL DEL VOLUNTARIO', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 16;
+
+            // ========== FOTO Y NOMBRE ==========
+            const nombreCompleto = Utils.obtenerNombreCompleto(bombero);
+            const fotoAncho = 30;
+            const fotoAlto = 36;
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.4);
+            doc.rect(xIzq, yPos, fotoAncho, fotoAlto);
             if (bombero.foto) {
                 try {
-                    doc.addImage(bombero.foto, 'JPEG', 12, 10, 40, 40);
-                } catch (error) {
-                    console.warn('No se pudo cargar la foto del voluntario');
+                    doc.addImage(bombero.foto, 'JPEG', xIzq + 0.6, yPos + 0.6, fotoAncho - 1.2, fotoAlto - 1.2);
+                } catch (e) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(...TEXTO_SUAVE);
+                    doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
                 }
+            } else {
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
             }
 
-            // LOGO DE LA COMPAÑÍA (derecha)
-            if (logoCompania) {
-                try {
-                    doc.addImage(logoCompania, 'PNG', pageWidth - 52, 10, 40, 40);
-                } catch (error) {
-                    console.warn('No se pudo cargar el logo de la compañía');
-                }
-            }
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...TEXTO_SUAVE);
+            doc.text('NOMBRE', xIzq + fotoAncho + 8, yPos + 5);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(13);
+            doc.setTextColor(...TEXTO);
+            doc.text(nombreCompleto || '', xIzq + fotoAncho + 8, yPos + 11);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO_SUAVE);
+            doc.text(`Clave Bombero: ${bombero.claveBombero || 'N/A'}`, xIzq + fotoAncho + 8, yPos + 19);
 
-            // Título principal (centro)
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24);
-            doc.setFont(undefined, 'bold');
-            doc.text('FICHA PERSONAL', pageWidth / 2, 25, { align: 'center' });
-            
-            // Subtítulo
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'normal');
-            doc.text('Voluntario Bombero', pageWidth / 2, 35, { align: 'center' });
-            
-            // Fecha de emisión
-            doc.setFontSize(10);
-            doc.text(new Date().toLocaleDateString('es-CL', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            }), pageWidth / 2, 48, { align: 'center' });
+            yPos += fotoAlto + 10;
 
-            yPos = 70;
-
-            // DATOS PERSONALES
-            doc.setTextColor(0, 0, 0);
-            doc.setFillColor(196, 30, 58);
-            doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('DATOS PERSONALES', pageWidth / 2, yPos + 7, { align: 'center' });
-            
-            yPos += 18;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-
-            // Nombre completo
-            const nombreCompleto = Utils.obtenerNombreCompleto(bombero);
-            doc.setFont(undefined, 'bold');
-            doc.text('Nombre Completo:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(nombreCompleto, margin + 50, yPos);
-            yPos += 7;
-
-            // RUN
-            doc.setFont(undefined, 'bold');
-            doc.text('RUN:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.rut || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Fecha de Nacimiento y Edad
+            // ========== DATOS PERSONALES ==========
+            dibujarSeccion('DATOS PERSONALES');
             const edad = Utils.calcularEdad(bombero.fechaNacimiento);
-            doc.setFont(undefined, 'bold');
-            doc.text('Fecha de Nacimiento:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(`${Utils.formatearFecha(bombero.fechaNacimiento)} (${edad} años)`, margin + 50, yPos);
-            yPos += 7;
+            dibujarDato('RUN', bombero.rut);
+            dibujarDato('Fecha de Nacimiento', `${Utils.formatearFecha(bombero.fechaNacimiento)} (${edad} años)`);
+            if (bombero.sexo) dibujarDato('Sexo', bombero.sexo);
+            if (bombero.estadoCivil) dibujarDato('Estado Civil', bombero.estadoCivil);
+            dibujarDato('Profesión', bombero.profesion);
+            dibujarDato('Grupo Sanguíneo', bombero.grupoSanguineo);
+            if (bombero.nombrePrimerPadrino) dibujarDato('Primer Padrino', bombero.nombrePrimerPadrino);
+            if (bombero.nombreSegundoPadrino) dibujarDato('Segundo Padrino', bombero.nombreSegundoPadrino);
+            yPos += 6;
 
-            // Sexo
-            if (bombero.sexo) {
-                doc.setFont(undefined, 'bold');
-                doc.text('Sexo:', margin, yPos);
-                doc.setFont(undefined, 'normal');
-                doc.text(bombero.sexo, margin + 50, yPos);
-                yPos += 7;
-            }
+            // ========== DATOS DE CONTACTO ==========
+            dibujarSeccion('DATOS DE CONTACTO');
+            dibujarDato('Domicilio', bombero.domicilio);
+            dibujarDato('Teléfono', bombero.telefono);
+            dibujarDato('Email', bombero.email);
+            yPos += 6;
 
-            // Estado Civil
-            if (bombero.estadoCivil) {
-                doc.setFont(undefined, 'bold');
-                doc.text('Estado Civil:', margin, yPos);
-                doc.setFont(undefined, 'normal');
-                doc.text(bombero.estadoCivil, margin + 50, yPos);
-                yPos += 7;
-            }
-
-            // Profesión
-            doc.setFont(undefined, 'bold');
-            doc.text('Profesión:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.profesion || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Grupo Sanguíneo
-            doc.setFont(undefined, 'bold');
-            doc.text('Grupo Sanguíneo:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.grupoSanguineo || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Padrino 1
-            if (bombero.nombrePrimerPadrino) {
-                doc.setFont(undefined, 'bold');
-                doc.text('Primer Padrino:', margin, yPos);
-                doc.setFont(undefined, 'normal');
-                doc.text(bombero.nombrePrimerPadrino, margin + 50, yPos);
-                yPos += 7;
-            }
-
-            // Padrino 2
-            if (bombero.nombreSegundoPadrino) {
-                doc.setFont(undefined, 'bold');
-                doc.text('Segundo Padrino:', margin, yPos);
-                doc.setFont(undefined, 'normal');
-                doc.text(bombero.nombreSegundoPadrino, margin + 50, yPos);
-                yPos += 7;
-            }
-
-            yPos += 3;
-
-            // DATOS DE CONTACTO
-            doc.setFillColor(25, 118, 210); // Azul
-            doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('DATOS DE CONTACTO', pageWidth / 2, yPos + 7, { align: 'center' });
-            
-            yPos += 18;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-
-            // Domicilio
-            doc.setFont(undefined, 'bold');
-            doc.text('Domicilio:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            const domicilio = bombero.domicilio || 'N/A';
-            const domicilioLines = doc.splitTextToSize(domicilio, pageWidth - margin - 60);
-            doc.text(domicilioLines, margin + 50, yPos);
-            yPos += (domicilioLines.length * 7);
-
-            // Teléfono
-            doc.setFont(undefined, 'bold');
-            doc.text('Teléfono:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.telefono || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Email
-            doc.setFont(undefined, 'bold');
-            doc.text('Email:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.email || 'N/A', margin + 50, yPos);
-            yPos += 10;
-
-            // DATOS INSTITUCIONALES
-            doc.setFillColor(196, 30, 58);
-            doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('DATOS INSTITUCIONALES', pageWidth / 2, yPos + 7, { align: 'center' });
-            
-            yPos += 18;
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-
-            // Clave Bombero
-            doc.setFont(undefined, 'bold');
-            doc.text('Clave Bombero:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.claveBombero, margin + 50, yPos);
-            yPos += 7;
-
-            // Número de Registro
-            doc.setFont(undefined, 'bold');
-            doc.text('N° Registro Nacional:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.nroRegistro || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Compañía
-            doc.setFont(undefined, 'bold');
-            doc.text('Compañía:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(bombero.compania || 'N/A', margin + 50, yPos);
-            yPos += 7;
-
-            // Fecha de Ingreso
-            doc.setFont(undefined, 'bold');
-            doc.text('Fecha de Ingreso:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(Utils.formatearFecha(bombero.fechaIngreso), margin + 50, yPos);
-            yPos += 7;
-
-            // Antigüedad
+            // ========== DATOS INSTITUCIONALES ==========
+            dibujarSeccion('DATOS INSTITUCIONALES');
+            dibujarDato('N° Registro Nacional', bombero.nroRegistro);
+            dibujarDato('Compañía', bombero.compania);
+            dibujarDato('Fecha de Ingreso', Utils.formatearFecha(bombero.fechaIngreso));
             const antiguedad = Utils.calcularAntiguedadDetallada(bombero.fechaAntiguedad);
-            doc.setFont(undefined, 'bold');
-            doc.text('Antigüedad:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(`${antiguedad.años} años, ${antiguedad.meses} meses, ${antiguedad.dias} días`, margin + 50, yPos);
-            yPos += 7;
-
-            // Categoría
+            dibujarDato('Antigüedad', `${antiguedad.años} años, ${antiguedad.meses} meses, ${antiguedad.dias} días`);
             const categoria = Utils.calcularCategoriaBombero(bombero.fechaAntiguedad);
-            doc.setFont(undefined, 'bold');
-            doc.text('Categoría:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(categoria.categoria, margin + 50, yPos);
-            yPos += 7;
+            dibujarDato('Categoría', categoria.categoria);
+            dibujarDato('Estado', (bombero.estadoBombero || 'activo').toUpperCase());
 
-            // Estado
-            const estadoBombero = bombero.estadoBombero || 'activo';
-            doc.setFont(undefined, 'bold');
-            doc.text('Estado:', margin, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.text(estadoBombero.toUpperCase(), margin + 50, yPos);
-            yPos += 15;
+            // ========== TEXTO DE CIERRE ==========
+            yPos += 8;
+            if (yPos > pageHeight - MARGEN - 30) {
+                doc.addPage();
+                dibujarMarco();
+                yPos = MARGEN + 20;
+            }
+            const fechaHoy = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO);
+            const textoCierre = `Este documento certifica los datos personales e institucionales del voluntario registrados en el sistema del Cuerpo de Bomberos, emitido en Puerto Montt a ${fechaHoy}.`;
+            const lineasCierre = doc.splitTextToSize(textoCierre, anchoUtil);
+            doc.text(lineasCierre, xIzq, yPos);
 
-            // FOOTER
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'italic');
-            doc.setTextColor(120, 120, 120);
-            doc.text('Este documento certifica los datos personales e institucionales del voluntario', pageWidth / 2, pageHeight - 20, { align: 'center' });
-            doc.text('registrados en el sistema del Cuerpo de Bomberos', pageWidth / 2, pageHeight - 15, { align: 'center' });
-            doc.setFont(undefined, 'normal');
-            doc.text(`Generado el ${new Date().toLocaleDateString('es-CL')}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+            // ========== NUMERACIÓN DE PÁGINAS ==========
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`Página ${i} de ${totalPages}`, xDer, pageHeight - MARGEN - 4, { align: 'right' });
+            }
 
             // Guardar PDF
-            doc.save(`Ficha_Personal_${bombero.claveBombero}_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`Ficha_Personal_${bombero.claveBombero}.pdf`);
             Utils.mostrarNotificacion('Ficha personal generada exitosamente', 'success');
         } catch (error) {
             console.error('Error al generar PDF:', error);
