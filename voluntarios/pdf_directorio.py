@@ -398,7 +398,7 @@ def generar_pdf_acta_directorio(evento):
         "Dando comienzo a éste directorio, se inicia la sesión con el resumen de puntos "
         "tratados en el Directorio de compañía anterior."
     )
-    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro)
+    _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_director, intro, mostrar_timbre=True)
 
     c.save()
     buffer.seek(0)
@@ -722,7 +722,7 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
 
     # ---- FIRMAS ----
     diametro_timbre = 34 * mm
-    espacio_timbre = (diametro_timbre + 20) if tipo_organo == 'asamblea' else 0
+    espacio_timbre = diametro_timbre + 20
     p.asegurar_espacio(90 + 50 + 26 + espacio_timbre)
 
     p.y -= 90
@@ -739,12 +739,11 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     c.drawCentredString(x_der + ancho_firma / 2, p.y, "Director")
     p.y -= 10
 
-    if tipo_organo == 'asamblea':
-        x_timbre = ANCHO / 2 - diametro_timbre / 2
-        _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre)
-        p.y -= diametro_timbre
-        _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, date.today())
-        p.y -= 20
+    x_timbre = ANCHO / 2 - diametro_timbre / 2
+    _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre)
+    p.y -= diametro_timbre
+    _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, date.today())
+    p.y -= 20
 
     c.save()
     buffer.seek(0)
