@@ -1476,21 +1476,6 @@ async cambiarEstadoBombero(id) {
             dibujarDato('Categoría', categoria.categoria);
             dibujarDato('Estado', (bombero.estadoBombero || 'activo').toUpperCase());
 
-            // ========== TEXTO DE CIERRE ==========
-            yPos += 8;
-            if (yPos > pageHeight - MARGEN - 30) {
-                doc.addPage();
-                dibujarMarco();
-                yPos = MARGEN + 20;
-            }
-            const fechaHoy = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9.5);
-            doc.setTextColor(...TEXTO);
-            const textoCierre = `Este documento certifica los datos personales e institucionales del voluntario registrados en el sistema del Cuerpo de Bomberos, emitido en Puerto Montt a ${fechaHoy}.`;
-            const lineasCierre = doc.splitTextToSize(textoCierre, anchoUtil);
-            doc.text(lineasCierre, xIzq, yPos);
-
             // ========== NUMERACIÓN DE PÁGINAS ==========
             const totalPages = doc.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
