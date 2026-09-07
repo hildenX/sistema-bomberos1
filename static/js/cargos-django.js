@@ -641,33 +641,46 @@ class SistemaCargos {
             doc.setFontSize(11);
             doc.setFont(undefined, 'normal');
             
-            this.cargos.forEach((cargo, index) => {
-                if (yPos > 260) {
+            // Orden cronológico (el más antiguo primero), como una hoja de vida
+            const cargosOrdenados = [...this.cargos].reverse();
+
+            cargosOrdenados.forEach((cargo, index) => {
+                const alturaCard = 22;
+                if (yPos + alturaCard > 265) {
                     doc.addPage();
                     yPos = 20;
                 }
 
+                // Tarjeta de fondo
+                doc.setFillColor(247, 247, 248);
+                doc.setDrawColor(230, 230, 232);
+                doc.setLineWidth(0.2);
+                doc.roundedRect(24, yPos - 5, pageWidth - 48, alturaCard, 2, 2, 'FD');
+
                 // Borde izquierdo rojo
                 doc.setFillColor(196, 30, 58);
-                doc.rect(25, yPos - 2, 3, 12, 'F');
-                
+                doc.roundedRect(24, yPos - 5, 2.5, alturaCard, 1, 1, 'F');
+
                 // Número y título del cargo
-                doc.setFontSize(11);
+                doc.setFontSize(11.5)
                 doc.setFont(undefined, 'bold');
-                doc.setTextColor(0, 0, 0);
-                doc.text(`${index + 1}. ${cargo.nombre_cargo} (${cargo.anio})`, 32, yPos + 3);
-                
-                yPos += 8;
-                
-                // Fechas
-                doc.setFontSize(10);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`${index + 1}. ${cargo.nombre_cargo}`, 32, yPos + 2);
+
+                doc.setFontSize(9.5);
                 doc.setFont(undefined, 'normal');
-                doc.setTextColor(80, 80, 80);
+                doc.setTextColor(196, 30, 58);
+                doc.text(`${cargo.anio}`, pageWidth - 30, yPos + 2, { align: 'right' });
+
+                // Fechas
+                doc.setFontSize(9.5);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(110, 110, 110);
                 const fechaInicio = cargo.fecha_inicio ? Utils.formatearFecha(cargo.fecha_inicio) : 'No especificado';
                 const fechaFin = cargo.fecha_fin ? Utils.formatearFecha(cargo.fecha_fin) : 'En ejercicio';
-                doc.text(`Desde: ${fechaInicio} | Hasta: ${fechaFin}`, 32, yPos);
-                
-                yPos += 10;
+                doc.text(`Desde: ${fechaInicio}   |   Hasta: ${fechaFin}`, 32, yPos + 10);
+
+                yPos += alturaCard + 5;
             });
 
             // ========== PIE DE PÁGINA ==========

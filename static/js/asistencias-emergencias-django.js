@@ -250,6 +250,7 @@ class SistemaAsistenciasEmergencias {
     esCargoComandancia(nombreCargo) {
         const cargos = ['Superintendente', 'Comandante 1', 'Comandante 2', 'Comandante 3',
                        'Intendente General', 'Tesorero General', 'Secretario General', 'Ayudante General',
+                       'Director Honorario',
                        'Depto. Investigación de Incendio', 'Depto. Comunicaciones', 'Depto. Prevención de Riesgos',
                        'Depto. Material Mayor', 'Depto. Capacitaciones', 'Depto. Hazmat'];
         return cargos.includes(nombreCargo);

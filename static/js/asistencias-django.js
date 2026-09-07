@@ -351,6 +351,7 @@ class SistemaAsistencias {
             'Intendente General',
             'Tesorero General',
             'Secretario General',
+            'Director Honorario',
             'Ayudante General',
             'Depto. Investigación de Incendio',
             'Depto. Comunicaciones',
