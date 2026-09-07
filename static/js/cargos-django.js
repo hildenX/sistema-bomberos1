@@ -517,196 +517,194 @@ class SistemaCargos {
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.width;
             const pageHeight = doc.internal.pageSize.height;
-            let yPos = 20;
 
-            // ========== ENCABEZADO CON FONDO NEGRO ==========
-            doc.setFillColor(0, 0, 0);
-            doc.rect(0, 0, pageWidth, 55, 'F');
-            
-            // ========== FOTO DEL BOMBERO (IZQUIERDA) ==========
-            if (this.bomberoActual.foto) {
-                try {
-                    const fotoX = 14;
-                    const fotoY = 8;
-                    const fotoWidth = 32;
-                    const fotoHeight = 40;
-                    doc.addImage(this.bomberoActual.foto, 'JPEG', fotoX, fotoY, fotoWidth, fotoHeight);
-                } catch (error) {
-                    console.log('No se pudo cargar la foto');
-                    doc.setFillColor(60, 60, 60);
-                    doc.roundedRect(14, 8, 32, 40, 16, 16, 'F');
-                    doc.setTextColor(200, 200, 200);
-                    doc.setFontSize(8);
-                    doc.text('SIN', 30, 26, { align: 'center' });
-                    doc.text('FOTO', 30, 32, { align: 'center' });
-                }
-            } else {
-                doc.setFillColor(60, 60, 60);
-                doc.roundedRect(14, 8, 32, 40, 16, 16, 'F');
-                doc.setTextColor(200, 200, 200);
+            // Paleta institucional: azul marino (marco/tablas) y guinda (títulos),
+            // en vez del rojo brillante + tarjetas redondeadas de antes.
+            const AZUL = [15, 35, 70];
+            const GUINDA = [110, 18, 34];
+            const TEXTO = [25, 25, 25];
+            const TEXTO_SUAVE = [95, 95, 95];
+            const MARGEN = 12;
+            const xIzq = MARGEN + 6;
+            const xDer = pageWidth - MARGEN - 6;
+            const anchoUtil = xDer - xIzq;
+
+            const dibujarMarco = () => {
+                doc.setDrawColor(...AZUL);
+                doc.setLineWidth(0.6);
+                doc.rect(MARGEN, MARGEN, pageWidth - 2 * MARGEN, pageHeight - 2 * MARGEN);
+                doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);
-                doc.text('SIN', 30, 26, { align: 'center' });
-                doc.text('FOTO', 30, 32, { align: 'center' });
-            }
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('Chorrillos 1339 - Fono 65-2252666 - Puerto Montt', pageWidth / 2, pageHeight - MARGEN - 4, { align: 'center' });
+            };
 
-            // ========== TÍTULO CENTRADO ==========
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.setFont(undefined, 'bold');
-            doc.text('CERTIFICADO DE CARGOS', pageWidth / 2, 23, { align: 'center' });
-            
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.text('Cuerpo de Bomberos', pageWidth / 2, 31, { align: 'center' });
-            
-            const fechaActual = new Date().toLocaleDateString('es-CL', { 
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            doc.setFontSize(9);
-            doc.text(`${fechaActual}`, pageWidth / 2, 38, { align: 'center' });
-            
-            // ========== LOGO COMPAÑÍA (DERECHA) ==========
+            dibujarMarco();
+
+            let yPos = MARGEN + 14;
+
+            // ========== ENCABEZADO INSTITUCIONAL ==========
             const logoCompania = localStorage.getItem('logoCompania');
             if (logoCompania) {
-                try {
-                    doc.addImage(logoCompania, 'PNG', pageWidth - 46, 10, 32, 36);
-                } catch (error) {
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(10);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('LOGO', pageWidth - 30, 24, { align: 'center' });
-                    doc.setFontSize(8);
-                    doc.setFont(undefined, 'normal');
-                    doc.text('COMPAÑIA', pageWidth - 30, 30, { align: 'center' });
-                }
-            } else {
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
-                doc.text('LOGO', pageWidth - 30, 24, { align: 'center' });
-                doc.setFontSize(8);
-                doc.setFont(undefined, 'normal');
-                doc.text('COMPAÑIA', pageWidth - 30, 30, { align: 'center' });
+                try { doc.addImage(logoCompania, 'PNG', xDer - 18, yPos - 10, 18, 18); } catch (e) { /* sin logo, no es crítico */ }
             }
-            
-            yPos = 65;
 
-            // ========== DATOS DEL VOLUNTARIO ==========
-            doc.setTextColor(0, 0, 0);
+            doc.setFont('times', 'bold');
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('DATOS DEL VOLUNTARIO', pageWidth / 2, yPos, { align: 'center' });
-            yPos += 3;
-            
-            doc.setDrawColor(196, 30, 58);
-            doc.setLineWidth(0.8);
-            doc.line(pageWidth / 2 - 35, yPos, pageWidth / 2 + 35, yPos);
-            yPos += 8;
-            
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(60, 60, 60);
-            
-            const nombreCompleto = this.bomberoActual.nombre_completo || 
-                                  `${this.bomberoActual.primerNombre || ''} ${this.bomberoActual.segundoNombre || ''} ${this.bomberoActual.tercerNombre || ''} ${this.bomberoActual.primerApellido || ''} ${this.bomberoActual.segundoApellido || ''}`.replace(/\s+/g, ' ').trim();
-            
-            const infoBombero = [
-                `Nombre: ${nombreCompleto}`,
-                `Clave Bombero: ${this.bomberoActual.claveBombero || this.bomberoActual.clave_bombero || 'N/A'}`,
-                `N° Registro: ${this.bomberoActual.nroRegistro || this.bomberoActual.nro_registro || 'N/A'}`,
-                `RUN: ${this.bomberoActual.rut || 'N/A'}`,
-                `Compañía: ${this.bomberoActual.compania || 'N/A'}`
-            ];
-            
-            infoBombero.forEach(info => {
-                doc.text(info, pageWidth / 2, yPos, { align: 'center' });
-                yPos += 6;
-            });
-            
-            yPos += 8;
+            doc.setTextColor(...TEXTO);
+            doc.text('SEXTA COMPAÑIA DE BOMBEROS PUERTO MONTT', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+            doc.setFont('times', 'italic');
+            doc.setFontSize(10);
+            doc.text('"Abnegación y Constancia"', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
 
-            // ========== TÍTULO DE CARGOS ==========
-            doc.setFillColor(196, 30, 58);
-            doc.rect(20, yPos, pageWidth - 40, 10, 'F');
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.3);
+            doc.line(xIzq, yPos, xDer, yPos);
+            yPos += 12;
+
+            // ========== TÍTULO DEL CERTIFICADO ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 9, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('CARGOS DESEMPEÑADOS', pageWidth / 2, yPos + 7, { align: 'center' });
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12.5);
+            doc.text('CERTIFICADO DE CARGOS DESEMPEÑADOS', pageWidth / 2, yPos, { align: 'center' });
             yPos += 16;
 
-            // ========== LISTA DE CARGOS ==========
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            
-            // Orden cronológico (el más antiguo primero), como una hoja de vida
-            const cargosOrdenados = [...this.cargos].reverse();
-
-            cargosOrdenados.forEach((cargo, index) => {
-                const alturaCard = 22;
-                if (yPos + alturaCard > 265) {
-                    doc.addPage();
-                    yPos = 20;
+            // ========== FOTO Y DATOS DEL VOLUNTARIO ==========
+            const fotoAncho = 28;
+            const fotoAlto = 34;
+            doc.setDrawColor(...AZUL);
+            doc.setLineWidth(0.4);
+            doc.rect(xIzq, yPos, fotoAncho, fotoAlto);
+            if (this.bomberoActual.foto) {
+                try {
+                    doc.addImage(this.bomberoActual.foto, 'JPEG', xIzq + 0.6, yPos + 0.6, fotoAncho - 1.2, fotoAlto - 1.2);
+                } catch (e) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(...TEXTO_SUAVE);
+                    doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
                 }
+            } else {
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text('SIN FOTO', xIzq + fotoAncho / 2, yPos + fotoAlto / 2, { align: 'center' });
+            }
 
-                // Tarjeta de fondo
-                doc.setFillColor(247, 247, 248);
-                doc.setDrawColor(230, 230, 232);
-                doc.setLineWidth(0.2);
-                doc.roundedRect(24, yPos - 5, pageWidth - 48, alturaCard, 2, 2, 'FD');
+            const nombreCompleto = this.bomberoActual.nombre_completo ||
+                                  `${this.bomberoActual.primerNombre || ''} ${this.bomberoActual.segundoNombre || ''} ${this.bomberoActual.tercerNombre || ''} ${this.bomberoActual.primerApellido || ''} ${this.bomberoActual.segundoApellido || ''}`.replace(/\s+/g, ' ').trim();
 
-                // Borde izquierdo rojo
-                doc.setFillColor(196, 30, 58);
-                doc.roundedRect(24, yPos - 5, 2.5, alturaCard, 1, 1, 'F');
+            const datosX = xIzq + fotoAncho + 8;
+            let datosY = yPos + 5;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...TEXTO_SUAVE);
+            doc.text('NOMBRE', datosX, datosY);
+            datosY += 5.5;
+            doc.setFont('times', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(...TEXTO);
+            doc.text(nombreCompleto, datosX, datosY);
+            datosY += 7;
 
-                // Número y título del cargo
-                doc.setFontSize(11.5)
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(30, 30, 30);
-                doc.text(`${index + 1}. ${cargo.nombre_cargo}`, 32, yPos + 2);
-
-                doc.setFontSize(9.5);
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(196, 30, 58);
-                doc.text(`${cargo.anio}`, pageWidth - 30, yPos + 2, { align: 'right' });
-
-                // Fechas
-                doc.setFontSize(9.5);
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(110, 110, 110);
-                const fechaInicio = cargo.fecha_inicio ? Utils.formatearFecha(cargo.fecha_inicio) : 'No especificado';
-                const fechaFin = cargo.fecha_fin ? Utils.formatearFecha(cargo.fecha_fin) : 'En ejercicio';
-                doc.text(`Desde: ${fechaInicio}   |   Hasta: ${fechaFin}`, 32, yPos + 10);
-
-                yPos += alturaCard + 5;
+            const filasDatos = [
+                ['Clave Bombero', this.bomberoActual.claveBombero || this.bomberoActual.clave_bombero || 'N/A'],
+                ['N° de Registro', this.bomberoActual.nroRegistro || this.bomberoActual.nro_registro || 'N/A'],
+                ['RUN', this.bomberoActual.rut || 'N/A'],
+                ['Compañía', this.bomberoActual.compania || 'N/A'],
+            ];
+            doc.setFontSize(9.5);
+            filasDatos.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`${label}:`, datosX, datosY);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...TEXTO);
+                doc.text(String(value), datosX + 32, datosY);
+                datosY += 5.5;
             });
 
-            // ========== PIE DE PÁGINA ==========
+            yPos += fotoAlto + 12;
+
+            // ========== TABLA DE CARGOS (orden cronológico, el más antiguo primero) ==========
+            doc.setFillColor(...GUINDA);
+            doc.rect(xIzq, yPos - 6, anchoUtil, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('times', 'bold');
+            doc.setFontSize(11);
+            doc.text('CARGOS DESEMPEÑADOS', pageWidth / 2, yPos, { align: 'center' });
+            yPos += 6;
+
+            const cargosOrdenados = [...this.cargos].reverse();
+            const filasCargos = cargosOrdenados.map((cargo, index) => [
+                String(index + 1),
+                cargo.nombre_cargo,
+                String(cargo.anio),
+                cargo.fecha_inicio ? Utils.formatearFecha(cargo.fecha_inicio) : '—',
+                cargo.fecha_fin ? Utils.formatearFecha(cargo.fecha_fin) : 'En ejercicio',
+            ]);
+
+            doc.autoTable({
+                startY: yPos,
+                margin: { left: xIzq, right: MARGEN + 6, bottom: MARGEN + 10 },
+                head: [['N°', 'Cargo', 'Año', 'Desde', 'Hasta']],
+                body: filasCargos,
+                theme: 'grid',
+                styles: { font: 'helvetica', fontSize: 9.5, textColor: TEXTO, lineColor: [195, 195, 200], lineWidth: 0.2, cellPadding: 3 },
+                headStyles: { fillColor: AZUL, textColor: 255, fontStyle: 'bold', halign: 'center' },
+                alternateRowStyles: { fillColor: [246, 246, 248] },
+                columnStyles: {
+                    0: { cellWidth: 10, halign: 'center' },
+                    2: { cellWidth: 16, halign: 'center' },
+                    3: { cellWidth: 26, halign: 'center' },
+                    4: { cellWidth: 26, halign: 'center' },
+                },
+                didDrawPage: () => dibujarMarco(),
+            });
+
+            yPos = doc.lastAutoTable.finalY + 16;
+
+            // ========== TEXTO DE CIERRE Y FIRMA ==========
+            if (yPos > pageHeight - MARGEN - 55) {
+                doc.addPage();
+                dibujarMarco();
+                yPos = MARGEN + 20;
+            }
+
+            const fechaActual = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO);
+            const textoCierre = `Se extiende el presente certificado a petición del interesado, para los fines que estime pertinentes, en Puerto Montt a ${fechaActual}.`;
+            const lineasCierre = doc.splitTextToSize(textoCierre, anchoUtil);
+            doc.text(lineasCierre, xIzq, yPos);
+            yPos += lineasCierre.length * 5 + 26;
+
+            const anchoFirma = 65;
+            const xFirma = pageWidth / 2 - anchoFirma / 2;
+            doc.setDrawColor(...TEXTO);
+            doc.setLineWidth(0.3);
+            doc.line(xFirma, yPos, xFirma + anchoFirma, yPos);
+            yPos += 5;
+            doc.setFont('times', 'italic');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...TEXTO);
+            doc.text('Secretario de Compañía', pageWidth / 2, yPos, { align: 'center' });
+
+            // ========== NUMERACIÓN DE PÁGINAS ==========
             const totalPages = doc.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 doc.setPage(i);
-                
-                // Línea superior
-                doc.setDrawColor(200, 200, 200);
-                doc.setLineWidth(0.3);
-                doc.line(20, pageHeight - 20, pageWidth - 20, pageHeight - 20);
-                
-                // Texto en cursiva
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'italic');
-                doc.setTextColor(100, 100, 100);
-                doc.text('Este certificado acredita los cargos desempeñados por el voluntario', pageWidth / 2, pageHeight - 14, { align: 'center' });
-                doc.text('en el Cuerpo de Bomberos', pageWidth / 2, pageHeight - 10, { align: 'center' });
-                
-                // Número de página
-                doc.setFont(undefined, 'normal');
-                doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 6, { align: 'center' });
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(...TEXTO_SUAVE);
+                doc.text(`Página ${i} de ${totalPages}`, xDer, pageHeight - MARGEN - 4, { align: 'right' });
             }
 
             // Guardar
-            const nombreArchivo = `Cargos_${this.bomberoActual.claveBombero || this.bomberoActual.clave_bombero || 'Bombero'}_${new Date().getTime()}.pdf`;
+            const nombreArchivo = `Certificado_Cargos_${this.bomberoActual.claveBombero || this.bomberoActual.clave_bombero || 'Bombero'}.pdf`;
             doc.save(nombreArchivo);
 
             Utils.mostrarNotificacion('PDF generado exitosamente', 'success');
