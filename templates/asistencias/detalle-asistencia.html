@@ -363,6 +363,11 @@
         <div class="header-detalle">
             <div class="header-acciones">
                 <button class="btn-editar-acta" id="btnEditarActa" style="display:none" onclick="detalleSistema.abrirModalEditar()">Editar acta</button>
+                <label id="grupoFechaAprobacion" style="display:none; color:#ccc; font-size:0.85rem; align-items:center; gap:6px;">
+                    Fecha de aprobación
+                    <input type="date" id="inputFechaAprobacion" onchange="detalleSistema.guardarFechaAprobacion(this.value)"
+                           style="background:#2a2a2a; color:#eee; border:1px solid #444; border-radius:4px; padding:4px 6px;">
+                </label>
                 <button class="btn-editar-acta" id="btnDescargarActaPdf" style="display:none" onclick="detalleSistema.descargarActaPdf()">Descargar PDF</button>
             </div>
             <h1 id="tituloAsistencia">Detalle de Asistencia</h1>
@@ -408,7 +413,7 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/claves-radiales.js' %}"></script>
-    <script src="{% static 'js/detalle-asistencia-django.js' %}?v=13.0"></script>
+    <script src="{% static 'js/detalle-asistencia-django.js' %}?v=14.0"></script>
     <script>console.log('Detalle Asistencia v10.0 - HORAS SIEMPRE VISIBLES');</script>
     
     <!-- SCRIPT ANTIGUO COMENTADO -->

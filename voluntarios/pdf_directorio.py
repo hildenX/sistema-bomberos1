@@ -92,9 +92,11 @@ def _dibujar_timbre_asamblea(c, x, y, diametro):
 
 def _dibujar_fecha_aprobacion(c, x_centro, y, fecha):
     """Escribe 'Fecha de aprobación: dd/mm/aaaa' como texto normal, separado del sello."""
-    if not fecha:
-        return
-    texto = f"Fecha de aprobación: {fecha.day:02d}/{fecha.month:02d}/{fecha.year}"
+    if fecha:
+        texto = f"Fecha de aprobación: {fecha.day:02d}/{fecha.month:02d}/{fecha.year}"
+    else:
+        # Sin fecha ingresada: línea en blanco para completar a mano
+        texto = "Fecha de aprobación: ____ / ____ / ________"
     c.setFont('Helvetica-Bold', 8.5)
     c.setFillColorRGB(0.05, 0.15, 0.45)
     c.drawCentredString(x_centro, y, texto)
@@ -489,7 +491,7 @@ def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_direc
         p.y -= diametro_timbre
         # La acta se aprueba en la asamblea siguiente: la fecha va aparte del
         # sello, no encima (el sello ya no trae línea para escribirla).
-        _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, date.today())
+        _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, evento.fecha_aprobacion)
         p.y -= 20
 
     p.y -= 16
@@ -742,7 +744,7 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     x_timbre = ANCHO / 2 - diametro_timbre / 2
     _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre)
     p.y -= diametro_timbre
-    _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, date.today())
+    _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, evento.fecha_aprobacion)
     p.y -= 20
 
     c.save()

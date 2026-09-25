@@ -121,6 +121,13 @@ class DetalleAsistenciaDjango {
             btnEditar.style.display = tiposConActa.includes(this.evento.tipo) ? 'inline-block' : 'none';
         }
 
+        const grupoAprobacion = document.getElementById('grupoFechaAprobacion');
+        if (grupoAprobacion) {
+            const conAprobacion = ['directorio', 'asamblea'].includes(this.evento.tipo);
+            grupoAprobacion.style.display = conAprobacion ? 'inline-flex' : 'none';
+            document.getElementById('inputFechaAprobacion').value = this.evento.fecha_aprobacion || '';
+        }
+
         const btnPdf = document.getElementById('btnDescargarActaPdf');
         if (btnPdf) {
             btnPdf.style.display = this.evento.tipo !== 'emergencia' ? 'inline-block' : 'none';
@@ -581,6 +588,25 @@ class DetalleAsistenciaDjango {
         } catch (error) {
             console.error('[DETALLE] Error guardando descripción:', error);
             alert('No se pudo guardar el acta. Intenta nuevamente.');
+        }
+    }
+
+    async guardarFechaAprobacion(valor) {
+        try {
+            const response = await fetch(`/api/eventos-asistencia/${this.eventoId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                credentials: 'include',
+                body: JSON.stringify({ fecha_aprobacion: valor || null }),
+            });
+            if (!response.ok) throw new Error('Error al guardar la fecha de aprobación');
+            this.evento.fecha_aprobacion = valor || null;
+        } catch (error) {
+            console.error('[DETALLE] Error guardando fecha de aprobación:', error);
+            alert('No se pudo guardar la fecha de aprobación. Intenta nuevamente.');
         }
     }
 
