@@ -887,31 +887,50 @@ function descargarActaPdfDesdeHistorial(id) {
 
 // Ingresar/cambiar la fecha en que se aprobó el acta (se usa en el timbre del PDF)
 function ingresarFechaAprobacion(boton, id, actual) {
-    const input = document.createElement('input');
-    input.type = 'date';
-    input.value = actual || '';
-    // Invisible pero anclado bajo el botón, para que el calendario se abra ahí
-    const r = boton.getBoundingClientRect();
-    input.style.cssText = `position:fixed; left:${r.left}px; top:${r.bottom}px; width:${r.width}px; height:1px; opacity:0; pointer-events:none;`;
-    document.body.appendChild(input);
-    input.addEventListener('change', async () => {
+    document.getElementById('modalFechaAprobacion')?.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'modalFechaAprobacion';
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:10000; padding:16px;';
+    overlay.innerHTML = `
+        <div style="background:#1c1c1c; border:1px solid #333; border-radius:12px; padding:24px; width:100%; max-width:360px; color:#f0f0f0; box-shadow:0 12px 32px rgba(0,0,0,0.5);">
+            <h3 style="margin:0 0 6px; font-size:1.1rem;">Fecha de aprobación del acta</h3>
+            <p style="margin:0 0 16px; font-size:0.85rem; color:#aaa;">Se imprime bajo el timbre del acta en el PDF.</p>
+            <input type="date" id="inputFechaAprobacionModal" value="${actual || ''}"
+                   style="width:100%; box-sizing:border-box; background:#2a2a2a; color:#f0f0f0; border:1px solid #444; border-radius:8px; padding:10px 12px; font-size:1rem; color-scheme:dark;">
+            <div style="display:flex; gap:8px; margin-top:20px;">
+                <button id="btnCancelarFecha" style="flex:1; background:#2a2a2a; color:#ccc; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">Cancelar</button>
+                ${actual ? '<button id="btnQuitarFecha" style="flex:1; background:#2a2a2a; color:#ef9a9a; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">Quitar</button>' : ''}
+                <button id="btnGuardarFecha" style="flex:1; background:#c0392b; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">Guardar</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    const input = overlay.querySelector('#inputFechaAprobacionModal');
+    const cerrar = () => overlay.remove();
+    const guardar = async (valor) => {
         try {
             const response = await fetch(`/api/eventos-asistencia/${id}/`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _getCookieHist('csrftoken') },
                 credentials: 'include',
-                body: JSON.stringify({ fecha_aprobacion: input.value || null }),
+                body: JSON.stringify({ fecha_aprobacion: valor || null }),
             });
             if (!response.ok) throw new Error('Error al guardar');
             location.reload();
         } catch (error) {
             console.error('[HISTORIAL] Error guardando fecha de aprobación:', error);
             alert('No se pudo guardar la fecha de aprobación. Intenta nuevamente.');
-        } finally {
-            input.remove();
         }
-    });
-    if (typeof input.showPicker === 'function') input.showPicker(); else input.click();
+    };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrar(); });
+    overlay.querySelector('#btnCancelarFecha').onclick = cerrar;
+    overlay.querySelector('#btnGuardarFecha').onclick = () => {
+        if (!input.value) { input.focus(); return; }
+        guardar(input.value);
+    };
+    const quitar = overlay.querySelector('#btnQuitarFecha');
+    if (quitar) quitar.onclick = () => guardar(null);
+    input.focus();
 }
 
 // Ir a la página de registro en modo edición
