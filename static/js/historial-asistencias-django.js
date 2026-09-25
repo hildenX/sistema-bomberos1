@@ -445,7 +445,7 @@ class HistorialAsistencias {
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
                      Ver Detalle Completo
                 </button>
-                ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `<button onclick='event.stopPropagation(); ingresarFechaAprobacion(${asistencia.id}, "${asistencia.fecha_aprobacion || ''}")' style="width:100%; margin-top:8px; background:#fff; color:#2e7d32; border:2px solid #2e7d32; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📅 ${asistencia.fecha_aprobacion ? 'Fecha de aprobación: ' + asistencia.fecha_aprobacion.split('-').reverse().join('/') : 'Ingresar fecha de aprobación'}</button>` : ''}
+                ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `<button onclick='event.stopPropagation(); ingresarFechaAprobacion(this, ${asistencia.id}, "${asistencia.fecha_aprobacion || ''}")' style="width:100%; margin-top:8px; background:#fff; color:#2e7d32; border:2px solid #2e7d32; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📅 ${asistencia.fecha_aprobacion ? 'Fecha de aprobación: ' + asistencia.fecha_aprobacion.split('-').reverse().join('/') : 'Ingresar fecha de aprobación'}</button>` : ''}
                 ${asistencia.tipo !== 'emergencia' ? `<button onclick='event.stopPropagation(); descargarActaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#1565c0; border:2px solid #1565c0; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📄 Descargar PDF</button>` : ''}
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
@@ -886,11 +886,13 @@ function descargarActaPdfDesdeHistorial(id) {
 }
 
 // Ingresar/cambiar la fecha en que se aprobó el acta (se usa en el timbre del PDF)
-function ingresarFechaAprobacion(id, actual) {
+function ingresarFechaAprobacion(boton, id, actual) {
     const input = document.createElement('input');
     input.type = 'date';
     input.value = actual || '';
-    input.style.cssText = 'position:fixed; opacity:0; pointer-events:none;';
+    // Invisible pero anclado bajo el botón, para que el calendario se abra ahí
+    const r = boton.getBoundingClientRect();
+    input.style.cssText = `position:fixed; left:${r.left}px; top:${r.bottom}px; width:${r.width}px; height:1px; opacity:0; pointer-events:none;`;
     document.body.appendChild(input);
     input.addEventListener('change', async () => {
         try {
