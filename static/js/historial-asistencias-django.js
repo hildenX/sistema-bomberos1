@@ -445,6 +445,7 @@ class HistorialAsistencias {
                 <button class="btn-ver-detalle" onclick='event.stopPropagation(); verDetalleAsistencia(${JSON.stringify(asistencia).replace(/'/g, "&#39;")})'>
                      Ver Detalle Completo
                 </button>
+                ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `<button onclick='event.stopPropagation(); ingresarFechaAprobacion(${asistencia.id}, "${asistencia.fecha_aprobacion || ''}")' style="width:100%; margin-top:8px; background:#fff; color:#2e7d32; border:2px solid #2e7d32; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📅 ${asistencia.fecha_aprobacion ? 'Fecha de aprobación: ' + asistencia.fecha_aprobacion.split('-').reverse().join('/') : 'Ingresar fecha de aprobación'}</button>` : ''}
                 ${asistencia.tipo !== 'emergencia' ? `<button onclick='event.stopPropagation(); descargarActaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#1565c0; border:2px solid #1565c0; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📄 Descargar PDF</button>` : ''}
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
@@ -882,6 +883,33 @@ function _getCookieHist(name) {
 // Descargar el PDF del acta directamente desde la tarjeta del historial
 function descargarActaPdfDesdeHistorial(id) {
     window.open(`/api/eventos-asistencia/${id}/pdf_acta/`, '_blank');
+}
+
+// Ingresar/cambiar la fecha en que se aprobó el acta (se usa en el timbre del PDF)
+function ingresarFechaAprobacion(id, actual) {
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = actual || '';
+    input.style.cssText = 'position:fixed; opacity:0; pointer-events:none;';
+    document.body.appendChild(input);
+    input.addEventListener('change', async () => {
+        try {
+            const response = await fetch(`/api/eventos-asistencia/${id}/`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _getCookieHist('csrftoken') },
+                credentials: 'include',
+                body: JSON.stringify({ fecha_aprobacion: input.value || null }),
+            });
+            if (!response.ok) throw new Error('Error al guardar');
+            location.reload();
+        } catch (error) {
+            console.error('[HISTORIAL] Error guardando fecha de aprobación:', error);
+            alert('No se pudo guardar la fecha de aprobación. Intenta nuevamente.');
+        } finally {
+            input.remove();
+        }
+    });
+    if (typeof input.showPicker === 'function') input.showPicker(); else input.click();
 }
 
 // Ir a la página de registro en modo edición
