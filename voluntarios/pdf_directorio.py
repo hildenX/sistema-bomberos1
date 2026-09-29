@@ -893,6 +893,12 @@ def generar_pdf_lista_asistencia(evento):
 
     p.linea(f"Total de asistentes: {len(asistentes)}", negrita=True, tamano=10, salto=14)
 
+    disculpados = evento.disculpados if isinstance(evento.disculpados, list) else []
+    if disculpados:
+        nombres = ", ".join(d.get('nombre', '') for d in disculpados if d.get('nombre'))
+        p.linea(f"Disculpados ({len(disculpados)}):", negrita=True, tamano=10, salto=14)
+        p.parrafo(nombres, tamano=9, salto=13)
+
     c.save()
     buffer.seek(0)
     return buffer

@@ -956,6 +956,7 @@ class EventoAsistencia(models.Model):
     temas = models.JSONField(default=list, blank=True, help_text="Lista de temas tratados: [{titulo, contenido}], usado para el Directorio")
     suma_ranking = models.BooleanField(default=True, help_text="Si False, no cuenta para el ranking anual (ej: directorio)")
     fecha_aprobacion = models.DateField(blank=True, null=True, help_text="Fecha en que se aprobó el acta (se ingresa manualmente)")
+    disculpados = models.JSONField(default=list, blank=True, help_text="Voluntarios que avisaron que no asistirían: [{id, nombre}]")
     fecha_registro = models.DateTimeField(auto_now_add=True)
     registrado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     

@@ -298,9 +298,17 @@ class SistemaAsistenciasGenericas {
 
             // Marcar los asistentes que ya estaban
             const idsPresentes = new Set(detalles.filter(d => !d.es_externo && d.voluntario).map(d => String(d.voluntario)));
-            document.querySelectorAll('.voluntarios-lista input[type="checkbox"]').forEach(cb => {
+            document.querySelectorAll('.voluntarios-lista input.chk-presente').forEach(cb => {
                 cb.checked = idsPresentes.has(String(cb.dataset.id));
             });
+
+            // Marcar los que quedaron disculpados
+            const idsDisculpados = new Set((Array.isArray(ev.disculpados) ? ev.disculpados : []).map(d => String(d.id)));
+            document.querySelectorAll('.voluntarios-lista input.chk-disculpado').forEach(cb => {
+                cb.checked = idsDisculpados.has(String(cb.dataset.id));
+                cb.closest('.voluntario-item')?.classList.toggle('disculpado', cb.checked);
+            });
+
             this.actualizarEstadisticas();
 
             // Aviso visual + cambiar el texto del botón de guardar
@@ -455,18 +463,29 @@ class SistemaAsistenciasGenericas {
             const checked = esMartires ? 'checked' : '';
 
             html += `
-                <label class="voluntario-item">
-                    <input type="checkbox" 
-                           data-id="${bombero.id}"
-                           data-nombre="${nombreCompleto}"
-                           data-clave="${clave}"
-                           data-cargo="${cargoTexto}"
-                           data-categoria="${this.obtenerCategoriaTexto(bombero, cargo)}"
-                           ${checked}
-                           onchange="${this.tipo}Sistema.onCheckboxChange()">
-                    <span class="voluntario-nombre">${nombreCompleto}</span>
-                    ${cargo ? `<span class="voluntario-cargo">${cargo.nombre_cargo}</span>` : ''}
-                </label>
+                <div class="voluntario-item">
+                    <label class="voluntario-presente">
+                        <input type="checkbox"
+                               class="chk-presente"
+                               data-id="${bombero.id}"
+                               data-nombre="${nombreCompleto}"
+                               data-clave="${clave}"
+                               data-cargo="${cargoTexto}"
+                               data-categoria="${this.obtenerCategoriaTexto(bombero, cargo)}"
+                               ${checked}
+                               onchange="${this.tipo}Sistema.onCheckboxChange(this)">
+                        <span class="voluntario-nombre">${nombreCompleto}</span>
+                        ${cargo ? `<span class="voluntario-cargo">${cargo.nombre_cargo}</span>` : ''}
+                    </label>
+                    <label class="voluntario-disculpado-toggle" title="Avisó que no asistiría">
+                        <input type="checkbox"
+                               class="chk-disculpado"
+                               data-id="${bombero.id}"
+                               data-nombre="${nombreCompleto}"
+                               onchange="${this.tipo}Sistema.onDisculpadoChange(this)">
+                        Disculpado
+                    </label>
+                </div>
             `;
         });
 
@@ -532,8 +551,35 @@ class SistemaAsistenciasGenericas {
         return cargos.includes(nombreCargo);
     }
 
-    onCheckboxChange() {
+    onCheckboxChange(checkboxEl) {
+        // Si se marca "presente", ese voluntario deja de estar disculpado.
+        if (checkboxEl && checkboxEl.checked) {
+            const fila = checkboxEl.closest('.voluntario-item');
+            const chkDisculpado = fila?.querySelector('.chk-disculpado');
+            if (chkDisculpado) chkDisculpado.checked = false;
+        }
         this.actualizarEstadisticas();
+    }
+
+    onDisculpadoChange(checkboxEl) {
+        // Un disculpado no puede estar marcado como presente al mismo tiempo.
+        const fila = checkboxEl.closest('.voluntario-item');
+        if (checkboxEl.checked) {
+            const chkPresente = fila?.querySelector('.chk-presente');
+            if (chkPresente) chkPresente.checked = false;
+        }
+        fila?.classList.toggle('disculpado', checkboxEl.checked);
+        this.actualizarEstadisticas();
+    }
+
+    // Filtra las tarjetas de voluntarios por nombre en todas las categorías
+    // (evita tener que buscar nombre por nombre entre listas largas).
+    filtrarVoluntarios(texto) {
+        const termino = (texto || '').trim().toLowerCase();
+        document.querySelectorAll('.voluntarios-lista .voluntario-item').forEach(item => {
+            const nombre = (item.querySelector('.voluntario-nombre')?.textContent || '').toLowerCase();
+            item.style.display = !termino || nombre.includes(termino) ? '' : 'none';
+        });
     }
 
     seleccionarTodos(categoria) {
@@ -557,7 +603,7 @@ class SistemaAsistenciasGenericas {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        const checkboxes = container.querySelectorAll('input.chk-presente');
         checkboxes.forEach(cb => cb.checked = true);
         this.actualizarEstadisticas();
     }
@@ -583,13 +629,13 @@ class SistemaAsistenciasGenericas {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+        const checkboxes = container.querySelectorAll('input.chk-presente');
         checkboxes.forEach(cb => cb.checked = false);
         this.actualizarEstadisticas();
     }
 
     actualizarEstadisticas() {
-        const checkboxes = document.querySelectorAll('.voluntarios-lista input[type="checkbox"]:checked');
+        const checkboxes = document.querySelectorAll('.voluntarios-lista input.chk-presente:checked');
         const totalPersonas = this.bomberos.length;
         const asistentes = checkboxes.length;
         const porcentaje = totalPersonas > 0 ? ((asistentes / totalPersonas) * 100).toFixed(1) : 0;
@@ -640,7 +686,7 @@ class SistemaAsistenciasGenericas {
             console.log(`[${this.tipo.toUpperCase()}] Guardando registro...`);
 
             // Obtener checkboxes seleccionados
-            const checkboxes = document.querySelectorAll('.voluntarios-lista input[type="checkbox"]:checked');
+            const checkboxes = document.querySelectorAll('.voluntarios-lista input.chk-presente:checked');
             
             if (checkboxes.length === 0) {
                 Utils.mostrarNotificacion('Debe seleccionar al menos un asistente', 'error');
@@ -651,12 +697,16 @@ class SistemaAsistenciasGenericas {
             const datosEspecificos = this.obtenerDatosEspecificos();
             if (!datosEspecificos) return;
 
+            const disculpados = Array.from(document.querySelectorAll('.voluntarios-lista input.chk-disculpado:checked'))
+                .map(cb => ({ id: parseInt(cb.dataset.id, 10), nombre: cb.dataset.nombre }));
+
             const eventoData = {
                 id_evento: Date.now(),
                 tipo: this.tipo,
                 fecha: datosEspecificos.fecha,
                 descripcion: datosEspecificos.descripcion,
                 total_asistentes: checkboxes.length,
+                disculpados,
                 oficiales_comandancia: 0,
                 oficiales_compania: 0,
                 cargos_confianza: 0,
