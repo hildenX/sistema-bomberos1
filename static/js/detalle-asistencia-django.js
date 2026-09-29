@@ -137,6 +137,12 @@ class DetalleAsistenciaDjango {
         if (btnAsistenciaPdf) {
             btnAsistenciaPdf.style.display = 'inline-block';
         }
+
+        const conActaParaEnviar = ['directorio', 'asamblea'].includes(this.evento.tipo);
+        const btnEnviarPrueba = document.getElementById('btnEnviarActaPrueba');
+        if (btnEnviarPrueba) btnEnviarPrueba.style.display = conActaParaEnviar ? 'inline-block' : 'none';
+        const btnEnviarTodos = document.getElementById('btnEnviarActaTodos');
+        if (btnEnviarTodos) btnEnviarTodos.style.display = conActaParaEnviar ? 'inline-block' : 'none';
         
         //  CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
         console.log('═══════════════════════════════════════════');
@@ -621,6 +627,58 @@ class DetalleAsistenciaDjango {
 
     descargarAsistenciaPdf() {
         window.open(`/api/eventos-asistencia/${this.eventoId}/pdf_asistencia/`, '_blank');
+    }
+
+    async enviarActaPrueba() {
+        const email = prompt('¿A qué correo se envía la prueba del acta?');
+        if (!email || !email.trim()) return;
+
+        try {
+            const response = await fetch(`/api/eventos-asistencia/${this.eventoId}/enviar_acta_prueba/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email: email.trim() }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Error al enviar la prueba');
+            alert(`Acta de prueba enviada a ${email.trim()}.`);
+        } catch (error) {
+            console.error('[DETALLE] Error enviando acta de prueba:', error);
+            alert('No se pudo enviar la prueba: ' + error.message);
+        }
+    }
+
+    async enviarActaTodos() {
+        const confirmado = confirm(
+            'Esto enviará el acta por correo a TODOS los voluntarios activos con correo registrado. ' +
+            '¿Ya probaste el envío y confirmas que quieres enviarlo a todos?'
+        );
+        if (!confirmado) return;
+
+        try {
+            const response = await fetch(`/api/eventos-asistencia/${this.eventoId}/enviar_acta_todos/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Error al enviar el acta');
+            let mensaje = `Acta enviada a ${data.enviados} de ${data.total_destinatarios} voluntarios.`;
+            if (data.errores && data.errores.length > 0) {
+                mensaje += `\nHubo ${data.errores.length} error(es) durante el envío.`;
+            }
+            alert(mensaje);
+        } catch (error) {
+            console.error('[DETALLE] Error enviando acta a todos:', error);
+            alert('No se pudo enviar el acta: ' + error.message);
+        }
     }
 
     escapeHtml(texto) {

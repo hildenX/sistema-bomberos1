@@ -912,6 +912,8 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
         'estadisticas_periodo': 'view',
         'pdf_acta': 'view',
         'pdf_asistencia': 'view',
+        'enviar_acta_prueba': 'edit',
+        'enviar_acta_todos': 'edit',
     }
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['tipo', 'fecha']
@@ -1030,6 +1032,62 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
             return response
         except Exception as e:
             print(f"[PDF ASISTENCIA ERROR] {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
+
+    @action(detail=True, methods=['post'])
+    def enviar_acta_prueba(self, request, pk=None):
+        """Envía el acta (PDF) de prueba a un único correo indicado por el usuario"""
+        from .utils_email import enviar_acta_por_email
+
+        evento = self.get_object()
+        if evento.tipo not in ('asamblea', 'directorio'):
+            return Response({'error': 'Este tipo de evento no tiene acta para enviar por correo'}, status=400)
+
+        email = (request.data.get('email') or '').strip()
+        if not email:
+            return Response({'error': 'Debe indicar un correo de prueba'}, status=400)
+
+        try:
+            resultado = enviar_acta_por_email(evento, [email], es_prueba=True)
+            if resultado['enviados'] == 0:
+                return Response({'error': resultado['errores'][0] if resultado['errores'] else 'No se pudo enviar'}, status=500)
+            return Response({'enviados': resultado['enviados']})
+        except Exception as e:
+            print(f"[ENVIAR ACTA PRUEBA ERROR] {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
+
+    @action(detail=True, methods=['post'])
+    def enviar_acta_todos(self, request, pk=None):
+        """Envía el acta (PDF) por correo a todos los voluntarios activos con email registrado"""
+        from .models import Voluntario
+        from .utils_email import enviar_acta_por_email
+
+        evento = self.get_object()
+        if evento.tipo not in ('asamblea', 'directorio'):
+            return Response({'error': 'Este tipo de evento no tiene acta para enviar por correo'}, status=400)
+
+        destinatarios = list(
+            Voluntario.objects.filter(estado_bombero='activo')
+            .exclude(email__isnull=True).exclude(email='')
+            .values_list('email', flat=True)
+        )
+
+        if not destinatarios:
+            return Response({'error': 'No hay voluntarios activos con correo registrado'}, status=400)
+
+        try:
+            resultado = enviar_acta_por_email(evento, destinatarios, es_prueba=False)
+            return Response({
+                'total_destinatarios': len(destinatarios),
+                'enviados': resultado['enviados'],
+                'errores': resultado['errores'],
+            })
+        except Exception as e:
+            print(f"[ENVIAR ACTA TODOS ERROR] {str(e)}")
             import traceback
             traceback.print_exc()
             return Response({'error': str(e)}, status=500)

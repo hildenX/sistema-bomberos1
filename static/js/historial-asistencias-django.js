@@ -448,6 +448,10 @@ class HistorialAsistencias {
                 ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `<button onclick='event.stopPropagation(); ingresarFechaAprobacion(this, ${asistencia.id}, "${asistencia.fecha_aprobacion || ''}")' style="width:100%; margin-top:8px; background:#fff; color:#2e7d32; border:2px solid #2e7d32; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📅 ${asistencia.fecha_aprobacion ? 'Fecha de aprobación: ' + asistencia.fecha_aprobacion.split('-').reverse().join('/') : 'Ingresar fecha de aprobación'}</button>` : ''}
                 ${asistencia.tipo !== 'emergencia' ? `<button onclick='event.stopPropagation(); descargarActaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#1565c0; border:2px solid #1565c0; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📄 Descargar PDF</button>` : ''}
                 <button onclick='event.stopPropagation(); descargarAsistenciaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#00695c; border:2px solid #00695c; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📋 Descargar Asistencia PDF</button>
+                ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `
+                <button onclick='event.stopPropagation(); enviarActaPruebaDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#6a1b9a; border:2px solid #6a1b9a; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✉️ Enviar prueba por correo</button>
+                <button onclick='event.stopPropagation(); enviarActaTodosDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#0f2346; color:#fff; border:2px solid #0f2346; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✉️ Enviar a todos los voluntarios</button>
+                ` : ''}
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
                     ${(this.puedeEditar() && asistencia.tipo !== 'emergencia') ? `<button onclick='event.stopPropagation(); editarAsistencia("${asistencia.tipo}", ${asistencia.id})' style="flex:1; background:#fff; color:#f57c00; border:2px solid #f57c00; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✏️ Editar</button>` : ''}
@@ -889,6 +893,54 @@ function descargarActaPdfDesdeHistorial(id) {
 // Descargar el listado (nómina) de asistentes directamente desde la tarjeta del historial
 function descargarAsistenciaPdfDesdeHistorial(id) {
     window.open(`/api/eventos-asistencia/${id}/pdf_asistencia/`, '_blank');
+}
+
+// Enviar el acta de prueba a un correo indicado, desde la tarjeta del historial
+async function enviarActaPruebaDesdeHistorial(id) {
+    const email = prompt('¿A qué correo se envía la prueba del acta?');
+    if (!email || !email.trim()) return;
+
+    try {
+        const response = await fetch(`/api/eventos-asistencia/${id}/enviar_acta_prueba/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _getCookieHist('csrftoken') },
+            credentials: 'include',
+            body: JSON.stringify({ email: email.trim() }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Error al enviar la prueba');
+        alert(`Acta de prueba enviada a ${email.trim()}.`);
+    } catch (error) {
+        console.error('[HISTORIAL] Error enviando acta de prueba:', error);
+        alert('No se pudo enviar la prueba: ' + error.message);
+    }
+}
+
+// Enviar el acta a todos los voluntarios activos con correo, desde la tarjeta del historial
+async function enviarActaTodosDesdeHistorial(id) {
+    const confirmado = confirm(
+        'Esto enviará el acta por correo a TODOS los voluntarios activos con correo registrado. ' +
+        '¿Ya probaste el envío y confirmas que quieres enviarlo a todos?'
+    );
+    if (!confirmado) return;
+
+    try {
+        const response = await fetch(`/api/eventos-asistencia/${id}/enviar_acta_todos/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': _getCookieHist('csrftoken') },
+            credentials: 'include',
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Error al enviar el acta');
+        let mensaje = `Acta enviada a ${data.enviados} de ${data.total_destinatarios} voluntarios.`;
+        if (data.errores && data.errores.length > 0) {
+            mensaje += `\nHubo ${data.errores.length} error(es) durante el envío.`;
+        }
+        alert(mensaje);
+    } catch (error) {
+        console.error('[HISTORIAL] Error enviando acta a todos:', error);
+        alert('No se pudo enviar el acta: ' + error.message);
+    }
 }
 
 // Ingresar/cambiar la fecha en que se aprobó el acta (se usa en el timbre del PDF)

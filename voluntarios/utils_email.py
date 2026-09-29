@@ -480,3 +480,97 @@ def enviar_notificacion_rechazo(voluntario, motivo, concepto):
     except Exception as e:
         logger.error(f'Error al enviar notificacion de rechazo: {str(e)}')
         return False
+
+
+def enviar_acta_por_email(evento, destinatarios, es_prueba=False):
+    """
+    Envía por correo el PDF del acta (Asamblea o Directorio) de un
+    EventoAsistencia a una lista de direcciones, en tandas por BCC para no
+    exponer los correos entre sí y no saturar el proveedor SMTP en un solo
+    mensaje.
+
+    Args:
+        evento: instancia de EventoAsistencia (tipo 'asamblea' o 'directorio')
+        destinatarios: lista de direcciones de correo (strings)
+        es_prueba: si True, se marca el asunto como envío de prueba
+
+    Returns:
+        dict: {'enviados': int, 'errores': list[str]}
+    """
+    from django.core.mail import get_connection
+    from .pdf_directorio import (
+        generar_pdf_acta_directorio, generar_pdf_acta_asamblea,
+        _calcular_numero_acta_fallback,
+    )
+
+    destinatarios = [d for d in dict.fromkeys(destinatarios) if d]  # únicos, sin vacíos
+    if not destinatarios:
+        return {'enviados': 0, 'errores': ['No hay destinatarios con correo registrado']}
+
+    if evento.tipo == 'directorio':
+        pdf_buffer = generar_pdf_acta_directorio(evento)
+        etiqueta = 'Acta de Directorio de Compañía'
+    elif evento.tipo == 'asamblea':
+        pdf_buffer = generar_pdf_acta_asamblea(evento)
+        etiqueta = 'Acta de Asamblea de Compañía'
+    else:
+        return {'enviados': 0, 'errores': [f'Tipo de evento no soportado: {evento.tipo}']}
+
+    numero_acta = (evento.numero_acta or _calcular_numero_acta_fallback(evento))
+    pdf_bytes = pdf_buffer.getvalue()
+    filename = f"{etiqueta.replace(' de ', '_').replace(' ', '_')}_{numero_acta.replace('/', '-')}.pdf"
+
+    fecha_texto = evento.fecha.strftime('%d/%m/%Y')
+    prefijo_prueba = '[PRUEBA] ' if es_prueba else ''
+    subject = f"{prefijo_prueba}{etiqueta} N° {numero_acta} - {fecha_texto}"
+    text_content = (
+        f"Estimado/a voluntario/a,\n\n"
+        f"Se adjunta el {etiqueta.lower()} N° {numero_acta}, correspondiente a la sesión "
+        f"del {fecha_texto}.\n\n"
+        f"Sexta Compañía de Bomberos Puerto Montt\n"
+        f'"Abnegación y Constancia"'
+    )
+    html_content = f"""
+    <html><body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
+        <div style="background:#0f2346;color:white;padding:20px;border-radius:8px 8px 0 0">
+            <h2 style="margin:0">{etiqueta} N° {numero_acta}</h2>
+        </div>
+        <div style="background:white;padding:20px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px">
+            <p>Estimado/a voluntario/a,</p>
+            <p>Se adjunta el {etiqueta.lower()} correspondiente a la sesión del <strong>{fecha_texto}</strong>.</p>
+            <p style="font-size:0.85rem;color:#9ca3af;margin-top:20px">
+                Sexta Compañía de Bomberos Puerto Montt — "Abnegación y Constancia"
+            </p>
+        </div>
+    </body></html>
+    """
+
+    TAMANO_TANDA = 40
+    tandas = [destinatarios[i:i + TAMANO_TANDA] for i in range(0, len(destinatarios), TAMANO_TANDA)]
+
+    enviados = 0
+    errores = []
+    try:
+        with get_connection() as connection:
+            for tanda in tandas:
+                try:
+                    msg = EmailMultiAlternatives(
+                        subject=subject,
+                        body=text_content,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[settings.DEFAULT_FROM_EMAIL],
+                        bcc=tanda,
+                        connection=connection,
+                    )
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.attach(filename, pdf_bytes, 'application/pdf')
+                    msg.send(fail_silently=False)
+                    enviados += len(tanda)
+                except Exception as e:
+                    logger.error(f'Error enviando tanda de acta a {tanda}: {str(e)}')
+                    errores.append(str(e))
+    except Exception as e:
+        logger.error(f'Error abriendo conexión SMTP para envío de acta: {str(e)}')
+        errores.append(str(e))
+
+    return {'enviados': enviados, 'errores': errores}
