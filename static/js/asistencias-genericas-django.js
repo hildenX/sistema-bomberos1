@@ -574,11 +574,24 @@ class SistemaAsistenciasGenericas {
 
     // Filtra las tarjetas de voluntarios por nombre en todas las categorías
     // (evita tener que buscar nombre por nombre entre listas largas).
+    // Busca por palabras sueltas en cualquier orden (ej: "vera cristian"
+    // encuentra a "Cristian Vera") y oculta las categorías sin resultados.
     filtrarVoluntarios(texto) {
-        const termino = (texto || '').trim().toLowerCase();
-        document.querySelectorAll('.voluntarios-lista .voluntario-item').forEach(item => {
-            const nombre = (item.querySelector('.voluntario-nombre')?.textContent || '').toLowerCase();
-            item.style.display = !termino || nombre.includes(termino) ? '' : 'none';
+        const normalizar = (s) => (s || '')
+            .toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, ''); // sin tildes
+
+        const terminos = normalizar(texto).split(/\s+/).filter(Boolean);
+
+        document.querySelectorAll('.categoria-container').forEach(categoria => {
+            let algunoVisible = false;
+            categoria.querySelectorAll('.voluntario-item').forEach(item => {
+                const nombre = normalizar(item.querySelector('.voluntario-nombre')?.textContent);
+                const coincide = terminos.every(t => nombre.includes(t));
+                item.style.display = coincide ? '' : 'none';
+                if (coincide) algunoVisible = true;
+            });
+            categoria.style.display = (!terminos.length || algunoVisible) ? '' : 'none';
         });
     }
 
