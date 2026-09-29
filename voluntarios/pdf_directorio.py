@@ -158,6 +158,33 @@ def _obtener_logo_pdf():
         return None
 
 
+def _categoria_o_cargo(asistente):
+    """
+    Para el listado de asistencia: si el asistente tenía un cargo (Director,
+    Secretario, Teniente, Confianza, etc.) al momento del evento, se muestra
+    ese cargo. Si no, se muestra su categoría de voluntario según antigüedad
+    (Voluntario / Voluntario Honorario de Compañía / del Cuerpo / Insigne de
+    Chile), calculada igual que en la Ficha Personal.
+    """
+    if asistente.cargo:
+        return asistente.cargo
+
+    if asistente.es_externo:
+        return asistente.categoria or '-'
+
+    voluntario = asistente.voluntario
+    if voluntario is not None:
+        try:
+            from .utils import VoluntarioUtils
+            fecha_base = voluntario.fecha_base_antiguedad
+            if fecha_base:
+                return VoluntarioUtils.calcular_categoria_bombero(fecha_base)['categoria']
+        except Exception:
+            pass
+
+    return asistente.categoria or '-'
+
+
 def _dibujar_marco(c):
     c.setLineWidth(1.2)
     c.setStrokeColorRGB(0.06, 0.2, 0.35)
@@ -775,20 +802,40 @@ def generar_pdf_lista_asistencia(evento):
     c.setTitle(f"Listado de Asistencia - {titulo} - {evento.fecha}")
     p = _PaginadorPDF(c)
 
-    asistentes = list(
-        evento.asistentes.all().order_by('es_externo', 'categoria', 'nombre_completo')
+    asistentes_raw = list(
+        evento.asistentes.select_related('voluntario').all()
+        .order_by('es_externo', 'categoria', 'nombre_completo')
     )
+    # Filtro de seguridad: si por un doble envío quedaron registros duplicados
+    # del mismo asistente, se muestra una sola vez en el listado.
+    asistentes = []
+    vistos = set()
+    for a in asistentes_raw:
+        clave = ('vol', a.voluntario_id) if a.voluntario_id else (
+            ('ext', a.externo_id) if a.externo_id else ('nom', a.nombre_completo)
+        )
+        if clave in vistos:
+            continue
+        vistos.add(clave)
+        asistentes.append(a)
 
     # ---- ENCABEZADO ----
+    y_inicial = p.y
     logo = _obtener_logo_pdf()
+    logo_tam = 20 * mm
     if logo:
-        logo_tam = 20 * mm
         c.drawImage(
-            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            logo, ANCHO - MARGEN - logo_tam, y_inicial - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
         )
     p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=16)
     p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=16)
+
+    # El texto del encabezado es más bajo que el escudo: se baja hasta que
+    # quede libre por completo antes de trazar la línea separadora.
+    if logo:
+        p.asegurar_espacio(0)
+        p.y = min(p.y, y_inicial - logo_tam - 6)
 
     c.setLineWidth(0.6)
     c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
@@ -798,13 +845,12 @@ def generar_pdf_lista_asistencia(evento):
     p.linea(f"Puerto Montt, {_formatear_fecha(evento.fecha)}", centrado=True, tamano=10, salto=22)
 
     # ---- TABLA DE ASISTENTES ----
-    col_n, col_nombre, col_categoria, col_cargo = MARGEN, MARGEN + 16, ANCHO - MARGEN - 160, ANCHO - MARGEN - 100
+    col_n, col_nombre, col_cat = MARGEN, MARGEN + 16, ANCHO - MARGEN - 150
     p.asegurar_espacio(20)
     c.setFont('Helvetica-Bold', 9)
     c.drawString(col_n, p.y, "N°")
     c.drawString(col_nombre, p.y, "Nombre")
-    c.drawString(col_categoria, p.y, "Categoría")
-    c.drawString(col_cargo, p.y, "Cargo")
+    c.drawString(col_cat, p.y, "Categoría / Cargo")
     p.y -= 4
     c.setLineWidth(0.5)
     c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
@@ -819,9 +865,8 @@ def generar_pdf_lista_asistencia(evento):
             if asistente.es_externo:
                 etiqueta = {'participante': 'Participante', 'canje': 'Canje'}.get(asistente.tipo_externo, 'Externo')
                 nombre = f"{nombre} ({etiqueta})"
-            c.drawString(col_nombre, p.y, _truncar_texto(c, nombre, col_categoria - col_nombre - 6, tamano=9))
-            c.drawString(col_categoria, p.y, _truncar_texto(c, asistente.categoria or '-', col_cargo - col_categoria - 6, tamano=9))
-            c.drawString(col_cargo, p.y, _truncar_texto(c, asistente.cargo or '-', ANCHO - MARGEN - col_cargo, tamano=9))
+            c.drawString(col_nombre, p.y, _truncar_texto(c, nombre, col_cat - col_nombre - 6, tamano=9))
+            c.drawString(col_cat, p.y, _truncar_texto(c, _categoria_o_cargo(asistente), ANCHO - MARGEN - col_cat, tamano=9))
             p.y -= 14
     else:
         p.linea("Sin asistentes registrados.", tamano=10, salto=14)
