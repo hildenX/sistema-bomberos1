@@ -309,12 +309,12 @@ def generar_pdf_acta_directorio(evento):
 
     asistentes = list(evento.asistentes.all().order_by('nombre_completo'))
     temas = evento.temas if isinstance(evento.temas, list) else []
-    nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or ''
+    nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or _obtener_secretario_director_vigentes()[1]
 
     # ---- ENCABEZADO ----
     logo = _obtener_logo_pdf()
     if logo:
-        logo_tam = 15 * mm
+        logo_tam = 20 * mm
         c.drawImage(
             logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
@@ -466,6 +466,10 @@ def _dibujar_bloque_temas_y_cierre(p, c, evento, temas, asistentes, nombre_direc
     # espacio para firmar quede visible debajo del margen superior de la página
     # nueva, en vez de perderse justo antes del salto.
     nombre_secretario = _buscar_nombre_por_cargo_exacto(asistentes, 'Secretario')
+    if not nombre_secretario or not nombre_director:
+        sec_vigente, dir_vigente = _obtener_secretario_director_vigentes()
+        nombre_secretario = nombre_secretario or sec_vigente
+        nombre_director = nombre_director or dir_vigente
 
     diametro_timbre = 34 * mm
     espacio_timbre = (diametro_timbre + 20) if mostrar_timbre else 0
@@ -519,12 +523,12 @@ def generar_pdf_acta_asamblea(evento):
 
     asistentes = list(evento.asistentes.all().order_by('nombre_completo'))
     temas = evento.temas if isinstance(evento.temas, list) else []
-    nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or ''
+    nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or _obtener_secretario_director_vigentes()[1]
 
     # ---- ENCABEZADO ----
     logo = _obtener_logo_pdf()
     if logo:
-        logo_tam = 15 * mm
+        logo_tam = 20 * mm
         c.drawImage(
             logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
@@ -636,7 +640,7 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     # ---- ENCABEZADO ----
     logo = _obtener_logo_pdf()
     if logo:
-        logo_tam = 15 * mm
+        logo_tam = 20 * mm
         c.drawImage(
             logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
@@ -746,6 +750,88 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     p.y -= diametro_timbre
     _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, evento.fecha_aprobacion)
     p.y -= 20
+
+    c.save()
+    buffer.seek(0)
+    return buffer
+
+
+def generar_pdf_lista_asistencia(evento):
+    """
+    Genera el listado (nómina) de asistentes a un evento, en tabla, para
+    respaldo/archivo — independiente del acta con los temas tratados.
+
+    Args:
+        evento: instancia de EventoAsistencia (cualquier tipo)
+
+    Returns:
+        BytesIO: buffer con el PDF generado
+    """
+    titulo = TIPO_DISPLAY.get(evento.tipo, 'Acta de Asistencia') if evento.tipo != 'directorio' else 'Directorio de Compañía'
+    titulo = titulo.replace('Acta de ', '')
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    c.setTitle(f"Listado de Asistencia - {titulo} - {evento.fecha}")
+    p = _PaginadorPDF(c)
+
+    asistentes = list(
+        evento.asistentes.all().order_by('es_externo', 'categoria', 'nombre_completo')
+    )
+
+    # ---- ENCABEZADO ----
+    logo = _obtener_logo_pdf()
+    if logo:
+        logo_tam = 20 * mm
+        c.drawImage(
+            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
+        )
+    p.linea(NOMBRE_COMPANIA, centrado=True, negrita=True, tamano=13, salto=16)
+    p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=16)
+
+    c.setLineWidth(0.6)
+    c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
+    p.y -= 16
+
+    p.linea(f"LISTADO DE ASISTENCIA — {titulo.upper()}", centrado=True, negrita=True, tamano=12, salto=18)
+    p.linea(f"Puerto Montt, {_formatear_fecha(evento.fecha)}", centrado=True, tamano=10, salto=22)
+
+    # ---- TABLA DE ASISTENTES ----
+    col_n, col_nombre, col_categoria, col_cargo = MARGEN, MARGEN + 16, ANCHO - MARGEN - 160, ANCHO - MARGEN - 100
+    p.asegurar_espacio(20)
+    c.setFont('Helvetica-Bold', 9)
+    c.drawString(col_n, p.y, "N°")
+    c.drawString(col_nombre, p.y, "Nombre")
+    c.drawString(col_categoria, p.y, "Categoría")
+    c.drawString(col_cargo, p.y, "Cargo")
+    p.y -= 4
+    c.setLineWidth(0.5)
+    c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
+    p.y -= 12
+
+    if asistentes:
+        for idx, asistente in enumerate(asistentes, start=1):
+            p.asegurar_espacio(14)
+            c.setFont('Helvetica', 9)
+            c.drawString(col_n, p.y, str(idx))
+            nombre = asistente.nombre_completo
+            if asistente.es_externo:
+                etiqueta = {'participante': 'Participante', 'canje': 'Canje'}.get(asistente.tipo_externo, 'Externo')
+                nombre = f"{nombre} ({etiqueta})"
+            c.drawString(col_nombre, p.y, _truncar_texto(c, nombre, col_categoria - col_nombre - 6, tamano=9))
+            c.drawString(col_categoria, p.y, _truncar_texto(c, asistente.categoria or '-', col_cargo - col_categoria - 6, tamano=9))
+            c.drawString(col_cargo, p.y, _truncar_texto(c, asistente.cargo or '-', ANCHO - MARGEN - col_cargo, tamano=9))
+            p.y -= 14
+    else:
+        p.linea("Sin asistentes registrados.", tamano=10, salto=14)
+
+    p.y -= 6
+    c.setLineWidth(0.5)
+    c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
+    p.y -= 16
+
+    p.linea(f"Total de asistentes: {len(asistentes)}", negrita=True, tamano=10, salto=14)
 
     c.save()
     buffer.seek(0)

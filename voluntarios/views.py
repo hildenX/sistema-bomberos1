@@ -911,6 +911,7 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
         'asistentes': 'view',
         'estadisticas_periodo': 'view',
         'pdf_acta': 'view',
+        'pdf_asistencia': 'view',
     }
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['tipo', 'fecha']
@@ -1010,6 +1011,25 @@ class EventoAsistenciaViewSet(viewsets.ModelViewSet):
             return response
         except Exception as e:
             print(f"[PDF ACTA ERROR] {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response({'error': str(e)}, status=500)
+
+    @action(detail=True, methods=['get'])
+    def pdf_asistencia(self, request, pk=None):
+        """Genera el listado (nómina) de asistentes de un evento, en PDF"""
+        from django.http import HttpResponse
+        from .pdf_directorio import generar_pdf_lista_asistencia
+
+        evento = self.get_object()
+        try:
+            pdf_buffer = generar_pdf_lista_asistencia(evento)
+            nombre_archivo = f"Listado_Asistencia_{evento.tipo}_{evento.fecha}.pdf"
+            response = HttpResponse(pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+            return response
+        except Exception as e:
+            print(f"[PDF ASISTENCIA ERROR] {str(e)}")
             import traceback
             traceback.print_exc()
             return Response({'error': str(e)}, status=500)

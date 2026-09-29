@@ -85,6 +85,7 @@ class SistemaAsistenciasGenericas {
             </div>
             <input type="text" class="tema-titulo" placeholder="Título del tema">
             <textarea class="tema-contenido" spellcheck="true" lang="es" placeholder="Detalle / acuerdo tomado..." oninput="${this.tipo}Sistema.onCambioTextoCorrector(this)"></textarea>
+            <button type="button" class="btn-mini btn-secondary" style="margin-top:6px;" onclick="${this.tipo}Sistema.justificarTema(${id})" title="Separa el texto pegado en párrafos prolijos (uno por viñeta u oración)">🧹 Ordenar texto</button>
             <div class="corrector-wrap">
                 <div class="redaccion-estado"></div>
                 <div class="lista-sugerencias"></div>
@@ -107,6 +108,39 @@ class SistemaAsistenciasGenericas {
             const titulo = item.querySelector('.tema-item-header strong');
             if (titulo) titulo.textContent = `Tema ${index + 1}`;
         });
+    }
+
+    // Reordena texto pegado (con viñetas "*", "-", saltos pegados) en párrafos
+    // separados y prolijos: uno por viñeta/oración, con mayúscula inicial y
+    // punto final. Cada línea queda como un párrafo propio en el PDF.
+    justificarTema(id) {
+        const div = document.querySelector(`.tema-item[data-tema-id="${id}"]`);
+        const textarea = div?.querySelector('.tema-contenido');
+        if (!textarea) return;
+
+        let texto = textarea.value;
+        if (!texto.trim()) return;
+
+        // Si el texto trae viñetas ("*", "-", "•") se separa una por línea.
+        // Si no, se deja como un solo párrafo.
+        const separador = /(?:^|\n)\s*[*\-•]\s+/;
+        let partes;
+        if (separador.test(texto)) {
+            partes = texto.split(separador).map(p => p.trim()).filter(Boolean);
+        } else {
+            partes = [texto.trim()];
+        }
+
+        const limpiar = (parrafo) => {
+            let p = parrafo.replace(/\s+/g, ' ').trim();
+            if (!p) return '';
+            p = p.charAt(0).toUpperCase() + p.slice(1);
+            if (!/[.!?:]$/.test(p)) p += '.';
+            return p;
+        };
+
+        textarea.value = partes.map(limpiar).filter(Boolean).join('\n');
+        this.onCambioTextoCorrector(textarea);
     }
 
     obtenerTemas() {

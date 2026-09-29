@@ -132,6 +132,11 @@ class DetalleAsistenciaDjango {
         if (btnPdf) {
             btnPdf.style.display = this.evento.tipo !== 'emergencia' ? 'inline-block' : 'none';
         }
+
+        const btnAsistenciaPdf = document.getElementById('btnDescargarAsistenciaPdf');
+        if (btnAsistenciaPdf) {
+            btnAsistenciaPdf.style.display = 'inline-block';
+        }
         
         //  CÓDIGO DE PRUEBA - VER TODOS LOS CAMPOS DEL EVENTO
         console.log('═══════════════════════════════════════════');
@@ -612,6 +617,10 @@ class DetalleAsistenciaDjango {
 
     descargarActaPdf() {
         window.open(`/api/eventos-asistencia/${this.eventoId}/pdf_acta/`, '_blank');
+    }
+
+    descargarAsistenciaPdf() {
+        window.open(`/api/eventos-asistencia/${this.eventoId}/pdf_asistencia/`, '_blank');
     }
 
     escapeHtml(texto) {

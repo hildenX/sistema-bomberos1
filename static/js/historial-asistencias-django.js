@@ -447,6 +447,7 @@ class HistorialAsistencias {
                 </button>
                 ${(['asamblea', 'directorio'].includes(asistencia.tipo) && this.puedeEditar()) ? `<button onclick='event.stopPropagation(); ingresarFechaAprobacion(this, ${asistencia.id}, "${asistencia.fecha_aprobacion || ''}")' style="width:100%; margin-top:8px; background:#fff; color:#2e7d32; border:2px solid #2e7d32; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📅 ${asistencia.fecha_aprobacion ? 'Fecha de aprobación: ' + asistencia.fecha_aprobacion.split('-').reverse().join('/') : 'Ingresar fecha de aprobación'}</button>` : ''}
                 ${asistencia.tipo !== 'emergencia' ? `<button onclick='event.stopPropagation(); descargarActaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#1565c0; border:2px solid #1565c0; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📄 Descargar PDF</button>` : ''}
+                <button onclick='event.stopPropagation(); descargarAsistenciaPdfDesdeHistorial(${asistencia.id})' style="width:100%; margin-top:8px; background:#fff; color:#00695c; border:2px solid #00695c; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">📋 Descargar Asistencia PDF</button>
                 ${(this.puedeGestionar(asistencia) && (this.puedeEditar() || this.puedeEliminar())) ? `
                 <div class="asistencia-acciones" style="display:flex; gap:8px; margin-top:8px;">
                     ${(this.puedeEditar() && asistencia.tipo !== 'emergencia') ? `<button onclick='event.stopPropagation(); editarAsistencia("${asistencia.tipo}", ${asistencia.id})' style="flex:1; background:#fff; color:#f57c00; border:2px solid #f57c00; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">✏️ Editar</button>` : ''}
@@ -883,6 +884,11 @@ function _getCookieHist(name) {
 // Descargar el PDF del acta directamente desde la tarjeta del historial
 function descargarActaPdfDesdeHistorial(id) {
     window.open(`/api/eventos-asistencia/${id}/pdf_acta/`, '_blank');
+}
+
+// Descargar el listado (nómina) de asistentes directamente desde la tarjeta del historial
+function descargarAsistenciaPdfDesdeHistorial(id) {
+    window.open(`/api/eventos-asistencia/${id}/pdf_asistencia/`, '_blank');
 }
 
 // Ingresar/cambiar la fecha en que se aprobó el acta (se usa en el timbre del PDF)
