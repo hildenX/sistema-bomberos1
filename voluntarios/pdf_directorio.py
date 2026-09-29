@@ -339,11 +339,12 @@ def generar_pdf_acta_directorio(evento):
     nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or _obtener_secretario_director_vigentes()[1]
 
     # ---- ENCABEZADO ----
+    y_inicial = p.y
     logo = _obtener_logo_pdf()
+    logo_tam = 20 * mm
     if logo:
-        logo_tam = 20 * mm
         c.drawImage(
-            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            logo, ANCHO - MARGEN - logo_tam, y_inicial - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
         )
 
@@ -351,6 +352,11 @@ def generar_pdf_acta_directorio(evento):
     if nombre_director:
         p.linea(f"DIRECTOR {nombre_director.upper()}", centrado=True, negrita=True, tamano=9, salto=13)
     p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=14)
+
+    # El texto del encabezado es mas bajo que el escudo: se baja hasta que
+    # quede libre por completo antes de trazar la linea separadora.
+    if logo:
+        p.y = min(p.y, y_inicial - logo_tam - 6)
 
     c.setLineWidth(0.6)
     c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
@@ -553,11 +559,12 @@ def generar_pdf_acta_asamblea(evento):
     nombre_director = _buscar_nombre_por_cargo(asistentes, ['director']) or _obtener_secretario_director_vigentes()[1]
 
     # ---- ENCABEZADO ----
+    y_inicial = p.y
     logo = _obtener_logo_pdf()
+    logo_tam = 20 * mm
     if logo:
-        logo_tam = 20 * mm
         c.drawImage(
-            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            logo, ANCHO - MARGEN - logo_tam, y_inicial - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
         )
 
@@ -565,6 +572,11 @@ def generar_pdf_acta_asamblea(evento):
     if nombre_director:
         p.linea(f"DIRECTOR {nombre_director.upper()}", centrado=True, negrita=True, tamano=9, salto=13)
     p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=14)
+
+    # El texto del encabezado es mas bajo que el escudo: se baja hasta que
+    # quede libre por completo antes de trazar la linea separadora.
+    if logo:
+        p.y = min(p.y, y_inicial - logo_tam - 6)
 
     c.setLineWidth(0.6)
     c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
@@ -665,11 +677,12 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     nombre_secretario, nombre_director = _obtener_secretario_director_vigentes()
 
     # ---- ENCABEZADO ----
+    y_inicial = p.y
     logo = _obtener_logo_pdf()
+    logo_tam = 20 * mm
     if logo:
-        logo_tam = 20 * mm
         c.drawImage(
-            logo, ANCHO - MARGEN - logo_tam, p.y - logo_tam,
+            logo, ANCHO - MARGEN - logo_tam, y_inicial - logo_tam,
             width=logo_tam, height=logo_tam, mask='auto', preserveAspectRatio=True, anchor='c'
         )
 
@@ -677,6 +690,8 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     if nombre_director:
         p.linea(f"DIRECTOR {nombre_director.upper()}", centrado=True, negrita=True, tamano=9, salto=13)
     p.linea(f'"{LEMA_COMPANIA}"', centrado=True, fuente='Helvetica-Oblique', tamano=9, salto=14)
+    if logo:
+        p.y = min(p.y, y_inicial - logo_tam - 6)
     c.setLineWidth(0.6)
     c.line(MARGEN, p.y, ANCHO - MARGEN, p.y)
     p.y -= 16
