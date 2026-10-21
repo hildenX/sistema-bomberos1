@@ -4,8 +4,8 @@ Vistas para generación de PDFs de cuotas
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .models import Voluntario, PagoCuota, LogoCompania
-from .pdf_cuotas import generar_pdf_cuotas, generar_pdf_deudores
+from .models import Voluntario, PagoCuota, LogoCompania, AsignacionBeneficio
+from .pdf_cuotas import generar_pdf_cuotas, generar_pdf_deudores, generar_pdf_deudores_beneficios
 from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas
 from datetime import datetime
 
@@ -131,6 +131,54 @@ def pdf_deudores_cuotas(request, anio=None):
         response['Content-Disposition'] = f'inline; filename="{filename}"'
         
         return response
-        
+
+    except Exception as e:
+        return HttpResponse(f'Error al generar PDF: {str(e)}', status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def pdf_deudores_beneficios(request):
+    """
+    Genera PDF con listado de deudores de beneficios
+    GET /api/voluntarios/pdf-deudores-beneficios/
+    """
+    try:
+        asignaciones = AsignacionBeneficio.objects.filter(
+            monto_pendiente__gt=0
+        ).exclude(
+            estado_pago='liberado'
+        ).select_related('voluntario', 'beneficio')
+
+        deudores_data = []
+        for asig in asignaciones:
+            deudores_data.append({
+                'clave': asig.voluntario.clave_bombero or 'N/A',
+                'nombre': f"{asig.voluntario.nombre} {asig.voluntario.apellido_paterno}",
+                'beneficio': asig.beneficio.nombre,
+                'tarjetas_asignadas': asig.tarjetas_asignadas,
+                'tarjetas_vendidas': asig.tarjetas_vendidas,
+                'deuda_total': float(asig.monto_pendiente),
+            })
+
+        logo_base64 = None
+        try:
+            logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+            if logo:
+                logo_base64 = logo.imagen
+        except Exception:
+            pass
+
+        pdf_buffer = generar_pdf_deudores_beneficios(
+            deudores_data=deudores_data,
+            logo_base64=logo_base64
+        )
+
+        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+        filename = f"deudores_beneficios_{datetime.now().strftime('%Y%m%d')}.pdf"
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+
+        return response
+
     except Exception as e:
         return HttpResponse(f'Error al generar PDF: {str(e)}', status=500)

@@ -461,3 +461,181 @@ def generar_pdf_deudores(deudores_data, anio, logo_base64=None):
 
     buffer.seek(0)
     return buffer
+
+
+def generar_pdf_deudores_beneficios(deudores_data, logo_base64=None):
+    """
+    Genera PDF con listado de deudores de beneficios (tarjetas/rifas por cobrar).
+    Mismo formato que generar_pdf_deudores, adaptado a columnas de beneficio.
+    Soporta 100+ entradas con paginación automática y headers repetidos.
+
+    Args:
+        deudores_data: lista de dicts con 'nombre', 'clave', 'beneficio',
+            'tarjetas_asignadas', 'tarjetas_vendidas', 'deuda_total'
+        logo_base64: String base64 del logo (opcional)
+
+    Returns:
+        BytesIO con el PDF generado
+    """
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    MX = 15 * mm
+    MY = 12 * mm
+    ROW_H = 6.5 * mm
+    TH_H = 8 * mm
+    FOOTER_Y = MY + 6 * mm
+
+    COL_NUM       = (MX,          10 * mm)
+    COL_NOMBRE    = (MX + 11 * mm, 62 * mm)
+    COL_CLAVE     = (MX + 74 * mm, 18 * mm)
+    COL_BENEFICIO = (MX + 93 * mm, 48 * mm)
+    COL_TARJETAS  = (MX + 142 * mm, 14 * mm)
+    COL_DEUDA     = (MX + 157 * mm, 21 * mm)
+
+    tabla_ancho = width - 2 * MX
+    total_deuda = Decimal('0')
+    page_num = [1]
+
+    def _logo(y_top):
+        if not logo_base64:
+            return
+        try:
+            from reportlab.lib.utils import ImageReader
+            import base64 as b64
+            data = b64.b64decode(logo_base64.split(',')[1] if ',' in logo_base64 else logo_base64)
+            img = ImageReader(BytesIO(data))
+            c.setFillColor(white)
+            c.rect(MX - 1 * mm, y_top - 24 * mm, 26 * mm, 25 * mm, fill=True, stroke=False)
+            c.drawImage(img, MX, y_top - 23 * mm, width=22 * mm, height=22 * mm, preserveAspectRatio=True)
+        except Exception:
+            pass
+
+    def _header_primera_pagina():
+        y = height - MY
+        _logo(y)
+        c.setFillColorRGB(0.77, 0.12, 0.23)
+        c.setFont("Helvetica-Bold", 13)
+        c.drawString(MX + 27 * mm, y - 8 * mm, "LISTADO DE DEUDORES DE BENEFICIOS")
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(MX + 27 * mm, y - 16 * mm, "Tarjetas y beneficios pendientes de pago")
+        c.setFont("Helvetica", 8)
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
+        c.drawRightString(width - MX, y - 8 * mm, f"Generado: {fecha}")
+        c.drawRightString(width - MX, y - 16 * mm, f"Total registros: {len(deudores_data)}")
+        c.setStrokeColorRGB(0.77, 0.12, 0.23)
+        c.setLineWidth(2)
+        c.line(MX, y - 22 * mm, width - MX, y - 22 * mm)
+        return y - 27 * mm
+
+    def _header_continuacion():
+        y = height - MY
+        c.setFillColorRGB(0.77, 0.12, 0.23)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(MX, y - 7 * mm, "DEUDORES DE BENEFICIOS (continuación)")
+        c.setFont("Helvetica", 8)
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        c.drawRightString(width - MX, y - 7 * mm, f"Pag. {page_num[0]}")
+        c.setStrokeColorRGB(0.77, 0.12, 0.23)
+        c.setLineWidth(1)
+        c.line(MX, y - 11 * mm, width - MX, y - 11 * mm)
+        return y - 16 * mm
+
+    def _encabezado_tabla(y):
+        c.setFillColorRGB(0.77, 0.12, 0.23)
+        c.rect(MX, y - TH_H, tabla_ancho, TH_H, fill=True, stroke=False)
+        c.setFillColor(white)
+        c.setFont("Helvetica-Bold", 8)
+        ry = y - TH_H + 2.5 * mm
+        c.drawString(COL_NUM[0] + 1 * mm,       ry, "#")
+        c.drawString(COL_NOMBRE[0] + 1 * mm,    ry, "NOMBRE COMPLETO")
+        c.drawString(COL_CLAVE[0] + 1 * mm,     ry, "CLAVE")
+        c.drawString(COL_BENEFICIO[0] + 1 * mm, ry, "BENEFICIO")
+        c.drawRightString(COL_TARJETAS[0] + COL_TARJETAS[1] - 1 * mm, ry, "TARJ.")
+        c.drawRightString(COL_DEUDA[0] + COL_DEUDA[1] - 1 * mm, ry, "DEUDA")
+        return y - TH_H
+
+    def _footer():
+        c.setFont("Helvetica", 7)
+        c.setFillColorRGB(0.5, 0.5, 0.5)
+        c.drawString(MX, FOOTER_Y, "Cuerpo de Bomberos - Sistema de Gestion Bomberil")
+        c.drawRightString(width - MX, FOOTER_Y, f"Pag. {page_num[0]}")
+
+    def _nueva_pagina(continuation=True):
+        _footer()
+        c.showPage()
+        page_num[0] += 1
+        if continuation:
+            return _encabezado_tabla(_header_continuacion())
+        return None
+
+    y = _encabezado_tabla(_header_primera_pagina())
+
+    for idx, deudor in enumerate(deudores_data):
+        if y - ROW_H < FOOTER_Y + 22 * mm:
+            y = _nueva_pagina(continuation=True)
+
+        if idx % 2 == 0:
+            c.setFillColorRGB(0.97, 0.97, 0.99)
+            c.rect(MX, y - ROW_H, tabla_ancho, ROW_H, fill=True, stroke=False)
+
+        c.setStrokeColorRGB(0.88, 0.88, 0.92)
+        c.setLineWidth(0.3)
+        c.line(MX, y - ROW_H, MX + tabla_ancho, y - ROW_H)
+
+        row_y = y - ROW_H + 1.8 * mm
+
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        c.setFont("Helvetica", 8)
+        c.drawString(COL_NUM[0] + 1 * mm, row_y, str(idx + 1))
+
+        nombre = (deudor.get('nombre', '') or '')[:36]
+        c.setFillColor(black)
+        c.setFont("Helvetica", 8)
+        c.drawString(COL_NOMBRE[0] + 1 * mm, row_y, nombre)
+
+        c.setFont("Helvetica", 8)
+        c.drawString(COL_CLAVE[0] + 1 * mm, row_y, str(deudor.get('clave', '') or 'N/A'))
+
+        beneficio = (deudor.get('beneficio', '') or '')[:28]
+        c.setFont("Helvetica", 7.5)
+        c.setFillColorRGB(0.65, 0.0, 0.0)
+        c.drawString(COL_BENEFICIO[0] + 1 * mm, row_y, beneficio)
+
+        tarjetas = f"{deudor.get('tarjetas_vendidas', 0)}/{deudor.get('tarjetas_asignadas', 0)}"
+        c.setFont("Helvetica", 8)
+        c.setFillColorRGB(0.4, 0.4, 0.4)
+        c.drawRightString(COL_TARJETAS[0] + COL_TARJETAS[1] - 1 * mm, row_y, tarjetas)
+
+        deuda_val = deudor.get('deuda_total', 0)
+        total_deuda += Decimal(str(deuda_val))
+        c.setFont("Helvetica-Bold", 8)
+        c.setFillColorRGB(0.0, 0.45, 0.0)
+        c.drawRightString(COL_DEUDA[0] + COL_DEUDA[1] - 1 * mm, row_y, f"${int(deuda_val):,}")
+
+        y -= ROW_H
+
+    y -= 4 * mm
+    if y - 16 * mm < FOOTER_Y + 5 * mm:
+        y = _nueva_pagina(continuation=False)
+        y = height - MY - 10 * mm
+
+    c.setStrokeColorRGB(0.77, 0.12, 0.23)
+    c.setLineWidth(1.5)
+    c.line(MX, y, width - MX, y)
+    y -= 9 * mm
+
+    c.setFont("Helvetica-Bold", 10)
+    c.setFillColor(black)
+    c.drawString(MX, y, f"TOTAL DEUDORES: {len(deudores_data)}")
+    c.setFillColorRGB(0.77, 0.12, 0.23)
+    c.drawRightString(width - MX, y, f"DEUDA TOTAL: ${int(total_deuda):,}")
+
+    _footer()
+    c.showPage()
+    c.save()
+
+    buffer.seek(0)
+    return buffer
