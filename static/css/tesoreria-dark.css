@@ -401,6 +401,17 @@ h1, h2, h3, h4, h5, h6 {
 p, span:not([class*="badge"]):not(.sum-value) {
   color: inherit !important;
 }
+
+/* Excepción: los montos de "Beneficios Asignados" (Total/Pagado/Pendiente)
+   van sobre fondo claro (#fafafa definido en pagar-beneficio.css), así que
+   no pueden heredar el texto claro del tema oscuro de arriba o quedan
+   invisibles. Se necesita más especificidad que la regla genérica de span. */
+.pb-montos .pb-monto-row .pb-monto-label { color: #666 !important; }
+.pb-montos .pb-monto-row .pb-monto-val   { color: #1a1a1a !important; }
+.pb-montos .pb-monto-val.verde   { color: #2e7d32 !important; }
+.pb-montos .pb-monto-val.rojo    { color: #c62828 !important; }
+.pb-montos .pb-monto-val.naranja { color: #e65100 !important; }
+
 .text-muted, .helper-text, .hint-text, small {
   color: var(--td-muted) !important;
 }
