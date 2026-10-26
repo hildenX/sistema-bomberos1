@@ -142,7 +142,7 @@
         .td-deuda { text-align: right; font-weight: 700; color: #4ade80; }
         .td-beneficio { color: #f472b6; font-weight: 600; font-size: 0.85rem; }
         .td-clave { color: #999; }
-        .td-tarjetas { text-align: center; color: #999; }
+        .td-tarjetas { color: #bbb; white-space: nowrap; }
         /* Estado vacio */
         .empty-state {
             padding: 60px 20px;
@@ -267,8 +267,8 @@
                         <th style="width:42px">#</th>
                         <th>Voluntario</th>
                         <th>Clave</th>
-                        <th>Beneficio</th>
-                        <th style="text-align:center">Tarjetas</th>
+                        <th>Beneficio o rifa</th>
+                        <th>Debe</th>
                         <th style="text-align:right">Deuda</th>
                     </tr>
                 </thead>
@@ -326,7 +326,7 @@
                     <td><strong>${d.voluntario_nombre || ''}</strong></td>
                     <td class="td-clave">${d.voluntario_clave || 'N/A'}</td>
                     <td class="td-beneficio">${d.beneficio_nombre || ''}</td>
-                    <td class="td-tarjetas">${d.tarjetas_asignadas || 0}</td>
+                    <td class="td-tarjetas">${d.debe || (d.tarjetas_asignadas || 0)}</td>
                     <td class="td-deuda">$${monto.toLocaleString('es-CL')}</td>
                 `;
                 tbody.appendChild(tr);

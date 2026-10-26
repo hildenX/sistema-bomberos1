@@ -13,7 +13,7 @@ import json
 from .models import (
     Voluntario, ConfiguracionCuotas, EstadoCuotasBombero,
     PagoCuota, Beneficio, AsignacionBeneficio, PagoBeneficio,
-    MovimientoFinanciero
+    MovimientoFinanciero, AsignacionRifa
 )
 
 
@@ -173,6 +173,102 @@ def calcular_deuda_cuotas(voluntario, anio=None):
         'monto': monto_total,
         'meses_pendientes': meses_pendientes
     }
+
+
+# ==================== DEUDAS DE BENEFICIOS Y RIFAS ====================
+
+# Unidad en que se cuenta lo adeudado según el tipo o nombre del beneficio
+_UNIDADES_BENEFICIO = (('bingo', 'cartón', 'cartones'), ('rifa', 'número', 'números'))
+
+
+def _cantidad_texto(cantidad, singular, plural):
+    """4 -> '4 tarjetas', 1 -> '1 tarjeta', 4.5 -> '4,5 tarjetas'"""
+    cantidad = float(cantidad)
+    if cantidad.is_integer():
+        cantidad = int(cantidad)
+        numero = str(cantidad)
+    else:
+        numero = f"{cantidad:.1f}".replace('.', ',')
+    return f"{numero} {singular if cantidad == 1 else plural}"
+
+
+def _unidad_beneficio(beneficio):
+    texto = f"{beneficio.tipo or ''} {beneficio.nombre or ''}".lower()
+    for clave, singular, plural in _UNIDADES_BENEFICIO:
+        if clave in texto:
+            return singular, plural
+    return 'tarjeta', 'tarjetas'
+
+
+def calcular_deudas_beneficios_y_rifas():
+    """
+    Todo lo que se debe fuera de las cuotas: beneficios (curantos, bingos...)
+    con monto pendiente y rifas retiradas con saldo. Una sola fuente para la
+    pantalla de deudores y su PDF.
+
+    Cada deuda: {'id', 'tipo' ('beneficio'|'rifa'), 'voluntario', 'grupo'
+    (tipo, id), 'grupo_nombre', 'grupo_fecha', 'precio_unitario',
+    'unidad' (singular), 'detalle_precio', 'debe', 'cantidad_asignada',
+    'monto_pendiente'}
+    """
+    deudas = []
+
+    beneficios = (AsignacionBeneficio.objects
+                  .filter(monto_pendiente__gt=0)
+                  .exclude(estado_pago='liberado')
+                  .select_related('voluntario', 'beneficio'))
+    for a in beneficios:
+        b = a.beneficio
+        singular, plural = _unidad_beneficio(b)
+        precio = Decimal(str(b.precio_por_tarjeta or 0))
+        pendiente = Decimal(str(a.monto_pendiente))
+        deudas.append({
+            'id': a.id,
+            'tipo': 'beneficio',
+            'voluntario': a.voluntario,
+            'grupo': ('beneficio', b.id),
+            'grupo_nombre': b.nombre.strip(),
+            'grupo_fecha': b.fecha_evento,
+            'precio_unitario': precio,
+            'unidad': singular,
+            'detalle_precio': None,
+            'debe': _cantidad_texto(pendiente / precio, singular, plural) if precio else '—',
+            'cantidad_asignada': a.tarjetas_asignadas,
+            'monto_pendiente': pendiente,
+        })
+
+    # Una rifa se debe cuando el voluntario retiró los talonarios y le queda saldo
+    rifas = AsignacionRifa.objects.filter(estado='retirada').select_related('voluntario', 'rifa')
+    for a in rifas:
+        pendiente = Decimal(str(a.monto_pendiente))
+        if pendiente <= 0:
+            continue
+        r = a.rifa
+        precio_numero = Decimal(str(r.precio_numero or 0))
+        por_talonario = r.numeros_por_talonario or 0
+        precio_talonario = precio_numero * por_talonario
+        if precio_talonario and pendiente % precio_talonario == 0:
+            debe = _cantidad_texto(pendiente / precio_talonario, 'talonario', 'talonarios')
+        elif precio_numero:
+            debe = _cantidad_texto(pendiente / precio_numero, 'número', 'números')
+        else:
+            debe = '—'
+        deudas.append({
+            'id': a.id,
+            'tipo': 'rifa',
+            'voluntario': a.voluntario,
+            'grupo': ('rifa', r.id),
+            'grupo_nombre': r.nombre.strip(),
+            'grupo_fecha': r.fecha_inicio,
+            'precio_unitario': precio_numero,
+            'unidad': 'número',
+            'detalle_precio': f"{por_talonario} números por talonario" if por_talonario else None,
+            'debe': debe,
+            'cantidad_asignada': a.talonarios_asignados,
+            'monto_pendiente': pendiente,
+        })
+
+    return deudas
 
 
 def calcular_deudores_cuotas(anio=None):

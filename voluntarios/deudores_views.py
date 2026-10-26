@@ -4,8 +4,7 @@ Vista simplificada para obtener deudores con toda la información necesaria
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from .models import AsignacionBeneficio
-from .utils_tesoreria import calcular_deudores_cuotas
+from .utils_tesoreria import calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from datetime import datetime
 from .permissions import autorizar_request
 
@@ -80,28 +79,23 @@ def listar_deudores_beneficios(request):
         return auth_response
 
     try:
-        # Obtener asignaciones con monto pendiente > 0 (excluir liberadas)
-        asignaciones = AsignacionBeneficio.objects.filter(
-            monto_pendiente__gt=0
-        ).exclude(
-            estado_pago='liberado'
-        ).select_related('voluntario', 'beneficio')
-        
-        # Formatear respuesta
+        # Beneficios y rifas: misma fuente que el PDF de la nómina
         resultado = []
-        for asig in asignaciones:
+        for d in calcular_deudas_beneficios_y_rifas():
+            v = d['voluntario']
             resultado.append({
-                'id': asig.id,
-                'voluntario_id': asig.voluntario.id,
-                'voluntario_nombre': f"{asig.voluntario.nombre} {asig.voluntario.apellido_paterno}",
-                'voluntario_clave': asig.voluntario.clave_bombero or 'N/A',
-                'beneficio_id': asig.beneficio.id,
-                'beneficio_nombre': asig.beneficio.nombre,
-                'tarjetas_asignadas': asig.tarjetas_asignadas,
-                'tarjetas_vendidas': asig.tarjetas_vendidas,
-                'monto_pendiente': float(asig.monto_pendiente)
+                'id': d['id'],
+                'tipo': d['tipo'],
+                'voluntario_id': v.id,
+                'voluntario_nombre': f"{v.nombre} {v.apellido_paterno}",
+                'voluntario_clave': v.clave_bombero or 'N/A',
+                'beneficio_id': d['grupo'][1],
+                'beneficio_nombre': d['grupo_nombre'],
+                'tarjetas_asignadas': d['cantidad_asignada'],
+                'debe': d['debe'],
+                'monto_pendiente': float(d['monto_pendiente'])
             })
-        
+
         return JsonResponse({
             'success': True,
             'total': len(resultado),

@@ -452,67 +452,81 @@ def generar_pdf_nomina_deudores_cuotas(deudores, anio, logo_base64=None, fecha_c
     return doc.terminar()
 
 
-def generar_pdf_nomina_deudores_beneficios(asignaciones, logo_base64=None, fecha_corte=None):
+def generar_pdf_nomina_deudores_beneficios(deudas, logo_base64=None, fecha_corte=None):
     """
-    asignaciones: AsignacionBeneficio con monto pendiente (con voluntario y beneficio cargados).
-    Agrupa por beneficio con subtotal y resume a quienes deben más de uno.
+    deudas: lista de calcular_deudas_beneficios_y_rifas() (beneficios y rifas).
+    Agrupa por beneficio o rifa con subtotal; la columna "Debe" dice lo que falta
+    pagar en la unidad de cada uno (tarjetas, cartones, talonarios o números) y
+    al final se resume a quienes deben más de una cosa.
     """
     fecha_corte = fecha_corte or date.today()
-    asignaciones = list(asignaciones)
-    total = sum(Decimal(str(a.monto_pendiente)) for a in asignaciones)
+    deudas = list(deudas)
+    total = sum(d['monto_pendiente'] for d in deudas)
+    hay_rifas = any(d['tipo'] == 'rifa' for d in deudas)
 
     grupos = OrderedDict()
-    for a in sorted(asignaciones, key=lambda a: (a.beneficio.fecha_evento, a.beneficio.nombre)):
-        grupos.setdefault(a.beneficio, []).append(a)
+    for d in sorted(deudas, key=lambda d: (d['grupo_fecha'], d['grupo_nombre'].lower())):
+        grupos.setdefault(d['grupo'], []).append(d)
 
     por_voluntario = OrderedDict()
-    for a in asignaciones:
-        por_voluntario.setdefault(a.voluntario, []).append(a)
-    multiples = [(v, lista) for v, lista in por_voluntario.items() if len(lista) > 1]
-    multiples.sort(key=lambda par: _orden_clave(par[0].clave_bombero))
+    for d in deudas:
+        por_voluntario.setdefault(d['voluntario'], []).append(d)
+    multiples = sorted(((v, lista) for v, lista in por_voluntario.items() if len(lista) > 1),
+                       key=lambda par: _orden_clave(par[0].clave_bombero))
 
-    doc = _Nomina('NÓMINA DE DEUDORES', 'Beneficios y tarjetas pendientes',
-                  'Nómina de deudores · beneficios', _logo_desde_base64(logo_base64))
+    que = 'beneficios y rifas' if hay_rifas else 'beneficios'
+    doc = _Nomina('NÓMINA DE DEUDORES', f"{que.capitalize()} pendientes",
+                  f"Nómina de deudores · {que}", _logo_desde_base64(logo_base64))
     doc.encabezado(fecha_corte)
     tesorero = _tesorero_vigente()
+    cantidad_grupos = f"{len(grupos)} {('beneficio o rifa' if hay_rifas else 'beneficio') if len(grupos) == 1 else que} con deuda"
     doc.bloque_datos(
         ('EMITIDO POR', [('Tesorería de Compañía', True),
                          (f"Tesorero(a): {tesorero}" if tesorero else 'Tesorero(a) de Compañía', False),
                          ('Chorrillos 1339, Puerto Montt', False)]),
-        ('RESUMEN', [(f"{len(por_voluntario)} voluntarios con beneficios pendientes", True),
-                     (f"{len(grupos)} {'beneficio' if len(grupos) == 1 else 'beneficios'} con deuda", False),
+        ('RESUMEN', [(f"{len(por_voluntario)} voluntarios con deudas pendientes", True),
+                     (cantidad_grupos, False),
                      (f"Total adeudado: {_pesos(total)}", False)]),
     )
 
-    doc.titulo_seccion('Detalle por beneficio')
+    doc.titulo_seccion(f"Detalle por {'beneficio y rifa' if hay_rifas else 'beneficio'}")
     doc.definir_columnas([('N°', 30, 'l'), ('Clave', 48, 'l'), ('Voluntario', 219, 'l'),
-                          ('Tarjetas vendidas', 116, 'l'), ('Deuda', ANCHO_UTIL - 413, 'r')])
-    for beneficio, lista in grupos.items():
-        lista.sort(key=lambda a: _orden_clave(a.voluntario.clave_bombero))
-        subtotal = sum(Decimal(str(a.monto_pendiente)) for a in lista)
-        detalle = (f"{beneficio.fecha_evento.strftime('%d-%m-%Y')} · "
-                   f"{_pesos(beneficio.precio_por_tarjeta)} por tarjeta · {len(lista)} voluntarios")
-        doc.banda_grupo(beneficio.nombre.strip().capitalize(), detalle)
+                          ('Debe', 116, 'l'), ('Monto', ANCHO_UTIL - 413, 'r')])
+    for lista in grupos.values():
+        lista.sort(key=lambda d: _orden_clave(d['voluntario'].clave_bombero))
+        primero = lista[0]
+        partes = []
+        if primero['grupo_fecha']:
+            partes.append(primero['grupo_fecha'].strftime('%d-%m-%Y'))
+        if primero['precio_unitario']:
+            partes.append(f"{_pesos(primero['precio_unitario'])} por {primero['unidad']}")
+        if primero['detalle_precio']:
+            partes.append(primero['detalle_precio'])
+        partes.append(f"{len(lista)} {'voluntario' if len(lista) == 1 else 'voluntarios'}")
+        nombre = primero['grupo_nombre']
+        doc.banda_grupo(nombre[:1].upper() + nombre[1:], ' · '.join(partes))
         doc.encabezado_tabla()
-        for i, a in enumerate(lista):
-            doc.fila([i + 1, a.voluntario.clave_bombero or '—', a.voluntario.nombre_completo(),
-                      f"{a.tarjetas_vendidas} de {a.tarjetas_asignadas}", _pesos(a.monto_pendiente)],
-                     i, negritas=(4,))
-        doc.fila_subtotal(f"Subtotal {beneficio.nombre.strip().lower()}", subtotal)
+        for i, d in enumerate(lista):
+            v = d['voluntario']
+            doc.fila([i + 1, v.clave_bombero or '—', v.nombre_completo(), d['debe'],
+                      _pesos(d['monto_pendiente'])], i, negritas=(4,))
+        doc.fila_subtotal(f"Subtotal {nombre.lower()}", sum(d['monto_pendiente'] for d in lista))
 
     if multiples:
-        doc.titulo_seccion('Voluntarios con más de un beneficio pendiente')
+        doc.titulo_seccion('Voluntarios con más de una deuda pendiente')
         doc.definir_columnas([('N°', 30, 'l'), ('Clave', 48, 'l'), ('Voluntario', 165, 'l'),
-                              ('Beneficios', 170, 'l'), ('Total', ANCHO_UTIL - 413, 'r')])
+                              ('Debe', 170, 'l'), ('Total', ANCHO_UTIL - 413, 'r')])
         doc.encabezado_tabla()
         for i, (v, lista) in enumerate(multiples):
-            nombres = ', '.join(a.beneficio.nombre.strip().lower() for a in lista)
-            doc.fila([i + 1, v.clave_bombero or '—', v.nombre_completo(), nombres,
-                      _pesos(sum(Decimal(str(a.monto_pendiente)) for a in lista))], i, negritas=(4,), envolver=(3,))
+            detalle = '; '.join(f"{d['debe']} de {d['grupo_nombre'].lower()}"
+                                for d in sorted(lista, key=lambda d: d['grupo_fecha']))
+            doc.fila([i + 1, v.clave_bombero or '—', v.nombre_completo(), detalle,
+                      _pesos(sum(d['monto_pendiente'] for d in lista))],
+                     i, negritas=(4,), envolver=(3,))
 
     doc.cierre([('Voluntarios con deuda', str(len(por_voluntario))),
-                ('Beneficios con deuda', str(len(grupos)))], total, [
-        'Valores en pesos chilenos (CLP). La deuda corresponde a tarjetas asignadas no rendidas.',
+                (f"{que.capitalize()} con deuda", str(len(grupos)))], total, [
+        'Valores en pesos chilenos (CLP). «Debe» indica lo asignado que falta pagar.',
         f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en esta nómina.",
         'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
     ], tesorero)

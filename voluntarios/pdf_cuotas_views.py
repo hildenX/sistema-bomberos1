@@ -4,10 +4,10 @@ Vistas para generación de PDFs de cuotas
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .models import Voluntario, PagoCuota, LogoCompania, AsignacionBeneficio
+from .models import Voluntario, PagoCuota, LogoCompania
 from .pdf_cuotas import generar_pdf_cuotas
 from .pdf_nominas import generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios
-from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas
+from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from .permissions import autorizar_request
 from datetime import datetime
 
@@ -129,15 +129,9 @@ def pdf_deudores_beneficios(request):
         return respuesta
 
     try:
-        asignaciones = AsignacionBeneficio.objects.filter(
-            monto_pendiente__gt=0
-        ).exclude(
-            estado_pago='liberado'
-        ).select_related('voluntario', 'beneficio')
-
         logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
         pdf_buffer = generar_pdf_nomina_deudores_beneficios(
-            asignaciones, logo_base64=logo.imagen if logo else None
+            calcular_deudas_beneficios_y_rifas(), logo_base64=logo.imagen if logo else None
         )
 
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
