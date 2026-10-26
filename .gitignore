@@ -56,3 +56,12 @@ datos_migracion.json*
 db.sqlite3.*
 # Configuracion local de herramientas
 .claude/settings.local.json
+
+# Archivos locales (datos personales / herramientas)
+/*.pdf
+/*.xlsx
+/*.docx
+/logobomba.png
+.mcp.json
+.claude/
+docs/superpowers/
