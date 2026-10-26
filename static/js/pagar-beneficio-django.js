@@ -162,15 +162,15 @@ function renderBcard(a) {
     const estadoTexto = { pendiente: 'Pendiente', parcial: 'Parcial', completo: 'Completo', liberado: 'Liberado' }[a.estado_pago] || a.estado_pago;
 
     const btnPagar = (a.tarjetas_disponibles > 0 && a.estado_pago !== 'completo' && a.estado_pago !== 'liberado') ? `
-        <button class="btn-action pagar" onclick="abrirModalPagar(${a.id})">PAGAR</button>
+        <button class="btn-action pagar" onclick="abrirModalPagar(${a.id})">Registrar pago</button>
     ` : '';
 
     const btnExtra = a.estado_pago !== 'liberado' ? `
-        <button class="btn-action extra" onclick="abrirModalExtra(${a.id})">VENTA EXTRA</button>
+        <button class="btn-action extra" onclick="abrirModalExtra(${a.id})">Venta extra</button>
     ` : '';
 
     const btnLiberar = (a.tarjetas_disponibles > 0 && a.estado_pago !== 'completo' && a.estado_pago !== 'liberado') ? `
-        <button class="btn-action liberar" onclick="abrirModalLiberar(${a.id})">LIBERAR</button>
+        <button class="btn-action liberar" onclick="abrirModalLiberar(${a.id})">Liberar tarjetas</button>
     ` : '';
 
     const filaExtra = a.tarjetas_extras_vendidas > 0 ? `
