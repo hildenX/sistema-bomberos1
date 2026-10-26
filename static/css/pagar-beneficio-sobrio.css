@@ -137,3 +137,47 @@ body .pb-pago-item, body .pb-pago-item.extra { border-left-width: 1px !important
   body .pb-bcard-actions { flex-direction: column !important; }
   body .btn-action { width: 100% !important; }
 }
+
+/* ── Calidez: fondo grafito, encabezado guinda y acentos suaves ── */
+body .pb-wrap { background: #131315 !important; }
+body .pb-header {
+  background: linear-gradient(180deg, #3a1219 0%, #24121a 55%, #1b1a1d 100%) !important;
+  border-top: 3px solid #b0303c !important;
+}
+body .pb-header-top p { color: #c9a9ad !important; }
+body .pb-summary { background: transparent !important; border-top: 0 !important; padding: 0 !important; }
+body .pb-sum-card { background: rgba(255,255,255,.04) !important; border-color: rgba(255,255,255,.1) !important; }
+body .pb-sum-card:last-child .pb-sum-value { color: #f08a80 !important; }
+
+body .pb-card { background: #1d1d20 !important; border: 1px solid #2c2c31 !important; }
+body .pb-card-header { background: #222226 !important; border-bottom: 1px solid #2c2c31 !important; }
+body .pb-card-header h2 { color: #d8c3c6 !important; }
+body .pb-vol-info { background: #1d1d20 !important; }
+
+body .pb-benefits-list { background: #1d1d20 !important; }
+body .pb-bcard, body .pb-bcard:hover, body .pb-bcard.completo, body .pb-bcard.liberado {
+  background: #242428 !important;
+  border-color: #33333a !important;
+  border-top: 2px solid #b0303c !important;
+}
+body .pb-bcard.completo { border-top-color: var(--td-green) !important; }
+body .pb-bcard.liberado { border-top-color: #555 !important; }
+body .pb-bcard:hover { box-shadow: 0 6px 18px rgba(0,0,0,.35) !important; }
+
+body .pb-tarjetas-grid { border-color: #33333a !important; }
+body .pb-tstat, body .pb-tstat.vendidas, body .pb-tstat.extras, body .pb-tstat.disponibles { border-right-color: #33333a !important; }
+body .pb-tstat { background: rgba(255,255,255,.02) !important; }
+body .pb-tstat.vendidas { background: rgba(39,174,96,.07) !important; }
+body .pb-tstat.extras { background: rgba(200,148,42,.07) !important; }
+body .pb-tstat.disponibles { background: rgba(192,57,43,.07) !important; }
+body .pb-tstat.disponibles .pb-tstat-val { color: #f08a80 !important; }
+
+body .pb-progreso { display: flex; align-items: center; gap: 12px; margin: 14px 0 4px; }
+body .pb-progreso-barra { flex: 1; height: 8px; background: #33333a; border-radius: 999px; overflow: hidden; }
+body .pb-progreso-barra span { display: block; height: 100%; min-width: 0; background: linear-gradient(90deg, #27ae60, #4cc283); border-radius: 999px; transition: width .4s ease; }
+body .pb-progreso-txt { font-size: .78rem; color: var(--td-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+body .pb-montos { overflow: hidden !important; background: #1b1b1e !important; border-color: #33333a !important; }
+body .pb-montos .pb-monto-row { border-color: #2c2c31 !important; }
+body .pb-montos .pb-monto-row:last-child { background: rgba(192,57,43,.06) !important; margin: 0 -16px -12px !important; padding: 10px 16px !important; border-radius: 0 0 8px 8px !important; }
+body .btn-action.extra, body .btn-action.liberar { background: rgba(255,255,255,.03) !important; border-color: #3d3d44 !important; }

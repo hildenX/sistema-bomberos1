@@ -159,6 +159,7 @@ function renderBeneficios() {
 
 function renderBcard(a) {
     const estadoClass = a.estado_pago || 'pendiente';
+    const pct = parseFloat(a.monto_total) > 0 ? Math.min(100, Math.round(parseFloat(a.monto_pagado || 0) / parseFloat(a.monto_total) * 100)) : 0;
     const estadoTexto = { pendiente: 'Pendiente', parcial: 'Parcial', completo: 'Completo', liberado: 'Liberado' }[a.estado_pago] || a.estado_pago;
 
     const btnPagar = (a.tarjetas_disponibles > 0 && a.estado_pago !== 'completo' && a.estado_pago !== 'liberado') ? `
@@ -209,6 +210,10 @@ function renderBcard(a) {
                     <div class="pb-tstat-val">${a.tarjetas_disponibles}</div>
                     <div class="pb-tstat-lbl">Disponibles</div>
                 </div>
+            </div>
+            <div class="pb-progreso" title="${pct}% pagado">
+                <div class="pb-progreso-barra"><span style="width:${pct}%"></span></div>
+                <span class="pb-progreso-txt">${pct}% pagado</span>
             </div>
             <div class="pb-montos">
                 <div class="pb-monto-row">
