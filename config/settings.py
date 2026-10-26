@@ -182,10 +182,9 @@ CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default='False').lower() in ('
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://*.pythonanywhere.com',
-    'https://*.onrender.com',
     'https://cuartelsexta.com',
     'https://www.cuartelsexta.com',
+    'https://pruebas.cuartelsexta.com',
 ]
 
 # EMAIL CONFIGURATION - Para envío de comprobantes
@@ -206,7 +205,8 @@ CSRF_TRUSTED_ORIGINS = [
 # 5. Reemplaza 'tu_email@gmail.com' y 'tu_contraseña_app'
 # 6. Reinicia el servidor Django
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Por env: el sitio de pruebas usa el backend de consola para no enviar correos reales
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

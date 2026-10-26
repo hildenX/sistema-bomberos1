@@ -787,10 +787,16 @@ def generar_pdf_acuerdos(tipo_organo, acuerdos):
     c.drawCentredString(x_der + ancho_firma / 2, p.y, "Director")
     p.y -= 10
 
+    # El registro puede juntar acuerdos de varias sesiones: solo se imprime una
+    # fecha de aprobación si todos vienen de la misma sesión y esta la tiene;
+    # si no, queda la línea en blanco para completar a mano.
+    eventos = {a.evento for a in acuerdos if getattr(a, 'evento', None)}
+    fecha_aprobacion = eventos.pop().fecha_aprobacion if len(eventos) == 1 else None
+
     x_timbre = ANCHO / 2 - diametro_timbre / 2
     _dibujar_timbre_asamblea(c, x_timbre, p.y - diametro_timbre, diametro_timbre)
     p.y -= diametro_timbre
-    _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, evento.fecha_aprobacion)
+    _dibujar_fecha_aprobacion(c, ANCHO / 2, p.y - 8, fecha_aprobacion)
     p.y -= 20
 
     c.save()
