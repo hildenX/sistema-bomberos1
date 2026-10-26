@@ -16,8 +16,8 @@ from .models import (
     PagoBeneficio, MovimientoFinanciero, LogoCompania, CuentaBancaria
 )
 from .utils_email import enviar_comprobante_beneficio
-from dateutil.relativedelta import relativedelta
 from .permissions import autorizar_request, obtener_accion_desde_request
+from .utils_tesoreria import tarjetas_beneficio_para
 
 
 def _autorizar_beneficios(request, accion=None):
@@ -172,7 +172,7 @@ def crear_beneficio_simple(request):
         tarjetas_voluntarios = int(data.get('tarjetas_voluntarios', 8))
         tarjetas_honorarios_cia = int(data.get('tarjetas_honorarios_cia', 5))
         tarjetas_honorarios_cuerpo = int(data.get('tarjetas_honorarios_cuerpo', 3))
-        tarjetas_insignes = int(data.get('tarjetas_insignes', 2))
+        tarjetas_insignes = 0  # Los insignes no venden beneficios (regla de la compañía)
 
         if not nombre or not fecha_evento_str or precio_tarjeta <= 0:
             return JsonResponse({'error': 'Datos incompletos'}, status=400)
@@ -206,21 +206,12 @@ def crear_beneficio_simple(request):
             asignaciones_creadas = 0
             
             # 3. Crear asignación para cada voluntario según su categoría
+            #    (antigüedad reconocida; los insignes quedan fuera)
             for voluntario in voluntarios:
-                # Calcular antigüedad en años
-                hoy = timezone.now().date()
-                antiguedad = relativedelta(hoy, voluntario.fecha_ingreso).years
-                
-                # Determinar tarjetas según antiguedad
-                if antiguedad >= 50:
-                    tarjetas = tarjetas_insignes  # Insigne 50+ años
-                elif antiguedad >= 25:
-                    tarjetas = tarjetas_honorarios_cuerpo  # Honorario Cuerpo 25-49
-                elif antiguedad >= 20:
-                    tarjetas = tarjetas_honorarios_cia  # Honorario Compañía 20-24
-                else:
-                    tarjetas = tarjetas_voluntarios  # Voluntario 0-19
-                
+                tarjetas = tarjetas_beneficio_para(voluntario, beneficio)
+                if tarjetas <= 0:
+                    continue
+
                 # Calcular monto total
                 monto_total = Decimal(tarjetas) * precio_tarjeta
                 

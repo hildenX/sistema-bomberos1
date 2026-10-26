@@ -437,6 +437,21 @@ def reactivar_cuotas_voluntario(voluntario_id):
 
 # ==================== BENEFICIOS ====================
 
+def tarjetas_beneficio_para(voluntario, beneficio):
+    """
+    Tarjetas de un beneficio que le corresponden a un voluntario según su
+    categoría por antigüedad reconocida. Los insignes no venden beneficios.
+    """
+    categoria = calcular_categoria_bombero(voluntario.fecha_base_antiguedad)
+    if 'Insigne' in categoria:
+        return 0
+    if 'Honorario del Cuerpo' in categoria:
+        return beneficio.tarjetas_honorarios_cuerpo
+    if 'Honorario de Compañía' in categoria:
+        return beneficio.tarjetas_honorarios_cia
+    return beneficio.tarjetas_voluntarios
+
+
 @transaction.atomic
 def crear_beneficio_con_asignaciones(datos_beneficio, usuario):
     """
@@ -451,7 +466,7 @@ def crear_beneficio_con_asignaciones(datos_beneficio, usuario):
         tarjetas_voluntarios=datos_beneficio.get('tarjetas_voluntarios', 5),
         tarjetas_honorarios_cia=datos_beneficio.get('tarjetas_honorarios_cia', 3),
         tarjetas_honorarios_cuerpo=datos_beneficio.get('tarjetas_honorarios_cuerpo', 3),
-        tarjetas_insignes=datos_beneficio.get('tarjetas_insignes', 2),
+        tarjetas_insignes=0,  # Los insignes no venden beneficios
         precio_por_tarjeta=datos_beneficio['precio_por_tarjeta'],
         precio_tarjeta_extra=datos_beneficio['precio_tarjeta_extra'],
         created_by=usuario
@@ -464,18 +479,10 @@ def crear_beneficio_con_asignaciones(datos_beneficio, usuario):
     
     asignaciones = []
     for voluntario in voluntarios:
-        categoria = calcular_categoria_bombero(voluntario.fecha_base_antiguedad)
+        tarjetas = tarjetas_beneficio_para(voluntario, beneficio)
+        if tarjetas <= 0:
+            continue
 
-        # Determinar tarjetas según categoría
-        if 'Insigne' in categoria:
-            tarjetas = beneficio.tarjetas_insignes
-        elif 'Honorario del Cuerpo' in categoria:
-            tarjetas = beneficio.tarjetas_honorarios_cuerpo
-        elif 'Honorario de Compañía' in categoria:
-            tarjetas = beneficio.tarjetas_honorarios_cia
-        else:
-            tarjetas = beneficio.tarjetas_voluntarios
-        
         # Calcular monto total
         monto_total = Decimal(str(tarjetas)) * beneficio.precio_por_tarjeta
         
