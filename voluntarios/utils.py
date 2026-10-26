@@ -106,7 +106,20 @@ class VoluntarioUtils:
         
         patron = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
         return bool(re.match(patron, email))
-    
+
+    @staticmethod
+    def normalizar_clave_bombero(valor):
+        """
+        Excel entrega las claves numéricas como decimales (653 -> 653.0).
+        Deja la clave como texto sin el '.0' sobrante: '653.0' -> '653',
+        '671.0-2' -> '671-2'. Las claves con letra ('610-I') no cambian.
+        """
+        if valor is None:
+            return ''
+        if isinstance(valor, float) and valor.is_integer():
+            valor = int(valor)
+        return re.sub(r'^(\d+)\.0(?=$|-)', r'\1', str(valor).strip())
+
     # ==================== FECHAS Y ANTIGÜEDAD ====================
     
     @staticmethod

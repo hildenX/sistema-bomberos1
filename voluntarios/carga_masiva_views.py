@@ -210,8 +210,8 @@ def importar_masiva(request):
         for row_num in range(2, ws.max_row + 1):
             try:
                 # Leer TODOS los datos de UNA SOLA FILA (23 columnas)
-                clave = ws.cell(row=row_num, column=1).value
-                
+                clave = VoluntarioUtils.normalizar_clave_bombero(ws.cell(row=row_num, column=1).value)
+
                 # Si la clave está vacía, terminar
                 if not clave:
                     continue

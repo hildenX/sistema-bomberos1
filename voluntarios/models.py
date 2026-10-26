@@ -152,7 +152,14 @@ class Voluntario(models.Model):
         if self.apellido_materno:
             return f"{self.nombre} {self.apellido_paterno} {self.apellido_materno}"
         return f"{self.nombre} {self.apellido_paterno}"
-    
+
+    def save(self, *args, **kwargs):
+        # Ninguna vía de ingreso puede volver a guardar claves como '653.0'
+        if self.clave_bombero:
+            from .utils import VoluntarioUtils
+            self.clave_bombero = VoluntarioUtils.normalizar_clave_bombero(self.clave_bombero)
+        super().save(*args, **kwargs)
+
     def edad(self):
         """Calcula la edad del voluntario"""
         from datetime import date
