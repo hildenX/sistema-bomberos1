@@ -46,6 +46,7 @@ urlpatterns = [
     path('api/voluntarios/pdf-deudores-cuotas/', pdf_cuotas_views.pdf_deudores_cuotas, name='pdf_deudores_cuotas'),
     path('api/voluntarios/pdf-deudores-cuotas/<int:anio>/', pdf_cuotas_views.pdf_deudores_cuotas, name='pdf_deudores_cuotas_anio'),
     path('api/voluntarios/pdf-deudores-beneficios/', pdf_cuotas_views.pdf_deudores_beneficios, name='pdf_deudores_beneficios'),
+    path('api/voluntarios/<int:voluntario_id>/pdf-deudas/', pdf_cuotas_views.pdf_estado_deuda_voluntario, name='pdf_estado_deuda_voluntario'),
 
     # Estado de Cuotas SIMPLE - SIN DRF
     path('api/voluntarios/<int:voluntario_id>/estado-cuotas-simple/', estado_cuotas_simple_views.estado_cuotas_simple, name='estado_cuotas_simple_direct'),

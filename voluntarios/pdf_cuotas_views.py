@@ -6,7 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania
 from .pdf_cuotas import generar_pdf_cuotas
-from .pdf_nominas import generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios
+from .pdf_nominas import (generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios,
+                          generar_pdf_estado_deuda_voluntario)
 from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from .permissions import autorizar_request
 from datetime import datetime
@@ -146,3 +147,28 @@ def pdf_deudores_beneficios(request):
 
     except Exception as e:
         return HttpResponse(f'Error al generar PDF: {str(e)}', status=500)
+
+
+@require_http_methods(["GET"])
+def pdf_estado_deuda_voluntario(request, voluntario_id):
+    """
+    Estado de deuda de un voluntario (cuotas del año + beneficios y rifas)
+    GET /api/voluntarios/{id}/pdf-deudas/
+    """
+    autorizado, respuesta = autorizar_request(request, modulo='finanzas', accion='view')
+    if not autorizado:
+        return respuesta
+    try:
+        voluntario = Voluntario.objects.get(id=voluntario_id)
+    except Voluntario.DoesNotExist:
+        return HttpResponse('Voluntario no encontrado', status=404)
+
+    anio = datetime.now().year
+    deuda_cuotas = calcular_deuda_cuotas(voluntario, anio)
+    otras = [d for d in calcular_deudas_beneficios_y_rifas() if d['voluntario'].id == voluntario.id]
+    logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+    pdf = generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, otras, anio,
+                                              logo_base64=logo.imagen if logo else None)
+    response = HttpResponse(pdf.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="estado_deuda_{voluntario.clave_bombero}.pdf"'
+    return response

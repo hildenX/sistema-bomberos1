@@ -76,6 +76,11 @@ def _orden_clave(clave):
     return (int(m.group(1)), m.group(2)) if m else (10 ** 6, clave or '')
 
 
+def _orden_antiguedad(voluntario):
+    """Más antiguo primero; empata por clave."""
+    return (voluntario.fecha_base_antiguedad or date.max, _orden_clave(voluntario.clave_bombero))
+
+
 def _recortar(c, texto, fuente, tamano, ancho_max):
     texto = texto or ''
     if c.stringWidth(texto, fuente, tamano) <= ancho_max:
@@ -292,7 +297,7 @@ class _Nomina:
                 lineas_por_celda.append(simpleSplit(str(valor), fuente, 9, ancho - 4 * mm) or [''])
             else:
                 lineas_por_celda.append([_recortar(c, str(valor), fuente, 9, ancho - 4 * mm)])
-        alto = max(7 * mm, max(len(l) for l in lineas_por_celda) * interlinea + 3 * mm)
+        alto = max(7 * mm, max(len(ls) for ls in lineas_por_celda) * interlinea + 3 * mm)
 
         self._asegurar(alto, repetir_tabla=True)
         if indice % 2 == 1:
@@ -414,7 +419,7 @@ def generar_pdf_nomina_deudores_cuotas(deudores, anio, logo_base64=None, fecha_c
       {'voluntario', 'monto', 'meses_pendientes': [{'mes', 'anio', 'monto'}], 'precio_cuota'}
     """
     fecha_corte = fecha_corte or date.today()
-    filas = sorted(deudores, key=lambda d: _orden_clave(d['voluntario'].clave_bombero))
+    filas = sorted(deudores, key=lambda d: _orden_antiguedad(d['voluntario']))
     total = sum(Decimal(str(d['monto'])) for d in filas)
     precios = {Decimal(str(d.get('precio_cuota') or 0)) for d in filas if d.get('precio_cuota')}
 
@@ -493,7 +498,7 @@ def generar_pdf_nomina_deudores_beneficios(deudas, logo_base64=None, fecha_corte
     doc.definir_columnas([('N°', 30, 'l'), ('Clave', 48, 'l'), ('Voluntario', 219, 'l'),
                           ('Debe', 116, 'l'), ('Monto', ANCHO_UTIL - 413, 'r')])
     for lista in grupos.values():
-        lista.sort(key=lambda d: _orden_clave(d['voluntario'].clave_bombero))
+        lista.sort(key=lambda d: _orden_antiguedad(d['voluntario']))
         primero = lista[0]
         partes = []
         if primero['grupo_fecha']:
@@ -530,4 +535,63 @@ def generar_pdf_nomina_deudores_beneficios(deudas, logo_base64=None, fecha_corte
         f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en esta nómina.",
         'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
     ], tesorero)
+    return doc.terminar()
+
+
+def generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, deudas_otras, anio,
+                                        logo_base64=None, fecha_corte=None):
+    """
+    Estado de deuda de un voluntario: cuotas del ciclo y beneficios/rifas.
+    deuda_cuotas: resultado de calcular_deuda_cuotas(); deudas_otras: items de
+    calcular_deudas_beneficios_y_rifas() de este voluntario.
+    """
+    fecha_corte = fecha_corte or date.today()
+    meses = [m['mes'] for m in deuda_cuotas.get('meses_pendientes', [])]
+    total_cuotas = Decimal(str(deuda_cuotas.get('monto') or 0))
+    total_otras = sum((d['monto_pendiente'] for d in deudas_otras), Decimal('0'))
+    total = total_cuotas + total_otras
+
+    doc = _Nomina('ESTADO DE DEUDA', voluntario.nombre_completo(),
+                  f"Estado de deuda · {voluntario.clave_bombero or ''}", _logo_desde_base64(logo_base64))
+    doc.encabezado(fecha_corte)
+    doc.bloque_datos(
+        ('VOLUNTARIO', [(voluntario.nombre_completo(), True),
+                        (f"Clave {voluntario.clave_bombero or '—'} · RUN {voluntario.rut or '—'}", False),
+                        (f"Compañía: {voluntario.compania or 'Sexta'}", False)]),
+        ('RESUMEN', [(f"Total adeudado: {_pesos(total)}", True),
+                     (f"Cuotas {anio}: {_pesos(total_cuotas)}" + (f" ({_rango_meses(meses)})" if meses else ''), False),
+                     (f"Beneficios y rifas: {_pesos(total_otras)}", False)]),
+    )
+
+    doc.titulo_seccion(f"Cuotas sociales {anio}")
+    doc.definir_columnas([('N°', 30, 'l'), ('Mes', 300, 'l'), ('Monto', ANCHO_UTIL - 330, 'r')])
+    doc.encabezado_tabla()
+    if meses:
+        for i, m in enumerate(deuda_cuotas['meses_pendientes']):
+            doc.fila([i + 1, f"{MESES[m['mes'] - 1].capitalize()} {m.get('anio', anio)}", _pesos(m['monto'])],
+                     i, negritas=(2,))
+        doc.fila_subtotal('Subtotal cuotas', total_cuotas)
+    else:
+        doc.fila(['', 'Sin cuotas pendientes', ''], 0)
+        doc.y -= 4 * mm
+
+    doc.titulo_seccion('Beneficios y rifas')
+    doc.definir_columnas([('N°', 30, 'l'), ('Beneficio o rifa', 230, 'l'), ('Debe', 120, 'l'),
+                          ('Monto', ANCHO_UTIL - 380, 'r')])
+    doc.encabezado_tabla()
+    if deudas_otras:
+        for i, d in enumerate(sorted(deudas_otras, key=lambda d: d['grupo_fecha'])):
+            nombre = d['grupo_nombre']
+            doc.fila([i + 1, nombre[:1].upper() + nombre[1:], d['debe'], _pesos(d['monto_pendiente'])],
+                     i, negritas=(3,))
+        doc.fila_subtotal('Subtotal beneficios y rifas', total_otras)
+    else:
+        doc.fila(['', 'Sin beneficios ni rifas pendientes', '', ''], 0)
+        doc.y -= 4 * mm
+
+    doc.cierre([('Cuotas sociales', _pesos(total_cuotas)), ('Beneficios y rifas', _pesos(total_otras))], total, [
+        'Valores en pesos chilenos (CLP).',
+        f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en este documento.",
+        'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
+    ], _tesorero_vigente())
     return doc.terminar()

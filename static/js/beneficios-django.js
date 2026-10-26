@@ -256,7 +256,8 @@ function verDeudores(beneficioId) {
         (a.estado_pago === 'pendiente' || a.estado_pago === 'parcial')
     );
     const ordenClave = c => { const m = /^(\d+)(.*)$/.exec((c || '').trim()); return m ? [parseInt(m[1]), m[2]] : [1e9, c || '']; };
-    deudores.sort((x, y) => { const a = ordenClave(x.voluntario_clave), c = ordenClave(y.voluntario_clave); return a[0] - c[0] || String(a[1]).localeCompare(String(c[1])); });
+    // Más antiguo primero; empata por clave
+    deudores.sort((x, y) => { const a = ordenClave(x.voluntario_clave), c = ordenClave(y.voluntario_clave); return (x.voluntario_antiguedad || '9999').localeCompare(y.voluntario_antiguedad || '9999') || a[0] - c[0] || String(a[1]).localeCompare(String(c[1])); });
     const precio = parseFloat(b.precio_por_tarjeta || b.precio_tarjeta || 0);
     const unidad = /bingo/i.test(`${b.tipo || ''} ${b.nombre}`) ? ['cartón', 'cartones'] : /rifa/i.test(`${b.tipo || ''} ${b.nombre}`) ? ['número', 'números'] : ['tarjeta', 'tarjetas'];
     deudores.forEach(d => {

@@ -1571,6 +1571,13 @@ async cambiarEstadoBombero(id) {
             Utils.mostrarNotificacion('Bombero no encontrado', 'error');
             return;
         }
+        // Estado de deuda con formato institucional, calculado en el servidor
+        window.open(`/api/voluntarios/${bombero.id}/pdf-deudas/`, '_blank');
+    }
+
+    async generarPDFDeudasBomberoAntiguo(bomberoId) {
+        const bombero = this.bomberos.find(b => b.id === parseInt(bomberoId));
+        if (!bombero) return;
 
         try {
             Utils.mostrarNotificacion('Generando PDF de deudas...', 'info');
