@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{% static 'css/pagos-pro.css' %}?v=6">
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
     <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=17">
+    <link rel="stylesheet" href="{% static 'css/cuotas-sobrio.css' %}?v=1">
     <style>
         /* ESTILOS MODAL ESTUDIANTE */
         .modal {
@@ -169,13 +170,13 @@
                     <!-- Botones de Acción -->
                     <div class="acciones-voluntario">
                         <button type="button" id="btnActivarEstudiante" class="btn btn-success" onclick="cuotasSistemaDjango.abrirModalEstudiante()" title="Activar Estudiante" style="display: none;">
-                            ACTIVAR ESTUDIANTE
+                            Activar estudiante
                         </button>
                         <button type="button" id="btnToggleCuotas" class="btn" onclick="cuotasSistemaDjango.toggleCuotas()" title="Activar/Desactivar Cuotas" style="display: none;">
                             <!-- Texto dinámico -->
                         </button>
                         <button type="button" class="btn btn-danger" onclick="generarPDFCuotas()" title="Generar PDF de Cuotas">
-                            Generar PDF Cuotas
+                            Descargar PDF
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="cuotasSistemaDjango.volverAlSistema()">
                             Volver
@@ -329,7 +330,7 @@
 
                 <!-- Grid de Meses -->
                 <div class="cuotas-grid">
-                    <h3>Estado de Cuotas del Ano <span id="anioActualCuotas">2025</span></h3>
+                    <h3>Estado de cuotas del año <span id="anioActualCuotas">2025</span></h3>
                     <div id="gridMesesCuotas" class="meses-grid"></div>
                 </div>
 
@@ -414,6 +415,6 @@
 
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/cuotas-django.js' %}?v=17.0"></script> 
+    <script src="{% static 'js/cuotas-django.js' %}?v=17.1"></script> 
 </body>
 </html>

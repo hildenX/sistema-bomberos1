@@ -1,0 +1,172 @@
+/* Cuotas sociales: mismo estilo institucional que Pago de Beneficios (se carga al final) */
+
+body.pp-light { background: #131315 !important; }
+body .cuotas-page, body .cuotas-page > .container { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+
+/* Encabezado guinda */
+body .cuotas-page .cuotas-header {
+  background: linear-gradient(180deg, #3a1219 0%, #24121a 55%, #1b1a1d 100%) !important;
+  border-top: 3px solid #b0303c !important;
+  border-radius: 10px 10px 0 0 !important;
+  box-shadow: none !important;
+  padding: 26px 24px 22px !important;
+}
+body .cuotas-page .cuotas-header::before, body .cuotas-page .cuotas-header::after { display: none !important; }
+body .cuotas-page .cuotas-header h2 { font-size: 1.4rem !important; font-weight: 700 !important; letter-spacing: .02em !important; color: #fff !important; text-shadow: none !important; }
+body .cuotas-page .cuotas-header p { color: #c9a9ad !important; font-size: .75rem !important; letter-spacing: .12em !important; }
+
+/* Secciones */
+body .cuotas-page .bombero-info,
+body .cuotas-page .form-container,
+body .cuotas-page .cuotas-grid,
+body .cuotas-page .list-container {
+  background: #1d1d20 !important;
+  border: 1px solid #2c2c31 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  margin: 14px 0 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+body .cuotas-page .bombero-info > h3,
+body .cuotas-page .form-container > h3,
+body .cuotas-page .cuotas-grid > h3,
+body .cuotas-page .list-header {
+  background: #222226 !important;
+  border: 0 !important;
+  border-bottom: 1px solid #2c2c31 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 16px 24px !important;
+  text-align: left !important;
+}
+body .cuotas-page .bombero-info > h3,
+body .cuotas-page .form-container > h3,
+body .cuotas-page .cuotas-grid > h3,
+body .cuotas-page .list-header h3 {
+  color: #d8c3c6 !important;
+  font-family: inherit !important;
+  font-size: .8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+body .cuotas-page .bombero-info > h3::before,
+body .cuotas-page .form-container > h3::before,
+body .cuotas-page .cuotas-grid > h3::before,
+body .cuotas-page .list-header::before,
+body .cuotas-page .list-header h3::before { display: none !important; }
+body .cuotas-page .list-header h3 { margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+
+/* Datos del voluntario: etiqueta arriba, valor abajo */
+body .cuotas-page .bombero-datos {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+  gap: 18px 24px !important;
+  padding: 20px 24px !important;
+  background: transparent !important;
+}
+body .cuotas-page .bombero-datos > div {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+}
+body .cuotas-page .bombero-datos strong { color: var(--td-muted, #888) !important; font-size: .7rem !important; font-weight: 600 !important; letter-spacing: .06em !important; text-transform: uppercase !important; }
+body .cuotas-page .bombero-datos span { color: #f0f0f0 !important; font-weight: 600 !important; font-size: .95rem !important; }
+body .cuotas-page #tagEstudiante { align-self: flex-start !important; background: rgba(39,174,96,.12) !important; color: #4cc283 !important; border: 1px solid rgba(39,174,96,.35) !important; border-radius: 4px !important; font-size: .7rem !important; margin: 0 !important; }
+
+/* Aviso de estado (cuotas desactivadas) */
+body .cuotas-page .estado-cuotas-aviso {
+  margin: 0 24px 18px !important;
+  padding: 12px 16px !important;
+  border-radius: 6px !important;
+  background: rgba(200,148,42,.08) !important;
+  border: 1px solid rgba(200,148,42,.35) !important;
+  color: #e3c07a !important;
+}
+body .cuotas-page .estado-cuotas-aviso strong { display: block; font-size: .75rem; letter-spacing: .08em; }
+body .cuotas-page .estado-cuotas-aviso small { color: #c9b48a; font-size: .85rem; }
+
+/* Acciones */
+body .cuotas-page .acciones-voluntario {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  padding: 16px 24px !important;
+  border-top: 1px solid #2c2c31 !important;
+  background: #1b1b1e !important;
+  margin: 0 !important;
+}
+body .cuotas-page .btn {
+  border-radius: 6px !important;
+  font-size: .85rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 10px 18px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  background-image: none !important;
+}
+body .cuotas-page .btn-danger,
+body .cuotas-page .btn-cuota { background: #c0392b !important; border: 1px solid #c0392b !important; color: #fff !important; }
+body .cuotas-page .btn-danger:hover,
+body .cuotas-page .btn-cuota:hover { background: #e74c3c !important; border-color: #e74c3c !important; }
+body .cuotas-page .btn-success,
+body .cuotas-page .btn-warning,
+body .cuotas-page .btn-secondary { background: rgba(255,255,255,.03) !important; border: 1px solid #3d3d44 !important; color: #f0f0f0 !important; }
+body .cuotas-page .btn-success:hover,
+body .cuotas-page .btn-warning:hover,
+body .cuotas-page .btn-secondary:hover { background: #2a2a2f !important; border-color: #555 !important; }
+body .cuotas-page .btn-success { color: #6fd39c !important; }
+body .cuotas-page .btn-warning { color: #e3c07a !important; }
+
+/* Formulario */
+body .cuotas-page .form-container form { padding: 20px 24px !important; }
+body .cuotas-page .buttons { justify-content: flex-end !important; gap: 10px !important; }
+
+/* Meses */
+body .cuotas-page .meses-grid { padding: 20px 24px !important; gap: 10px !important; }
+body .cuotas-page .mes-card {
+  background: rgba(255,255,255,.02) !important;
+  border: 1px solid #33333a !important;
+  border-top: 2px solid #b0303c !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+body .cuotas-page .mes-card.pagado { background: rgba(39,174,96,.07) !important; border-top-color: #27ae60 !important; }
+body .cuotas-page .mes-nombre { color: #f0f0f0 !important; font-weight: 600 !important; }
+body .cuotas-page .mes-estado { color: var(--td-muted, #888) !important; font-size: .8rem !important; }
+body .cuotas-page .mes-card.pagado .mes-estado { color: #4cc283 !important; }
+body .cuotas-page .mes-card.pendiente .mes-estado { color: #f08a80 !important; }
+
+/* Historial */
+body .cuotas-page .contador {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid #2c2c31 !important;
+  color: var(--td-muted, #888) !important;
+  padding: 12px 24px !important;
+  text-align: left !important;
+  font-size: .85rem !important;
+}
+body .cuotas-page .contador strong { color: #f0f0f0 !important; }
+body .cuotas-page .lista-items { padding: 16px 24px !important; background: transparent !important; }
+body .cuotas-page .lista-items:empty::after,
+body .cuotas-page .empty-state { color: var(--td-muted, #888) !important; }
+body .cuotas-page .pago-card { background: #242428 !important; border: 1px solid #33333a !important; border-radius: 8px !important; box-shadow: none !important; }
+body .cuotas-page .pago-monto { color: #4cc283 !important; }
+
+/* Volver al final: discreto */
+body .cuotas-page .navigation-buttons { text-align: center !important; margin: 22px 0 8px !important; }
+body .cuotas-page .navigation-buttons .btn { background: transparent !important; border-color: #3d3d44 !important; }
+
+@media (max-width: 768px) {
+  body .cuotas-page .acciones-voluntario { justify-content: stretch !important; }
+  body .cuotas-page .acciones-voluntario .btn { flex: 1 1 100% !important; }
+  body .cuotas-page .bombero-datos { grid-template-columns: 1fr 1fr !important; padding: 16px !important; }
+}

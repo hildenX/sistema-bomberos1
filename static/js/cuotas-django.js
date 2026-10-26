@@ -632,9 +632,7 @@ class SistemaCuotasDjango {
         if (this.estadoCuotas.cuotas_desactivadas) {
             // Mostrar mensaje de desactivación
             infoDiv.style.display = 'block';
-            infoDiv.style.background = '#fff3cd';
-            infoDiv.style.border = '1px solid #ffc107';
-            infoDiv.style.color = '#856404';
+            infoDiv.className = 'estado-cuotas-aviso';
             infoDiv.innerHTML = `
                 <strong>CUOTAS DESACTIVADAS</strong><br>
                 <small>Motivo: ${this.estadoCuotas.motivo_desactivacion || 'No especificado'}</small>
@@ -647,7 +645,7 @@ class SistemaCuotasDjango {
             // Botón para reactivar
             btnToggle.style.display = 'inline-block';
             btnToggle.className = 'btn btn-success';
-            btnToggle.innerHTML = 'Reactivar Cuotas';
+            btnToggle.innerHTML = 'Reactivar cuotas';
 
             // Ocultar botón estudiante
             btnEstudiante.style.display = 'none';
@@ -661,18 +659,18 @@ class SistemaCuotasDjango {
             // Botón para desactivar
             btnToggle.style.display = 'inline-block';
             btnToggle.className = 'btn btn-warning';
-            btnToggle.innerHTML = 'Desactivar Cuotas';
+            btnToggle.innerHTML = 'Desactivar cuotas';
 
             // Botón ESTUDIANTE
             if (!this.estadoCuotas.es_estudiante) {
                 btnEstudiante.style.display = 'inline-block';
                 btnEstudiante.className = 'btn btn-success';
-                btnEstudiante.innerHTML = 'ACTIVAR ESTUDIANTE';
+                btnEstudiante.innerHTML = 'Activar estudiante';
                 btnEstudiante.onclick = () => this.abrirModalEstudiante();
             } else {
                 btnEstudiante.style.display = 'inline-block';
                 btnEstudiante.className = 'btn btn-danger';
-                btnEstudiante.innerHTML = 'DESACTIVAR ESTUDIANTE';
+                btnEstudiante.innerHTML = 'Desactivar estudiante';
                 btnEstudiante.onclick = () => this.desactivarEstudiante();
             }
         }
