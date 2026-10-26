@@ -5,7 +5,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania, AsignacionBeneficio
-from .pdf_cuotas import generar_pdf_cuotas, generar_pdf_deudores, generar_pdf_deudores_beneficios
+from .pdf_cuotas import generar_pdf_cuotas
+from .pdf_nominas import generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios
 from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas
 from .permissions import autorizar_request
 from datetime import datetime
@@ -99,41 +100,12 @@ def pdf_deudores_cuotas(request, anio=None):
         else:
             anio = int(anio)
         
-        # Obtener deudores
         deudores = calcular_deudores_cuotas(anio)
-        
-        # Preparar datos para PDF
-        meses_nombres = ['', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-                         'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-        deudores_data = []
-        for deudor in deudores:
-            voluntario = deudor['voluntario']
-            meses_str = ', '.join([meses_nombres[m['mes']] for m in deudor['meses_pendientes']])
-            deudores_data.append({
-                'clave': voluntario.clave_bombero or 'N/A',
-                'nombre': f"{voluntario.nombre} {voluntario.apellido_paterno}",
-                'compania': voluntario.compania or '',
-                'meses_nombres': meses_str,
-                'meses_pendientes': len(deudor['meses_pendientes']),
-                'deuda_total': deudor['monto']
-            })
-        
-        # Obtener logo (si existe)
-        logo_base64 = None
-        try:
-            logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
-            if logo:
-                logo_base64 = logo.imagen
-        except Exception:
-            pass
-        
-        # Generar PDF
-        pdf_buffer = generar_pdf_deudores(
-            deudores_data=deudores_data,
-            anio=anio,
-            logo_base64=logo_base64
+        logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+        pdf_buffer = generar_pdf_nomina_deudores_cuotas(
+            deudores, anio, logo_base64=logo.imagen if logo else None
         )
-        
+
         # Crear respuesta HTTP
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
         filename = f"deudores_cuotas_{anio}.pdf"
@@ -163,28 +135,9 @@ def pdf_deudores_beneficios(request):
             estado_pago='liberado'
         ).select_related('voluntario', 'beneficio')
 
-        deudores_data = []
-        for asig in asignaciones:
-            deudores_data.append({
-                'clave': asig.voluntario.clave_bombero or 'N/A',
-                'nombre': f"{asig.voluntario.nombre} {asig.voluntario.apellido_paterno}",
-                'beneficio': asig.beneficio.nombre,
-                'tarjetas_asignadas': asig.tarjetas_asignadas,
-                'tarjetas_vendidas': asig.tarjetas_vendidas,
-                'deuda_total': float(asig.monto_pendiente),
-            })
-
-        logo_base64 = None
-        try:
-            logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
-            if logo:
-                logo_base64 = logo.imagen
-        except Exception:
-            pass
-
-        pdf_buffer = generar_pdf_deudores_beneficios(
-            deudores_data=deudores_data,
-            logo_base64=logo_base64
+        logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+        pdf_buffer = generar_pdf_nomina_deudores_beneficios(
+            asignaciones, logo_base64=logo.imagen if logo else None
         )
 
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
