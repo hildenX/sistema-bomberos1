@@ -285,7 +285,7 @@ class _Nomina:
             return True
         return False
 
-    def fila(self, valores, indice, negritas=(), envolver=()):
+    def fila(self, valores, indice, negritas=(), envolver=(), colores=None):
         """Fila de tabla; las columnas en 'envolver' pasan a varias líneas en vez de cortarse."""
         c = self.c
         columnas = self._x_columnas()
@@ -309,7 +309,7 @@ class _Nomina:
         primera_base = self.y - 4.6 * mm
         for i, (lineas, (x, ancho, alin)) in enumerate(zip(lineas_por_celda, columnas, strict=True)):
             c.setFont('Helvetica-Bold' if i in negritas else 'Helvetica', 9)
-            c.setFillColor(GRIS if i == 0 else TINTA)
+            c.setFillColor((colores or {}).get(i) or (GRIS if i == 0 else TINTA))
             for n, texto in enumerate(lineas):
                 base = primera_base - n * interlinea
                 if alin == 'r':
@@ -593,5 +593,63 @@ def generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, deudas_otras, 
         'Valores en pesos chilenos (CLP).',
         f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en este documento.",
         'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
+    ], _tesorero_vigente())
+    return doc.terminar()
+
+
+def generar_pdf_cuotas_voluntario(voluntario, anio, pagos_dict, deuda_cuotas, precio_cuota,
+                                  exento=False, motivo_exencion='', logo_base64=None, fecha_corte=None):
+    """
+    Estado anual de cuotas sociales de un voluntario: los 12 meses con su estado.
+    pagos_dict: {mes: {'monto_pagado', 'fecha_pago', 'metodo_pago'}};
+    deuda_cuotas: resultado de calcular_deuda_cuotas().
+    """
+    fecha_corte = fecha_corte or date.today()
+    vencidos = {m['mes'] for m in deuda_cuotas.get('meses_pendientes', [])}
+    total_deuda = Decimal(str(deuda_cuotas.get('monto') or 0))
+    total_pagado = sum((Decimal(str(p['monto_pagado'] or 0)) for p in pagos_dict.values()), Decimal('0'))
+    verde, rojo = Color(30 / 255, 125 / 255, 69 / 255), GUINDA
+
+    doc = _Nomina('CUOTAS SOCIALES', voluntario.nombre_completo(),
+                  f"Cuotas {anio} · {voluntario.clave_bombero or ''}", _logo_desde_base64(logo_base64))
+    doc.encabezado(fecha_corte)
+    if exento:
+        resumen = [('Exento de cuota social', True), (motivo_exencion or 'Sin motivo registrado', False)]
+    else:
+        resumen = [(f"Deuda vencida: {_pesos(total_deuda)}", True),
+                   (f"Pagado {anio}: {_pesos(total_pagado)} ({len(pagos_dict)} de 12 meses)", False),
+                   (f"Valor cuota mensual: {_pesos(precio_cuota)}", False)]
+    doc.bloque_datos(
+        ('VOLUNTARIO', [(voluntario.nombre_completo(), True),
+                        (f"Clave {voluntario.clave_bombero or '—'} · RUN {voluntario.rut or '—'}", False),
+                        (f"Compañía: {voluntario.compania or 'Sexta'}", False)]),
+        ('RESUMEN', resumen),
+    )
+
+    doc.titulo_seccion(f"Detalle mensual {anio}")
+    doc.definir_columnas([('N°', 30, 'l'), ('Mes', 110, 'l'), ('Estado', 100, 'l'),
+                          ('Fecha de pago', 100, 'l'), ('Forma de pago', 90, 'l'), ('Monto', ANCHO_UTIL - 430, 'r')])
+    doc.encabezado_tabla()
+    for mes in range(1, 13):
+        pago = pagos_dict.get(mes)
+        if pago:
+            fecha = pago['fecha_pago']
+            fila = ['Pagado', fecha.strftime('%d-%m-%Y') if fecha else '—',
+                    (pago['metodo_pago'] or '—').capitalize(), _pesos(pago['monto_pagado'])]
+            color = verde
+        elif exento:
+            fila, color = ['Exento', '—', '—', '—'], GRIS
+        elif mes in vencidos:
+            fila, color = ['Pendiente', '—', '—', _pesos(precio_cuota)], rojo
+        else:
+            fila, color = ['Por vencer', '—', '—', _pesos(precio_cuota)], GRIS
+        doc.fila([mes, MESES[mes - 1].capitalize(), *fila], mes - 1, negritas=(2,), colores={2: color})
+
+    lineas = [('Pagado en el año', _pesos(total_pagado))]
+    if not exento:
+        lineas.append((f"Meses vencidos sin pagar ({len(vencidos)})", _pesos(total_deuda)))
+    doc.cierre(lineas, total_deuda, [
+        'Valores en CLP. Pendiente: mes vencido sin pago. Por vencer: mes que aún no corresponde.',
+        f"Estado calculado al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen aquí.",
     ], _tesorero_vigente())
     return doc.terminar()

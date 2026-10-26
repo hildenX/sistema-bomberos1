@@ -5,10 +5,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania
-from .pdf_cuotas import generar_pdf_cuotas
-from .pdf_nominas import (generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios,
+from .pdf_nominas import (generar_pdf_cuotas_voluntario, generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios,
                           generar_pdf_estado_deuda_voluntario)
-from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
+from .utils_tesoreria import puede_pagar_cuotas, obtener_precio_cuota, calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from .permissions import autorizar_request
 from datetime import datetime
 
@@ -48,28 +47,15 @@ def pdf_cuotas_voluntario(request, voluntario_id, anio=None):
                 'metodo_pago': pago.metodo_pago
             }
         
-        # Calcular deuda total
         deuda = calcular_deuda_cuotas(voluntario, anio)
-        deuda_total = deuda['monto']
-        
-        # Obtener logo (si existe)
-        logo_base64 = None
-        try:
-            logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
-            if logo:
-                logo_base64 = logo.imagen
-        except Exception:
-            pass
-        
-        # Generar PDF
-        pdf_buffer = generar_pdf_cuotas(
-            voluntario=voluntario,
-            anio=anio,
-            pagos_dict=pagos_dict,
-            deuda_total=deuda_total,
-            logo_base64=logo_base64
+        validacion = puede_pagar_cuotas(voluntario)
+        logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+        pdf_buffer = generar_pdf_cuotas_voluntario(
+            voluntario, anio, pagos_dict, deuda, obtener_precio_cuota(voluntario),
+            exento=not validacion['puede'], motivo_exencion=validacion.get('mensaje', ''),
+            logo_base64=logo.imagen if logo else None,
         )
-        
+
         # Crear respuesta HTTP
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
         filename = f"cuotas_{voluntario.clave_bombero}_{anio}.pdf"
