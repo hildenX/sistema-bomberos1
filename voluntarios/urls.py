@@ -78,6 +78,7 @@ urlpatterns = [
     path('auth/permissions/', auth_views.get_permissions_view, name='api_permissions'),
     path('auth/users/', auth_views.list_users_view, name='api_list_users'),
     path('auth/change-password/', auth_views.change_password_view, name='api_change_password'),
+    path('auth/change-own-password/', auth_views.change_own_password_view, name='api_change_own_password'),
 
     # Portal voluntarios
     path('portal/auth/login/', portal_views.portal_login_view, name='portal_login'),

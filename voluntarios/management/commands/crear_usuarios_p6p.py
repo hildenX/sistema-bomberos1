@@ -4,7 +4,7 @@ Ejecutar: python manage.py crear_usuarios_p6p
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group
-from voluntarios.auth_views import USUARIOS_DEFAULT
+from voluntarios.auth_views import USUARIOS_DEFAULT, generar_password_temporal
 
 
 class Command(BaseCommand):
@@ -18,6 +18,7 @@ class Command(BaseCommand):
         
         usuarios_creados = 0
         usuarios_existentes = 0
+        credenciales_nuevas = {}
         
         for username, data in USUARIOS_DEFAULT.items():
             try:
@@ -31,7 +32,9 @@ class Command(BaseCommand):
                 )
                 
                 if created:
-                    user.set_password(data['password'])
+                    password = generar_password_temporal()
+                    credenciales_nuevas[username] = password
+                    user.set_password(password)
                     user.save()
                     
                     # Asignar grupo/rol
@@ -41,7 +44,7 @@ class Command(BaseCommand):
                     usuarios_creados += 1
                     self.stdout.write(
                         self.style.SUCCESS(
-                            f'OK Usuario creado: {username:12} | Password: {data["password"]:10} | Rol: {data["role"]}'
+                            f'OK Usuario creado: {username:12} | Rol: {data["role"]}'
                         )
                     )
                 else:
@@ -66,8 +69,8 @@ class Command(BaseCommand):
         if usuarios_creados > 0:
             self.stdout.write(self.style.SUCCESS('USUARIOS DEL P6P LISTOS!'))
             self.stdout.write('')
-            self.stdout.write('Credenciales para login:')
+            self.stdout.write('Contrasenas temporales (solo se muestran ahora; cambialas al primer ingreso):')
             self.stdout.write('')
-            for username, data in USUARIOS_DEFAULT.items():
-                self.stdout.write(f'  Usuario: {username:12} | Password: {data["password"]:10} | Rol: {data["role"]}')
+            for username, password in credenciales_nuevas.items():
+                self.stdout.write(f'  Usuario: {username:12} | Contrasena: {password}')
             self.stdout.write('')

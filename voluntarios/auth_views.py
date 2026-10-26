@@ -1,8 +1,11 @@
 """
 Vistas de autenticación - Migrado desde auth.js del p6p
 """
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -10,16 +13,27 @@ import json
 from datetime import datetime
 from .permissions import obtener_permisos_usuario, obtener_rol_usuario
 
+# Roles de las cuentas del sistema (no incluye las cuentas del portal de voluntarios)
+ROLES_STAFF = ['Director', 'Secretario', 'Tesorero', 'Capitán', 'Ayudante', 'Super Administrador']
 
-# Usuarios por defecto del p6p
+
+# Cuentas por defecto del sistema y su rol. Las contrasenas NO van en el
+# codigo: al crear una cuenta nueva se genera una aleatoria y se muestra
+# una sola vez en consola (ver generar_password_temporal).
 USUARIOS_DEFAULT = {
-    'director': {'password': 'dir2024', 'role': 'Director'},
-    'secretario': {'password': 'sec2024', 'role': 'Secretario'},
-    'tesorero': {'password': 'tes2024', 'role': 'Tesorero'},
-    'capitan': {'password': 'cap2024', 'role': 'Capitán'},
-    'ayudante': {'password': 'ayu2024', 'role': 'Ayudante'},
-    'superadmin': {'password': 'admin2024', 'role': 'Super Administrador'},
+    'director': {'role': 'Director'},
+    'secretario': {'role': 'Secretario'},
+    'tesorero': {'role': 'Tesorero'},
+    'capitan': {'role': 'Capitán'},
+    'ayudante': {'role': 'Ayudante'},
+    'superadmin': {'role': 'Super Administrador'},
 }
+
+
+def generar_password_temporal():
+    """Contrasena aleatoria para cuentas nuevas; debe cambiarse al primer ingreso."""
+    import secrets
+    return secrets.token_urlsafe(12)
 
 
 def crear_usuarios_default():
@@ -34,14 +48,15 @@ def crear_usuarios_default():
         )
         
         if created:
-            user.set_password(data['password'])
+            password = generar_password_temporal()
+            user.set_password(password)
             user.save()
             
             # Asignar grupo/rol
             group, _ = Group.objects.get_or_create(name=data['role'])
             user.groups.add(group)
             
-            print(f"✓ Usuario creado: {username} ({data['role']})")
+            print(f"Usuario creado: {username} ({data['role']}) | contrasena temporal: {password}")
 
 
 @csrf_exempt
@@ -235,9 +250,12 @@ def list_users_view(request):
             'error': 'No autorizado - Solo Super Administrador'
         }, status=403)
 
-    # Obtener usuarios reales de la base de datos
+    # Solo las cuentas del sistema (roles); las del portal de voluntarios se
+    # gestionan en "Credenciales Portal Voluntarios" de Tesorería.
     users_list = []
-    all_users = User.objects.all().order_by('username')
+    all_users = User.objects.filter(
+        Q(groups__name__in=ROLES_STAFF) | Q(is_superuser=True)
+    ).distinct().order_by('username')
 
     for user in all_users:
         permisos_user = obtener_permisos_usuario(user)
@@ -251,7 +269,6 @@ def list_users_view(request):
     return JsonResponse(users_list, safe=False)
 
 
-@csrf_exempt
 @require_http_methods(["POST"])
 def change_password_view(request):
     """
@@ -299,12 +316,6 @@ def change_password_view(request):
                 'error': 'Nueva contraseña es requerida'
             }, status=400)
 
-        if len(new_password) < 4:
-            return JsonResponse({
-                'success': False,
-                'error': 'La contraseña debe tener al menos 4 caracteres'
-            }, status=400)
-
         # Buscar usuario
         try:
             target_user = User.objects.get(username=target_username)
@@ -314,9 +325,17 @@ def change_password_view(request):
                 'error': f'Usuario {target_username} no encontrado'
             }, status=404)
 
-        # Cambiar contraseña
+        # Reglas de contraseña segura de settings (mínimo 8, no común, no solo números)
+        try:
+            validate_password(new_password, user=target_user)
+        except ValidationError as e:
+            return JsonResponse({'success': False, 'error': ' '.join(e.messages)}, status=400)
+
+        # Cambiar contraseña (Django cierra las otras sesiones abiertas de esa cuenta)
         target_user.set_password(new_password)
         target_user.save()
+        if target_user.pk == request.user.pk:
+            update_session_auth_hash(request, target_user)
 
         print(f"[ADMIN] Contraseña cambiada para usuario: {target_username} por {request.user.username}")
 
@@ -336,3 +355,41 @@ def change_password_view(request):
             'success': False,
             'error': f'Error interno: {str(e)}'
         }, status=500)
+
+
+@require_http_methods(["POST"])
+def change_own_password_view(request):
+    """
+    Cualquier usuario del sistema cambia SU propia contraseña.
+
+    POST /api/auth/change-own-password/
+    Body: {"current_password": "...", "new_password": "..."}
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'No autenticado'}, status=401)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
+
+    current_password = data.get('current_password', '')
+    new_password = data.get('new_password', '')
+
+    if not request.user.check_password(current_password):
+        return JsonResponse({'success': False, 'error': 'La contraseña actual no es correcta'}, status=400)
+
+    if new_password == current_password:
+        return JsonResponse({'success': False, 'error': 'La nueva contraseña debe ser distinta a la actual'}, status=400)
+
+    try:
+        validate_password(new_password, user=request.user)
+    except ValidationError as e:
+        return JsonResponse({'success': False, 'error': ' '.join(e.messages)}, status=400)
+
+    request.user.set_password(new_password)
+    request.user.save()
+    # Mantiene esta sesión abierta; las demás sesiones de la cuenta se cierran
+    update_session_auth_hash(request, request.user)
+
+    return JsonResponse({'success': True, 'message': 'Contraseña actualizada correctamente'})

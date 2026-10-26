@@ -38,12 +38,8 @@ echo ========================================
 echo.
 echo USUARIOS DISPONIBLES:
 echo.
-echo   director     / dir2024    (Director)
-echo   secretario   / sec2024    (Secretario)
-echo   tesorero     / tes2024    (Tesorero)
-echo   capitan      / cap2024    (Capitan)
-echo   ayudante     / ayu2024    (Ayudante)
-echo   superadmin   / admin2024  (Super Admin)
+echo   Las contrasenas temporales de cada cuenta se muestran
+echo   arriba, en la salida de "crear_usuarios_p6p".
 echo.
 echo ========================================
 echo.

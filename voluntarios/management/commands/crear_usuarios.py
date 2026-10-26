@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group, Permission
+from voluntarios.auth_views import generar_password_temporal
 
 class Command(BaseCommand):
     help = 'Crear usuarios y grupos del sistema con sus permisos'
@@ -72,7 +73,6 @@ class Command(BaseCommand):
         usuarios = [
             {
                 'username': 'director',
-                'password': 'dir2024',
                 'role': 'Director',
                 'first_name': 'Director',
                 'last_name': 'del Sistema',
@@ -80,7 +80,6 @@ class Command(BaseCommand):
             },
             {
                 'username': 'secretario',
-                'password': 'sec2024',
                 'role': 'Secretario',
                 'first_name': 'Secretario',
                 'last_name': 'del Sistema',
@@ -88,7 +87,6 @@ class Command(BaseCommand):
             },
             {
                 'username': 'tesorero',
-                'password': 'tes2024',
                 'role': 'Tesorero',
                 'first_name': 'Tesorero',
                 'last_name': 'del Sistema',
@@ -96,7 +94,6 @@ class Command(BaseCommand):
             },
             {
                 'username': 'capitan',
-                'password': 'cap2024',
                 'role': 'Capitán',
                 'first_name': 'Capitán',
                 'last_name': 'del Sistema',
@@ -104,7 +101,6 @@ class Command(BaseCommand):
             },
             {
                 'username': 'ayudante',
-                'password': 'ayu2024',
                 'role': 'Ayudante',
                 'first_name': 'Ayudante',
                 'last_name': 'del Sistema',
@@ -112,7 +108,6 @@ class Command(BaseCommand):
             },
             {
                 'username': 'superadmin',
-                'password': 'admin2024',
                 'role': 'Super Administrador',
                 'first_name': 'Super',
                 'last_name': 'Administrador',
@@ -121,25 +116,26 @@ class Command(BaseCommand):
             }
         ]
 
+        credenciales_nuevas = {}
         for user_data in usuarios:
             username = user_data['username']
-            password = user_data['password']
             role = user_data['role']
             
             # Crear o actualizar usuario
             user, created = User.objects.get_or_create(username=username)
             
             if created:
+                password = generar_password_temporal()
+                credenciales_nuevas[username] = password
                 user.set_password(password)
                 user.first_name = user_data['first_name']
                 user.last_name = user_data['last_name']
                 user.is_staff = user_data.get('is_staff', False)
                 user.is_superuser = user_data.get('is_superuser', False)
                 user.save()
-                self.stdout.write(self.style.SUCCESS(f'✅ Usuario creado: {username} | Contraseña: {password} | Rol: {role}'))
+                self.stdout.write(self.style.SUCCESS(f'Usuario creado: {username} | Rol: {role}'))
             else:
-                # Actualizar contraseña por si cambió
-                user.set_password(password)
+                # La cuenta ya existe: se respeta su contrasena actual.
                 user.first_name = user_data['first_name']
                 user.last_name = user_data['last_name']
                 user.is_staff = user_data.get('is_staff', False)
@@ -157,8 +153,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'⚠️  Grupo no encontrado: {role}'))
 
         self.stdout.write(self.style.SUCCESS('\n🎉 ¡USUARIOS Y GRUPOS CREADOS EXITOSAMENTE!'))
-        self.stdout.write('\n📝 USUARIOS DISPONIBLES:')
-        self.stdout.write('=' * 60)
-        for user_data in usuarios:
-            self.stdout.write(f"👤 Usuario: {user_data['username']:15} | 🔑 Contraseña: {user_data['password']:10} | 🎭 Rol: {user_data['role']}")
-        self.stdout.write('=' * 60)
+        if credenciales_nuevas:
+            self.stdout.write('\nContraseñas temporales de las cuentas NUEVAS (solo se muestran ahora; cámbialas al primer ingreso):')
+            self.stdout.write('=' * 60)
+            for username, password in credenciales_nuevas.items():
+                self.stdout.write(f"Usuario: {username:15} | Contraseña: {password}")
+            self.stdout.write('=' * 60)
+        else:
+            self.stdout.write('\nNo se crearon cuentas nuevas; las existentes conservan su contraseña.')

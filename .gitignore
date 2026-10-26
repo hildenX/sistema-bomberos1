@@ -48,3 +48,11 @@ Thumbs.db
 
 # Worktrees
 .worktrees/
+
+# Respaldos y volcados de datos: contienen datos personales, nunca al repo
+backup_*.json
+datos_migracion.json*
+*.sqlite3
+db.sqlite3.*
+# Configuracion local de herramientas
+.claude/settings.local.json

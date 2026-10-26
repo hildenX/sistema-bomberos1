@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania, AsignacionBeneficio
 from .pdf_cuotas import generar_pdf_cuotas, generar_pdf_deudores, generar_pdf_deudores_beneficios
 from .utils_tesoreria import calcular_deuda_cuotas, calcular_deudores_cuotas
+from .permissions import autorizar_request
 from datetime import datetime
 
 
@@ -17,6 +18,10 @@ def pdf_cuotas_voluntario(request, voluntario_id, anio=None):
     Genera PDF con estado de cuotas de un voluntario
     GET /api/voluntarios/{id}/pdf-cuotas/{anio}/
     """
+    autorizado, respuesta = autorizar_request(request, modulo='cuotas', accion='view')
+    if not autorizado:
+        return respuesta
+
     try:
         voluntario = Voluntario.objects.get(id=voluntario_id)
         
@@ -83,6 +88,10 @@ def pdf_deudores_cuotas(request, anio=None):
     Genera PDF con listado de deudores de cuotas
     GET /api/voluntarios/pdf-deudores-cuotas/{anio}/
     """
+    autorizado, respuesta = autorizar_request(request, modulo='finanzas', accion='view')
+    if not autorizado:
+        return respuesta
+
     try:
         # Si no se especifica año, usar el actual
         if not anio:
@@ -143,6 +152,10 @@ def pdf_deudores_beneficios(request):
     Genera PDF con listado de deudores de beneficios
     GET /api/voluntarios/pdf-deudores-beneficios/
     """
+    autorizado, respuesta = autorizar_request(request, modulo='finanzas', accion='view')
+    if not autorizado:
+        return respuesta
+
     try:
         asignaciones = AsignacionBeneficio.objects.filter(
             monto_pendiente__gt=0

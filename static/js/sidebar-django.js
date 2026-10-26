@@ -264,6 +264,12 @@ function generarMenuSegunRol(role) {
             texto: 'Logo Compa\u00f1\u00eda (PDFs)',
             url: '#',
             onclick: 'abrirModalLogoCompania()'
+        },
+        {
+            icono: '&#9672;',
+            texto: 'Cambiar mi contrase\u00f1a',
+            url: '#',
+            onclick: 'abrirModalMiPassword()'
         }
     ];
 
@@ -1134,8 +1140,8 @@ async function confirmarCambioPassword(username) {
         return;
     }
 
-    if (password1.length < 4) {
-        errorDiv.textContent = 'La contraseña debe tener al menos 4 caracteres';
+    if (password1.length < 8) {
+        errorDiv.textContent = 'La contraseña debe tener al menos 8 caracteres';
         errorDiv.style.display = 'block';
         return;
     }
@@ -1156,7 +1162,8 @@ async function confirmarCambioPassword(username) {
         const response = await fetch('/api/auth/change-password/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': leerCookieCsrf()
             },
             credentials: 'include',
             body: JSON.stringify({
@@ -1190,7 +1197,85 @@ async function confirmarCambioPassword(username) {
     }
 }
 
+// Lee el token CSRF que Django deja en la cookie al iniciar sesión
+function leerCookieCsrf() {
+    const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
+// ==================== CAMBIAR MI CONTRASEÑA (todos los roles) ====================
+
+function abrirModalMiPassword() {
+    cerrarModalMiPassword();
+    const campo = (id, etiqueta, autocomplete) => `
+        <label for="${id}" style="display:block; color:#ccc; font-size:0.85rem; font-weight:600; margin:14px 0 6px;">${etiqueta}</label>
+        <input type="password" id="${id}" autocomplete="${autocomplete}"
+               style="width:100%; box-sizing:border-box; padding:11px 13px; border:1px solid #333; border-radius:8px; background:#141414; color:#f0f0f0; font-size:1rem;">
+    `;
+    document.body.insertAdjacentHTML('beforeend', `
+        <div id="modalMiPassword" style="position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:10001; display:flex; align-items:center; justify-content:center; padding:16px;"
+             onclick="if (event.target === this) cerrarModalMiPassword()">
+            <div style="background:#1c1c1c; border:1px solid #2a2a2a; border-radius:12px; padding:26px; width:100%; max-width:420px;">
+                <h3 style="margin:0 0 4px; color:#f0f0f0; font-size:1.2rem;">Cambiar mi contraseña</h3>
+                <p style="margin:0; color:#888; font-size:0.85rem;">Mínimo 8 caracteres; no puede ser solo números ni una contraseña común.</p>
+                ${campo('miPasswordActual', 'Contraseña actual', 'current-password')}
+                ${campo('miPasswordNueva', 'Nueva contraseña', 'new-password')}
+                ${campo('miPasswordConfirmar', 'Repite la nueva contraseña', 'new-password')}
+                <div id="miPasswordError" style="display:none; margin-top:14px; padding:10px 12px; border-radius:8px; background:#2a1414; color:#f87171; font-size:0.88rem;"></div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" onclick="cerrarModalMiPassword()"
+                            style="flex:1; padding:11px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:#ccc; font-weight:600; cursor:pointer;">Cancelar</button>
+                    <button type="button" id="btnGuardarMiPassword" onclick="guardarMiPassword()"
+                            style="flex:1; padding:11px; border-radius:8px; border:none; background:#c0392b; color:#fff; font-weight:700; cursor:pointer;">Guardar</button>
+                </div>
+            </div>
+        </div>
+    `);
+    document.getElementById('miPasswordActual').focus();
+}
+
+function cerrarModalMiPassword() {
+    document.getElementById('modalMiPassword')?.remove();
+}
+
+async function guardarMiPassword() {
+    const actual = document.getElementById('miPasswordActual').value;
+    const nueva = document.getElementById('miPasswordNueva').value;
+    const confirmar = document.getElementById('miPasswordConfirmar').value;
+    const errorEl = document.getElementById('miPasswordError');
+    const mostrarError = (msg) => { errorEl.textContent = msg; errorEl.style.display = 'block'; };
+
+    if (!actual || !nueva || !confirmar) return mostrarError('Completa los tres campos.');
+    if (nueva !== confirmar) return mostrarError('La nueva contraseña y su repetición no coinciden.');
+    if (nueva.length < 8) return mostrarError('La nueva contraseña debe tener al menos 8 caracteres.');
+
+    const btn = document.getElementById('btnGuardarMiPassword');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+    try {
+        const response = await fetch('/api/auth/change-own-password/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': leerCookieCsrf() },
+            credentials: 'include',
+            body: JSON.stringify({ current_password: actual, new_password: nueva }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || data.detail || 'No se pudo cambiar la contraseña.');
+        }
+        cerrarModalMiPassword();
+        alert('Tu contraseña se cambió correctamente.');
+    } catch (error) {
+        mostrarError(error.message);
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
+    }
+}
+
 // Exportar funciones globales
+window.abrirModalMiPassword = abrirModalMiPassword;
+window.cerrarModalMiPassword = cerrarModalMiPassword;
+window.guardarMiPassword = guardarMiPassword;
 window.abrirPanelGestionUsuarios = abrirPanelGestionUsuarios;
 window.cerrarPanelGestionUsuarios = cerrarPanelGestionUsuarios;
 window.cambiarPasswordUsuario = cambiarPasswordUsuario;
