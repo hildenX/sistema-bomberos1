@@ -129,9 +129,13 @@ def pdf_deudores_beneficios(request):
         return respuesta
 
     try:
+        deudas = calcular_deudas_beneficios_y_rifas()
+        beneficio_id = request.GET.get('beneficio_id')
+        if beneficio_id:
+            deudas = [d for d in deudas if d['grupo'] == ('beneficio', int(beneficio_id))]
         logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
         pdf_buffer = generar_pdf_nomina_deudores_beneficios(
-            calcular_deudas_beneficios_y_rifas(), logo_base64=logo.imagen if logo else None
+            deudas, logo_base64=logo.imagen if logo else None
         )
 
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')

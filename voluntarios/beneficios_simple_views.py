@@ -119,6 +119,7 @@ def listar_asignaciones_simple(request):
                 'beneficio_nombre': asig.beneficio.nombre,
                 'voluntario': asig.voluntario.id,
                 'voluntario_nombre': f"{asig.voluntario.nombre} {asig.voluntario.apellido_paterno}",
+                'voluntario_clave': asig.voluntario.clave_bombero or '',
                 'tarjetas_asignadas': asig.tarjetas_asignadas,
                 'tarjetas_vendidas': asig.tarjetas_vendidas,
                 'tarjetas_extras_vendidas': asig.tarjetas_extras_vendidas,

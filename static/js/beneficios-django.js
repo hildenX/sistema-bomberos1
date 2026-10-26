@@ -255,11 +255,20 @@ function verDeudores(beneficioId) {
         a.beneficio === beneficioId &&
         (a.estado_pago === 'pendiente' || a.estado_pago === 'parcial')
     );
+    const ordenClave = c => { const m = /^(\d+)(.*)$/.exec((c || '').trim()); return m ? [parseInt(m[1]), m[2]] : [1e9, c || '']; };
+    deudores.sort((x, y) => { const a = ordenClave(x.voluntario_clave), c = ordenClave(y.voluntario_clave); return a[0] - c[0] || String(a[1]).localeCompare(String(c[1])); });
+    const precio = parseFloat(b.precio_por_tarjeta || b.precio_tarjeta || 0);
+    const unidad = /bingo/i.test(`${b.tipo || ''} ${b.nombre}`) ? ['cartón', 'cartones'] : /rifa/i.test(`${b.tipo || ''} ${b.nombre}`) ? ['número', 'números'] : ['tarjeta', 'tarjetas'];
+    deudores.forEach(d => {
+        const n = precio ? parseFloat(d.monto_pendiente || 0) / precio : 0;
+        const txt = Number.isInteger(n) ? String(n) : n.toFixed(1).replace('.', ',');
+        d.debe = precio ? `${txt} ${n === 1 ? unidad[0] : unidad[1]}` : '';
+    });
 
     const totalDeuda = deudores.reduce((s, d) => s + parseFloat(d.monto_pendiente || 0), 0);
     const promedio   = deudores.length > 0 ? totalDeuda / deudores.length : 0;
 
-    modalDeudoresData = { nombre: b.nombre, deudores, totalDeuda };
+    modalDeudoresData = { id: b.id, nombre: b.nombre, deudores, totalDeuda };
 
     el('modalDeudoresTitle').textContent    = 'Lista de Deudores';
     el('modalDeudoresSubtitle').textContent = b.nombre;
@@ -290,8 +299,8 @@ function verDeudores(beneficioId) {
             <div class="deudor-row">
                 <div class="deudor-num">${i + 1}</div>
                 <div class="deudor-info">
-                    <div class="deudor-nombre">${d.voluntario_nombre}</div>
-                    <div class="deudor-sub">${d.tarjetas_vendidas || 0}/${d.tarjetas_asignadas} tarjetas vendidas</div>
+                    <div class="deudor-nombre">${d.voluntario_clave ? d.voluntario_clave + ' · ' : ''}${d.voluntario_nombre}</div>
+                    <div class="deudor-sub">Debe ${d.debe}</div>
                 </div>
                 <div class="deudor-monto">$${fmt(d.monto_pendiente)}</div>
             </div>
@@ -346,6 +355,11 @@ async function cerrarBeneficio(id) {
 
 // ===== PDF DEUDORES =====
 function exportarPDFDeudores() {
+    if (!modalDeudoresData) return;
+    window.open(`/api/voluntarios/pdf-deudores-beneficios/?beneficio_id=${modalDeudoresData.id}`, '_blank');
+}
+
+function exportarPDFDeudoresAntiguo() {
     if (!modalDeudoresData) return;
     const { nombre, deudores, totalDeuda } = modalDeudoresData;
 
