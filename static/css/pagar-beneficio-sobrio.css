@@ -12,7 +12,7 @@ body .pb-header::before { display: none !important; }
 body .pb-header-top h1 { font-size: 1.4rem !important; font-weight: 700 !important; letter-spacing: 0 !important; }
 body .pb-header-top p { color: var(--td-muted) !important; }
 
-body .pb-summary { gap: 12px !important; margin-top: 18px !important; justify-content: flex-start !important; }
+body .pb-summary { gap: 12px !important; margin-top: 18px !important; justify-content: center !important; }
 body .pb-sum-divider, body .pb-sum-icon { display: none !important; }
 body .pb-sum-card {
   background: var(--td-card) !important;
