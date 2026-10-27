@@ -349,25 +349,41 @@ class SistemaCuotasDjango {
             return;
         }
 
-        try {
-            // Guardar pago para cada mes seleccionado
-            for (const mes of mesesSeleccionados) {
+        // Se guarda mes a mes: bloquear el botón, mostrar avance y advertir si se sale antes de terminar
+        const btn = event.target.querySelector('button[type="submit"]');
+        const textoBtn = btn ? btn.textContent : '';
+        const advertir = e => { e.preventDefault(); e.returnValue = ''; };
+        window.addEventListener('beforeunload', advertir);
+        if (btn) btn.disabled = true;
+
+        const guardados = [];
+        const fallidos = [];
+        for (const [i, mes] of mesesSeleccionados.entries()) {
+            if (btn) btn.textContent = `Registrando ${i + 1} de ${mesesSeleccionados.length}...`;
+            try {
                 await this.guardarPagoCuota({...datos, mes: mes});
+                guardados.push(mes);
+            } catch (error) {
+                fallidos.push(`${this.obtenerNombreMes(mes)} (${error.message})`);
             }
-            
-            Utils.mostrarNotificacion(`Pago de ${mesesSeleccionados.length} cuota(s) registrado exitosamente`, 'success');
-            
-            // Recargar datos y actualizar interfaz
-            await this.cargarDatos();
-            await this.cargarEstadoCuotas();
-            this.renderizarGridMeses();
-            this.actualizarEstadoCheckboxes();
-            this.renderizarHistorialCuotas();
-            this.limpiarFormularioCuota();
-            
-        } catch (error) {
-            Utils.mostrarNotificacion(error.message, 'error');
         }
+
+        window.removeEventListener('beforeunload', advertir);
+        if (btn) { btn.disabled = false; btn.textContent = textoBtn; }
+
+        if (fallidos.length) {
+            Utils.mostrarNotificacion(`Se registraron ${guardados.length} de ${mesesSeleccionados.length}. No se guardaron: ${fallidos.join(', ')}`, 'error');
+        } else {
+            Utils.mostrarNotificacion(`Pago de ${guardados.length} cuota(s) registrado exitosamente`, 'success');
+        }
+
+        // Recargar datos y actualizar interfaz
+        await this.cargarDatos();
+        await this.cargarEstadoCuotas();
+        this.renderizarGridMeses();
+        this.actualizarEstadoCheckboxes();
+        this.renderizarHistorialCuotas();
+        if (!fallidos.length) this.limpiarFormularioCuota();
     }
 
     validarDatosCuota(datos, mesesSeleccionados) {

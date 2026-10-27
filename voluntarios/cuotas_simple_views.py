@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from decimal import Decimal
 import json
+import threading
 from .models import PagoCuota, Voluntario, MovimientoFinanciero, CuentaBancaria
 from .utils_email import enviar_comprobante_cuota
 from .permissions import autorizar_request, obtener_accion_desde_request
@@ -82,6 +83,9 @@ def pagos_cuotas_simple(request):
                 except CuentaBancaria.DoesNotExist:
                     return JsonResponse({'error': 'Cuenta bancaria no encontrada'}, status=404)
 
+            if PagoCuota.objects.filter(voluntario=voluntario, mes=data['mes'], anio=data['anio']).exists():
+                return JsonResponse({'error': f"Ya existe un pago para el mes {data['mes']}/{data['anio']}"}, status=400)
+
             # Usar transacción atómica para crear pago + movimiento
             with transaction.atomic():
                 # Crear el pago
@@ -96,7 +100,7 @@ def pagos_cuotas_simple(request):
                     comprobante_base64=data.get('comprobante_base64') or None,
                     observaciones=data.get('observaciones', ''),
                     cuenta_bancaria=cuenta_bancaria,
-                    created_by=None  # Sin usuario por ahora
+                    created_by=request.user if request.user.is_authenticated else None
                 )
 
                 # Crear MovimientoFinanciero (INGRESO)
@@ -111,27 +115,17 @@ def pagos_cuotas_simple(request):
                     cuenta_bancaria=cuenta_bancaria,
                 )
             
-            # Enviar comprobante por email automáticamente
-            email_enviado = False
-            print('[EMAIL] Verificando envío de comprobante...')
-            print(f'[EMAIL] Voluntario: {voluntario.nombre} {voluntario.apellido_paterno}')
-            print(f'[EMAIL] Email del voluntario: {voluntario.email}')
-            
+            # El comprobante se envía en segundo plano: el SMTP tarda ~3 s y no debe frenar el registro
+            email_enviado = bool(voluntario.email)
             if voluntario.email:
-                try:
-                    print(f'[EMAIL] Intentando enviar a: {voluntario.email}')
-                    email_enviado = enviar_comprobante_cuota(pago, voluntario)
-                    if email_enviado:
-                        print(f'[EMAIL] OK Comprobante enviado exitosamente a {voluntario.email}')
-                    else:
-                        print('[EMAIL] FALLO No se pudo enviar el comprobante')
-                except Exception as e:
-                    print(f'[EMAIL] ERROR al enviar email: {str(e)}')
-                    import traceback
-                    traceback.print_exc()
-            else:
-                print('[EMAIL] AVISO El voluntario NO tiene email configurado')
-            
+                def _enviar(pago=pago, voluntario=voluntario):
+                    try:
+                        if not enviar_comprobante_cuota(pago, voluntario):
+                            print(f'[EMAIL] FALLO comprobante cuota {pago.id}')
+                    except Exception as e:
+                        print(f'[EMAIL] ERROR comprobante cuota {pago.id}: {e}')
+                threading.Thread(target=_enviar, daemon=True).start()
+
             # Retornar el pago creado
             return JsonResponse({
                 'id': pago.id,
