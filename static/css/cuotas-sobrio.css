@@ -170,3 +170,27 @@ body .cuotas-page .navigation-buttons .btn { background: transparent !important;
   body .cuotas-page .acciones-voluntario .btn { flex: 1 1 100% !important; }
   body .cuotas-page .bombero-datos { grid-template-columns: 1fr 1fr !important; padding: 16px !important; }
 }
+
+/* Selector de meses: ✓ solo en los marcados; los ya pagados quedan en verde y bloqueados */
+body .cuotas-page .checkbox-mes .checkbox-custom { color: transparent !important; }
+body .cuotas-page .checkbox-mes input[type="checkbox"]:checked ~ .checkbox-custom { color: #fff !important; }
+body .cuotas-page .checkbox-mes.pagado {
+  background: rgba(39,174,96,.08) !important;
+  border-color: rgba(39,174,96,.35) !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}
+body .cuotas-page .checkbox-mes.pagado .checkbox-custom {
+  background: #27ae60 !important;
+  border-color: #27ae60 !important;
+  color: #fff !important;
+}
+body .cuotas-page .checkbox-mes.pagado .mes-label { color: #4cc283 !important; }
+body .cuotas-page .checkbox-mes.pagado .mes-label::after {
+  content: 'Pagado';
+  display: block;
+  font-size: .7rem;
+  font-weight: 500;
+  color: #8fcfaa;
+  letter-spacing: .04em;
+}

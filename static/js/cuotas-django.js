@@ -311,16 +311,9 @@ class SistemaCuotasDjango {
                        p.anio == this.anioActual;
             });
             
-            if (estaPagado) {
-                checkbox.checked = false;
-                checkbox.disabled = true;
-                checkbox.parentElement.style.opacity = '0.5';
-                checkbox.parentElement.style.pointerEvents = 'none';
-            } else {
-                checkbox.disabled = false;
-                checkbox.parentElement.style.opacity = '1';
-                checkbox.parentElement.style.pointerEvents = 'auto';
-            }
+            if (estaPagado) checkbox.checked = false;
+            checkbox.disabled = estaPagado;
+            checkbox.parentElement.classList.toggle('pagado', estaPagado);
         });
         
         // Actualizar total después de deshabilitar
