@@ -27,6 +27,7 @@ from .portal_utils import (
     crear_grupo_solicitud,
     deudas_beneficios_portal,
     deudas_cuotas_portal,
+    deudas_aniversario_portal,
     deudas_rifas_portal,
     expirar_solicitudes_observadas,
     listar_solicitudes_usuario,
@@ -38,7 +39,7 @@ from .portal_utils import (
     validar_item_pago,
 )
 from .utils_email import enviar_comprobante_grupo, enviar_notificacion_rechazo
-from .utils_tesoreria import registrar_pago_beneficio, registrar_pago_cuota
+from .utils_tesoreria import registrar_pago_aniversario, registrar_pago_beneficio, registrar_pago_cuota
 
 
 ROLES_TESORERIA_PORTAL = [RolBomberos.TESORERO, RolBomberos.DIRECTOR, RolBomberos.SUPER_ADMIN]
@@ -202,6 +203,7 @@ def portal_dashboard_view(request):
     cuotas = deudas_cuotas_portal(profile.voluntario)
     beneficios = deudas_beneficios_portal(profile.voluntario)
     rifas = deudas_rifas_portal(profile.voluntario)
+    aniversario = deudas_aniversario_portal(profile.voluntario)
     solicitudes = [serializar_solicitud(s) for s in listar_solicitudes_usuario(profile.user)]
     cuentas = list(CuentaBancaria.objects.filter(activa=True).values('id', 'nombre', 'banco', 'numero_cuenta'))
 
@@ -219,6 +221,7 @@ def portal_dashboard_view(request):
             },
             'beneficios': beneficios,
             'rifas': rifas,
+            'aniversario': aniversario,
             'solicitudes': solicitudes,
             'grupos_solicitud': grupos_serializados,
             'cuentas_bancarias': cuentas,
@@ -229,7 +232,7 @@ def portal_dashboard_view(request):
 def _crear_o_actualizar_solicitud(request, profile, solicitud=None):
     data = _parse_request_data(request)
     tipo_pago = str(data.get('tipo_pago', '')).strip().lower()
-    if tipo_pago not in ['cuota', 'beneficio', 'rifa']:
+    if tipo_pago not in ['cuota', 'beneficio', 'rifa', 'aniversario']:
         raise ValueError('Tipo de pago invalido')
 
     nombre_pago = str(data.get('nombre_pago', '')).strip()
@@ -258,6 +261,7 @@ def _crear_o_actualizar_solicitud(request, profile, solicitud=None):
             'tipo_pago_beneficio': data.get('tipo_pago_beneficio'),
             'cantidad': data.get('cantidad'),
             'asignacion_rifa_id': data.get('asignacion_rifa_id'),
+            'cuota_aniversario_id': data.get('cuota_aniversario_id'),
         },
         exclude_solicitud_id=solicitud.id if solicitud else None,
     )
@@ -283,6 +287,7 @@ def _crear_o_actualizar_solicitud(request, profile, solicitud=None):
         'asignacion_beneficio': validado['asignacion_beneficio'],
         'tipo_pago_beneficio': validado['tipo_pago_beneficio'],
         'asignacion_rifa': validado['asignacion_rifa'],
+        'cuota_aniversario': validado['cuota_aniversario'],
         'cantidad': validado['cantidad'],
     }
 
@@ -505,6 +510,10 @@ def _aprobar_solicitud(solicitud, reviewer):
             reviewer,
         )
         solicitud.pago_beneficio = pago
+    elif solicitud.tipo_pago == 'aniversario':
+        pago = registrar_pago_aniversario(solicitud.cuota_aniversario_id, solicitud.voluntario_id,
+                                          datos_pago, reviewer)
+        solicitud.pago_cuota_aniversario = pago
     else:
         pago = registrar_pago_rifa(
             solicitud.asignacion_rifa_id,
@@ -527,6 +536,8 @@ def _aprobar_solicitud(solicitud, reviewer):
     elif solicitud.tipo_pago == 'beneficio':
         from .utils_email import enviar_comprobante_beneficio
         enviar_comprobante_beneficio(pago, solicitud.voluntario, solicitud.asignacion_beneficio.beneficio)
+    elif solicitud.tipo_pago == 'aniversario':
+        pass  # sin plantilla de correo propia: el voluntario lo ve aprobado en el portal
     else:
         from .utils_email import enviar_comprobante_rifa
         enviar_comprobante_rifa(pago, solicitud.voluntario, solicitud.asignacion_rifa.rifa)
@@ -578,6 +589,10 @@ def _aprobar_grupo(grupo, reviewer):
                     item.cantidad, item.monto_solicitado, datos_pago, reviewer,
                 )
                 item.pago_beneficio = pago
+            elif item.tipo_pago == 'aniversario':
+                pago = registrar_pago_aniversario(item.cuota_aniversario_id, item.voluntario_id,
+                                                  datos_pago, reviewer)
+                item.pago_cuota_aniversario = pago
             else:
                 pago = registrar_pago_rifa(
                     item.asignacion_rifa_id, item.monto_solicitado,

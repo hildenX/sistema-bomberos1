@@ -6,7 +6,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
-from voluntarios import cuotas_simple_views, ciclos_cuotas_simple_views, pdf_cuotas_views, configuracion_cuotas_simple_views, estado_cuotas_simple_views, beneficios_simple_views, voluntarios_simple_views, deudores_views, carga_masiva_views, ciclos_beneficios_simple_views, cuentas_views, rifa_views, inventario_excel_views
+from voluntarios import cuotas_simple_views, ciclos_cuotas_simple_views, pdf_cuotas_views, configuracion_cuotas_simple_views, estado_cuotas_simple_views, beneficios_simple_views, voluntarios_simple_views, deudores_views, carga_masiva_views, ciclos_beneficios_simple_views, cuentas_views, rifa_views, inventario_excel_views, aniversario_views
 
 # Helper para servir templates
 def template(name):
@@ -47,6 +47,11 @@ urlpatterns = [
     path('api/voluntarios/pdf-deudores-cuotas/<int:anio>/', pdf_cuotas_views.pdf_deudores_cuotas, name='pdf_deudores_cuotas_anio'),
     path('api/voluntarios/pdf-deudores-beneficios/', pdf_cuotas_views.pdf_deudores_beneficios, name='pdf_deudores_beneficios'),
     path('api/voluntarios/<int:voluntario_id>/pdf-deudas/', pdf_cuotas_views.pdf_estado_deuda_voluntario, name='pdf_estado_deuda_voluntario'),
+    path('api/voluntarios/cuotas-aniversario/', aniversario_views.cuotas_aniversario, name='cuotas_aniversario'),
+    path('api/voluntarios/cuotas-aniversario/<int:cuota_id>/estado/', aniversario_views.estado_cuota_aniversario, name='estado_cuota_aniversario'),
+    path('api/voluntarios/cuotas-aniversario/<int:cuota_id>/pagos/', aniversario_views.registrar_pago_cuota_aniversario, name='pago_cuota_aniversario'),
+    path('api/voluntarios/cuotas-aniversario/pagos/<int:pago_id>/', aniversario_views.anular_pago_cuota_aniversario, name='anular_pago_cuota_aniversario'),
+    path('api/voluntarios/cuotas-aniversario/<int:cuota_id>/pdf-deudores/', aniversario_views.pdf_deudores_aniversario, name='pdf_deudores_aniversario'),
 
     # Estado de Cuotas SIMPLE - SIN DRF
     path('api/voluntarios/<int:voluntario_id>/estado-cuotas-simple/', estado_cuotas_simple_views.estado_cuotas_simple, name='estado_cuotas_simple_direct'),
@@ -144,6 +149,7 @@ urlpatterns = [
     # ==================== FINANZAS ====================
     path('cuotas-beneficios.html', template('tesoreria/cuotas-beneficios.html'), name='cuotas_beneficios'),
     path('deudores-cuotas.html', template('tesoreria/deudores-cuotas.html'), name='deudores_cuotas'),
+    path('cuota-aniversario.html', template('tesoreria/cuota-aniversario.html'), name='cuota_aniversario'),
     path('deudores-beneficios.html', template('tesoreria/deudores-beneficios.html'), name='deudores_beneficios'),
     path('beneficios.html', template('tesoreria/beneficios.html'), name='beneficios'),
     path('pagar-beneficio.html', template('tesoreria/pagar-beneficio.html'), name='pagar_beneficio'),

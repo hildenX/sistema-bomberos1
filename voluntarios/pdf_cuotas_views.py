@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania
 from .pdf_nominas import (generar_pdf_cuotas_voluntario, generar_pdf_nomina_deudores_cuotas, generar_pdf_nomina_deudores_beneficios,
                           generar_pdf_estado_deuda_voluntario)
-from .utils_tesoreria import puede_pagar_cuotas, obtener_precio_cuota, calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
+from .utils_tesoreria import cuotas_aniversario_pendientes, puede_pagar_cuotas, obtener_precio_cuota, calcular_deuda_cuotas, calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from .permissions import autorizar_request
 from datetime import datetime
 
@@ -153,8 +153,10 @@ def pdf_estado_deuda_voluntario(request, voluntario_id):
     deuda_cuotas = calcular_deuda_cuotas(voluntario, anio)
     otras = [d for d in calcular_deudas_beneficios_y_rifas() if d['voluntario'].id == voluntario.id]
     logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
+    aniversario = [(c.anio, c.monto) for c in cuotas_aniversario_pendientes(voluntario)]
     pdf = generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, otras, anio,
-                                              logo_base64=logo.imagen if logo else None)
+                                              logo_base64=logo.imagen if logo else None,
+                                              aniversario=aniversario)
     response = HttpResponse(pdf.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="estado_deuda_{voluntario.clave_bombero}.pdf"'
     return response

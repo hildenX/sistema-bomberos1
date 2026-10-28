@@ -1,0 +1,316 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuota de aniversario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/deudores-sobrio.css' %}?v=3">
+</head>
+<body>
+{% csrf_token %}
+<main class="dd">
+    <header class="dd-head">
+        <div>
+            <h1>Cuota de aniversario</h1>
+            <p>Monto único al año acordado en asamblea. La pagan los voluntarios activos que pagan cuota social.</p>
+        </div>
+        <div class="dd-head-acc">
+            <select id="anCuota" class="dd-anio" aria-label="Año de la cuota" hidden></select>
+            <button type="button" id="anNueva" class="dd-btn is-ghost">Nueva cuota</button>
+            <a id="anPDF" class="dd-btn is-pri" href="#" target="_blank" rel="noopener" hidden>Deudores PDF</a>
+            <a class="dd-btn is-ghost" href="/sistema.html">Volver</a>
+        </div>
+    </header>
+
+    <!-- Sin cuotas todavía -->
+    <section id="anVacio" class="an-vacio" hidden>
+        <h2>Todavía no hay cuotas de aniversario</h2>
+        <p>Crea la cuota del año con el monto que se acordó en la asamblea. Se cargará a todos los voluntarios que pagan cuota social.</p>
+        <button type="button" class="dd-btn is-pri" onclick="document.getElementById('anNueva').click()">Crear cuota de aniversario</button>
+    </section>
+
+    <!-- Cuota seleccionada -->
+    <section id="anDetalle" hidden>
+        <section class="dd-resumen">
+            <div><span>Valor cuota</span><b id="anMonto">$0</b></div>
+            <div><span>Pagaron</span><b id="anPagados">0</b></div>
+            <div><span>Deben</span><b id="anDeben">0</b></div>
+            <div><span>Recaudado</span><b id="anRecaudado">$0</b></div>
+            <div><span>Por cobrar</span><b id="anPendiente">$0</b></div>
+            <div class="an-origen"><small id="anOrigen"></small><button type="button" class="an-link" id="anEditar">Editar cuota</button></div>
+        </section>
+
+        <div class="dd-toolbar">
+            <nav class="an-tabs" aria-label="Filtrar por estado">
+                <button type="button" data-filtro="pendiente" class="is-active">Pendientes</button>
+                <button type="button" data-filtro="pagado">Pagados</button>
+                <button type="button" data-filtro="">Todos</button>
+            </nav>
+            <input id="anBuscar" type="search" placeholder="Buscar por nombre o clave" aria-label="Buscar voluntario" autocomplete="off">
+            <span id="anContador" class="dd-contador"></span>
+        </div>
+
+        <div class="dd-tabla-caja">
+            <div id="anEstado" class="dd-estado">Cargando…</div>
+            <table id="anTabla" hidden>
+                <thead>
+                    <tr>
+                        <th class="dd-num">N°</th>
+                        <th>Clave</th>
+                        <th>Voluntario</th>
+                        <th>Estado</th>
+                        <th class="dd-der">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="anFilas"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<!-- Modal: crear o editar cuota -->
+<dialog id="dlgCuota" class="an-dlg">
+    <form method="dialog" id="formCuota">
+        <h2 id="dlgCuotaTitulo">Nueva cuota de aniversario</h2>
+        <div class="an-campos">
+            <label>Año<input name="anio" type="number" min="2020" max="2100" required></label>
+            <label>Monto por voluntario<input name="monto" type="number" min="1" step="1" required inputmode="numeric"></label>
+        </div>
+        <div class="an-campos">
+            <label>Fecha de la asamblea<input name="fecha_asamblea" type="date"></label>
+            <label>Acta o referencia <span class="an-opc">(opcional)</span><input name="acta" maxlength="120" placeholder="Ej: Acta N° 008/2026"></label>
+        </div>
+        <label>Observaciones <span class="an-opc">(opcional)</span><textarea name="observaciones" rows="2"></textarea></label>
+        <p class="an-error" id="errCuota" role="alert"></p>
+        <div class="an-acciones">
+            <button type="button" class="dd-btn is-ghost" onclick="this.closest('dialog').close()">Cancelar</button>
+            <button type="submit" class="dd-btn is-pri" value="ok">Guardar cuota</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- Modal: registrar pago -->
+<dialog id="dlgPago" class="an-dlg">
+    <form method="dialog" id="formPago">
+        <h2>Registrar pago</h2>
+        <p class="an-sub" id="dlgPagoQuien"></p>
+        <div class="an-campos">
+            <label>Fecha de pago<input name="fecha_pago" type="date" required></label>
+            <label>Forma de pago
+                <select name="metodo_pago" id="pagoMetodo">
+                    <option>Efectivo</option>
+                    <option>Transferencia</option>
+                </select>
+            </label>
+        </div>
+        <div class="an-campos" id="pagoTransfer" hidden>
+            <label>Cuenta de destino<select name="cuenta_bancaria_id" id="pagoCuenta"></select></label>
+            <label>N° comprobante <span class="an-opc">(opcional)</span><input name="numero_comprobante"></label>
+        </div>
+        <label>Observaciones <span class="an-opc">(opcional)</span><textarea name="observaciones" rows="2"></textarea></label>
+        <p class="an-error" id="errPago" role="alert"></p>
+        <div class="an-acciones">
+            <button type="button" class="dd-btn is-ghost" onclick="this.closest('dialog').close()">Cancelar</button>
+            <button type="submit" class="dd-btn is-ok" value="ok" id="btnGuardarPago">Registrar pago</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+(function () {
+    const $ = (id) => document.getElementById(id);
+    const API = '/api/voluntarios/cuotas-aniversario/';
+    const pesos = (n) => '$' + Math.round(n || 0).toLocaleString('es-CL');
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const fecha = (iso) => iso ? new Date(`${iso}T12:00:00`).toLocaleDateString('es-CL') : '';
+    const hoyIso = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    const csrf = () => (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+
+    let cuotas = [];
+    let actual = null;
+    let filas = [];
+    let filtro = 'pendiente';
+    let pagando = null;
+
+    async function api(url, opts = {}) {
+        const res = await fetch(url, {
+            credentials: 'include',
+            ...opts,
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf(), ...(opts.headers || {}) },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || data.mensaje || 'Error de comunicación');
+        return data;
+    }
+
+    async function cargarCuotas(anioPreferido) {
+        const data = await api(API);
+        cuotas = data.cuotas;
+        if (!cuotas.length) {
+            $('anVacio').hidden = false;
+            $('anDetalle').hidden = true;
+            $('anCuota').hidden = true;
+            $('anPDF').hidden = true;
+            return;
+        }
+        $('anVacio').hidden = true;
+        $('anCuota').hidden = cuotas.length < 2;
+        $('anCuota').innerHTML = cuotas.map((c) => `<option value="${c.id}">${c.anio}</option>`).join('');
+        const elegida = cuotas.find((c) => c.anio === anioPreferido) || cuotas[0];
+        $('anCuota').value = elegida.id;
+        await cargarEstado(elegida.id);
+    }
+
+    async function cargarEstado(id) {
+        $('anDetalle').hidden = false;
+        $('anTabla').hidden = true;
+        $('anEstado').hidden = false;
+        $('anEstado').textContent = 'Cargando…';
+        const data = await api(`${API}${id}/estado/`);
+        actual = data.cuota;
+        filas = data.voluntarios;
+        $('anPDF').hidden = false;
+        $('anPDF').href = `${API}${id}/pdf-deudores/`;
+        $('anMonto').textContent = pesos(actual.monto);
+        $('anPagados').textContent = actual.pagados;
+        $('anDeben').textContent = actual.deudores;
+        $('anRecaudado').textContent = pesos(actual.recaudado);
+        $('anPendiente').textContent = pesos(actual.pendiente);
+        const origen = [actual.acta, actual.fecha_asamblea ? `Asamblea del ${fecha(actual.fecha_asamblea)}` : ''].filter(Boolean).join(' · ');
+        $('anOrigen').textContent = `Cuota ${actual.anio}${origen ? ' · ' + origen : ''}`;
+        pintar();
+    }
+
+    function pintar() {
+        const q = norm($('anBuscar').value.trim());
+        const visibles = filas.filter((f) =>
+            (!filtro || (filtro === 'pagado') === f.pagado) &&
+            (!q || norm(`${f.nombre} ${f.clave}`).includes(q)));
+        $('anContador').textContent = `${visibles.length} voluntario${visibles.length === 1 ? '' : 's'}`;
+        if (!visibles.length) {
+            $('anTabla').hidden = true;
+            $('anEstado').hidden = false;
+            $('anEstado').className = 'dd-estado' + (filtro === 'pendiente' && !q ? ' is-ok' : '');
+            $('anEstado').textContent = q ? `Nadie coincide con "${$('anBuscar').value.trim()}".`
+                : filtro === 'pendiente' ? 'Todos pagaron la cuota de aniversario.' : 'Nadie ha pagado todavía.';
+            return;
+        }
+        $('anEstado').hidden = true;
+        $('anTabla').hidden = false;
+        $('anFilas').innerHTML = visibles.map((f, i) => {
+            const estado = f.pagado
+                ? `<span class="an-pill is-ok">Pagado</span> <span class="dd-suave">${fecha(f.pago.fecha_pago)} · ${esc(f.pago.metodo_pago)}${f.pago.registrado_por ? ' · ' + esc(f.pago.registrado_por) : ''}</span>`
+                : '<span class="an-pill is-pend">Pendiente</span>';
+            const accion = f.pagado
+                ? `<button type="button" class="an-link is-danger" data-anular="${f.pago.id}" data-nombre="${esc(f.nombre)}">Anular</button>`
+                : `<button type="button" class="dd-btn is-sec" data-pagar="${f.voluntario_id}">Registrar pago</button>`;
+            return `<tr>
+                <td class="dd-num">${i + 1}</td>
+                <td class="dd-clave">${esc(f.clave)}</td>
+                <td class="dd-nombre">${esc(f.nombre)}</td>
+                <td>${estado}</td>
+                <td class="dd-der">${accion}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Crear / editar cuota
+    function abrirCuota(editar) {
+        const f = $('formCuota');
+        f.reset();
+        $('errCuota').textContent = '';
+        $('dlgCuotaTitulo').textContent = editar ? `Editar cuota de aniversario ${actual.anio}` : 'Nueva cuota de aniversario';
+        f.anio.value = editar ? actual.anio : new Date().getFullYear();
+        f.anio.readOnly = !!editar;
+        if (editar) {
+            f.monto.value = actual.monto;
+            f.fecha_asamblea.value = actual.fecha_asamblea || '';
+            f.acta.value = actual.acta || '';
+            f.observaciones.value = actual.observaciones || '';
+        }
+        $('dlgCuota').showModal();
+    }
+    $('anNueva').addEventListener('click', () => abrirCuota(false));
+    $('anEditar').addEventListener('click', () => abrirCuota(true));
+    $('formCuota').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const anio = Number(f.anio.value);
+        if (!f.anio.readOnly && cuotas.some((c) => c.anio === anio)
+            && !confirm(`Ya existe la cuota ${anio}. ¿Quieres reemplazar sus datos?`)) return;
+        try {
+            await api(API, { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(f))) });
+            $('dlgCuota').close();
+            await cargarCuotas(anio);
+        } catch (err) {
+            $('errCuota').textContent = err.message;
+        }
+    });
+
+    // ── Registrar / anular pago
+    $('anFilas').addEventListener('click', async (e) => {
+        const pagar = e.target.closest('[data-pagar]');
+        const anular = e.target.closest('[data-anular]');
+        if (pagar) {
+            pagando = filas.find((f) => String(f.voluntario_id) === pagar.dataset.pagar);
+            const f = $('formPago');
+            f.reset();
+            f.fecha_pago.value = hoyIso();
+            $('pagoTransfer').hidden = true;
+            $('errPago').textContent = '';
+            $('dlgPagoQuien').textContent = `${pagando.clave} · ${pagando.nombre} · ${pesos(actual.monto)} (pago único)`;
+            $('dlgPago').showModal();
+        }
+        if (anular && confirm(`¿Anular el pago de ${anular.dataset.nombre}? También se borrará el ingreso en Finanzas.`)) {
+            try {
+                await api(`${API}pagos/${anular.dataset.anular}/`, { method: 'DELETE' });
+                await cargarEstado(actual.id);
+            } catch (err) { alert(err.message); }
+        }
+    });
+    $('pagoMetodo').addEventListener('change', (e) => { $('pagoTransfer').hidden = e.target.value !== 'Transferencia'; });
+    $('formPago').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = Object.fromEntries(new FormData(e.target));
+        if (datos.metodo_pago !== 'Transferencia') { delete datos.cuenta_bancaria_id; datos.numero_comprobante = ''; }
+        $('btnGuardarPago').disabled = true;
+        try {
+            await api(`${API}${actual.id}/pagos/`, { method: 'POST', body: JSON.stringify({ ...datos, voluntario_id: pagando.voluntario_id }) });
+            $('dlgPago').close();
+            await cargarEstado(actual.id);
+        } catch (err) {
+            $('errPago').textContent = err.message;
+        } finally {
+            $('btnGuardarPago').disabled = false;
+        }
+    });
+
+    // ── Filtros
+    document.querySelectorAll('.an-tabs [data-filtro]').forEach((b) => b.addEventListener('click', () => {
+        filtro = b.dataset.filtro;
+        document.querySelectorAll('.an-tabs [data-filtro]').forEach((x) => x.classList.toggle('is-active', x === b));
+        pintar();
+    }));
+    let t;
+    $('anBuscar').addEventListener('input', () => { clearTimeout(t); t = setTimeout(pintar, 150); });
+    $('anCuota').addEventListener('change', (e) => cargarEstado(e.target.value).catch((err) => alert(err.message)));
+
+    // Cuentas bancarias para pagos por transferencia
+    fetch('/api/voluntarios/cuentas-bancarias-simple/', { credentials: 'include' })
+        .then((r) => r.ok ? r.json() : [])
+        .then((cs) => { $('pagoCuenta').innerHTML = cs.map((c) => `<option value="${c.id}">${esc(c.nombre)} · ${esc(c.banco)}</option>`).join(''); })
+        .catch(() => {});
+
+    cargarCuotas().catch((err) => {
+        $('anVacio').hidden = false;
+        $('anVacio').innerHTML = `<h2>No se pudo cargar</h2><p>${esc(err.message)}</p>`;
+    });
+})();
+</script>
+</body>
+</html>

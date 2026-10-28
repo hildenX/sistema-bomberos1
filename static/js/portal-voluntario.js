@@ -239,8 +239,21 @@
             });
         };
 
+        window.agregarAniversarioCarrito = (id) => {
+            const a = ((dashboardCache || {}).aniversario || []).find((x) => x.cuota_aniversario_id === id);
+            if (!a) return;
+            agregarAlCarrito({
+                clave: claveItem('aniversario', id),
+                tipo_pago: 'aniversario',
+                nombre_pago: a.nombre,
+                monto: a.monto,
+                cuota_aniversario_id: id,
+            });
+        };
+
         window.agregarTodoCarrito = () => {
             const d = dashboardCache || {};
+            (d.aniversario || []).forEach((a) => window.agregarAniversarioCarrito(a.cuota_aniversario_id));
             ((d.cuotas && d.cuotas.pendientes) || []).forEach((c) => agregarAlCarrito({
                 clave: claveItem('cuota', `${c.anio}-${c.mes}`), tipo_pago: 'cuota',
                 nombre_pago: `Cuota ${String(c.mes).padStart(2, '0')}/${c.anio}`, monto: c.monto, cuota_mes: c.mes, cuota_anio: c.anio,
@@ -270,7 +283,8 @@
         const cuotas = ((d.cuotas && d.cuotas.pendientes) || []).reduce((s, c) => s + Number(c.monto || 0), 0);
         const beneficios = (d.beneficios || []).reduce((s, b) => s + Number(b.monto_pendiente || 0), 0);
         const rifas = (d.rifas || []).reduce((s, r) => s + Number(r.monto_pendiente || 0), 0);
-        return { cuotas, beneficios, rifas, total: cuotas + beneficios + rifas };
+        const aniversario = (d.aniversario || []).reduce((s, a) => s + Number(a.monto || 0), 0);
+        return { cuotas, beneficios, rifas, aniversario, total: cuotas + beneficios + rifas + aniversario };
     }
 
     function renderResumen() {
@@ -279,10 +293,10 @@
         const t = deudasTotales();
         if (!t.total) {
             cont.className = 'pv-resumen is-ok';
-            cont.innerHTML = '<div><span class="pv-resumen-lbl">Estás al día</span><b>$0</b></div><p>No tienes cuotas, beneficios ni rifas pendientes.</p>';
+            cont.innerHTML = '<div><span class="pv-resumen-lbl">Estás al día</span><b>$0</b></div><p>No tienes cuotas, beneficios, rifas ni cuota de aniversario pendientes.</p>';
             return;
         }
-        const partes = [['Cuotas', t.cuotas], ['Beneficios', t.beneficios], ['Rifas', t.rifas]].filter(([, m]) => m > 0);
+        const partes = [['Cuotas', t.cuotas], ['Aniversario', t.aniversario], ['Beneficios', t.beneficios], ['Rifas', t.rifas]].filter(([, m]) => m > 0);
         const todoAgregado = carrito.length && carrito.reduce((s, i) => s + i.monto, 0) >= t.total;
         cont.className = 'pv-resumen';
         cont.innerHTML = `
@@ -309,6 +323,14 @@
                     <div><b>${capital(MESES[c.mes - 1])} ${c.anio}</b></div>
                     <span class="pv-monto">${money(c.monto)}</span>
                     ${botonAgregar(claveItem('cuota', `${c.anio}-${c.mes}`), `agregarCuotaCarrito(${c.mes}, ${c.anio}, ${c.monto})`)}
+                </div>`).join(''));
+        }
+        if ((d.aniversario || []).length) {
+            bloques.push('<h3>Cuota de aniversario</h3>' + d.aniversario.map((a) => `
+                <div class="pv-deuda">
+                    <div><b>Aniversario ${a.anio}</b><small>Pago único acordado en asamblea</small></div>
+                    <span class="pv-monto">${money(a.monto)}</span>
+                    ${botonAgregar(claveItem('aniversario', a.cuota_aniversario_id), `agregarAniversarioCarrito(${a.cuota_aniversario_id})`)}
                 </div>`).join(''));
         }
         if ((d.beneficios || []).length) {

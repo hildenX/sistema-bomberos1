@@ -18,6 +18,7 @@ from .models import (
     SolicitudPagoPortal,
 )
 from .utils_tesoreria import (
+    cuotas_aniversario_pendientes,
     obtener_precio_cuota,
     puede_pagar_cuotas,
 )
@@ -149,6 +150,15 @@ def deudas_cuotas_portal(voluntario):
     return {'ciclo': ciclo, 'items': items, 'mensaje': ''}
 
 
+def deudas_aniversario_portal(voluntario):
+    return [{
+        'cuota_aniversario_id': c.id,
+        'anio': c.anio,
+        'nombre': f'Cuota de aniversario {c.anio}',
+        'monto': float(c.monto),
+    } for c in cuotas_aniversario_pendientes(voluntario)]
+
+
 def deudas_beneficios_portal(voluntario):
     asignaciones = AsignacionBeneficio.objects.select_related('beneficio').filter(
         voluntario=voluntario,
@@ -210,7 +220,8 @@ def _solicitudes_abiertas(voluntario):
 
 
 def validar_solicitud_duplicada(voluntario, tipo_pago, cuota_mes=None, cuota_anio=None,
-                                asignacion_beneficio_id=None, asignacion_rifa_id=None, exclude_id=None):
+                                asignacion_beneficio_id=None, asignacion_rifa_id=None, exclude_id=None,
+                                cuota_aniversario_id=None):
     qs = _solicitudes_abiertas(voluntario)
     if exclude_id:
         qs = qs.exclude(id=exclude_id)
@@ -221,6 +232,8 @@ def validar_solicitud_duplicada(voluntario, tipo_pago, cuota_mes=None, cuota_ani
         return qs.filter(tipo_pago='beneficio', asignacion_beneficio_id=asignacion_beneficio_id).exists()
     if tipo_pago == 'rifa':
         return qs.filter(tipo_pago='rifa', asignacion_rifa_id=asignacion_rifa_id).exists()
+    if tipo_pago == 'aniversario':
+        return qs.filter(tipo_pago='aniversario', cuota_aniversario_id=cuota_aniversario_id).exists()
     return False
 
 
@@ -262,7 +275,7 @@ def validar_item_pago(voluntario, tipo_pago, item_data, exclude_solicitud_id=Non
     Levanta ValueError con un mensaje para el usuario final si algo no cuadra.
     """
     tipo_pago = str(tipo_pago or '').strip().lower()
-    if tipo_pago not in ['cuota', 'beneficio', 'rifa']:
+    if tipo_pago not in ['cuota', 'beneficio', 'rifa', 'aniversario']:
         raise ValueError('Tipo de pago invalido')
 
     monto = _normalizar_decimal(item_data.get('monto'))
@@ -276,8 +289,30 @@ def validar_item_pago(voluntario, tipo_pago, item_data, exclude_solicitud_id=Non
         'asignacion_beneficio': None,
         'tipo_pago_beneficio': 'normal',
         'asignacion_rifa': None,
+        'cuota_aniversario': None,
         'cantidad': 1,
     }
+
+    if tipo_pago == 'aniversario':
+        try:
+            cuota_id = int(item_data.get('cuota_aniversario_id'))
+        except (TypeError, ValueError) as exc:
+            raise ValueError('La cuota de aniversario seleccionada es invalida') from exc
+        cuota = next((c for c in cuotas_aniversario_pendientes(voluntario) if c.id == cuota_id), None)
+        if not cuota:
+            raise ValueError('La cuota de aniversario ya no esta pendiente')
+        # Pago unico y completo: el monto lo define el servidor
+        if monto != cuota.monto:
+            raise ValueError(f'Para la cuota de aniversario debes pagar el monto exacto: ${cuota.monto}')
+        if validar_solicitud_duplicada(voluntario, 'aniversario', cuota_aniversario_id=cuota.id,
+                                       exclude_id=exclude_solicitud_id):
+            raise ValueError('Ya existe una solicitud abierta para esa cuota de aniversario')
+        validado.update({
+            'cuota_aniversario': cuota,
+            'cuota_anio': cuota.anio,
+            'nombre_pago': f'Cuota de aniversario {cuota.anio}',
+        })
+        return validado
 
     if tipo_pago == 'cuota':
         try:
@@ -396,6 +431,8 @@ def _clave_referencia_item(validado):
         return ('cuota', validado['cuota_mes'], validado['cuota_anio'])
     if validado['tipo_pago'] == 'beneficio':
         return ('beneficio', validado['asignacion_beneficio'].id)
+    if validado['tipo_pago'] == 'aniversario':
+        return ('aniversario', validado['cuota_aniversario'].id)
     return ('rifa', validado['asignacion_rifa'].id)
 
 
@@ -478,6 +515,7 @@ def serializar_solicitud(solicitud):
         'cuota': 'Cuota Social',
         'beneficio': 'Beneficio',
         'rifa': 'Rifa',
+        'aniversario': 'Cuota de Aniversario',
     }
     return {
         'id': solicitud.id,
@@ -498,6 +536,7 @@ def serializar_solicitud(solicitud):
         'asignacion_beneficio_id': solicitud.asignacion_beneficio_id,
         'tipo_pago_beneficio': solicitud.tipo_pago_beneficio,
         'asignacion_rifa_id': solicitud.asignacion_rifa_id,
+        'cuota_aniversario_id': solicitud.cuota_aniversario_id,
         'comprobante_url': solicitud.comprobante.url if solicitud.comprobante else None,
         'cuenta_bancaria_destino_id': solicitud.cuenta_bancaria_destino_id,
         'revisada_por': solicitud.revisada_por.username if solicitud.revisada_por else None,
@@ -567,6 +606,7 @@ def crear_grupo_solicitud(profile, items, datos_comunes, archivo):
             asignacion_beneficio=validado['asignacion_beneficio'],
             tipo_pago_beneficio=validado['tipo_pago_beneficio'],
             asignacion_rifa=validado['asignacion_rifa'],
+            cuota_aniversario=validado['cuota_aniversario'],
             cantidad=validado['cantidad'],
             fecha_pago=datos_comunes['fecha_pago'],
             numero_comprobante=datos_comunes.get('numero_comprobante', ''),

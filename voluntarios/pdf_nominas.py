@@ -539,7 +539,7 @@ def generar_pdf_nomina_deudores_beneficios(deudas, logo_base64=None, fecha_corte
 
 
 def generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, deudas_otras, anio,
-                                        logo_base64=None, fecha_corte=None):
+                                        logo_base64=None, fecha_corte=None, aniversario=()):
     """
     Estado de deuda de un voluntario: cuotas del ciclo y beneficios/rifas.
     deuda_cuotas: resultado de calcular_deuda_cuotas(); deudas_otras: items de
@@ -547,7 +547,9 @@ def generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, deudas_otras, 
     """
     fecha_corte = fecha_corte or date.today()
     meses = [m['mes'] for m in deuda_cuotas.get('meses_pendientes', [])]
-    total_cuotas = Decimal(str(deuda_cuotas.get('monto') or 0))
+    # aniversario: [(anio, monto)] de cuotas de aniversario sin pagar
+    total_aniversario = sum((Decimal(str(m)) for _, m in aniversario), Decimal('0'))
+    total_cuotas = Decimal(str(deuda_cuotas.get('monto') or 0)) + total_aniversario
     total_otras = sum((d['monto_pendiente'] for d in deudas_otras), Decimal('0'))
     total = total_cuotas + total_otras
 
@@ -563,13 +565,17 @@ def generar_pdf_estado_deuda_voluntario(voluntario, deuda_cuotas, deudas_otras, 
                      (f"Beneficios y rifas: {_pesos(total_otras)}", False)]),
     )
 
-    doc.titulo_seccion(f"Cuotas sociales {anio}")
-    doc.definir_columnas([('N°', 30, 'l'), ('Mes', 300, 'l'), ('Monto', ANCHO_UTIL - 330, 'r')])
+    doc.titulo_seccion(f"Cuotas sociales {anio}" + (' y aniversario' if aniversario else ''))
+    doc.definir_columnas([('N°', 30, 'l'), ('Cuota', 300, 'l'), ('Monto', ANCHO_UTIL - 330, 'r')])
     doc.encabezado_tabla()
-    if meses:
-        for i, m in enumerate(deuda_cuotas['meses_pendientes']):
-            doc.fila([i + 1, f"{MESES[m['mes'] - 1].capitalize()} {m.get('anio', anio)}", _pesos(m['monto'])],
-                     i, negritas=(2,))
+    if meses or aniversario:
+        filas_cuotas = [f"{MESES[m['mes'] - 1].capitalize()} {m.get('anio', anio)}"
+                        for m in deuda_cuotas.get('meses_pendientes', [])]
+        montos = [m['monto'] for m in deuda_cuotas.get('meses_pendientes', [])]
+        filas_cuotas += [f"Cuota de aniversario {a}" for a, _ in aniversario]
+        montos += [m for _, m in aniversario]
+        for i, (texto, monto) in enumerate(zip(filas_cuotas, montos, strict=True)):
+            doc.fila([i + 1, texto, _pesos(monto)], i, negritas=(2,))
         doc.fila_subtotal('Subtotal cuotas', total_cuotas)
     else:
         doc.fila(['', 'Sin cuotas pendientes', ''], 0)
@@ -652,4 +658,44 @@ def generar_pdf_cuotas_voluntario(voluntario, anio, pagos_dict, deuda_cuotas, pr
         'Valores en CLP. Pendiente: mes vencido sin pago. Por vencer: mes que aún no corresponde.',
         f"Estado calculado al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen aquí.",
     ], _tesorero_vigente())
+    return doc.terminar()
+
+
+def generar_pdf_nomina_deudores_aniversario(cuota, deudores, logo_base64=None, fecha_corte=None):
+    """deudores: lista de calcular_deudores_aniversario() -> [{'voluntario', 'monto'}]."""
+    fecha_corte = fecha_corte or date.today()
+    filas = sorted(deudores, key=lambda d: _orden_antiguedad(d['voluntario']))
+    total = sum((Decimal(str(d['monto'])) for d in filas), Decimal('0'))
+    pagados = cuota.pagos.count()
+
+    doc = _Nomina('NÓMINA DE DEUDORES', f"Cuota de aniversario {cuota.anio}",
+                  f"Deudores · cuota de aniversario {cuota.anio}", _logo_desde_base64(logo_base64))
+    doc.encabezado(fecha_corte)
+    tesorero = _tesorero_vigente()
+    origen = cuota.acta or (f"Asamblea del {_fecha_larga(cuota.fecha_asamblea)}" if cuota.fecha_asamblea else 'Acordada en asamblea')
+    doc.bloque_datos(
+        ('CUOTA', [(f"{_pesos(cuota.monto)} por voluntario · pago único", True),
+                   (origen, False),
+                   (f"{pagados} voluntario ya pagó" if pagados == 1 else f"{pagados} voluntarios ya pagaron", False)]),
+        ('RESUMEN', [(f"{len(filas)} voluntarios con la cuota pendiente", True),
+                     (f"Total adeudado: {_pesos(total)}", False),
+                     (f"Año {cuota.anio}", False)]),
+    )
+
+    doc.titulo_seccion('Detalle de la deuda')
+    doc.definir_columnas([('N°', 30, 'l'), ('Clave', 48, 'l'), ('Voluntario', 270, 'l'),
+                          ('Deuda', ANCHO_UTIL - 348, 'r')])
+    doc.encabezado_tabla()
+    if filas:
+        for i, d in enumerate(filas):
+            v = d['voluntario']
+            doc.fila([i + 1, v.clave_bombero or '—', v.nombre_completo(), _pesos(d['monto'])], i, negritas=(3,))
+    else:
+        doc.fila(['', '', 'Todos pagaron la cuota de aniversario', ''], 0)
+        doc.y -= 4 * mm
+
+    doc.cierre([('Voluntarios con deuda', str(len(filas))), ('Valor de la cuota', _pesos(cuota.monto))], total, [
+        'Valores en pesos chilenos (CLP). La cuota de aniversario se paga una sola vez en el año.',
+        f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en esta nómina.",
+    ], tesorero)
     return doc.terminar()

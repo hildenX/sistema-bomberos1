@@ -236,6 +236,7 @@ function generarMenuSegunRol(role) {
                 { icono: '$', texto: 'Finanzas', url: '/finanzas.html' },
                 { icono: '&#9830;', texto: 'Rifas', url: '/rifas.html' },
                 { icono: '&#9827;', texto: 'Beneficios', url: '/beneficios.html' },
+                { icono: '&#9733;', texto: 'Cuota de Aniversario', url: '/cuota-aniversario.html' },
                 { icono: '&#9881;', texto: 'Configurar Cuotas', url: '/configurar-cuotas.html' },
                 { icono: '&#9671;', texto: 'Ciclos de Cuotas', url: '/admin-ciclos-cuotas.html' },
                 { icono: '&#9671;', texto: 'Ciclos Beneficios', url: '/admin-ciclos-beneficios.html' }
