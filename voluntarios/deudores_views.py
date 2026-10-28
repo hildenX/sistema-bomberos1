@@ -41,7 +41,7 @@ def listar_deudores_cuotas(request):
                         'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
         
         resultado = []
-        for d in deudores:
+        for d in sorted(deudores, key=lambda d: _orden_antiguedad(d['voluntario'])):
             vol = d['voluntario']
             # Convertir lista de meses a nombres legibles
             meses_str = ', '.join([meses_nombres[m['mes']] for m in d['meses_pendientes']])
@@ -51,6 +51,7 @@ def listar_deudores_cuotas(request):
                 'nombre_completo': f"{vol.nombre} {vol.apellido_paterno}",
                 'clave_bombero': vol.clave_bombero or 'N/A',
                 'meses_pendientes': meses_str,
+                'meses': [m['mes'] for m in d['meses_pendientes']],
                 'cantidad_meses': len(d['meses_pendientes']),
                 'monto': float(d['monto']),
                 'precio_cuota': float(d['precio_cuota'])

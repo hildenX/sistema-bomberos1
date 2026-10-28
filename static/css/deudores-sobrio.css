@@ -68,3 +68,8 @@ tbody tr:hover td { background: rgba(255,255,255,.025); }
   .dd-toolbar input, .dd-toolbar select { flex: 1 1 100%; max-width: none; }
   .dd-contador { margin-left: 0; }
 }
+
+/* Deudores de cuotas: selector de año y meses en rangos */
+.dd-anio { padding: 9px 12px; border-radius: 6px; border: 1px solid #3d3d44; background: var(--dd-card); color: var(--dd-ink); font: inherit; font-size: .88rem; font-weight: 600; }
+.dd-anio option { background: var(--dd-card); }
+.dd-meses { color: #f08a80; font-weight: 600; }
