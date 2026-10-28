@@ -95,6 +95,8 @@
         const totalDiv = document.getElementById('carritoTotal');
         const form = document.getElementById('solicitudForm');
 
+        renderDeudas();
+        renderResumen();
         if (!carrito.length) {
             vacio.style.display = 'block';
             itemsDiv.innerHTML = '';
@@ -107,14 +109,14 @@
         form.style.display = 'grid';
 
         itemsDiv.innerHTML = carrito.map((item) => `
-            <article class="request-card">
-                <div>
-                    <h4>${item.nombre_pago}</h4>
-                    <p>${money(item.monto)}</p>
-                    ${controlesBeneficio(item)}
+            <div class="pv-item">
+                <div class="pv-item-top">
+                    <span>${escapeHtml(item.nombre_pago)}</span>
+                    <b>${money(item.monto)}</b>
+                    <button type="button" class="pv-quitar" onclick="quitarDelCarrito('${item.clave}')" aria-label="Quitar ${escapeHtml(item.nombre_pago)}">×</button>
                 </div>
-                <button class="danger-btn" onclick="quitarDelCarrito('${item.clave}')">Quitar</button>
-            </article>
+                ${controlesBeneficio(item)}
+            </div>
         `).join('');
 
         itemsDiv.querySelectorAll('[data-cart-cantidad]').forEach((input) => {
@@ -131,7 +133,7 @@
 
         const total = carrito.reduce((sum, item) => sum + item.monto, 0);
         totalDiv.style.display = 'block';
-        totalDiv.textContent = `Total a pagar: ${money(total)}`;
+        totalDiv.innerHTML = `<span>Total a transferir</span><b>${money(total)}</b>`;
 
         if (!document.getElementById('fecha_pago').value) {
             document.getElementById('fecha_pago').value = new Date().toISOString().slice(0, 10);
@@ -237,10 +239,135 @@
             });
         };
 
+        window.agregarTodoCarrito = () => {
+            const d = dashboardCache || {};
+            ((d.cuotas && d.cuotas.pendientes) || []).forEach((c) => agregarAlCarrito({
+                clave: claveItem('cuota', `${c.anio}-${c.mes}`), tipo_pago: 'cuota',
+                nombre_pago: `Cuota ${String(c.mes).padStart(2, '0')}/${c.anio}`, monto: c.monto, cuota_mes: c.mes, cuota_anio: c.anio,
+            }));
+            (d.beneficios || []).forEach((b) => window.agregarBeneficioCarrito(b.asignacion_id));
+            (d.rifas || []).filter((r) => r.puede_pagar).forEach((r) => window.agregarRifaCarrito(r.asignacion_id));
+            document.getElementById('solicitudFormPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
         window.cerrarSesionPortal = async () => {
             await request('/api/portal/auth/logout/', { method: 'POST' });
             window.location.href = '/portal/';
         };
+    }
+
+
+    function escapeHtml(v) {
+        return String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const capital = (t) => t ? t[0].toUpperCase() + t.slice(1) : '';
+    const enCarrito = (clave) => carrito.some((i) => i.clave === clave);
+
+    function deudasTotales() {
+        const d = dashboardCache || {};
+        const cuotas = ((d.cuotas && d.cuotas.pendientes) || []).reduce((s, c) => s + Number(c.monto || 0), 0);
+        const beneficios = (d.beneficios || []).reduce((s, b) => s + Number(b.monto_pendiente || 0), 0);
+        const rifas = (d.rifas || []).reduce((s, r) => s + Number(r.monto_pendiente || 0), 0);
+        return { cuotas, beneficios, rifas, total: cuotas + beneficios + rifas };
+    }
+
+    function renderResumen() {
+        const cont = document.getElementById('pvResumen');
+        if (!cont || !dashboardCache) return;
+        const t = deudasTotales();
+        if (!t.total) {
+            cont.className = 'pv-resumen is-ok';
+            cont.innerHTML = '<div><span class="pv-resumen-lbl">Estás al día</span><b>$0</b></div><p>No tienes cuotas, beneficios ni rifas pendientes.</p>';
+            return;
+        }
+        const partes = [['Cuotas', t.cuotas], ['Beneficios', t.beneficios], ['Rifas', t.rifas]].filter(([, m]) => m > 0);
+        const todoAgregado = carrito.length && carrito.reduce((s, i) => s + i.monto, 0) >= t.total;
+        cont.className = 'pv-resumen';
+        cont.innerHTML = `
+            <div><span class="pv-resumen-lbl">Total que debes</span><b>${money(t.total)}</b></div>
+            <ul>${partes.map(([n, m]) => `<li><span>${n}</span>${money(m)}</li>`).join('')}</ul>
+            ${todoAgregado ? '<span class="pv-agregado">Todo en tu pago ✓</span>' : '<button type="button" class="pv-btn is-pri" onclick="agregarTodoCarrito()">Pagar todo</button>'}`;
+    }
+
+    function botonAgregar(clave, onclick) {
+        return enCarrito(clave)
+            ? '<span class="pv-agregado">En tu pago ✓</span>'
+            : `<button type="button" class="pv-btn is-sec" onclick="${onclick}">Agregar</button>`;
+    }
+
+    function renderDeudas() {
+        const cont = document.getElementById('pvDeudas');
+        if (!cont || !dashboardCache) return;
+        const d = dashboardCache;
+        const bloques = [];
+        const cuotas = (d.cuotas && d.cuotas.pendientes) || [];
+        if (cuotas.length) {
+            bloques.push('<h3>Cuotas sociales</h3>' + cuotas.map((c) => `
+                <div class="pv-deuda">
+                    <div><b>${capital(MESES[c.mes - 1])} ${c.anio}</b></div>
+                    <span class="pv-monto">${money(c.monto)}</span>
+                    ${botonAgregar(claveItem('cuota', `${c.anio}-${c.mes}`), `agregarCuotaCarrito(${c.mes}, ${c.anio}, ${c.monto})`)}
+                </div>`).join(''));
+        }
+        if ((d.beneficios || []).length) {
+            bloques.push('<h3>Beneficios</h3>' + d.beneficios.map((b) => `
+                <div class="pv-deuda">
+                    <div><b>${escapeHtml(capital(b.nombre))}</b><small>${b.tarjetas_disponibles} tarjeta${b.tarjetas_disponibles === 1 ? '' : 's'} por pagar · ${money(b.precio_por_tarjeta)} c/u</small></div>
+                    <span class="pv-monto">${money(b.monto_pendiente)}</span>
+                    ${botonAgregar(claveItem('beneficio', b.asignacion_id), `agregarBeneficioCarrito(${b.asignacion_id})`)}
+                </div>`).join(''));
+        }
+        if ((d.rifas || []).length) {
+            bloques.push('<h3>Rifas</h3>' + d.rifas.map((r) => `
+                <div class="pv-deuda">
+                    <div><b>${escapeHtml(capital(r.nombre))}</b>${r.puede_pagar ? '' : '<small>Retira los talonarios antes de pagar</small>'}</div>
+                    <span class="pv-monto">${money(r.monto_pendiente)}</span>
+                    ${r.puede_pagar ? botonAgregar(claveItem('rifa', r.asignacion_id), `agregarRifaCarrito(${r.asignacion_id})`) : '<span></span>'}
+                </div>`).join(''));
+        }
+        cont.innerHTML = bloques.length ? bloques.join('') : '<div class="pv-vacio">No tienes nada pendiente. ¡Gracias por estar al día!</div>';
+    }
+
+    function resumirItems(items) {
+        const cuotas = items.filter((i) => i.tipo_pago === 'cuota' && i.cuota_mes)
+            .sort((a, b) => (a.cuota_anio - b.cuota_anio) || (a.cuota_mes - b.cuota_mes));
+        const otros = items.filter((i) => !(i.tipo_pago === 'cuota' && i.cuota_mes)).map((i) => i.nombre_pago);
+        if (!cuotas.length) return otros;
+        const anio = cuotas[0].cuota_anio;
+        const meses = cuotas.map((c) => c.cuota_mes);
+        const seguidos = cuotas.every((c, i) => c.cuota_anio === anio && (i === 0 || c.cuota_mes === meses[i - 1] + 1));
+        const txt = meses.length === 1 ? `Cuota ${MESES[meses[0] - 1]} ${anio}`
+            : seguidos ? `Cuotas ${MESES[meses[0] - 1]} a ${MESES[meses[meses.length - 1] - 1]} ${anio}`
+                : `${meses.length} cuotas`;
+        return [txt, ...otros];
+    }
+
+    const ESTADO_PV = {
+        pendiente: ['En revisión', 'is-pendiente', 'Tesorería revisará tu comprobante pronto.'],
+        observada: ['Requiere corrección', 'is-observada', ''],
+        aprobada: ['Aprobado', 'is-aprobada', 'Tu pago quedó registrado.'],
+        rechazada: ['Rechazado', 'is-rechazada', ''],
+        expirada: ['Vencido', 'is-expirada', 'No se corrigió a tiempo. Puedes enviar un pago nuevo.'],
+    };
+
+    function renderHistorial(grupos) {
+        const cont = document.getElementById('solicitudesHistorial');
+        if (!grupos.length) { cont.innerHTML = '<div class="pv-vacio">Aún no has enviado pagos por el portal.</div>'; return; }
+        cont.innerHTML = grupos.map((g) => {
+            const [label, clase, ayuda] = ESTADO_PV[g.estado] || [g.estado_label, '', ''];
+            const f = g.fecha_pago ? new Date(`${g.fecha_pago}T12:00:00`).toLocaleDateString('es-CL') : '';
+            return `
+                <article class="pv-sol">
+                    <div class="pv-sol-top">
+                        <div><b>${escapeHtml(capital(resumirItems(g.items).join(' · ')))}</b><small>Transferencia del ${f}</small></div>
+                        <div class="pv-sol-der"><span class="pv-pill ${clase}">${label}</span><b>${money(g.monto_total)}</b></div>
+                    </div>
+                    ${g.feedback_tesorero ? `<p class="pv-sol-msg"><span>Tesorería te dice:</span>${escapeHtml(g.feedback_tesorero)}</p>` : (ayuda ? `<p class="pv-sol-ayuda">${ayuda}</p>` : '')}
+                    ${g.observada_hasta && g.estado === 'observada' ? `<p class="pv-sol-ayuda">Corrige antes del ${new Date(g.observada_hasta).toLocaleString('es-CL')}.</p>` : ''}
+                </article>`;
+        }).join('');
     }
 
     async function loadDashboard() {
@@ -252,55 +379,12 @@
 
         const data = await request('/api/portal/dashboard/');
         dashboardCache = data.dashboard;
-        document.getElementById('portalNombre').textContent = data.dashboard.usuario.voluntario.nombre;
-        document.getElementById('portalRut').textContent = data.dashboard.usuario.voluntario.rut;
-        document.getElementById('portalUsuario').textContent = data.dashboard.usuario.username;
-        document.getElementById('portalAvisoClave').textContent = data.dashboard.usuario.must_change_password
-            ? `Clave inicial activa: ${data.dashboard.password_inicial}. Cámbiala apenas ingreses.`
-            : '';
+        const vol = data.dashboard.usuario.voluntario;
+        document.getElementById('portalNombre').textContent = vol.nombre;
+        document.getElementById('portalIdent').textContent = [vol.clave ? `Clave ${vol.clave}` : '', vol.rut ? `RUN ${vol.rut}` : '', `Usuario ${data.dashboard.usuario.username}`].filter(Boolean).join(' · ');
+        document.getElementById('portalAvisoClave').hidden = !data.dashboard.usuario.must_change_password;
 
-        renderList('cuotasPendientes', data.dashboard.cuotas.pendientes, '<div class="empty-state">No hay cuotas pendientes del ciclo activo.</div>', (item) => `
-            <article class="debt-card">
-                <div>
-                    <h4>${item.nombre}</h4>
-                    <p>Monto pendiente: ${money(item.monto)}</p>
-                </div>
-                <button class="primary-btn" onclick="agregarCuotaCarrito(${item.mes}, ${item.anio}, ${item.monto})">Agregar al carrito</button>
-            </article>
-        `);
-
-        renderList('beneficiosPendientes', data.dashboard.beneficios, '<div class="empty-state">No hay beneficios pendientes.</div>', (item) => `
-            <article class="debt-card">
-                <div>
-                    <h4>${item.nombre}</h4>
-                    <p>Pendiente: ${money(item.monto_pendiente)} · Tarjetas disponibles: ${item.tarjetas_disponibles} · ${money(item.precio_por_tarjeta)} por tarjeta</p>
-                </div>
-                <button class="primary-btn" onclick="agregarBeneficioCarrito(${item.asignacion_id})">Agregar al carrito</button>
-            </article>
-        `);
-
-        renderList('rifasPendientes', data.dashboard.rifas, '<div class="empty-state">No hay rifas activas pendientes.</div>', (item) => `
-            <article class="debt-card">
-                <div>
-                    <h4>${item.nombre}</h4>
-                    <p>Pendiente: ${money(item.monto_pendiente)} · Estado: ${item.estado}</p>
-                </div>
-                ${item.puede_pagar ? `<button class="primary-btn" onclick="agregarRifaCarrito(${item.asignacion_id})">Agregar al carrito</button>` : `<span class="pill warning">Retira los talonarios antes de pagar</span>`}
-            </article>
-        `);
-
-        renderList('solicitudesHistorial', data.dashboard.grupos_solicitud, '<div class="empty-state">Todavía no envías solicitudes.</div>', (grupo) => `
-            <article class="request-card" style="flex-direction:column; align-items:stretch;">
-                <div>
-                    <h4>Grupo #${grupo.id} · ${money(grupo.monto_total)} · ${grupo.estado_label}</h4>
-                    <ul>
-                        ${grupo.items.map((item) => `<li>${item.nombre_pago}: ${money(item.monto_solicitado)}</li>`).join('')}
-                    </ul>
-                    ${grupo.feedback_tesorero ? `<p>${grupo.feedback_tesorero}</p>` : ''}
-                    ${grupo.observada_hasta ? `<p>Debes corregir antes de ${new Date(grupo.observada_hasta).toLocaleString('es-CL')}</p>` : ''}
-                </div>
-            </article>
-        `);
+        renderHistorial(data.dashboard.grupos_solicitud || []);
 
         const cuentaSelect = document.getElementById('cuenta_bancaria_destino_id');
         cuentaSelect.innerHTML = '<option value="">Seleccione cuenta destino</option>' + data.dashboard.cuentas_bancarias.map((item) =>

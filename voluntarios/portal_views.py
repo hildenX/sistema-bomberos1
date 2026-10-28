@@ -85,6 +85,7 @@ def _portal_user_payload(profile):
             'id': profile.voluntario_id,
             'nombre': profile.voluntario.nombre_completo(),
             'rut': profile.voluntario.rut,
+            'clave': profile.voluntario.clave_bombero,
             'compania': profile.voluntario.compania,
             'email': profile.voluntario.email,
         }
@@ -221,7 +222,6 @@ def portal_dashboard_view(request):
             'solicitudes': solicitudes,
             'grupos_solicitud': grupos_serializados,
             'cuentas_bancarias': cuentas,
-            'password_inicial': PORTAL_PASSWORD_INICIAL if profile.debe_cambiar_clave else '',
         }
     })
 
