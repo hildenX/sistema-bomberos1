@@ -9,8 +9,8 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #eef1f5;
-            color: #18202f;
+            background: #0e0e0e;
+            color: #f0f0f0;
             min-height: 100vh;
         }
 
@@ -23,7 +23,7 @@
             align-items: center;
             gap: 16px;
             flex-wrap: wrap;
-            box-shadow: 0 3px 12px rgba(15,35,70,0.062);
+            box-shadow: 0 3px 12px rgba(0,0,0,.25);
         }
         .cc-header h1 { font-size: 1.4rem; font-weight: 700; flex: 1; }
         .btn-cc {
@@ -36,8 +36,8 @@
             transition: opacity .15s;
         }
         .btn-cc:hover { opacity: .85; }
-        .btn-cc.volver   { background: rgba(15,35,70,0.12); color: #18202f; }
-        .btn-cc.nuevo    { background: #f5f7fa; color: #b3202a; border: 1px solid #dfe4eb; }
+        .btn-cc.volver   { background: rgba(255,255,255,.2); color: #fff; }
+        .btn-cc.nuevo    { background: #2a2a2a; color: #f87171; border: 1px solid #333; }
         .btn-cc.deposito { background: #27ae60; color: #fff; }
         .btn-cc.desact   { background: #e74c3c; color: #fff; font-size: .75rem; padding: 5px 10px; }
         .btn-cc.react    { background: #27ae60; color: #fff; font-size: .75rem; padding: 5px 10px; }
@@ -53,9 +53,9 @@
             border-radius: 8px;
             font-size: .9rem;
         }
-        #ccNotif.success { background: rgba(39,174,96,0.12); color: #12653a; border: 1px solid rgba(39,174,96,0.3); }
-        #ccNotif.error   { background: rgba(192,57,43,0.12); color: #b3202a; border: 1px solid rgba(192,57,43,0.3); }
-        #ccNotif.info    { background: rgba(41,128,185,0.12); color: #1d4486; border: 1px solid rgba(41,128,185,0.3); }
+        #ccNotif.success { background: rgba(39,174,96,0.12); color: #4ade80; border: 1px solid rgba(39,174,96,0.3); }
+        #ccNotif.error   { background: rgba(192,57,43,0.12); color: #fca5a5; border: 1px solid rgba(192,57,43,0.3); }
+        #ccNotif.info    { background: rgba(41,128,185,0.12); color: #93c5fd; border: 1px solid rgba(41,128,185,0.3); }
 
         /* ===== BODY ===== */
         .cc-body { padding: 24px; max-width: 1100px; margin: 0 auto; }
@@ -68,13 +68,13 @@
             margin-bottom: 32px;
         }
         .cc-card {
-            background: #ffffff;
+            background: #1c1c1c;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(15,35,70,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,.4);
             border-top: 4px solid #c41e3a;
             position: relative;
-            border: 1px solid #dfe4eb;
+            border: 1px solid #2a2a2a;
             border-top: 4px solid #c41e3a;
         }
         .cc-card.caja  { border-top-color: #27ae60; }
@@ -83,18 +83,18 @@
             font-size: .8rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #6b7486;
+            color: #666;
             margin-bottom: 4px;
         }
         .cc-card-nombre {
             font-size: 1rem;
             font-weight: 700;
-            color: #18202f;
+            color: #f0f0f0;
             margin-bottom: 2px;
         }
         .cc-card-sub {
             font-size: .78rem;
-            color: #5b6578;
+            color: #888;
             margin-bottom: 12px;
         }
         .cc-card-saldo {
@@ -102,7 +102,7 @@
             font-weight: 800;
             color: #27ae60;
         }
-        .cc-card-saldo.negativo { color: #b3202a; }
+        .cc-card-saldo.negativo { color: #e74c3c; }
         .cc-card-actions { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
 
         /* ===== TABLA DEPÓSITOS ===== */
@@ -110,10 +110,10 @@
         .cc-section h2 {
             font-size: 1.05rem;
             font-weight: 700;
-            color: #b3202a;
+            color: #e74c3c;
             margin-bottom: 14px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #dfe4eb;
+            border-bottom: 2px solid #2a2a2a;
         }
         .cc-table-wrap { overflow-x: auto; }
         .cc-table {
@@ -130,14 +130,14 @@
         }
         .cc-table td {
             padding: 9px 12px;
-            border-bottom: 1px solid #dfe4eb;
+            border-bottom: 1px solid #2a2a2a;
         }
-        .cc-table tr:hover td { background: #f5f7fa; }
+        .cc-table tr:hover td { background: #222; }
         .cc-table .monto { font-weight: 700; color: #27ae60; }
         .cc-empty {
             text-align: center;
             padding: 24px;
-            color: #5b6578;
+            color: #999;
             font-size: .9rem;
         }
 
@@ -145,27 +145,27 @@
         .cc-modal {
             display: none;
             position: fixed; inset: 0;
-            background: rgba(15,35,70,0.075);
+            background: rgba(0,0,0,.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 16px;
         }
         .cc-modal-box {
-            background: #ffffff;
+            background: #1c1c1c;
             border-radius: 12px;
             padding: 24px;
             width: 100%;
             max-width: 480px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(15,35,70,0.125);
-            border: 1px solid #dfe4eb;
+            box-shadow: 0 8px 32px rgba(0,0,0,.6);
+            border: 1px solid #2a2a2a;
         }
         .cc-modal-box h3 {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #b3202a;
+            color: #e74c3c;
             margin-bottom: 20px;
         }
         .cc-field { margin-bottom: 14px; }
@@ -173,7 +173,7 @@
             display: block;
             font-size: .8rem;
             font-weight: 600;
-            color: #5b6578;
+            color: #999;
             margin-bottom: 5px;
         }
         .cc-field input,
@@ -181,12 +181,12 @@
         .cc-field textarea {
             width: 100%;
             padding: 9px 12px;
-            border: 1px solid #dfe4eb;
+            border: 1px solid #2a2a2a;
             border-radius: 6px;
             font-size: .9rem;
             font-family: inherit;
-            background: #ffffff;
-            color: #18202f;
+            background: #1a1a1a;
+            color: #f0f0f0;
         }
         .cc-field input:focus,
         .cc-field select:focus,
@@ -196,7 +196,7 @@
         }
         .cc-field textarea { resize: vertical; min-height: 60px; }
         .cc-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
-        .btn-cc.cancelar { background: #f5f7fa; color: #18202f; border: 1px solid #dfe4eb; }
+        .btn-cc.cancelar { background: #2a2a2a; color: #ccc; border: 1px solid #333; }
         .btn-cc.guardar  { background: #c41e3a; color: #fff; }
 
         /* Vista previa comprobante */
@@ -206,7 +206,7 @@
             max-width: 100%;
             max-height: 200px;
             border-radius: 6px;
-            border: 1px solid #dfe4eb;
+            border: 1px solid #2a2a2a;
         }
         #prevComprobantePdf {
             display: none;
@@ -220,9 +220,8 @@
         #modalVerComp .cc-modal-box { max-width: 700px; }
         #imgComprobante { max-width: 100%; border-radius: 8px; }
     </style>
-    <link rel="stylesheet" href="{% static 'css/cuartel/global-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/cuartel/tesoreria-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/cuartel/tema-cuartel.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
 </head>
 <body>
 

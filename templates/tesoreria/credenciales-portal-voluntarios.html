@@ -6,21 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Credenciales Portal</title>
     <style>
-        body { margin:0; font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background:#eef1f5; color:#18202f; }
+        body { margin:0; font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background:#0e0e0e; color:#f0f0f0; }
         .shell { width:min(1100px, calc(100% - 32px)); margin:24px auto; }
-        .hero, .panel { background:#ffffff; border-radius:24px; padding:24px; box-shadow:0 16px 44px rgba(15,35,70,0.1); border:1px solid #dfe4eb; }
+        .hero, .panel { background:#1c1c1c; border-radius:24px; padding:24px; box-shadow:0 16px 44px rgba(0,0,0,.4); border:1px solid #2a2a2a; }
         .hero { margin-bottom:20px; }
-        .hero h1 { margin:0 0 8px; color:#18202f; }
-        .hero p { margin:4px 0; color:#5b6578; }
+        .hero h1 { margin:0 0 8px; color:#f0f0f0; }
+        .hero p { margin:4px 0; color:#888; }
         .clave { display:inline-block; margin-top:12px; padding:10px 14px; border-radius:999px; background:#c0392b; color:#fff; font-weight:700; }
         .tabla-portal { width:100%; border-collapse:collapse; }
-        .tabla-portal th, .tabla-portal td { text-align:left; padding:14px 12px; border-bottom:1px solid #dfe4eb; color:#18202f; }
-        .tabla-portal th { color:#5b6578; font-size:.88rem; text-transform:uppercase; letter-spacing:.06em; }
-        .empty-state { padding:18px; border-radius:16px; background:#ffffff; color:#5b6578; border:1px solid #dfe4eb; }
+        .tabla-portal th, .tabla-portal td { text-align:left; padding:14px 12px; border-bottom:1px solid #2a2a2a; color:#f0f0f0; }
+        .tabla-portal th { color:#888; font-size:.88rem; text-transform:uppercase; letter-spacing:.06em; }
+        .empty-state { padding:18px; border-radius:16px; background:#161616; color:#888; border:1px solid #2a2a2a; }
         @media (max-width: 800px) { .tabla-portal { font-size:.9rem; } }
     </style>
-    <link rel="stylesheet" href="{% static 'css/cuartel/tesoreria-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/cuartel/tema-cuartel.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
 </head>
 <body>
     <main id="tesoreriaCredencialesPortal" class="shell">
