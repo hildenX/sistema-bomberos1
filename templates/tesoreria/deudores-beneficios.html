@@ -4,343 +4,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deudores de Beneficios</title>
-    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
-    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
-    <style>
-        body {
-            background: #0e0e0e;
-            color: #f0f0f0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .page-wrap {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 20px 48px;
-        }
-        /* Header */
-        .page-header {
-            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 22px 28px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            box-shadow: 0 4px 20px rgba(190, 24, 93, 0.25);
-        }
-        .page-header h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-        }
-        .page-header p {
-            margin: 4px 0 0;
-            font-size: 0.85rem;
-            opacity: 0.85;
-        }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        /* Resumen */
-        .resumen-card {
-            background: #1c1c1c;
-            border-radius: 14px;
-            padding: 20px 28px;
-            margin-bottom: 22px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 20px;
-            border-left: 5px solid #ec4899;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
-            border-left: 5px solid #ec4899;
-        }
-        .resumen-item {
-            text-align: center;
-        }
-        .resumen-label {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #f472b6;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-        .resumen-valor {
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1;
-        }
-        .resumen-valor.rosa { color: #ec4899; }
-        .resumen-valor.verde { color: #059669; }
-        .resumen-divider {
-            width: 1px;
-            height: 50px;
-            background: rgba(131, 24, 67, 0.2);
-        }
-        /* Tabla */
-        .tabla-card {
-            background: #1c1c1c;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
-        }
-        .tabla-toolbar {
-            padding: 16px 22px;
-            background: #161616;
-            border-bottom: 1px solid #2a2a2a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .tabla-toolbar span {
-            font-size: 0.88rem;
-            color: #888;
-            font-weight: 500;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        thead {
-            background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
-            color: white;
-        }
-        thead th {
-            padding: 13px 16px;
-            text-align: left;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-        }
-        thead th:last-child { text-align: right; }
-        tbody tr {
-            border-bottom: 1px solid #2a2a2a;
-            transition: background 0.15s ease;
-        }
-        tbody tr:hover { background: #222; }
-        tbody tr:last-child { border-bottom: none; }
-        tbody td {
-            padding: 12px 16px;
-            font-size: 0.9rem;
-            color: #f0f0f0;
-        }
-        tbody td:first-child { color: #999; font-weight: 600; }
-        .td-deuda { text-align: right; font-weight: 700; color: #4ade80; }
-        .td-beneficio { color: #f472b6; font-weight: 600; font-size: 0.85rem; }
-        .td-clave { color: #999; }
-        .td-tarjetas { color: #bbb; white-space: nowrap; }
-        /* Estado vacio */
-        .empty-state {
-            padding: 60px 20px;
-            text-align: center;
-            color: #888;
-        }
-        .empty-state p { font-size: 1rem; margin: 8px 0 0; }
-        /* Cargando */
-        #loadingMsg {
-            padding: 50px 20px;
-            text-align: center;
-            color: #888;
-            font-size: 1rem;
-        }
-        /* Botones */
-        .btn-volver {
-            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-            color: white;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(55, 65, 81, 0.25);
-            text-decoration: none;
-        }
-        .btn-volver:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(55, 65, 81, 0.35);
-        }
-        .btn-close {
-            background: #2a2a2a;
-            color: #ccc;
-            border: 1px solid #333;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .btn-close:hover { background: #333; color: #fff; }
-        .btn-pdf {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
-            color: white;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.25);
-            text-decoration: none;
-        }
-        .btn-pdf:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(196, 30, 58, 0.35);
-        }
-        /* Print styles */
-        @media print {
-            body { background: white; }
-            .no-print { display: none !important; }
-            .tabla-card { box-shadow: none; }
-            .resumen-card { border: 1px solid #ccc; }
-        }
-    </style>
-    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
+    <title>Deudores de beneficios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/deudores-sobrio.css' %}?v=1">
 </head>
 <body>
-<div class="page-wrap">
-
-    <!-- Header -->
-    <div class="page-header no-print">
+<main class="dd">
+    <header class="dd-head">
         <div>
-            <h1>Deudores de Beneficios</h1>
-            <p id="subtitulo">Voluntarios con beneficios pendientes de pago</p>
+            <h1>Deudores de beneficios</h1>
+            <p>Voluntarios con beneficios o rifas pendientes de pago, del más antiguo al más nuevo.</p>
         </div>
-        <div class="header-actions">
-            <a id="btnPDF" href="/api/voluntarios/pdf-deudores-beneficios/" target="_blank" class="btn-pdf">
-                Descargar PDF
-            </a>
-            <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'">&#8592; Volver</button>
-            <button type="button" class="btn-close" onclick="window.close()">&#10005; Cerrar</button>
+        <div class="dd-head-acc">
+            <a id="btnPDF" class="dd-btn is-pri" href="/api/voluntarios/pdf-deudores-beneficios/" target="_blank" rel="noopener">Descargar PDF</a>
+            <a class="dd-btn is-ghost" href="/sistema.html">Volver</a>
         </div>
+    </header>
+
+    <section class="dd-resumen" id="ddResumen" hidden>
+        <div><span>Deudores</span><b id="ddTotalDeudores">0</b></div>
+        <div><span>Deuda total</span><b id="ddTotalDeuda">$0</b></div>
+        <div class="dd-chips" id="ddChips"></div>
+    </section>
+
+    <div class="dd-toolbar">
+        <input id="ddBuscar" type="search" placeholder="Buscar por nombre o clave" aria-label="Buscar deudor" autocomplete="off">
+        <select id="ddBeneficio" aria-label="Filtrar por beneficio">
+            <option value="">Todos los beneficios y rifas</option>
+        </select>
+        <span id="ddContador" class="dd-contador"></span>
     </div>
 
-    <!-- Resumen -->
-    <div class="resumen-card" id="resumenCard" style="display:none;">
-        <div class="resumen-item">
-            <div class="resumen-label">Total Deudores</div>
-            <div class="resumen-valor rosa" id="totalDeudores">0</div>
-        </div>
-        <div class="resumen-divider"></div>
-        <div class="resumen-item">
-            <div class="resumen-label">Deuda Total</div>
-            <div class="resumen-valor verde" id="totalDeuda">$0</div>
-        </div>
+    <div class="dd-tabla-caja">
+        <div id="ddEstado" class="dd-estado">Cargando deudores…</div>
+        <table id="ddTabla" hidden>
+            <thead>
+                <tr>
+                    <th class="dd-num">N°</th>
+                    <th>Clave</th>
+                    <th>Voluntario</th>
+                    <th>Beneficio o rifa</th>
+                    <th>Debe</th>
+                    <th class="dd-der">Deuda</th>
+                </tr>
+            </thead>
+            <tbody id="ddFilas"></tbody>
+        </table>
     </div>
-
-    <!-- Tabla -->
-    <div class="tabla-card">
-        <div class="tabla-toolbar no-print">
-            <span id="contadorRegistros"></span>
-        </div>
-
-        <div id="loadingMsg">Cargando deudores...</div>
-
-        <div id="tablaWrapper" style="display:none; overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:42px">#</th>
-                        <th>Voluntario</th>
-                        <th>Clave</th>
-                        <th>Beneficio o rifa</th>
-                        <th>Debe</th>
-                        <th style="text-align:right">Deuda</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
-        </div>
-
-        <div id="emptyState" class="empty-state" style="display:none;">
-            <div style="font-size:3rem;">&#10004;&#65039;</div>
-            <p>No hay deudores de beneficios actualmente.</p>
-        </div>
-    </div>
-
-</div>
+</main>
 
 <script>
-    const API_BASE = '/api/voluntarios';
+(function () {
+    let deudores = [];
+    const $ = (id) => document.getElementById(id);
+    const pesos = (n) => '$' + Math.round(n).toLocaleString('es-CL');
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const capital = (t) => t ? t[0].toUpperCase() + t.slice(1) : '';
+    // Ignora mayúsculas y tildes al buscar
+    const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const llaveGrupo = (d) => `${d.tipo}:${d.beneficio_id}`;
 
-    async function cargarDeudores() {
-        document.getElementById('loadingMsg').style.display = 'block';
-        document.getElementById('tablaWrapper').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('resumenCard').style.display = 'none';
+    function pintar() {
+        const q = norm($('ddBuscar').value.trim());
+        const grupo = $('ddBeneficio').value;
+        const filas = deudores.filter((d) =>
+            (!grupo || llaveGrupo(d) === grupo) &&
+            (!q || norm(`${d.voluntario_nombre} ${d.voluntario_clave}`).includes(q)));
 
+        const total = filas.reduce((s, d) => s + d.monto_pendiente, 0);
+        $('ddContador').textContent = filas.length === deudores.length
+            ? `${filas.length} deudas`
+            : `${filas.length} de ${deudores.length} deudas · ${pesos(total)}`;
+
+        if (!filas.length) {
+            $('ddTabla').hidden = true;
+            $('ddEstado').hidden = false;
+            $('ddEstado').textContent = q ? `Nadie coincide con "${$('ddBuscar').value.trim()}".` : 'No hay deudores en este beneficio.';
+            return;
+        }
+        $('ddEstado').hidden = true;
+        $('ddTabla').hidden = false;
+        $('ddFilas').innerHTML = filas.map((d, i) => `
+            <tr>
+                <td class="dd-num">${i + 1}</td>
+                <td class="dd-clave">${esc(d.voluntario_clave)}</td>
+                <td class="dd-nombre">${esc(d.voluntario_nombre)}</td>
+                <td>${esc(capital(d.beneficio_nombre))}</td>
+                <td class="dd-suave">${esc(d.debe || d.tarjetas_asignadas || '')}</td>
+                <td class="dd-der dd-monto">${pesos(d.monto_pendiente)}</td>
+            </tr>`).join('');
+
+        // El PDF sigue al filtro cuando se elige un beneficio
+        const [tipo, id] = grupo.split(':');
+        $('btnPDF').href = grupo && tipo === 'beneficio'
+            ? `/api/voluntarios/pdf-deudores-beneficios/?beneficio_id=${id}`
+            : '/api/voluntarios/pdf-deudores-beneficios/';
+    }
+
+    async function cargar() {
         try {
-            const res = await fetch(`${API_BASE}/deudores-beneficios-listado/`, {
-                credentials: 'include'
-            });
-            if (!res.ok) throw new Error('Error al cargar datos');
+            const res = await fetch('/api/voluntarios/deudores-beneficios-listado/', { credentials: 'include' });
             const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'No se pudo cargar');
+            deudores = data.deudores.map((d) => ({ ...d, monto_pendiente: Number(d.monto_pendiente || 0) }));
 
-            document.getElementById('loadingMsg').style.display = 'none';
-
-            if (!data.success || data.total === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('contadorRegistros').textContent = 'Sin deudores';
+            if (!deudores.length) {
+                $('ddEstado').textContent = 'No hay deudores de beneficios. Todos están al día.';
+                $('ddEstado').classList.add('is-ok');
                 return;
             }
 
-            // Resumen
-            const totalDeuda = data.deudores.reduce((s, d) => s + parseFloat(d.monto_pendiente || 0), 0);
-            document.getElementById('totalDeudores').textContent = data.total;
-            document.getElementById('totalDeuda').textContent = '$' + totalDeuda.toLocaleString('es-CL');
-            document.getElementById('resumenCard').style.display = 'flex';
-            document.getElementById('contadorRegistros').textContent = `Mostrando ${data.total} deudor${data.total !== 1 ? 'es' : ''}`;
-
-            // Filas
-            const tbody = document.getElementById('tablaBody');
-            tbody.innerHTML = '';
-            data.deudores.forEach((d, i) => {
-                const monto = parseFloat(d.monto_pendiente || 0);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td><strong>${d.voluntario_nombre || ''}</strong></td>
-                    <td class="td-clave">${d.voluntario_clave || 'N/A'}</td>
-                    <td class="td-beneficio">${d.beneficio_nombre || ''}</td>
-                    <td class="td-tarjetas">${d.debe || (d.tarjetas_asignadas || 0)}</td>
-                    <td class="td-deuda">$${monto.toLocaleString('es-CL')}</td>
-                `;
-                tbody.appendChild(tr);
+            // Resumen y filtro por beneficio (con conteo y monto de cada uno)
+            const grupos = new Map();
+            deudores.forEach((d) => {
+                const g = grupos.get(llaveGrupo(d)) || { nombre: capital(d.beneficio_nombre), n: 0, monto: 0 };
+                g.n += 1; g.monto += d.monto_pendiente;
+                grupos.set(llaveGrupo(d), g);
             });
-
-            document.getElementById('tablaWrapper').style.display = 'block';
-
+            $('ddTotalDeudores').textContent = new Set(deudores.map((d) => d.voluntario_id)).size;
+            $('ddTotalDeuda').textContent = pesos(deudores.reduce((s, d) => s + d.monto_pendiente, 0));
+            $('ddChips').innerHTML = [...grupos.values()].map((g) => `<span>${esc(g.nombre)} <b>${g.n}</b> · ${pesos(g.monto)}</span>`).join('');
+            $('ddResumen').hidden = false;
+            $('ddBeneficio').insertAdjacentHTML('beforeend',
+                [...grupos.entries()].map(([k, g]) => `<option value="${esc(k)}">${esc(g.nombre)} (${g.n})</option>`).join(''));
+            pintar();
         } catch (err) {
-            document.getElementById('loadingMsg').textContent = 'Error al cargar datos: ' + err.message;
+            $('ddEstado').textContent = 'Error al cargar los deudores: ' + err.message;
         }
     }
 
-    // Carga inicial
-    cargarDeudores();
+    let t;
+    $('ddBuscar').addEventListener('input', () => { clearTimeout(t); t = setTimeout(pintar, 150); });
+    $('ddBeneficio').addEventListener('change', pintar);
+    cargar();
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,70 @@
+/* Nóminas de deudores: misma línea sobria de Cuotas, Bandeja y Portal */
+:root {
+  --dd-bg: #131315; --dd-card: #1d1d20; --dd-card-2: #242428; --dd-line: #2f2f35; --dd-ink: #f0f0f0;
+  --dd-soft: #9a9aa3; --dd-red: #c0392b; --dd-red-h: #e74c3c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--dd-bg); color: var(--dd-ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+}
+.dd { width: min(1080px, calc(100% - 32px)); margin: 28px auto 48px; }
+
+.dd-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--dd-line); }
+.dd-head h1 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+.dd-head p { margin: 4px 0 0; color: var(--dd-soft); font-size: .9rem; }
+.dd-head-acc { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.dd-btn { display: inline-flex; align-items: center; padding: 9px 16px; border-radius: 6px; border: 1px solid transparent; font-size: .88rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.dd-btn.is-pri { background: var(--dd-red); border-color: var(--dd-red); color: #fff; }
+.dd-btn.is-pri:hover { background: var(--dd-red-h); border-color: var(--dd-red-h); }
+.dd-btn.is-ghost { border-color: #3d3d44; color: #d6d6dc; }
+.dd-btn.is-ghost:hover { background: var(--dd-card-2); }
+
+/* Resumen */
+.dd-resumen { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; margin: 18px 0; padding: 16px 20px; border-radius: 10px; background: var(--dd-card); border: 1px solid var(--dd-line); }
+.dd-resumen[hidden] { display: none; }
+.dd-resumen > div:not(.dd-chips) { display: grid; }
+.dd-resumen span { color: var(--dd-soft); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.dd-resumen b { font-size: 1.6rem; font-weight: 700; }
+.dd-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; justify-content: flex-end; }
+.dd-chips span { padding: 5px 10px; border-radius: 999px; background: var(--dd-card-2); border: 1px solid var(--dd-line); color: #d6d6dc; font-size: .8rem; text-transform: none; letter-spacing: 0; font-weight: 500; }
+.dd-chips b { font-size: .8rem; font-weight: 700; }
+
+/* Buscador y filtro */
+.dd-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+.dd-toolbar input, .dd-toolbar select {
+  padding: 10px 14px; border-radius: 6px; border: 1px solid var(--dd-line);
+  background: var(--dd-card); color: var(--dd-ink); font: inherit; font-size: .92rem;
+}
+.dd-toolbar input { flex: 1 1 280px; max-width: 420px; }
+.dd-toolbar select { flex: 0 1 260px; }
+.dd-toolbar select option { background: var(--dd-card); }
+.dd-toolbar input:focus, .dd-toolbar select:focus { outline: none; border-color: #6a6a74; }
+.dd-contador { margin-left: auto; color: var(--dd-soft); font-size: .85rem; }
+
+/* Tabla */
+.dd-tabla-caja { background: var(--dd-card); border: 1px solid var(--dd-line); border-radius: 10px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 640px; }
+thead th { position: sticky; top: 0; background: #222226; text-align: left; padding: 11px 14px; color: var(--dd-soft); font-size: .72rem; letter-spacing: .07em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--dd-line); }
+tbody td { padding: 11px 14px; border-bottom: 1px solid var(--dd-line); }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: rgba(255,255,255,.025); }
+.dd-num { width: 52px; color: var(--dd-soft); }
+.dd-clave { font-weight: 600; white-space: nowrap; }
+.dd-nombre { font-weight: 600; }
+.dd-suave { color: var(--dd-soft); }
+.dd-der { text-align: right; }
+.dd-monto { font-weight: 700; white-space: nowrap; }
+.dd-estado { padding: 40px 20px; text-align: center; color: var(--dd-soft); }
+.dd-estado[hidden] { display: none; }
+.dd-estado.is-ok { color: #4cc283; }
+
+@media (max-width: 640px) {
+  .dd-head { flex-direction: column; }
+  .dd-resumen { gap: 16px; }
+  .dd-chips { justify-content: flex-start; }
+  .dd-toolbar input, .dd-toolbar select { flex: 1 1 100%; max-width: none; }
+  .dd-contador { margin-left: 0; }
+}
