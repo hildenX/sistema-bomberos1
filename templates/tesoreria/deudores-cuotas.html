@@ -4,372 +4,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deudores de Cuotas</title>
-    <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
-    <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
-    <style>
-        body {
-            background: #0e0e0e;
-            color: #f0f0f0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .page-wrap {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 20px 48px;
-        }
-        /* Header */
-        .page-header {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 22px 28px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.25);
-        }
-        .page-header h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-        }
-        .page-header p {
-            margin: 4px 0 0;
-            font-size: 0.85rem;
-            opacity: 0.85;
-        }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        /* Resumen */
-        .resumen-card {
-            background: #1c1c1c;
-            border-radius: 14px;
-            padding: 20px 28px;
-            margin-bottom: 22px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 20px;
-            border-left: 5px solid #f59e0b;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
-            border-left: 5px solid #f59e0b;
-        }
-        .resumen-item {
-            text-align: center;
-        }
-        .resumen-label {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #fbbf24;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-        .resumen-valor {
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1;
-        }
-        .resumen-valor.naranja { color: #d97706; }
-        .resumen-valor.verde   { color: #059669; }
-        .resumen-divider {
-            width: 1px;
-            height: 50px;
-            background: rgba(120, 53, 15, 0.2);
-        }
-        /* Tabla */
-        .tabla-card {
-            background: #1c1c1c;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
-        }
-        .tabla-toolbar {
-            padding: 16px 22px;
-            background: #161616;
-            border-bottom: 1px solid #2a2a2a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .tabla-toolbar span {
-            font-size: 0.88rem;
-            color: #888;
-            font-weight: 500;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        thead {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
-            color: white;
-        }
-        thead th {
-            padding: 13px 16px;
-            text-align: left;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-        }
-        thead th:last-child { text-align: right; }
-        tbody tr {
-            border-bottom: 1px solid #2a2a2a;
-            transition: background 0.15s ease;
-        }
-        tbody tr:hover { background: #222; }
-        tbody tr:last-child { border-bottom: none; }
-        tbody td {
-            padding: 12px 16px;
-            font-size: 0.9rem;
-            color: #f0f0f0;
-        }
-        tbody td:first-child { color: #999; font-weight: 600; }
-        .td-deuda { text-align: right; font-weight: 700; color: #4ade80; }
-        .td-meses { color: #f87171; font-weight: 600; font-size: 0.85rem; }
-        .td-clave { color: #999; }
-        /* Estado vacío */
-        .empty-state {
-            padding: 60px 20px;
-            text-align: center;
-            color: #888;
-        }
-        .empty-state p { font-size: 1rem; margin: 8px 0 0; }
-        /* Cargando */
-        #loadingMsg {
-            padding: 50px 20px;
-            text-align: center;
-            color: #888;
-            font-size: 1rem;
-        }
-        /* Botones */
-        .btn-pdf {
-            background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
-            color: white;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.25);
-            text-decoration: none;
-        }
-        .btn-pdf:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(196, 30, 58, 0.35);
-        }
-        .btn-close {
-            background: #2a2a2a;
-            color: #ccc;
-            border: 1px solid #333;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .btn-close:hover { background: #333; color: #fff; }
-        .btn-volver {
-            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-            color: white;
-            border: none;
-            padding: 11px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(55, 65, 81, 0.25);
-        }
-        .btn-volver:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(55, 65, 81, 0.35);
-        }
-        /* Print styles */
-        @media print {
-            body { background: white; }
-            .no-print { display: none !important; }
-            .tabla-card { box-shadow: none; }
-            .resumen-card { border: 1px solid #ccc; }
-        }
-        /* Selector año */
-        .anio-selector {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            padding: 9px 14px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #f0f0f0;
-            cursor: pointer;
-        }
-        .anio-selector:focus { outline: none; border-color: #c41e3a; }
-    </style>
-    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
+    <title>Deudores de cuotas sociales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/deudores-sobrio.css' %}?v=2">
 </head>
 <body>
-<div class="page-wrap">
-
-    <!-- Header -->
-    <div class="page-header no-print">
+<main class="dd">
+    <header class="dd-head">
         <div>
-            <h1>Deudores de Cuotas Sociales</h1>
-            <p id="subtitulo">Cargando datos...</p>
+            <h1>Deudores de cuotas sociales</h1>
+            <p id="ddSubtitulo">Voluntarios activos con cuotas vencidas, del más antiguo al más nuevo.</p>
         </div>
-        <div class="header-actions">
-            <select id="selectorAnio" class="anio-selector" onchange="cargarDeudores()"></select>
-            <a id="btnPDF" href="#" target="_blank" class="btn-pdf">
-                Descargar PDF
-            </a>
-            <button type="button" class="btn-volver" onclick="window.location.href='/sistema.html'">← Volver</button>
-            <button type="button" class="btn-close" onclick="window.close()">✕ Cerrar</button>
+        <div class="dd-head-acc">
+            <select id="ddAnio" class="dd-anio" aria-label="Año"></select>
+            <a id="btnPDF" class="dd-btn is-pri" href="#" target="_blank" rel="noopener">Descargar PDF</a>
+            <a class="dd-btn is-ghost" href="/sistema.html">Volver</a>
         </div>
+    </header>
+
+    <section class="dd-resumen" id="ddResumen" hidden>
+        <div><span>Deudores</span><b id="ddTotalDeudores">0</b></div>
+        <div><span>Deuda total</span><b id="ddTotalDeuda">$0</b></div>
+        <div class="dd-chips" id="ddChips"></div>
+    </section>
+
+    <div class="dd-toolbar">
+        <input id="ddBuscar" type="search" placeholder="Buscar por nombre o clave" aria-label="Buscar deudor" autocomplete="off">
+        <select id="ddTramo" aria-label="Filtrar por meses adeudados">
+            <option value="">Todos los deudores</option>
+            <option value="1-2">Deben 1 a 2 meses</option>
+            <option value="3-5">Deben 3 a 5 meses</option>
+            <option value="6-12">Deben 6 meses o más</option>
+        </select>
+        <span id="ddContador" class="dd-contador"></span>
     </div>
 
-    <!-- Resumen -->
-    <div class="resumen-card" id="resumenCard" style="display:none;">
-        <div class="resumen-item">
-            <div class="resumen-label">Total Deudores</div>
-            <div class="resumen-valor naranja" id="totalDeudores">0</div>
-        </div>
-        <div class="resumen-divider"></div>
-        <div class="resumen-item">
-            <div class="resumen-label">Deuda Total</div>
-            <div class="resumen-valor verde" id="totalDeuda">$0</div>
-        </div>
+    <div class="dd-tabla-caja">
+        <div id="ddEstado" class="dd-estado">Cargando deudores…</div>
+        <table id="ddTabla" hidden>
+            <thead>
+                <tr>
+                    <th class="dd-num">N°</th>
+                    <th>Clave</th>
+                    <th>Voluntario</th>
+                    <th>Meses adeudados</th>
+                    <th class="dd-der">Deuda</th>
+                </tr>
+            </thead>
+            <tbody id="ddFilas"></tbody>
+        </table>
     </div>
-
-    <!-- Tabla -->
-    <div class="tabla-card">
-        <div class="tabla-toolbar no-print">
-            <span id="contadorRegistros"></span>
-        </div>
-
-        <div id="loadingMsg">Cargando deudores...</div>
-
-        <div id="tablaWrapper" style="display:none; overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:42px">#</th>
-                        <th>Nombre</th>
-                        <th>Clave</th>
-                        <th>Meses Pendientes</th>
-                        <th style="text-align:right">Deuda</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaBody"></tbody>
-            </table>
-        </div>
-
-        <div id="emptyState" class="empty-state" style="display:none;">
-            <div style="font-size:1.5rem;color:#4ade80;font-weight:800">SIN DEUDORES</div>
-            <p>No hay deudores de cuotas para este año.</p>
-        </div>
-    </div>
-
-</div>
+</main>
 
 <script>
-    const API_BASE = '/api/voluntarios';
-    let anioActual = new Date().getFullYear();
+(function () {
+    const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const TRAMOS = { '1-2': [1, 2], '3-5': [3, 5], '6-12': [6, 12] };
+    let deudores = [];
+    const $ = (id) => document.getElementById(id);
+    const pesos = (n) => '$' + Math.round(n).toLocaleString('es-CL');
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // Ignora mayúsculas y tildes al buscar
+    const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
-    // Inicializar selector de año
-    (function inicializarSelector() {
-        const sel = document.getElementById('selectorAnio');
-        const params = new URLSearchParams(window.location.search);
-        anioActual = parseInt(params.get('anio')) || new Date().getFullYear();
-        for (let y = anioActual + 1; y >= 2020; y--) {
-            const opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = y;
-            if (y === anioActual) opt.selected = true;
-            sel.appendChild(opt);
+    // [1,2,3,5,6] -> "Ene a Mar, May a Jun"
+    function rangos(meses) {
+        const tramos = [];
+        meses.slice().sort((a, b) => a - b).forEach((m) => {
+            const ult = tramos[tramos.length - 1];
+            if (ult && m === ult[1] + 1) ult[1] = m; else tramos.push([m, m]);
+        });
+        return tramos.map(([a, b]) => a === b ? MESES[a - 1] : `${MESES[a - 1]} a ${MESES[b - 1]}`).join(', ');
+    }
+
+    function pintar() {
+        const q = norm($('ddBuscar').value.trim());
+        const tramo = TRAMOS[$('ddTramo').value];
+        const filas = deudores.filter((d) =>
+            (!tramo || (d.cantidad_meses >= tramo[0] && d.cantidad_meses <= tramo[1])) &&
+            (!q || norm(`${d.nombre_completo} ${d.clave_bombero}`).includes(q)));
+
+        const total = filas.reduce((s, d) => s + d.monto, 0);
+        $('ddContador').textContent = filas.length === deudores.length
+            ? `${filas.length} deudores`
+            : `${filas.length} de ${deudores.length} deudores · ${pesos(total)}`;
+
+        if (!filas.length) {
+            $('ddTabla').hidden = true;
+            $('ddEstado').hidden = false;
+            $('ddEstado').className = 'dd-estado';
+            $('ddEstado').textContent = q ? `Nadie coincide con "${$('ddBuscar').value.trim()}".` : 'No hay deudores en este tramo.';
+            return;
         }
-    })();
+        $('ddEstado').hidden = true;
+        $('ddTabla').hidden = false;
+        $('ddFilas').innerHTML = filas.map((d, i) => `
+            <tr>
+                <td class="dd-num">${i + 1}</td>
+                <td class="dd-clave">${esc(d.clave_bombero)}</td>
+                <td class="dd-nombre">${esc(d.nombre_completo)}</td>
+                <td><span class="dd-meses">${d.meses && d.meses.length ? rangos(d.meses) : esc(d.meses_pendientes)}</span> <span class="dd-suave">· ${d.cantidad_meses} ${d.cantidad_meses === 1 ? 'mes' : 'meses'}</span></td>
+                <td class="dd-der dd-monto">${pesos(d.monto)}</td>
+            </tr>`).join('');
+    }
 
-    async function cargarDeudores() {
-        anioActual = parseInt(document.getElementById('selectorAnio').value);
-
-        // Actualizar link PDF
-        document.getElementById('btnPDF').href = `${API_BASE}/pdf-deudores-cuotas/${anioActual}/`;
-        document.getElementById('subtitulo').textContent = `Ciclo ${anioActual} — Solo voluntarios activos con cuotas pendientes`;
-
-        // Mostrar cargando
-        document.getElementById('loadingMsg').style.display = 'block';
-        document.getElementById('tablaWrapper').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('resumenCard').style.display = 'none';
-
+    async function cargar() {
+        const anio = $('ddAnio').value;
+        history.replaceState(null, '', `?anio=${anio}`);
+        $('btnPDF').href = `/api/voluntarios/pdf-deudores-cuotas/${anio}/`;
+        $('ddResumen').hidden = true;
+        $('ddTabla').hidden = true;
+        $('ddEstado').hidden = false;
+        $('ddEstado').className = 'dd-estado';
+        $('ddEstado').textContent = 'Cargando deudores…';
         try {
-            const res = await fetch(`${API_BASE}/deudores-cuotas-listado/?anio=${anioActual}`);
-            if (!res.ok) throw new Error('Error al cargar datos');
+            const res = await fetch(`/api/voluntarios/deudores-cuotas-listado/?anio=${anio}`, { credentials: 'include' });
             const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'No se pudo cargar');
+            deudores = data.deudores.map((d) => ({ ...d, monto: Number(d.monto || 0) }));
 
-            document.getElementById('loadingMsg').style.display = 'none';
-
-            if (!data.success || data.total === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('contadorRegistros').textContent = 'Sin deudores';
+            if (!deudores.length) {
+                $('ddEstado').textContent = `No hay deudores de cuotas en ${anio}. Todos están al día.`;
+                $('ddEstado').classList.add('is-ok');
+                $('ddContador').textContent = '';
                 return;
             }
 
-            // Resumen
-            const totalDeuda = data.deudores.reduce((s, d) => s + parseFloat(d.monto || 0), 0);
-            document.getElementById('totalDeudores').textContent = data.total;
-            document.getElementById('totalDeuda').textContent = '$' + totalDeuda.toLocaleString('es-CL');
-            document.getElementById('resumenCard').style.display = 'flex';
-            document.getElementById('contadorRegistros').textContent = `Mostrando ${data.total} deudor${data.total !== 1 ? 'es' : ''}`;
-
-            // Filas
-            const tbody = document.getElementById('tablaBody');
-            tbody.innerHTML = '';
-            data.deudores.forEach((d, i) => {
-                const monto = parseFloat(d.monto || 0);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td><strong>${d.nombre_completo || ''}</strong></td>
-                    <td class="td-clave">${d.clave_bombero || 'N/A'}</td>
-                    <td class="td-meses">${d.meses_pendientes || ''}</td>
-                    <td class="td-deuda">$${monto.toLocaleString('es-CL')}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('tablaWrapper').style.display = 'block';
-
+            $('ddTotalDeudores').textContent = deudores.length;
+            $('ddTotalDeuda').textContent = pesos(deudores.reduce((s, d) => s + d.monto, 0));
+            $('ddChips').innerHTML = Object.entries(TRAMOS).map(([k, [a, b]]) => {
+                const n = deudores.filter((d) => d.cantidad_meses >= a && d.cantidad_meses <= b).length;
+                const txt = k === '6-12' ? '6 meses o más' : `${a} a ${b} meses`;
+                return n ? `<span>${txt} <b>${n}</b></span>` : '';
+            }).join('');
+            $('ddResumen').hidden = false;
+            pintar();
         } catch (err) {
-            document.getElementById('loadingMsg').textContent = 'Error al cargar datos: ' + err.message;
+            $('ddEstado').textContent = 'Error al cargar los deudores: ' + err.message;
         }
     }
 
-    // Carga inicial
-    cargarDeudores();
+    const anioUrl = parseInt(new URLSearchParams(location.search).get('anio'), 10) || new Date().getFullYear();
+    const hoy = new Date().getFullYear();
+    for (let y = hoy + 1; y >= 2020; y--) {
+        $('ddAnio').insertAdjacentHTML('beforeend', `<option value="${y}" ${y === anioUrl ? 'selected' : ''}>${y}</option>`);
+    }
+
+    let t;
+    $('ddBuscar').addEventListener('input', () => { clearTimeout(t); t = setTimeout(pintar, 150); });
+    $('ddTramo').addEventListener('change', pintar);
+    $('ddAnio').addEventListener('change', cargar);
+    cargar();
+})();
 </script>
 </body>
 </html>
