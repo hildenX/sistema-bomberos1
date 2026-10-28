@@ -1282,6 +1282,55 @@ class DepositoCaja(models.Model):
         return f"Depósito ${self.monto} → {self.cuenta_destino.nombre} ({self.fecha})"
 
 
+class CuotaAniversario(models.Model):
+    """Cuota de aniversario del año: monto único fijado en asamblea, se cobra una vez."""
+    anio = models.IntegerField(unique=True)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_asamblea = models.DateField(blank=True, null=True)
+    acta = models.CharField(max_length=120, blank=True, default='', help_text="Asamblea o acta que fijó el monto")
+    observaciones = models.TextField(blank=True, default='')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-anio']
+        verbose_name = 'Cuota de Aniversario'
+        verbose_name_plural = 'Cuotas de Aniversario'
+
+    def __str__(self):
+        return f"Cuota de aniversario {self.anio} - ${self.monto}"
+
+
+class PagoCuotaAniversario(models.Model):
+    """Pago completo de la cuota de aniversario de un voluntario (uno por año)."""
+    cuota = models.ForeignKey(CuotaAniversario, on_delete=models.PROTECT, related_name='pagos')
+    voluntario = models.ForeignKey(Voluntario, on_delete=models.CASCADE, related_name='pagos_aniversario')
+
+    fecha_pago = models.DateField(default=timezone.now)
+    monto_pagado = models.DecimalField(max_digits=10, decimal_places=2)
+    metodo_pago = models.CharField(max_length=50, blank=True, null=True)
+    numero_comprobante = models.CharField(max_length=100, blank=True, null=True)
+    comprobante_base64 = models.TextField(blank=True, null=True)
+    observaciones = models.TextField(blank=True, null=True)
+    cuenta_bancaria = models.ForeignKey(
+        'CuentaBancaria', on_delete=models.SET_NULL, null=True, blank=True,
+        help_text="Null = Efectivo/Caja"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-fecha_pago', '-created_at']
+        verbose_name = 'Pago de Cuota de Aniversario'
+        verbose_name_plural = 'Pagos de Cuota de Aniversario'
+        unique_together = ['cuota', 'voluntario']
+
+    def __str__(self):
+        return f"{self.voluntario.clave_bombero} - Aniversario {self.cuota.anio} - ${self.monto_pagado}"
+
+
 class MovimientoFinanciero(models.Model):
     """
     Libro contable automático
@@ -1294,6 +1343,7 @@ class MovimientoFinanciero(models.Model):
     
     CATEGORIA_CHOICES = [
         ('cuota', 'Cuota Mensual'),
+        ('cuota_aniversario', 'Cuota de Aniversario'),
         ('beneficio', 'Beneficio'),
         ('rifa', 'Rifa'),
         ('rifa_retiro', 'Retiro Fondos Rifa'),
@@ -1328,6 +1378,13 @@ class MovimientoFinanciero(models.Model):
     )
     pago_rifa = models.ForeignKey(
         'PagoRifa',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='movimientos'
+    )
+    pago_cuota_aniversario = models.ForeignKey(
+        'PagoCuotaAniversario',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -1499,6 +1556,7 @@ class SolicitudPagoPortal(models.Model):
         ('cuota', 'Cuota Social'),
         ('beneficio', 'Beneficio'),
         ('rifa', 'Rifa'),
+        ('aniversario', 'Cuota de Aniversario'),
     ]
 
     ESTADO_CHOICES = [
@@ -1609,6 +1667,20 @@ class SolicitudPagoPortal(models.Model):
         null=True,
         related_name='solicitudes_portal'
     )
+    cuota_aniversario = models.ForeignKey(
+        CuotaAniversario,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='solicitudes_portal'
+    )
+    pago_cuota_aniversario = models.ForeignKey(
+        PagoCuotaAniversario,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='solicitudes_portal'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -1635,6 +1707,10 @@ class SolicitudPagoPortal(models.Model):
                 raise ValidationError('La solicitud de beneficio requiere una cantidad válida.')
             if self.cuota_mes or self.cuota_anio or self.asignacion_rifa_id:
                 raise ValidationError('La solicitud de beneficio no debe mezclar referencias de otros módulos.')
+
+        elif self.tipo_pago == 'aniversario':
+            if not self.cuota_aniversario_id:
+                raise ValidationError('La solicitud de cuota de aniversario requiere la cuota del año.')
 
         elif self.tipo_pago == 'rifa':
             if not self.asignacion_rifa_id:

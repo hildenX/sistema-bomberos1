@@ -13,7 +13,7 @@ import json
 from .models import (
     Voluntario, ConfiguracionCuotas, EstadoCuotasBombero,
     PagoCuota, Beneficio, AsignacionBeneficio, PagoBeneficio,
-    MovimientoFinanciero, AsignacionRifa
+    MovimientoFinanciero, AsignacionRifa, CuotaAniversario, PagoCuotaAniversario
 )
 
 
@@ -364,6 +364,77 @@ def registrar_pago_cuota(voluntario_id, mes, anio, monto, datos_pago, usuario):
     )
     
     return pago
+
+
+# ==================== CUOTA DE ANIVERSARIO ====================
+# Monto único al año fijado en asamblea. La deben los mismos que pagan cuota
+# social (activos, no exentos ni desactivados) y solo cuenta el pago completo.
+
+def debe_cuota_aniversario(voluntario):
+    return voluntario.estado_bombero == 'activo' and puede_pagar_cuotas(voluntario)['puede']
+
+
+def cuotas_aniversario_pendientes(voluntario):
+    """Cuotas de aniversario que el voluntario aún no paga (lista de CuotaAniversario)."""
+    if not debe_cuota_aniversario(voluntario):
+        return []
+    return list(CuotaAniversario.objects.exclude(pagos__voluntario=voluntario).order_by('anio'))
+
+
+def calcular_deudores_aniversario(cuota):
+    """[{'voluntario', 'monto'}] de quienes deben la cuota de aniversario indicada."""
+    pagados = set(cuota.pagos.values_list('voluntario_id', flat=True))
+    return [
+        {'voluntario': v, 'monto': cuota.monto}
+        for v in Voluntario.objects.filter(estado_bombero='activo').exclude(id__in=pagados)
+        if puede_pagar_cuotas(v)['puede']
+    ]
+
+
+@transaction.atomic
+def registrar_pago_aniversario(cuota_id, voluntario_id, datos_pago, usuario):
+    """Registra el pago completo de la cuota de aniversario y su ingreso en finanzas."""
+    cuota = CuotaAniversario.objects.get(id=cuota_id)
+    voluntario = Voluntario.objects.get(id=voluntario_id)
+    if not debe_cuota_aniversario(voluntario):
+        raise ValueError('Este voluntario no paga cuotas (exento, desactivado o no activo).')
+    if PagoCuotaAniversario.objects.filter(cuota=cuota, voluntario=voluntario).exists():
+        raise ValueError(f'{voluntario.nombre_completo()} ya pagó la cuota de aniversario {cuota.anio}.')
+
+    pago = PagoCuotaAniversario.objects.create(
+        cuota=cuota,
+        voluntario=voluntario,
+        fecha_pago=datos_pago.get('fecha_pago') or timezone.now().date(),
+        monto_pagado=cuota.monto,
+        metodo_pago=datos_pago.get('metodo_pago'),
+        numero_comprobante=datos_pago.get('numero_comprobante'),
+        comprobante_base64=datos_pago.get('comprobante_base64'),
+        observaciones=datos_pago.get('observaciones'),
+        cuenta_bancaria=datos_pago.get('cuenta_bancaria'),
+        created_by=usuario,
+    )
+    MovimientoFinanciero.objects.create(
+        tipo='ingreso',
+        categoria='cuota_aniversario',
+        monto=cuota.monto,
+        descripcion=f'Cuota de aniversario {cuota.anio} - {voluntario.nombre_completo()}',
+        fecha=pago.fecha_pago,
+        pago_cuota_aniversario=pago,
+        cuenta_bancaria=pago.cuenta_bancaria,
+        metodo_pago='transferencia' if pago.cuenta_bancaria else 'efectivo',
+        numero_comprobante=pago.numero_comprobante,
+        observaciones=pago.observaciones,
+        created_by=usuario,
+    )
+    return pago
+
+
+@transaction.atomic
+def anular_pago_aniversario(pago_id):
+    """Borra un pago mal registrado junto con su ingreso en finanzas."""
+    pago = PagoCuotaAniversario.objects.get(id=pago_id)
+    MovimientoFinanciero.objects.filter(pago_cuota_aniversario=pago).delete()
+    pago.delete()
 
 
 # ==================== ESTADO DE CUOTAS ====================
