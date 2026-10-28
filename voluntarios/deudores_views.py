@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils_tesoreria import calcular_deudores_cuotas, calcular_deudas_beneficios_y_rifas
 from datetime import datetime
 from .permissions import autorizar_request
+from .pdf_nominas import _orden_antiguedad
 
 
 def _autorizar_finanzas(request):
@@ -81,7 +82,8 @@ def listar_deudores_beneficios(request):
     try:
         # Beneficios y rifas: misma fuente que el PDF de la nómina
         resultado = []
-        for d in calcular_deudas_beneficios_y_rifas():
+        # Más antiguo primero, igual que las nóminas en PDF
+        for d in sorted(calcular_deudas_beneficios_y_rifas(), key=lambda d: _orden_antiguedad(d['voluntario'])):
             v = d['voluntario']
             resultado.append({
                 'id': d['id'],
@@ -89,6 +91,7 @@ def listar_deudores_beneficios(request):
                 'voluntario_id': v.id,
                 'voluntario_nombre': f"{v.nombre} {v.apellido_paterno}",
                 'voluntario_clave': v.clave_bombero or 'N/A',
+                'voluntario_antiguedad': v.fecha_base_antiguedad.isoformat() if v.fecha_base_antiguedad else None,
                 'beneficio_id': d['grupo'][1],
                 'beneficio_nombre': d['grupo_nombre'],
                 'tarjetas_asignadas': d['cantidad_asignada'],
