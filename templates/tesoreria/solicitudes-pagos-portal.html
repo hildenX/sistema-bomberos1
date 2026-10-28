@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandeja de Solicitudes Portal</title>
+    <title>Solicitudes de pago</title>
     <link rel="stylesheet" href="{% static 'css/global-profesional.css' %}">
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}?v=4">
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
@@ -1156,6 +1156,7 @@
     </style>
     <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
     <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/bandeja-portal.css' %}?v=1">
 </head>
 <body>
     <!-- ========== SIDEBAR ========== -->
@@ -1186,97 +1187,29 @@
     <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">&#9776; Men&uacute;</button>
 
     <div class="main-content-with-sidebar">
-    <main id="tesoreriaSolicitudesPortal" class="shell">
-        <section class="hero">
-            <article class="hero-card">
-                <div class="hero-eyebrow">Estado de caja</div>
-                <h1>Bandeja de Solicitudes de Pago</h1>
-                <p>
-                    Revisa pagos enviados por voluntarios, filtra por estado y busca por concepto
-                    para una trazabilidad completa del protocolo de tesorer&iacute;a.
-                </p>
-            </article>
-
-            <section class="hero-grid">
-                <article class="metric-card is-pending">
-                    <span class="metric-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    </span>
-                    <div class="metric-body">
-                        <span class="metric-label">Pendientes</span>
-                        <span class="metric-value is-pending" id="metricPendientes">0</span>
-                    </div>
-                    <span class="metric-chip is-alert" id="chipPendientes">Alerta</span>
-                </article>
-                <article class="metric-card is-paid">
-                    <span class="metric-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    </span>
-                    <div class="metric-body">
-                        <span class="metric-label">Pagados</span>
-                        <span class="metric-value is-paid" id="metricPagados">0</span>
-                    </div>
-                    <span class="metric-chip is-ok">OK</span>
-                </article>
-                <article class="metric-card is-total">
-                    <span class="metric-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    </span>
-                    <div class="metric-body">
-                        <span class="metric-label">Total</span>
-                        <span class="metric-value is-total" id="metricTotal">0</span>
-                    </div>
-                    <span class="metric-chip is-neutral">Total</span>
-                </article>
-            </section>
-        </section>
-
-        <section class="panel">
-            <h2>Solicitudes combinadas (carrito)</h2>
-            <div id="gruposPortal"></div>
-        </section>
-
-        <section class="panel" id="panelSolicitudesSimples">
-            <div class="panel-head">
-                <div>
-                    <h2>Solicitudes del portal</h2>
-                    <p>Vista compacta con paginacion de 10 registros, estados claros y busqueda por voluntario o nombre del pago.</p>
-                </div>
-                <div class="hero-badge" id="badgePendientes">0</div>
+    <main id="bandejaPortal" class="bj">
+        <header class="bj-head">
+            <div>
+                <h1>Solicitudes de pago</h1>
+                <p>Pagos que los voluntarios envían desde el portal. Revisa el comprobante y aprueba o rechaza.</p>
             </div>
+            <a class="bj-volver" href="/sistema.html">Volver</a>
+        </header>
 
-            <div class="toolbar">
-                <div class="search-box">
-                    <label for="buscadorSolicitudes">Buscar solicitud</label>
-                    <input id="buscadorSolicitudes" class="search-input" type="search" placeholder="Ej: Juan Ruiz, cuota enero, beneficio aniversario">
-                </div>
+        <nav class="bj-tabs" aria-label="Filtrar por estado">
+            <button type="button" data-estado="pendiente" class="is-active">Pendientes <span id="cntPendiente">0</span></button>
+            <button type="button" data-estado="observada">Observadas <span id="cntObservada">0</span></button>
+            <button type="button" data-estado="pagado">Aprobadas <span id="cntPagado">0</span></button>
+            <button type="button" data-estado="rechazada">Rechazadas <span id="cntRechazada">0</span></button>
+            <button type="button" data-estado="todos">Todas <span id="cntTodos">0</span></button>
+        </nav>
 
-                <div class="filter-box">
-                    <label for="filtroEstado">Estado</label>
-                    <select id="filtroEstado" class="filter-select">
-                        <option value="todos">Todos</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="pagado">Pagado</option>
-                        <option value="observada">Observada</option>
-                        <option value="rechazada">Rechazada</option>
-                        <option value="expirada">Expirada</option>
-                    </select>
-                </div>
+        <div class="bj-toolbar">
+            <input id="bjBuscar" type="search" placeholder="Buscar por voluntario o concepto" aria-label="Buscar solicitud">
+        </div>
 
-                <div class="quick-filters">
-                    <button class="quick-filter is-active" data-quick-filter="todos">Todos</button>
-                    <button class="quick-filter" data-quick-filter="pendiente">Pendientes</button>
-                    <button class="quick-filter" data-quick-filter="pagado">Pagados</button>
-                </div>
-            </div>
-
-            <div id="listaSolicitudesPortal" class="request-list"></div>
-
-            <div class="pagination-bar">
-                <div id="paginationStatus" class="pagination-status">Sin resultados</div>
-                <div id="paginationControls" class="pagination-controls"></div>
-            </div>
-        </section>
+        <div id="bjLista" class="bj-lista" aria-live="polite"></div>
+        <div id="bjPaginacion" class="bj-paginacion"></div>
     </main>
     </div>
 
@@ -1285,6 +1218,12 @@
         <div class="modal-dialog">
             <h3 id="modalGestionTitulo">Gestionar solicitud</h3>
             <p id="modalGestionHelper"></p>
+            <div class="bj-motivos" id="bjMotivos">
+                <button type="button">Comprobante ilegible</button>
+                <button type="button">El monto no coincide</button>
+                <button type="button">Transferencia no recibida</button>
+                <button type="button">Falta el comprobante</button>
+            </div>
             <textarea id="modalGestionFeedback" placeholder="Escribe aqui el detalle para el voluntario..."></textarea>
             <div class="modal-actions">
                 <button id="modalGestionCancel" class="modal-btn is-cancel" type="button">Cancelar</button>
@@ -1297,6 +1236,6 @@
     <script src="{% static 'js/auth_django.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/sidebar-django.js' %}?v=38.1"></script>
-    <script src="{% static 'js/tesoreria-portal.js' %}?v=5"></script>
+    <script src="{% static 'js/bandeja-portal.js' %}?v=1"></script>
 </body>
 </html>

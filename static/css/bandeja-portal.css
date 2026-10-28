@@ -1,0 +1,131 @@
+/* Bandeja de solicitudes de pago: misma línea sobria de Cuotas y Pago de Beneficios */
+
+body .bj {
+  --bj-bg: #131315; --bj-card: #1d1d20; --bj-card-2: #242428; --bj-line: #2f2f35; --bj-ink: #f0f0f0;
+  --bj-soft: #9a9aa3; --bj-red: #c0392b; --bj-red-h: #e74c3c; --bj-green: #1f8f50; --bj-green-h: #26a85f;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  color: var(--bj-ink);
+  font-variant-numeric: tabular-nums;
+}
+body:has(.bj) { background: var(--bj-bg, #131315) !important; }
+
+/* Encabezado simple */
+.bj-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.bj-head h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--bj-ink); letter-spacing: 0; }
+.bj-head p { margin: 4px 0 0; color: var(--bj-soft); font-size: .9rem; max-width: 60ch; }
+.bj-volver {
+  flex: none; padding: 8px 16px; border: 1px solid #3d3d44; border-radius: 6px;
+  color: var(--bj-ink); text-decoration: none; font-weight: 600; font-size: .85rem;
+}
+.bj-volver:hover { background: var(--bj-card-2); }
+
+/* Pestañas de estado con conteo */
+.bj-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--bj-line); margin-bottom: 16px; }
+.bj-tabs button {
+  appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  padding: 10px 14px; color: var(--bj-soft); font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer;
+}
+.bj-tabs button:hover { color: var(--bj-ink); }
+.bj-tabs button.is-active { color: var(--bj-ink); border-bottom-color: var(--bj-red); }
+.bj-tabs button span {
+  display: inline-block; min-width: 1.6em; margin-left: 6px; padding: 1px 6px; border-radius: 999px;
+  background: var(--bj-card-2); color: var(--bj-soft); font-size: .75rem; text-align: center;
+}
+.bj-tabs button.is-active span { background: rgba(192,57,43,.18); color: #f08a80; }
+
+.bj-toolbar { margin-bottom: 16px; }
+.bj-toolbar input {
+  width: 100%; max-width: 420px; padding: 10px 14px; border-radius: 6px;
+  background: var(--bj-card) !important; border: 1px solid var(--bj-line) !important; color: var(--bj-ink) !important; font: inherit;
+}
+.bj-toolbar input:focus { outline: none; border-color: #55555e !important; }
+
+/* Tarjeta */
+.bj-lista { display: grid; gap: 14px; }
+.bj-card { background: var(--bj-card); border: 1px solid var(--bj-line); border-radius: 10px; overflow: hidden; }
+.bj-card.is-pendiente { border-top: 2px solid #c8942a; }
+.bj-card.is-observada { border-top: 2px solid #2471a3; }
+.bj-card-head { display: flex; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--bj-line); }
+.bj-quien h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--bj-ink); }
+.bj-quien p { margin: 3px 0 0; color: var(--bj-soft); font-size: .8rem; }
+.bj-cifra { display: flex; align-items: center; gap: 12px; flex: none; }
+.bj-cifra strong { font-size: 1.35rem; font-weight: 700; color: var(--bj-ink); }
+
+.bj-pill { padding: 3px 9px; border-radius: 4px; font-size: .72rem; font-weight: 600; letter-spacing: .03em; border: 1px solid transparent; }
+.bj-pill.is-pendiente { background: rgba(200,148,42,.12); color: #e3b75a; border-color: rgba(200,148,42,.35); }
+.bj-pill.is-observada { background: rgba(36,113,163,.14); color: #6fb0e0; border-color: rgba(36,113,163,.4); }
+.bj-pill.is-aprobada { background: rgba(39,174,96,.12); color: #4cc283; border-color: rgba(39,174,96,.35); }
+.bj-pill.is-rechazada { background: rgba(192,57,43,.12); color: #f08a80; border-color: rgba(192,57,43,.35); }
+.bj-pill.is-expirada { background: rgba(255,255,255,.05); color: var(--bj-soft); border-color: var(--bj-line); }
+
+.bj-card-body { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 20px; padding: 16px 20px; }
+.bj-info { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.bj-conceptos { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.bj-conceptos li { font-size: 1rem; font-weight: 600; color: var(--bj-ink); }
+
+.bj-detalle summary { cursor: pointer; color: var(--bj-soft); font-size: .82rem; }
+.bj-detalle summary:hover { color: var(--bj-ink); }
+.bj-detalle ul { margin: 8px 0 0; padding: 0; list-style: none; border: 1px solid var(--bj-line); border-radius: 6px; }
+.bj-detalle li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 12px; font-size: .85rem; border-bottom: 1px solid var(--bj-line); }
+.bj-detalle li:last-child { border-bottom: 0; }
+.bj-detalle li b { font-weight: 600; }
+
+.bj-datos { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0; }
+.bj-datos dt { color: var(--bj-soft); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; font-weight: 600; }
+.bj-datos dd { margin: 2px 0 0; font-weight: 600; }
+
+.bj-nota, .bj-feedback { margin: 0; padding: 10px 12px; border-radius: 6px; font-size: .9rem; line-height: 1.45; }
+.bj-nota { background: var(--bj-card-2); color: #d6d6dc; }
+.bj-feedback { background: rgba(200,148,42,.08); border: 1px solid rgba(200,148,42,.28); color: #e3c07a; }
+.bj-nota span, .bj-feedback span { display: block; margin-bottom: 2px; font-size: .7rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; opacity: .75; }
+.bj-plazo { margin: 0; color: #6fb0e0; font-size: .85rem; }
+.bj-cierre { margin: 0; color: var(--bj-soft); font-size: .82rem; }
+
+/* Comprobante visible al lado de los datos */
+.bj-comp {
+  display: grid; align-content: center; justify-items: center; gap: 6px; min-height: 150px;
+  border: 1px solid var(--bj-line); border-radius: 8px; background: #17171a;
+  color: var(--bj-soft); text-decoration: none; font-size: .8rem; overflow: hidden;
+}
+.bj-comp img { width: 100%; height: 150px; object-fit: cover; display: block; }
+.bj-comp span { padding: 0 8px 8px; }
+.bj-comp:hover { border-color: #55555e; color: var(--bj-ink); }
+.bj-comp.is-pdf b { font-size: 1.2rem; color: #f08a80; letter-spacing: .08em; }
+.bj-comp.is-vacio { border-style: dashed; }
+
+/* Acciones */
+.bj-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--bj-line); background: #1a1a1d; }
+.bj-btn { padding: 9px 18px; border-radius: 6px; font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+.bj-btn:disabled { opacity: .6; cursor: progress; }
+.bj-btn.is-aprobar { background: var(--bj-green); border-color: var(--bj-green); color: #fff; }
+.bj-btn.is-aprobar:hover { background: var(--bj-green-h); }
+.bj-btn.is-observar { background: transparent; border-color: #3d3d44; color: var(--bj-ink); }
+.bj-btn.is-observar:hover { background: var(--bj-card-2); }
+.bj-btn.is-rechazar { background: transparent; border-color: rgba(192,57,43,.55); color: #f08a80; }
+.bj-btn.is-rechazar:hover { background: rgba(192,57,43,.1); }
+
+.bj-vacio, .bj-cargando { padding: 48px 20px; text-align: center; color: var(--bj-soft); background: var(--bj-card); border: 1px dashed var(--bj-line); border-radius: 10px; }
+.bj-vacio h3 { margin: 0 0 4px; color: var(--bj-ink); font-size: 1.05rem; }
+.bj-vacio p { margin: 0; }
+.bj-vacio.is-ok h3 { color: #4cc283; }
+
+.bj-paginacion { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 18px; color: var(--bj-soft); font-size: .85rem; }
+.bj-paginacion button { padding: 7px 14px; border-radius: 6px; border: 1px solid #3d3d44; background: transparent; color: var(--bj-ink); font: inherit; cursor: pointer; }
+.bj-paginacion button:disabled { opacity: .4; cursor: default; }
+
+/* Motivos frecuentes en el modal */
+.bj-motivos { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.bj-motivos button { padding: 5px 10px; border-radius: 999px; border: 1px solid #3d3d44; background: transparent; color: inherit; font: inherit; font-size: .8rem; cursor: pointer; }
+.bj-motivos button:hover { background: rgba(255,255,255,.06); }
+
+@media (max-width: 720px) {
+  body .bj { padding: 20px 16px 40px; }
+  .bj-head { flex-direction: column; }
+  .bj-card-head { flex-direction: column; }
+  .bj-cifra { justify-content: space-between; }
+  .bj-card-body { grid-template-columns: 1fr; }
+  .bj-acciones .bj-btn { flex: 1 1 100%; }
+  .bj-acciones .bj-btn.is-aprobar { order: -1; }
+}

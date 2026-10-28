@@ -507,6 +507,7 @@ def serializar_solicitud(solicitud):
             'id': solicitud.voluntario_id,
             'nombre': solicitud.voluntario.nombre_completo(),
             'rut': solicitud.voluntario.rut,
+            'clave': solicitud.voluntario.clave_bombero,
         }
     }
 
@@ -605,10 +606,13 @@ def serializar_grupo_solicitud(grupo):
         'feedback_tesorero': grupo.feedback_tesorero,
         'observada_hasta': grupo.observada_hasta.isoformat() if grupo.observada_hasta else None,
         'created_at': grupo.created_at.isoformat() if grupo.created_at else None,
+        'revisada_por': grupo.revisada_por.username if getattr(grupo, 'revisada_por', None) else None,
+        'revisada_at': grupo.revisada_at.isoformat() if getattr(grupo, 'revisada_at', None) else None,
         'voluntario': {
             'id': grupo.voluntario_id,
             'nombre': grupo.voluntario.nombre_completo(),
             'rut': grupo.voluntario.rut,
+            'clave': grupo.voluntario.clave_bombero,
         },
         'items': [serializar_solicitud(item) for item in grupo.items.all()],
     }
