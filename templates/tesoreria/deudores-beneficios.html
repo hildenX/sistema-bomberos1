@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{% static 'css/tema-bomberil.css' %}">
     <style>
         body {
-            background: #0e0e0e;
-            color: #f0f0f0;
+            background: #eef1f5;
+            color: #18202f;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .page-wrap {
@@ -51,7 +51,7 @@
         }
         /* Resumen */
         .resumen-card {
-            background: #1c1c1c;
+            background: #ffffff;
             border-radius: 14px;
             padding: 20px 28px;
             margin-bottom: 22px;
@@ -60,8 +60,8 @@
             align-items: center;
             gap: 20px;
             border-left: 5px solid #ec4899;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
+            box-shadow: 0 2px 10px rgba(15,35,70,0.1);
+            border: 1px solid #dfe4eb;
             border-left: 5px solid #ec4899;
         }
         .resumen-item {
@@ -70,7 +70,7 @@
         .resumen-label {
             font-size: 0.78rem;
             font-weight: 700;
-            color: #f472b6;
+            color: #5b2a86;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             margin-bottom: 6px;
@@ -80,7 +80,7 @@
             font-weight: 800;
             line-height: 1;
         }
-        .resumen-valor.rosa { color: #ec4899; }
+        .resumen-valor.rosa { color: #b3202a; }
         .resumen-valor.verde { color: #059669; }
         .resumen-divider {
             width: 1px;
@@ -89,16 +89,16 @@
         }
         /* Tabla */
         .tabla-card {
-            background: #1c1c1c;
+            background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-            border: 1px solid #2a2a2a;
+            box-shadow: 0 2px 12px rgba(15,35,70,0.1);
+            border: 1px solid #dfe4eb;
         }
         .tabla-toolbar {
             padding: 16px 22px;
-            background: #161616;
-            border-bottom: 1px solid #2a2a2a;
+            background: #ffffff;
+            border-bottom: 1px solid #dfe4eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -107,7 +107,7 @@
         }
         .tabla-toolbar span {
             font-size: 0.88rem;
-            color: #888;
+            color: #5b6578;
             font-weight: 500;
         }
         table {
@@ -128,38 +128,38 @@
         }
         thead th:last-child { text-align: right; }
         tbody tr {
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #dfe4eb;
             transition: background 0.15s ease;
         }
-        tbody tr:hover { background: #222; }
+        tbody tr:hover { background: #f5f7fa; }
         tbody tr:last-child { border-bottom: none; }
         tbody td {
             padding: 12px 16px;
             font-size: 0.9rem;
-            color: #f0f0f0;
+            color: #18202f;
         }
-        tbody td:first-child { color: #999; font-weight: 600; }
-        .td-deuda { text-align: right; font-weight: 700; color: #4ade80; }
-        .td-beneficio { color: #f472b6; font-weight: 600; font-size: 0.85rem; }
-        .td-clave { color: #999; }
-        .td-tarjetas { color: #bbb; white-space: nowrap; }
+        tbody td:first-child { color: #5b6578; font-weight: 600; }
+        .td-deuda { text-align: right; font-weight: 700; color: #12653a; }
+        .td-beneficio { color: #5b2a86; font-weight: 600; font-size: 0.85rem; }
+        .td-clave { color: #5b6578; }
+        .td-tarjetas { color: #5b6578; white-space: nowrap; }
         /* Estado vacio */
         .empty-state {
             padding: 60px 20px;
             text-align: center;
-            color: #888;
+            color: #5b6578;
         }
         .empty-state p { font-size: 1rem; margin: 8px 0 0; }
         /* Cargando */
         #loadingMsg {
             padding: 50px 20px;
             text-align: center;
-            color: #888;
+            color: #5b6578;
             font-size: 1rem;
         }
         /* Botones */
         .btn-volver {
-            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            background: linear-gradient(135deg, #374151 0%, #ffffff 100%);
             color: white;
             border: none;
             padding: 11px 22px;
@@ -179,9 +179,9 @@
             box-shadow: 0 4px 14px rgba(55, 65, 81, 0.35);
         }
         .btn-close {
-            background: #2a2a2a;
-            color: #ccc;
-            border: 1px solid #333;
+            background: #f5f7fa;
+            color: #18202f;
+            border: 1px solid #dfe4eb;
             padding: 11px 22px;
             border-radius: 8px;
             cursor: pointer;
@@ -189,7 +189,7 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
         }
-        .btn-close:hover { background: #333; color: #fff; }
+        .btn-close:hover { background: #dfe4eb; color: #18202f; }
         .btn-pdf {
             background: linear-gradient(135deg, #c41e3a 0%, #8b1429 100%);
             color: white;
@@ -218,8 +218,9 @@
             .resumen-card { border: 1px solid #ccc; }
         }
     </style>
-    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/global-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/tesoreria-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/tema-cuartel.css' %}?v=1">
 </head>
 <body>
 <div class="page-wrap">

@@ -91,7 +91,7 @@
             padding: 22px 24px;
             background:
                 linear-gradient(135deg, rgba(196, 30, 58, 0.16), transparent 36%),
-                linear-gradient(135deg, #101317 0%, #1b2430 100%);
+                linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
             color: #ffffff;
         }
 
@@ -148,7 +148,7 @@
             z-index: 1;
             margin: 0;
             max-width: 620px;
-            color: rgba(255, 255, 255, 0.82);
+            color: rgba(24,32,47,0.82);
             font-size: 0.88rem;
             line-height: 1.5;
         }
@@ -178,7 +178,7 @@
         .metric-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 16px 30px -16px rgba(15, 23, 42, 0.26);
-            border-color: #333;
+            border-color: #dfe4eb;
         }
 
         .metric-card.is-pending { --accent-color: var(--brand); }
@@ -192,7 +192,7 @@
             height: 38px;
             border-radius: 11px;
             color: var(--accent-color, var(--brand));
-            background: color-mix(in srgb, var(--accent-color, var(--brand)) 20%, #000000);
+            background: color-mix(in srgb, var(--accent-color, var(--brand)) 20%, #eef1f5);
             flex-shrink: 0;
         }
 
@@ -402,7 +402,7 @@
         .request-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
-            border-color: #333;
+            border-color: #dfe4eb;
         }
 
         .request-card::before {
@@ -537,7 +537,7 @@
         .status-pill.is-observed { background: var(--warning-soft); color: var(--warning); }
         .status-pill.is-paid { background: var(--success-soft); color: var(--success); }
         .status-pill.is-rejected { background: var(--danger-soft); color: var(--danger); }
-        .status-pill.is-expired { background: #ece7e2; color: #5c4f46; }
+        .status-pill.is-expired { background: #ece7e2; color: #6b7486; }
 
         .request-description,
         .request-feedback {
@@ -711,7 +711,7 @@
             width: 100%;
             height: 100%;
             left: 0;
-            color: #fff;
+            color: #18202f;
         }
 
         .request-download-wrapper {
@@ -833,7 +833,7 @@
 
         .secondary-btn {
             background: rgba(41,128,185,0.15);
-            color: #93c5fd;
+            color: #1d4486;
         }
 
         .danger-btn {
@@ -866,7 +866,7 @@
             height: 64px;
             margin-bottom: 12px;
             border-radius: 50%;
-            background: color-mix(in srgb, var(--mark-color, var(--success)) 20%, #000000);
+            background: color-mix(in srgb, var(--mark-color, var(--success)) 20%, #eef1f5);
             color: var(--mark-color, var(--success));
             box-shadow: 0 0 0 6px color-mix(in srgb, var(--mark-color, var(--success)) 8%, transparent);
         }
@@ -883,7 +883,7 @@
             place-items: center;
             border-radius: 50%;
             background: var(--mark-color, var(--success));
-            color: #fff;
+            color: #18202f;
             border: 2px solid #fff;
         }
 
@@ -942,7 +942,7 @@
             text-align: center;
             border-radius: 16px;
             background: var(--panel);
-            border: 1px dashed #333;
+            border: 1px dashed #dfe4eb;
             color: var(--muted);
         }
 
@@ -989,7 +989,7 @@
 
         .pager-btn.is-current {
             background: var(--brand);
-            color: #fff;
+            color: #18202f;
             border-color: var(--brand);
         }
 
@@ -1154,8 +1154,9 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="{% static 'css/global-dark.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/tesoreria-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/global-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/tesoreria-dark.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/cuartel/tema-cuartel.css' %}?v=1">
 </head>
 <body>
     <!-- ========== SIDEBAR ========== -->
