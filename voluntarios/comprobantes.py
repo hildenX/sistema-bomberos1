@@ -24,8 +24,10 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------- conceptos
 
-def _metodo(pago):
+def _metodo(pago, con_cuenta=True):
     metodo = (pago.metodo_pago or '').strip()
+    if not con_cuenta:
+        return metodo.capitalize() or ('Transferencia' if pago.cuenta_bancaria_id else 'Efectivo')
     if pago.cuenta_bancaria_id:
         return f"{metodo.capitalize() or 'Transferencia'} · {pago.cuenta_bancaria.nombre}"
     return metodo.capitalize() or 'Efectivo'
@@ -33,24 +35,27 @@ def _metodo(pago):
 
 def concepto_cuota(p):
     return {'fecha': p.fecha_pago, 'concepto': f"Cuota social {MESES[p.mes - 1]} {p.anio}",
-            'detalle': '', 'monto': p.monto_pagado, 'pago': p, 'orden': (p.anio, p.mes)}
+            'detalle': '', 'monto': p.monto_pagado, 'pago': p, 'orden': (p.anio, p.mes), 'tipo': 'Cuotas sociales'}
 
 
 def concepto_beneficio(p):
     b = p.asignacion.beneficio
     unidades = f"{p.cantidad_tarjetas} tarjeta{'s' if p.cantidad_tarjetas != 1 else ''}"
     return {'fecha': p.fecha_pago, 'concepto': b.nombre[:1].upper() + b.nombre[1:],
-            'detalle': f"{unidades}{' extra' if p.tipo_pago == 'extra' else ''}", 'monto': p.monto, 'pago': p}
+            'detalle': f"{unidades}{' extra' if p.tipo_pago == 'extra' else ''}", 'monto': p.monto, 'pago': p,
+            'tipo': 'Beneficios'}
 
 
 def concepto_rifa(p):
-    return {'fecha': p.fecha_pago, 'concepto': f"Rifa {p.asignacion.rifa.nombre}", 'detalle': '',
-            'monto': p.monto, 'pago': p}
+    nombre = p.asignacion.rifa.nombre
+    return {'fecha': p.fecha_pago, 'concepto': nombre if nombre.lower().startswith('rifa') else f"Rifa {nombre}",
+            'detalle': '',
+            'monto': p.monto, 'pago': p, 'tipo': 'Rifas'}
 
 
 def concepto_aniversario(p):
     return {'fecha': p.fecha_pago, 'concepto': f"Cuota de aniversario {p.cuota.anio}", 'detalle': 'Pago único',
-            'monto': p.monto_pagado, 'pago': p}
+            'monto': p.monto_pagado, 'pago': p, 'tipo': 'Cuota de aniversario'}
 
 
 # ---------------------------------------------------------------- PDF
@@ -103,17 +108,24 @@ def generar_pdf_comprobante(voluntario, conceptos, folio, fecha_emision=None):
     return doc.terminar()
 
 
+# Todos los tipos de pago de un voluntario. Para sumar uno nuevo al comprobante anual basta
+# agregar aquí su consulta y su concepto_*; y en el lugar donde se registra ese pago, llamar a
+# enviar_comprobante_pagos(voluntario, [concepto_nuevo(pago)], folio('XX', pago.id)).
+TIPOS_DE_PAGO = [
+    (lambda v, anio: PagoCuota.objects.filter(voluntario=v, anio=anio).select_related('cuenta_bancaria'),
+     concepto_cuota),
+    (lambda v, anio: PagoCuotaAniversario.objects.filter(voluntario=v, cuota__anio=anio)
+     .select_related('cuota', 'cuenta_bancaria'), concepto_aniversario),
+    (lambda v, anio: PagoBeneficio.objects.filter(asignacion__voluntario=v, fecha_pago__year=anio)
+     .select_related('asignacion__beneficio', 'cuenta_bancaria'), concepto_beneficio),
+    (lambda v, anio: PagoRifa.objects.filter(asignacion__voluntario=v, fecha_pago__year=anio)
+     .select_related('asignacion__rifa', 'cuenta_bancaria'), concepto_rifa),
+]
+
+
 def pagos_del_anio(voluntario, anio):
     """Todos los pagos del voluntario en el año, como conceptos ordenados por fecha."""
-    conceptos = (
-        [concepto_cuota(p) for p in PagoCuota.objects.filter(voluntario=voluntario, anio=anio).select_related('cuenta_bancaria')]
-        + [concepto_beneficio(p) for p in PagoBeneficio.objects.filter(asignacion__voluntario=voluntario, fecha_pago__year=anio)
-           .select_related('asignacion__beneficio', 'cuenta_bancaria')]
-        + [concepto_rifa(p) for p in PagoRifa.objects.filter(asignacion__voluntario=voluntario, fecha_pago__year=anio)
-           .select_related('asignacion__rifa', 'cuenta_bancaria')]
-        + [concepto_aniversario(p) for p in PagoCuotaAniversario.objects.filter(voluntario=voluntario, cuota__anio=anio)
-           .select_related('cuota', 'cuenta_bancaria')]
-    )
+    conceptos = [concepto(p) for consulta, concepto in TIPOS_DE_PAGO for p in consulta(voluntario, anio)]
     return sorted(conceptos, key=lambda c: (c['fecha'], c.get('orden', (0, 0)), c['concepto']))
 
 
@@ -123,18 +135,16 @@ def generar_pdf_comprobante_anual(voluntario, anio, conceptos, fecha_emision=Non
     total = sum((Decimal(str(c['monto'])) for c in conceptos), Decimal('0'))
     grupos = {}
     for c in conceptos:
-        tipo = ('Cuotas sociales' if isinstance(c['pago'], PagoCuota) else
-                'Cuota de aniversario' if isinstance(c['pago'], PagoCuotaAniversario) else
-                'Beneficios' if isinstance(c['pago'], PagoBeneficio) else 'Rifas')
-        grupos.setdefault(tipo, []).append(c)
+        grupos.setdefault(c['tipo'], []).append(c)
 
     doc = _Nomina('COMPROBANTE ANUAL', f"Pagos {anio}", f"Comprobante anual {anio}", _logo())
     doc.etiqueta_fecha = 'Emitido el'
     doc.etiqueta_total = 'TOTAL PAGADO'
     doc.encabezado(fecha_emision)
     resumen = [(f"Total pagado en {anio}: {_pesos(total)}", True)]
-    resumen += [(f"{t}: {_pesos(sum((Decimal(str(c['monto'])) for c in cs), Decimal('0')))}", False)
-                for t, cs in grupos.items()][:3]
+    detalle = [f"{t}: {_pesos(sum((Decimal(str(c['monto'])) for c in cs), Decimal('0')))}" for t, cs in grupos.items()]
+    # El bloque de resumen tiene espacio para dos líneas más: se juntan de a dos si hay muchos tipos
+    resumen += [(' · '.join(detalle[i:i + 2]), False) for i in range(0, len(detalle), 2)][:2]
     doc.bloque_datos(_bloque_voluntario(voluntario), ('RESUMEN', resumen))
 
     doc.titulo_seccion(f"Pagos registrados en {anio}")
@@ -147,15 +157,14 @@ def generar_pdf_comprobante_anual(voluntario, anio, conceptos, fecha_emision=Non
             doc.banda_grupo(tipo, f"{len(cs)} pago{'s' if len(cs) != 1 else ''}")
             for c in cs:
                 concepto = c['concepto'] + (f" · {c['detalle']}" if c['detalle'] and c['detalle'] != 'Pago único' else '')
-                doc.fila([n + 1, c['fecha'].strftime('%d-%m-%Y'), concepto, _metodo(c['pago']), _pesos(c['monto'])],
+                doc.fila([n + 1, c['fecha'].strftime('%d-%m-%Y'), concepto, _metodo(c['pago'], False), _pesos(c['monto'])],
                          n, negritas=(4,))
                 n += 1
     else:
         doc.fila(['', '', f"Sin pagos registrados en {anio}", '', ''], 0)
         doc.y -= 4 * mm
 
-    doc.cierre([(t, _pesos(sum((Decimal(str(c['monto'])) for c in cs), Decimal('0')))) for t, cs in grupos.items()],
-               total, [
+    doc.cierre([('Pagos registrados', str(len(conceptos)))], total, [
                    'Valores en pesos chilenos (CLP).',
                    f"Incluye los pagos registrados hasta el {_fecha_larga(fecha_emision)}.",
                ], _tesorero_vigente())
