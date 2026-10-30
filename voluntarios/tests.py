@@ -1077,3 +1077,36 @@ class PortalSolicitudSimpleTest(PortalGrupoBaseTest):
         response = self._post_simple(comprobante=_archivo_comprobante('voucher.exe', b'x', 'application/octet-stream'))
         self.assertEqual(response.status_code, 400, response.content)
         self.assertIn('comprobante debe ser un archivo', response.json()['error'])
+
+
+class ComprobanteAnualTodosLosTiposTest(PortalGrupoBaseTest):
+    """El comprobante anual debe incluir todo tipo de pago del año y llegar en un solo correo."""
+
+    def test_anual_incluye_cuota_aniversario_beneficio_y_rifa(self):
+        from django.core import mail
+        from voluntarios.comprobantes import enviar_comprobante_anual, pagos_del_anio
+        from voluntarios.models import CuotaAniversario
+        from voluntarios.portal_utils import registrar_pago_rifa
+        from voluntarios.utils_tesoreria import (registrar_pago_aniversario, registrar_pago_beneficio,
+                                                 registrar_pago_cuota)
+
+        tesorero = User.objects.create_user(username='tesorero_anual', password='x12345678')
+        datos = {'fecha_pago': date(2026, 5, 10), 'metodo_pago': 'efectivo'}
+        registrar_pago_cuota(self.voluntario.id, 1, 2026, self.precio_cuota, datos, tesorero)
+        cuota_aniv = CuotaAniversario.objects.create(anio=2026, monto=Decimal('10000'))
+        registrar_pago_aniversario(cuota_aniv.id, self.voluntario.id, datos, tesorero)
+        registrar_pago_beneficio(self.asignacion_beneficio.id, 'normal', 2, Decimal('4000'), datos, tesorero)
+        registrar_pago_rifa(self.asignacion_rifa.id, Decimal('20000'), datos, tesorero)
+
+        conceptos = pagos_del_anio(self.voluntario, 2026)
+        self.assertEqual({c['tipo'] for c in conceptos},
+                         {'Cuotas sociales', 'Cuota de aniversario', 'Beneficios', 'Rifas'})
+        self.assertEqual(sum(c['monto'] for c in conceptos), Decimal('39000'))
+
+        self.voluntario.email = 'voluntario@example.com'
+        self.voluntario.save()
+        mail.outbox.clear()
+        self.assertTrue(enviar_comprobante_anual(self.voluntario, 2026))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox[0].attachments), 1)
+        self.assertIn('Comprobante anual', mail.outbox[0].subject)
