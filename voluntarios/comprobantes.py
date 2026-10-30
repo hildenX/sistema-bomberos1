@@ -147,13 +147,16 @@ def generar_pdf_comprobante_anual(voluntario, anio, conceptos, fecha_emision=Non
     resumen += [(' · '.join(detalle[i:i + 2]), False) for i in range(0, len(detalle), 2)][:2]
     doc.bloque_datos(_bloque_voluntario(voluntario), ('RESUMEN', resumen))
 
+    doc.y -= 4 * mm
     doc.titulo_seccion(f"Pagos registrados en {anio}")
     doc.definir_columnas([('N°', 30, 'l'), ('Fecha', 62, 'l'), ('Concepto', 200, 'l'), ('Forma de pago', 120, 'l'),
                           ('Monto', ANCHO_UTIL - 412, 'r')])
     doc.encabezado_tabla()
     if conceptos:
         n = 0
-        for tipo, cs in grupos.items():
+        for g, (tipo, cs) in enumerate(grupos.items()):
+            if g:
+                doc.y -= 6 * mm  # aire entre un tipo de pago y el siguiente
             doc.banda_grupo(tipo, f"{len(cs)} pago{'s' if len(cs) != 1 else ''}")
             for c in cs:
                 concepto = c['concepto'] + (f" · {c['detalle']}" if c['detalle'] and c['detalle'] != 'Pago único' else '')
