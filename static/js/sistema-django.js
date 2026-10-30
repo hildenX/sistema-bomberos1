@@ -857,6 +857,7 @@ renderizarBomberos() {
                             ${permisos && permisos.canViewFinanzas && mostrarBotonCuotas ? `<button class="btn btn-cuotas" onclick="sistemaBomberos.verCuotas(${bombero.id})"> Cuotas</button>` : ''}
                             ${permisos && permisos.canViewFinanzas && !esMartir ? `<button class="btn btn-beneficios" onclick="sistemaBomberos.verPagarBeneficios(${bombero.id})"> Beneficios</button>` : ''}
                             ${permisos && permisos.canViewFinanzas && permisos.canEditFinanzas && !esMartir ? `<button class="btn btn-pdf" onclick="sistemaBomberos.generarPDFDeudasBombero(${bombero.id})"> PDF Deudas</button>` : ''}
+                            ${permisos && permisos.canViewFinanzas && permisos.canEditFinanzas && !esMartir ? `<button class="btn btn-pdf btn-comprobantes" title="Comprobante anual de pagos" onclick="sistemaBomberos.enviarComprobanteAnual(${bombero.id})"> Comprobantes</button>` : ''}
                             ${permisos && permisos.canViewAsistencias ? `<button class="btn btn-asistencias" onclick="verReporteAsistencias(${bombero.id})" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;"> Asistencias</button>` : ''}
                             ${puedeEditar ? `<button class="btn btn-editar" onclick="sistemaBomberos.editarBombero(${bombero.id})">Editar</button>` : ''}
                             ${puedeReintegrarse && puedeEditar ? `<button class="btn btn-success" onclick="sistemaBomberos.iniciarReintegracion(${bombero.id})" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"> Reintegrar</button>` : ''}
@@ -1573,6 +1574,38 @@ async cambiarEstadoBombero(id) {
         }
         // Estado de deuda con formato institucional, calculado en el servidor
         window.open(`/api/voluntarios/${bombero.id}/pdf-deudas/`, '_blank');
+    }
+
+    // Comprobante anual: todo lo pagado en el año, en un solo correo con un solo PDF
+    async enviarComprobanteAnual(bomberoId) {
+        const bombero = this.bomberos.find(b => b.id === parseInt(bomberoId));
+        if (!bombero) return;
+        const anio = new Date().getFullYear();
+        const url = `/api/voluntarios/${bombero.id}/comprobante-anual/?anio=${anio}`;
+        if (!bombero.email) {
+            if (confirm(`${bombero.nombre} no tiene email registrado.\n\n¿Quieres ver el comprobante anual ${anio} para descargarlo?`)) {
+                window.open(url, '_blank');
+            }
+            return;
+        }
+        const opcion = prompt(
+            `Comprobante anual ${anio} de ${bombero.nombre}\n\n` +
+            `1 = Enviar por correo a ${bombero.email}\n2 = Solo ver el PDF\n\nEscribe 1 o 2:`, '1');
+        if (opcion === '2') { window.open(url, '_blank'); return; }
+        if (opcion !== '1') return;
+        Utils.mostrarNotificacion('Enviando comprobante anual...', 'info');
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '' },
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'No se pudo enviar');
+            Utils.mostrarNotificacion(`Comprobante anual enviado a ${data.email}`, 'success');
+        } catch (err) {
+            Utils.mostrarNotificacion(err.message, 'error');
+        }
     }
 
     async generarPDFDeudasBomberoAntiguo(bomberoId) {

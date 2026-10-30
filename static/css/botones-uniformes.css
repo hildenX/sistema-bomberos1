@@ -147,3 +147,13 @@
         min-width: unset !important;
     }
 }
+
+/* Comprobante anual de pagos (tarjeta del voluntario) */
+.btn.btn-pdf.btn-comprobantes,
+.voluntario-card .btn.btn-pdf.btn-comprobantes {
+    background: #1d3a6b !important;
+    border-color: #1d3a6b !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+.btn.btn-pdf.btn-comprobantes:hover { background: #24477f !important; }

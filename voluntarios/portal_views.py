@@ -537,7 +537,8 @@ def _aprobar_solicitud(solicitud, reviewer):
         from .utils_email import enviar_comprobante_beneficio
         enviar_comprobante_beneficio(pago, solicitud.voluntario, solicitud.asignacion_beneficio.beneficio)
     elif solicitud.tipo_pago == 'aniversario':
-        pass  # sin plantilla de correo propia: el voluntario lo ve aprobado en el portal
+        from .utils_email import enviar_comprobante_aniversario
+        enviar_comprobante_aniversario(pago, solicitud.voluntario)
     else:
         from .utils_email import enviar_comprobante_rifa
         enviar_comprobante_rifa(pago, solicitud.voluntario, solicitud.asignacion_rifa.rifa)

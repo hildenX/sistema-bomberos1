@@ -350,12 +350,14 @@ class SistemaCuotasDjango {
         if (btn) btn.disabled = true;
 
         const guardados = [];
+        const idsGuardados = [];
         const fallidos = [];
         for (const [i, mes] of mesesSeleccionados.entries()) {
             if (btn) btn.textContent = `Registrando ${i + 1} de ${mesesSeleccionados.length}...`;
             try {
-                await this.guardarPagoCuota({...datos, mes: mes});
+                const pago = await this.guardarPagoCuota({...datos, mes: mes});
                 guardados.push(mes);
+                if (pago && pago.id) idsGuardados.push(pago.id);
             } catch (error) {
                 fallidos.push(`${this.obtenerNombreMes(mes)} (${error.message})`);
             }
@@ -363,6 +365,16 @@ class SistemaCuotasDjango {
 
         window.removeEventListener('beforeunload', advertir);
         if (btn) { btn.disabled = false; btn.textContent = textoBtn; }
+
+        // Un solo comprobante por correo con todos los meses recién pagados
+        if (idsGuardados.length) {
+            fetch(`${API_BASE}/comprobantes/cuotas/`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify({ voluntario_id: this.bomberoActual.id, pago_ids: idsGuardados }),
+            }).catch(() => {});
+        }
 
         if (fallidos.length) {
             Utils.mostrarNotificacion(`Se registraron ${guardados.length} de ${mesesSeleccionados.length}. No se guardaron: ${fallidos.join(', ')}`, 'error');
@@ -429,7 +441,8 @@ class SistemaCuotasDjango {
             cuenta_bancaria_id: metodo === 'Transferencia' ? parseInt(cuentaId) : null,
             numero_comprobante: numComp,
             comprobante_base64: b64Comp,
-            observaciones: datos.observacionesCuota || ''
+            observaciones: datos.observacionesCuota || '',
+            enviar_comprobante: false
         };
         
         console.log('[CUOTAS DJANGO] Guardando pago:', payload);
