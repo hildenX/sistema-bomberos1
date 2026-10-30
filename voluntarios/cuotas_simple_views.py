@@ -116,8 +116,10 @@ def pagos_cuotas_simple(request):
                 )
             
             # El comprobante se envía en segundo plano: el SMTP tarda ~3 s y no debe frenar el registro
-            email_enviado = bool(voluntario.email)
-            if voluntario.email:
+            # La pantalla de cuotas pide un solo comprobante al final cuando se pagan varios meses
+            enviar = data.get('enviar_comprobante', True) is not False
+            email_enviado = bool(voluntario.email) and enviar
+            if email_enviado:
                 def _enviar(pago=pago, voluntario=voluntario):
                     try:
                         if not enviar_comprobante_cuota(pago, voluntario):
@@ -146,3 +148,31 @@ def pagos_cuotas_simple(request):
             return JsonResponse({'error': f'Falta el campo: {str(e)}'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def enviar_comprobante_cuotas(request):
+    """
+    Un solo correo con un solo PDF para varias cuotas pagadas juntas.
+    POST /api/voluntarios/comprobantes/cuotas/  {voluntario_id, pago_ids: [...]}
+    """
+    autorizado, respuesta = autorizar_request(request, modulo='cuotas', accion='create')
+    if not autorizado:
+        return respuesta
+    from .comprobantes import concepto_cuota, enviar_comprobante_pagos, folio
+    try:
+        data = json.loads(request.body or '{}')
+        voluntario = Voluntario.objects.get(id=int(data.get('voluntario_id')))
+        pagos = list(PagoCuota.objects.filter(voluntario=voluntario, id__in=data.get('pago_ids') or [])
+                     .select_related('cuenta_bancaria').order_by('anio', 'mes'))
+    except (ValueError, TypeError, Voluntario.DoesNotExist, json.JSONDecodeError):
+        return JsonResponse({'error': 'Datos inválidos'}, status=400)
+    if not pagos:
+        return JsonResponse({'error': 'No hay pagos para el comprobante'}, status=400)
+    if not voluntario.email:
+        return JsonResponse({'enviado': False, 'motivo': 'El voluntario no tiene email registrado'})
+
+    def _enviar():
+        enviar_comprobante_pagos(voluntario, [concepto_cuota(p) for p in pagos], folio('CS', pagos[0].id))
+    threading.Thread(target=_enviar, daemon=True).start()
+    return JsonResponse({'enviado': True, 'email': voluntario.email})

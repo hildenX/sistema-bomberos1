@@ -163,6 +163,9 @@ class _Nomina:
         self.logo = logo
         self.columnas = []
         self.y = 0
+        # Los comprobantes cambian estas etiquetas ("Emitido el", "TOTAL PAGADO")
+        self.etiqueta_fecha = 'Fecha de corte'
+        self.etiqueta_total = 'TOTAL ADEUDADO'
 
     # -- piezas fijas
     def _franja_superior(self):
@@ -198,7 +201,7 @@ class _Nomina:
         c.drawRightString(derecha, tope - 14 * mm, self.subtitulo)
         c.setFillColor(GRIS)
         c.setFont('Helvetica', 8.5)
-        c.drawRightString(derecha, tope - 19.5 * mm, f"Fecha de corte: {_fecha_larga(fecha_corte)}")
+        c.drawRightString(derecha, tope - 19.5 * mm, f"{self.etiqueta_fecha}: {_fecha_larga(fecha_corte)}")
         c.drawRightString(derecha, tope - 24 * mm, 'Emitido por Tesorería de Compañía')
 
         y_linea = tope - lado_logo - 6 * mm
@@ -372,7 +375,7 @@ class _Nomina:
         c.roundRect(x, self.y - alto + 3.5 * mm, ancho, alto, 1.5 * mm, fill=1, stroke=0)
         c.setFillColor(white)
         c.setFont('Helvetica-Bold', 11)
-        c.drawString(x + 3 * mm, self.y - alto + 7 * mm, 'TOTAL ADEUDADO')
+        c.drawString(x + 3 * mm, self.y - alto + 7 * mm, self.etiqueta_total)
         c.drawRightString(ANCHO - MX - 3 * mm, self.y - alto + 7 * mm, _pesos(total))
         self.y -= alto + 8 * mm
 

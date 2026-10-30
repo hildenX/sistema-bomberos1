@@ -3,6 +3,7 @@ Cuota de aniversario: monto único al año fijado en asamblea.
 Tesorería crea la cuota, registra pagos completos y descarga la nómina de deudores.
 """
 import json
+import threading
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
@@ -13,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from .models import CuentaBancaria, CuotaAniversario, LogoCompania, Voluntario
 from .pdf_nominas import _orden_antiguedad, generar_pdf_nomina_deudores_aniversario
 from .permissions import autorizar_request, obtener_accion_desde_request
+from .utils_email import enviar_comprobante_aniversario
 from .utils_tesoreria import (anular_pago_aniversario, calcular_deudores_aniversario,
                               puede_pagar_cuotas, registrar_pago_aniversario)
 
@@ -143,7 +145,9 @@ def registrar_pago_cuota_aniversario(request, cuota_id):
         return JsonResponse({'error': str(e) or 'Datos inválidos'}, status=400)
     except IntegrityError:
         return JsonResponse({'error': 'Este voluntario ya pagó la cuota de aniversario'}, status=400)
-    return JsonResponse({'id': pago.id}, status=201)
+    if pago.voluntario.email:
+        threading.Thread(target=enviar_comprobante_aniversario, args=(pago, pago.voluntario), daemon=True).start()
+    return JsonResponse({'id': pago.id, 'comprobante_enviado': bool(pago.voluntario.email)}, status=201)
 
 
 @require_http_methods(["DELETE"])

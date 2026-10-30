@@ -1,7 +1,7 @@
 """
 Vistas para generación de PDFs de cuotas
 """
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Voluntario, PagoCuota, LogoCompania
@@ -160,3 +160,37 @@ def pdf_estado_deuda_voluntario(request, voluntario_id):
     response = HttpResponse(pdf.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="estado_deuda_{voluntario.clave_bombero}.pdf"'
     return response
+
+
+@require_http_methods(["GET", "POST"])
+def comprobante_anual_voluntario(request, voluntario_id):
+    """
+    Comprobante anual con todo lo que el voluntario pagó en el año.
+    GET  /api/voluntarios/{id}/comprobante-anual/?anio=2026  -> ver el PDF
+    POST /api/voluntarios/{id}/comprobante-anual/?anio=2026  -> enviarlo por correo
+    """
+    from .comprobantes import enviar_comprobante_anual, generar_pdf_comprobante_anual, pagos_del_anio
+    autorizado, respuesta = autorizar_request(request, modulo='finanzas', accion='view')
+    if not autorizado:
+        return respuesta
+    try:
+        voluntario = Voluntario.objects.get(id=voluntario_id)
+        anio = int(request.GET.get('anio') or datetime.now().year)
+    except (Voluntario.DoesNotExist, ValueError):
+        return JsonResponse({'error': 'Voluntario o año inválido'}, status=404)
+
+    if request.method == 'GET':
+        pdf = generar_pdf_comprobante_anual(voluntario, anio, pagos_del_anio(voluntario, anio))
+        response = HttpResponse(pdf.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="comprobante_anual_{anio}_{voluntario.clave_bombero}.pdf"'
+        return response
+
+    if not voluntario.email:
+        return JsonResponse({'error': f'{voluntario.nombre_completo()} no tiene email registrado'}, status=400)
+    try:
+        enviado = enviar_comprobante_anual(voluntario, anio)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    if not enviado:
+        return JsonResponse({'error': 'No se pudo enviar el correo. Intenta de nuevo en unos minutos.'}, status=502)
+    return JsonResponse({'enviado': True, 'email': voluntario.email})
