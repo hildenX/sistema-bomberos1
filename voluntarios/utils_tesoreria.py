@@ -367,11 +367,12 @@ def registrar_pago_cuota(voluntario_id, mes, anio, monto, datos_pago, usuario):
 
 
 # ==================== CUOTA DE ANIVERSARIO ====================
-# Monto único al año fijado en asamblea. La deben los mismos que pagan cuota
-# social (activos, no exentos ni desactivados) y solo cuenta el pago completo.
+# Monto único al año fijado en asamblea. La deben todos los activos menos los
+# insignes (aunque tengan la cuota social exenta o desactivada) y solo cuenta el pago completo.
 
 def debe_cuota_aniversario(voluntario):
-    return voluntario.estado_bombero == 'activo' and puede_pagar_cuotas(voluntario)['puede']
+    return (voluntario.estado_bombero == 'activo'
+            and calcular_categoria_bombero(voluntario.fecha_base_antiguedad) != 'Insigne')
 
 
 def cuotas_aniversario_pendientes(voluntario):
@@ -387,7 +388,7 @@ def calcular_deudores_aniversario(cuota):
     return [
         {'voluntario': v, 'monto': cuota.monto}
         for v in Voluntario.objects.filter(estado_bombero='activo').exclude(id__in=pagados)
-        if puede_pagar_cuotas(v)['puede']
+        if debe_cuota_aniversario(v)
     ]
 
 
@@ -397,7 +398,7 @@ def registrar_pago_aniversario(cuota_id, voluntario_id, datos_pago, usuario):
     cuota = CuotaAniversario.objects.get(id=cuota_id)
     voluntario = Voluntario.objects.get(id=voluntario_id)
     if not debe_cuota_aniversario(voluntario):
-        raise ValueError('Este voluntario no paga cuotas (exento, desactivado o no activo).')
+        raise ValueError('Este voluntario no debe la cuota de aniversario (insigne o no activo).')
     if PagoCuotaAniversario.objects.filter(cuota=cuota, voluntario=voluntario).exists():
         raise ValueError(f'{voluntario.nombre_completo()} ya pagó la cuota de aniversario {cuota.anio}.')
 

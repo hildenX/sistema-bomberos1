@@ -453,6 +453,11 @@ tr:hover {
     color: #e74c3c !important;
 }
 
+/* El aviso flotante de error ya es rojo: su texto debe ir en blanco */
+.notificacion.error {
+    color: #fff !important;
+}
+
 .alert-warning {
     background: rgba(230,126,34,0.12) !important;
     color: var(--gd-dorado-lt) !important;
