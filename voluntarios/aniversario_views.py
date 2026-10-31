@@ -16,7 +16,7 @@ from .pdf_nominas import _orden_antiguedad, generar_pdf_nomina_deudores_aniversa
 from .permissions import autorizar_request, obtener_accion_desde_request
 from .utils_email import enviar_comprobante_aniversario
 from .utils_tesoreria import (anular_pago_aniversario, calcular_deudores_aniversario,
-                              puede_pagar_cuotas, registrar_pago_aniversario)
+                              debe_cuota_aniversario, registrar_pago_aniversario)
 
 
 def _autorizar(request, accion=None):
@@ -100,8 +100,8 @@ def estado_cuota_aniversario(request, cuota_id):
     voluntarios = Voluntario.objects.filter(estado_bombero='activo')
     for v in sorted(voluntarios, key=_orden_antiguedad):
         pago = pagos.get(v.id)
-        if not pago and not puede_pagar_cuotas(v)['puede']:
-            continue  # exentos que no pagaron no deben la cuota
+        if not pago and not debe_cuota_aniversario(v):
+            continue  # insignes que no pagaron no deben la cuota
         filas.append({
             'voluntario_id': v.id,
             'clave': v.clave_bombero or '',
