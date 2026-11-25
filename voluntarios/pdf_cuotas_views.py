@@ -87,15 +87,20 @@ def pdf_deudores_cuotas(request, anio=None):
         else:
             anio = int(anio)
         
-        deudores = calcular_deudores_cuotas(anio)
+        # mes_tope opcional: nómina electoral (quienes no pueden votar por deber
+        # cuotas hasta ese mes inclusive, p. ej. mes_tope=10 => hasta octubre)
+        mes_tope = request.GET.get('mes_tope')
+        mes_tope = int(mes_tope) if mes_tope else None
+
+        deudores = calcular_deudores_cuotas(anio, mes_tope=mes_tope)
         logo = LogoCompania.objects.filter(usar_en_pdfs=True).first()
         pdf_buffer = generar_pdf_nomina_deudores_cuotas(
-            deudores, anio, logo_base64=logo.imagen if logo else None
+            deudores, anio, logo_base64=logo.imagen if logo else None, mes_tope=mes_tope
         )
 
         # Crear respuesta HTTP
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
-        filename = f"deudores_cuotas_{anio}.pdf"
+        filename = f"nomina_electoral_{anio}.pdf" if mes_tope else f"deudores_cuotas_{anio}.pdf"
         response['Content-Disposition'] = f'inline; filename="{filename}"'
         
         return response

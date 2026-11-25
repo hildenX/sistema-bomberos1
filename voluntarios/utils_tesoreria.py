@@ -127,10 +127,13 @@ def obtener_precio_cuota(voluntario):
     return config.precio_regular
 
 
-def calcular_deuda_cuotas(voluntario, anio=None):
+def calcular_deuda_cuotas(voluntario, anio=None, mes_tope=None):
     """
     Calcula la deuda de cuotas de un voluntario
-    
+
+    mes_tope: si se indica (1-12), solo cuenta meses hasta ese mes inclusive
+    (p. ej. 10 = hasta octubre, para la nómina electoral).
+
     Returns:
         dict: {
             'monto': Decimal,
@@ -139,23 +142,25 @@ def calcular_deuda_cuotas(voluntario, anio=None):
     """
     if anio is None:
         anio = timezone.now().year
-    
+
     # Verificar si puede pagar
     validacion = puede_pagar_cuotas(voluntario)
     if not validacion['puede']:
         return {'monto': Decimal('0'), 'meses_pendientes': []}
-    
+
     # Obtener precio
     precio = obtener_precio_cuota(voluntario)
-    
+
     # Buscar cuotas pagadas
     pagos = PagoCuota.objects.filter(
         voluntario=voluntario,
         anio=anio
     ).values_list('mes', flat=True)
-    
+
     # Mes actual
     mes_actual = timezone.now().month if anio == timezone.now().year else 12
+    if mes_tope is not None:
+        mes_actual = min(mes_actual, max(1, min(12, mes_tope)))
     
     # Calcular pendientes
     meses_pendientes = []
@@ -271,7 +276,7 @@ def calcular_deudas_beneficios_y_rifas():
     return deudas
 
 
-def calcular_deudores_cuotas(anio=None):
+def calcular_deudores_cuotas(anio=None, mes_tope=None):
     """
     Calcula la lista de voluntarios deudores de cuotas
     
@@ -301,7 +306,7 @@ def calcular_deudores_cuotas(anio=None):
         if not validacion['puede']:
             continue  # Saltar exentos, bloqueados y desactivados
         
-        deuda = calcular_deuda_cuotas(v, anio)
+        deuda = calcular_deuda_cuotas(v, anio, mes_tope=mes_tope)
         if deuda['monto'] > 0:
             deudores.append({
                 'voluntario': v,
