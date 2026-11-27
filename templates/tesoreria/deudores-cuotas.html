@@ -20,6 +20,7 @@
         <div class="dd-head-acc">
             <select id="ddAnio" class="dd-anio" aria-label="Año"></select>
             <a id="btnPDF" class="dd-btn is-pri" href="#" target="_blank" rel="noopener">Descargar PDF</a>
+            <a id="btnPDFElectoral" class="dd-btn is-pri" href="#" target="_blank" rel="noopener" title="Voluntarios que no pueden votar por deber cuotas hasta octubre (noviembre no cuenta)">PDF electoral (hasta octubre)</a>
             <a class="dd-btn is-ghost" href="/sistema.html">Volver</a>
         </div>
     </header>
@@ -114,6 +115,7 @@
         const anio = $('ddAnio').value;
         history.replaceState(null, '', `?anio=${anio}`);
         $('btnPDF').href = `/api/voluntarios/pdf-deudores-cuotas/${anio}/`;
+        $('btnPDFElectoral').href = `/api/voluntarios/pdf-deudores-cuotas/${anio}/?mes_tope=10`;
         $('ddResumen').hidden = true;
         $('ddTabla').hidden = true;
         $('ddEstado').hidden = false;

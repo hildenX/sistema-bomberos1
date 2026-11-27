@@ -652,6 +652,12 @@
                     <input type="text" id="buscadorAsistencias" placeholder="Buscar en descripción o fecha...">
                 </div>
                 <div class="filtro-group">
+                    <label>Año</label>
+                    <select id="filtroAno">
+                        <!-- Se llena dinámicamente (año calendario ene-dic) -->
+                    </select>
+                </div>
+                <div class="filtro-group">
                     <label>Tipo de Asistencia</label>
                     <select id="filtroTipo">
                         <option value="todas">Todas las Asistencias</option>
@@ -755,7 +761,7 @@
     <script src="{% static 'js/utils.js' %}"></script>
     <script src="{% static 'js/claves-radiales.js' %}"></script>
     <script src="{% static 'js/ciclos-asistencias.js' %}"></script>
-    <script src="{% static 'js/historial-asistencias-django.js' %}?v=31.0"></script>
+    <script src="{% static 'js/historial-asistencias-django.js' %}?v=32.0"></script>
     <script>console.log('Historial v18.0 - SIN CIERRE AUTOMATICO - SOLO MANUAL');</script>
 </body>
 </html>

@@ -416,30 +416,46 @@ class _Nomina:
 
 # ------------------------------------------------------------- generadores
 
-def generar_pdf_nomina_deudores_cuotas(deudores, anio, logo_base64=None, fecha_corte=None):
+_MESES_NOMBRE = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+
+
+def generar_pdf_nomina_deudores_cuotas(deudores, anio, logo_base64=None, fecha_corte=None, mes_tope=None):
     """
     deudores: lista de dicts de calcular_deudores_cuotas()
       {'voluntario', 'monto', 'meses_pendientes': [{'mes', 'anio', 'monto'}], 'precio_cuota'}
+    mes_tope: si se indica, el PDF se emite como nómina electoral (voluntarios
+      que no pueden votar por deber cuotas hasta ese mes inclusive).
     """
     fecha_corte = fecha_corte or date.today()
     filas = sorted(deudores, key=lambda d: _orden_antiguedad(d['voluntario']))
     total = sum(Decimal(str(d['monto'])) for d in filas)
     precios = {Decimal(str(d.get('precio_cuota') or 0)) for d in filas if d.get('precio_cuota')}
 
-    doc = _Nomina('NÓMINA DE DEUDORES', f"Cuotas sociales · Ciclo {anio}",
-                  f"Nómina de deudores · cuotas {anio}", _logo_desde_base64(logo_base64))
+    electoral = mes_tope is not None
+    hasta = _MESES_NOMBRE[max(1, min(12, mes_tope))] if electoral else ''
+    if electoral:
+        titulo, subtitulo = 'NÓMINA ELECTORAL', f"Voluntarios inhabilitados para votar · Ciclo {anio}"
+        titulo_corto = f"Nómina electoral · cuotas {anio}"
+        resumen_cab = f"{len(filas)} voluntarios no habilitados para votar"
+    else:
+        titulo, subtitulo = 'NÓMINA DE DEUDORES', f"Cuotas sociales · Ciclo {anio}"
+        titulo_corto = f"Nómina de deudores · cuotas {anio}"
+        resumen_cab = f"{len(filas)} voluntarios con cuotas pendientes"
+
+    doc = _Nomina(titulo, subtitulo, titulo_corto, _logo_desde_base64(logo_base64))
     doc.encabezado(fecha_corte)
     tesorero = _tesorero_vigente()
     doc.bloque_datos(
         ('EMITIDO POR', [('Tesorería de Compañía', True),
                          (f"Tesorero(a): {tesorero}" if tesorero else 'Tesorero(a) de Compañía', False),
                          ('Chorrillos 1339, Puerto Montt', False)]),
-        ('RESUMEN', [(f"{len(filas)} voluntarios con cuotas pendientes", True),
+        ('RESUMEN', [(resumen_cab, True),
                      (f"Total adeudado: {_pesos(total)}", False),
-                     (f"Ciclo de cuotas {anio}", False)]),
+                     (f"Deuda considerada hasta {hasta} de {anio}" if electoral else f"Ciclo de cuotas {anio}", False)]),
     )
 
-    doc.titulo_seccion('Detalle de la deuda')
+    doc.titulo_seccion('Voluntarios no habilitados para votar' if electoral else 'Detalle de la deuda')
     doc.definir_columnas([('N°', 30, 'l'), ('Clave', 48, 'l'), ('Voluntario', 199, 'l'),
                           ('Meses pendientes', 136, 'l'), ('Deuda', ANCHO_UTIL - 413, 'r')])
     doc.encabezado_tabla()
@@ -449,14 +465,22 @@ def generar_pdf_nomina_deudores_cuotas(deudores, anio, logo_base64=None, fecha_c
                   _rango_meses(m['mes'] for m in d['meses_pendientes']), _pesos(d['monto'])],
                  i, negritas=(4,))
 
-    lineas = [('Voluntarios con deuda', str(len(filas)))]
+    lineas = [('Voluntarios no habilitados' if electoral else 'Voluntarios con deuda', str(len(filas)))]
     if len(precios) == 1:
         lineas.append(('Valor de la cuota mensual', _pesos(precios.pop())))
-    doc.cierre(lineas, total, [
-        'Valores en pesos chilenos (CLP).',
-        f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en esta nómina.",
-        'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
-    ], tesorero)
+    if electoral:
+        notas = [
+            'Valores en pesos chilenos (CLP).',
+            f"Incluye solo deuda de cuotas hasta {hasta} de {anio}; noviembre y meses posteriores no se consideran.",
+            f"Listado emitido al {_fecha_larga(fecha_corte)}; los pagos posteriores no se reflejan aquí.",
+        ]
+    else:
+        notas = [
+            'Valores en pesos chilenos (CLP).',
+            f"Deuda calculada al {_fecha_larga(fecha_corte)}; los pagos posteriores no aparecen en esta nómina.",
+            'Para regularizar tu situación, acércate a Tesorería o usa el Portal del Voluntario.',
+        ]
+    doc.cierre(lineas, total, notas, tesorero)
     return doc.terminar()
 
 

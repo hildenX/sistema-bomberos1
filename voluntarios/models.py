@@ -1539,6 +1539,14 @@ class PortalVoluntarioProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Vinculación con el bot de Telegram (Tesorería)
+    telegram_chat_id = models.BigIntegerField(blank=True, null=True, unique=True,
+                                              help_text="Chat de Telegram vinculado para registrar pagos")
+    telegram_codigo = models.CharField(max_length=12, blank=True, null=True,
+                                       help_text="Código de un solo uso para vincular Telegram")
+    telegram_codigo_expira = models.DateTimeField(blank=True, null=True)
+    telegram_vinculado_at = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         ordering = ['voluntario__apellido_paterno', 'voluntario__nombre']
         verbose_name = 'Perfil Portal Voluntario'

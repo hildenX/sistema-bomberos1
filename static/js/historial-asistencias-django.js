@@ -5,6 +5,7 @@ class HistorialAsistencias {
     constructor() {
         this.asistencias = [];
         this.cicloActivo = null;
+        this.filtroAno = new Date().getFullYear();  // Lista: año calendario (ene-dic). El ciclo oct-oct solo aplica al ranking.
         this.filtroTipo = 'todas';
         this.filtroTop = 10;
         this.filtroClave = '';
@@ -27,6 +28,7 @@ class HistorialAsistencias {
         await this.cargarDatos();
         this.configurarEventos();
         this.cargarCicloActivo();
+        this.poblarFiltroAno();
         this.inicializarFiltroClave();
         this.mostrarOcultarFiltroClave();
         this.renderizar();
@@ -122,7 +124,7 @@ class HistorialAsistencias {
         const filtroAno = document.getElementById('filtroAno');
         if (filtroAno) {
             filtroAno.addEventListener('change', (e) => {
-                this.filtroAno = parseInt(e.target.value);
+                this.filtroAno = e.target.value === 'todos' ? 'todos' : parseInt(e.target.value, 10);
                 this.renderizar();
             });
         }
@@ -258,6 +260,22 @@ class HistorialAsistencias {
         this.renderizarRanking();
     }
 
+    poblarFiltroAno() {
+        const sel = document.getElementById('filtroAno');
+        if (!sel) return;
+        const anios = new Set(
+            this.asistencias
+                .filter(a => a.fecha)
+                .map(a => new Date(a.fecha).getFullYear())
+        );
+        anios.add(new Date().getFullYear());
+        const ordenados = Array.from(anios).sort((a, b) => b - a);
+        // Si el año por defecto (actual) no tiene registros, igual se muestra como opción.
+        sel.innerHTML = '<option value="todos">Todos los años</option>'
+            + ordenados.map(y => `<option value="${y}">${y}</option>`).join('');
+        sel.value = (this.filtroAno === 'todos') ? 'todos' : String(this.filtroAno);
+    }
+
     renderizarAsistencias() {
         const container = document.getElementById('asistenciasLista');
         const contador = document.getElementById('asistenciasContador');
@@ -287,16 +305,11 @@ class HistorialAsistencias {
                 if (!coincide) return false;
             }
 
-            // Filtrar por ciclo activo
-            if (this.cicloActivo && a.fecha) {
-                const fechaEvento = new Date(a.fecha);
-                const fechaInicio = new Date(this.cicloActivo.fechaInicio);
-                const fechaFin = new Date(this.cicloActivo.fechaFin);
-                
-                if (fechaEvento < fechaInicio || fechaEvento > fechaFin) return false;
-            } else if (!this.cicloActivo) {
-                // Si no hay ciclo activo, no mostrar nada
-                return false;
+            // Filtrar por AÑO CALENDARIO (ene-dic), no por el ciclo oct-oct.
+            // El ciclo oct-oct solo se usa para el ranking/premios de asistencia.
+            if (this.filtroAno && this.filtroAno !== 'todos' && a.fecha) {
+                const anioEvento = new Date(a.fecha).getFullYear();
+                if (anioEvento !== this.filtroAno) return false;
             }
             
             // Filtrar por tipo
