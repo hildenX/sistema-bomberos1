@@ -747,3 +747,32 @@ def tesoreria_credenciales_portal_view(request):
         'credenciales': data,
         'password_generica': PORTAL_PASSWORD_INICIAL,
     })
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def portal_telegram_generar_codigo_view(request):
+    """
+    Devuelve un código de un solo uso para vincular el Telegram del voluntario.
+    GET: estado de vinculación. POST: genera (o regenera) el código.
+    """
+    from .telegram_utils import asignar_codigo_vinculacion, CODIGO_VALIDEZ_MIN
+
+    profile, error = _require_portal_user(request)
+    if error:
+        return error
+
+    if request.method == 'GET':
+        return JsonResponse({
+            'success': True,
+            'vinculado': bool(profile.telegram_chat_id),
+        })
+
+    codigo = asignar_codigo_vinculacion(profile)
+    return JsonResponse({
+        'success': True,
+        'codigo': codigo,
+        'usuario': profile.user.username,
+        'validez_min': CODIGO_VALIDEZ_MIN,
+        'bot': 'Tesoreria_Sexta_bot',
+    })

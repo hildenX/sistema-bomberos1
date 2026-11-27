@@ -20,6 +20,7 @@
             </div>
             <div class="pv-head-acc">
                 <a class="pv-btn is-ghost" href="/portal/cambiar-clave/">Cambiar contraseña</a>
+                <button class="pv-btn is-ghost" type="button" onclick="vincularTelegram()">Vincular Telegram</button>
                 <button class="pv-btn is-ghost" type="button" onclick="cerrarSesionPortal()">Cerrar sesión</button>
             </div>
         </header>
@@ -85,6 +86,26 @@
             </aside>
         </div>
     </div>
+    <script>
+    async function vincularTelegram() {
+        try {
+            const r = await fetch('/portal/telegram/generar-codigo/', { method: 'POST', credentials: 'include' });
+            const d = await r.json();
+            if (!d.success) { alert(d.error || 'No se pudo generar el código.'); return; }
+            if (d.vinculado) { alert('Tu Telegram ya está vinculado.'); return; }
+            alert(
+                'Vincula tu Telegram en 3 pasos:\n\n' +
+                '1) Abre el bot: t.me/' + d.bot + '\n' +
+                '2) Escribe /start y pon tu usuario: ' + d.usuario + '\n' +
+                '3) Pega este código (válido ' + d.validez_min + ' min):\n\n' +
+                '      ' + d.codigo + '\n\n' +
+                'Luego comparte tu número cuando el bot te lo pida.'
+            );
+        } catch (e) {
+            alert('Error de conexión al generar el código.');
+        }
+    }
+    </script>
     <script src="{% static 'js/portal-voluntario.js' %}?v=7"></script>
 </body>
 </html>
